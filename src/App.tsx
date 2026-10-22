@@ -118,6 +118,11 @@ const App = () => {
                       <LandingGenio />
                     </Suspense>
                   } />
+                  <Route path="/old" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LandingGenio />
+                    </Suspense>
+                  } />
                   <Route path="/onboarding" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <Onboarding />
