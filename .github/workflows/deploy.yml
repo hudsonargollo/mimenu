@@ -41,9 +41,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=pontalcarapitangui --branch=main
+          command: pages deploy dist --project-name=mimenu --branch=main
 
       - name: Deployment Summary
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "🌐 Site URL: https://pontalcarapitangui.pages.dev"
+          echo "🌐 Site URL: https://mimenu.clubemkt.digital"
