@@ -6,10 +6,10 @@ import { handleChatTurn, loadSessionState, saveSessionState } from '@/lib/chatbo
 
 type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string };
 const labels: Record<ChatbotLang, { title: string; placeholder: string; welcome: string; error: string }> = {
-  es: { title: 'Asistente', placeholder: 'Escribe tu mensaje…', welcome: '¡Hola! Puedo ayudarte con el menú, horarios, ubicación y solicitudes de reserva.', error: 'No pude enviar el mensaje. Inténtalo de nuevo.' },
-  en: { title: 'Assistant', placeholder: 'Type a message…', welcome: 'Hi! I can help with the menu, hours, location, and reservation requests.', error: 'I could not send that message. Please try again.' },
-  pt: { title: 'Assistente', placeholder: 'Digite sua mensagem…', welcome: 'Olá! Posso ajudar com o cardápio, horários, localização e solicitações de reserva.', error: 'Não consegui enviar a mensagem. Tente novamente.' },
-  de: { title: 'Assistent', placeholder: 'Nachricht schreiben…', welcome: 'Hallo! Ich helfe bei Speisekarte, Öffnungszeiten, Anfahrt und Reservierungsanfragen.', error: 'Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.' },
+  es: { title: 'Asistente', placeholder: 'Escribe tu mensaje…', welcome: '¡Hola! Puedo ayudarte con el menú, horarios, ubicación y solicitudes de reserva.', error: 'No pude confirmar si tu solicitud quedó registrada. Vuelve a enviar la misma confirmación; si ya se guardó, no se creará otra reserva.' },
+  en: { title: 'Assistant', placeholder: 'Type a message…', welcome: 'Hi! I can help with the menu, hours, location, and reservation requests.', error: 'I could not confirm whether your request was recorded. Send the same confirmation again; if it was already saved, no duplicate request will be created.' },
+  pt: { title: 'Assistente', placeholder: 'Digite sua mensagem…', welcome: 'Olá! Posso ajudar com o cardápio, horários, localização e solicitações de reserva.', error: 'Não consegui confirmar se sua solicitação foi registrada. Envie a mesma confirmação novamente; se já tiver sido salva, não será criada outra reserva.' },
+  de: { title: 'Assistent', placeholder: 'Nachricht schreiben…', welcome: 'Hallo! Ich helfe bei Speisekarte, Öffnungszeiten, Anfahrt und Reservierungsanfragen.', error: 'Ich konnte nicht bestätigen, ob Ihre Anfrage gespeichert wurde. Senden Sie dieselbe Bestätigung erneut; falls sie bereits gespeichert ist, wird keine doppelte Anfrage erstellt.' },
 };
 
 export function MenuChatbot() {
