@@ -269,4 +269,165 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
     expect(createdReservations[0].reservation_time).toBe('20:30');
     expect(createdReservations[0].status).toBe('pending');
   });
+
+  it.each([
+    {
+      lang: 'es' as const,
+      selectValue: 'es',
+      startMsg: 'quiero reservar una mesa',
+      partyMsg: '2 personas',
+      dateMsg: '2026-11-05',
+      timeMsg: '19:30',
+      nameMsg: 'Elena Gomez',
+      phoneMsg: '+591 70001122',
+      confirmMsg: 'sí, confirmar',
+      expectedFailurePattern: /No pude confirmar si tu solicitud quedó registrada|No pude guardar la solicitud/i,
+      expectedGuidancePattern: /vuelve a enviar la misma confirmación|responde [“"]?sí[”"]? para volver a intentarlo/i,
+      retryConfirmation: 'sí, confirmar',
+      expectedSuccessPattern: /pendiente de confirmación|Esta solicitud ya fue enviada/i,
+    },
+    {
+      lang: 'en' as const,
+      selectValue: 'en',
+      startMsg: 'I want to reserve a table',
+      partyMsg: '2 people',
+      dateMsg: '2026-11-05',
+      timeMsg: '19:30',
+      nameMsg: 'John Miller',
+      phoneMsg: '+1 4155552671',
+      confirmMsg: 'yes, confirm',
+      expectedFailurePattern: /I could not confirm whether your request was recorded|I could not save the request/i,
+      expectedGuidancePattern: /Send the same confirmation again|reply [“"]?yes[”"]? to retry/i,
+      retryConfirmation: 'yes, confirm',
+      expectedSuccessPattern: /pending restaurant confirmation|This request has already been submitted/i,
+    },
+    {
+      lang: 'pt' as const,
+      selectValue: 'pt',
+      startMsg: 'quero reservar uma mesa',
+      partyMsg: '2 pessoas',
+      dateMsg: '2026-11-05',
+      timeMsg: '19:30',
+      nameMsg: 'Mariana Silva',
+      phoneMsg: '+55 11987654321',
+      confirmMsg: 'sim, confirmar',
+      expectedFailurePattern: /Não consegui confirmar se sua solicitação foi registrada|Não consegui salvar a solicitação/i,
+      expectedGuidancePattern: /Envie a mesma confirmação novamente|responda [“"]?sim[”"]? para tentar novamente/i,
+      retryConfirmation: 'sim, confirmar',
+      expectedSuccessPattern: /aguarda confirmação do restaurante|Esta solicitação já foi enviada/i,
+    },
+    {
+      lang: 'de' as const,
+      selectValue: 'de',
+      startMsg: 'ich möchte einen Tisch reservieren',
+      partyMsg: '2 Personen',
+      dateMsg: '2026-11-05',
+      timeMsg: '19:30',
+      nameMsg: 'Klaus Weber',
+      phoneMsg: '+49 1701234567',
+      confirmMsg: 'ja, bestätigen',
+      expectedFailurePattern: /Ich konnte nicht bestätigen, ob Ihre Anfrage gespeichert wurde|Die Anfrage konnte nicht gespeichert werden/i,
+      expectedGuidancePattern: /Senden Sie dieselbe Bestätigung erneut|antworten Sie mit [„"]?ja[“"]?, um es erneut zu versuchen/i,
+      retryConfirmation: 'ja',
+      expectedSuccessPattern: /wartet auf die Bestätigung des Restaurants|Diese Anfrage wurde bereits gesendet/i,
+    },
+  ])(
+    'verifies post-failure guidance and idempotent retry in $lang after reloading the customer menu',
+    async ({
+      selectValue,
+      startMsg,
+      partyMsg,
+      dateMsg,
+      timeMsg,
+      nameMsg,
+      phoneMsg,
+      confirmMsg,
+      expectedFailurePattern,
+      expectedGuidancePattern,
+      retryConfirmation,
+      expectedSuccessPattern,
+    }) => {
+      simulateTransportFailure = true;
+
+      const firstMenu = render(<MenuChatbot />);
+
+      // Open chat widget
+      const toggleButton = screen.getByRole('button', { name: /Open chat|Abrir chat/i });
+      fireEvent.click(toggleButton);
+
+      // Select language
+      const langSelector = screen.getByLabelText(/Chat language/i);
+      fireEvent.change(langSelector, { target: { value: selectValue } });
+
+      const input = screen.getByRole('textbox');
+      const sendBtn = screen.getByRole('button', { name: /Send message/i });
+
+      const sendUserMessage = async (msg: string) => {
+        fireEvent.change(input, { target: { value: msg } });
+        fireEvent.click(sendBtn);
+        await waitFor(() => expect(screen.getByText(msg)).toBeDefined());
+      };
+
+      await sendUserMessage(startMsg);
+      await sendUserMessage(partyMsg);
+      await sendUserMessage(dateMsg);
+      await sendUserMessage(timeMsg);
+      await sendUserMessage(nameMsg);
+      await sendUserMessage(phoneMsg);
+
+      // Confirm with simulated transport failure
+      await sendUserMessage(confirmMsg);
+
+      // Verify clear post-failure guidance in the chosen language
+      await waitFor(() => {
+        expect(screen.getByText(expectedFailurePattern)).toBeDefined();
+        expect(screen.getByText(expectedGuidancePattern)).toBeDefined();
+      });
+
+      expect(createdReservations).toHaveLength(1);
+      expect(insertAttempt).toBe(1);
+
+      const savedSessionAfterFailure = persistedSessions.find(
+        (row) => row.venue_id === 'venue-e2e-1'
+      );
+      expect(savedSessionAfterFailure?.state?.reservationDraft?.step).toBe('confirm');
+      const retryKey = savedSessionAfterFailure?.state?.reservationDraft?.idempotencyKey;
+      expect(retryKey).toBeDefined();
+
+      // Reload the customer menu
+      firstMenu.unmount();
+      render(<MenuChatbot />);
+      const reloadToggle = screen.getByRole('button', { name: /Open chat|Abrir chat/i });
+      fireEvent.click(reloadToggle);
+
+      await waitFor(() => {
+        const savedSession = persistedSessions.find((row) => row.venue_id === 'venue-e2e-1');
+        expect(savedSession?.state?.reservationDraft?.step).toBe('confirm');
+        expect(savedSession?.state?.reservationDraft?.idempotencyKey).toBe(retryKey);
+        expect(savedSession?.language).toBe(selectValue);
+      });
+
+      // Confirm retry guidance is intact and the customer can complete safely
+      const reloadedInput = screen.getByRole('textbox');
+      const reloadedSendBtn = screen.getByRole('button', { name: /Send message/i });
+      const retryAfterReload = async (msg: string) => {
+        fireEvent.change(reloadedInput, { target: { value: msg } });
+        fireEvent.click(reloadedSendBtn);
+        await waitFor(() => expect(screen.getByText(msg)).toBeDefined());
+      };
+
+      simulateTransportFailure = false;
+      await retryAfterReload(retryConfirmation);
+
+      await waitFor(() => {
+        expect(screen.getByText(expectedSuccessPattern)).toBeDefined();
+      });
+
+      expect(createdReservations).toHaveLength(1);
+      expect(insertAttempt).toBe(2);
+      expect(createdReservations[0].idempotency_key).toBe(retryKey);
+      expect(createdReservations[0].status).toBe('pending');
+    }
+  );
+
 });
