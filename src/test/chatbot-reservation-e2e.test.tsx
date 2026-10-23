@@ -46,6 +46,7 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
   let createdReservations: any[] = [];
   let insertAttempt = 0;
   let simulateTransportFailure = false;
+  let persistedSessions: any[] = [];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -53,18 +54,29 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
     createdReservations = [];
     insertAttempt = 0;
     simulateTransportFailure = false;
+    persistedSessions = [];
 
     (supabase.from as any).mockImplementation((table: string) => {
       if (table === 'chatbot_sessions') {
         return {
           select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnValue({
-                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-              }),
-            }),
+            eq: vi.fn().mockImplementation((col1: string, val1: string) => ({
+              eq: vi.fn().mockImplementation((col2: string, val2: string) => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                  data: persistedSessions.find((row) => row[col1] === val1 && row[col2] === val2) || null,
+                  error: null,
+                }),
+              })),
+            })),
           }),
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
+          upsert: vi.fn().mockImplementation(async (row: any) => {
+            const existingIndex = persistedSessions.findIndex(
+              (saved) => saved.venue_id === row.venue_id && saved.session_key === row.session_key
+            );
+            if (existingIndex >= 0) persistedSessions[existingIndex] = row;
+            else persistedSessions.push(row);
+            return { data: row, error: null };
+          }),
         };
       }
 
@@ -147,7 +159,7 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
   it('completes reservation flow, survives transport failure on confirmation, and retries idempotently with only 1 DB row created', async () => {
     simulateTransportFailure = true;
 
-    render(<MenuChatbot />);
+    const firstMenu = render(<MenuChatbot />);
 
     // Open chat widget
     const toggleButton = screen.getByRole('button', { name: /Open chat|Abrir chat/i });
@@ -194,14 +206,49 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
       expect(
         screen.getByText(/No pude confirmar si tu solicitud quedó registrada|No pude guardar la solicitud/i)
       ).toBeDefined();
+      expect(screen.getByText(/vuelve a enviar la misma confirmación|responde [“\"]?sí[”\"]? para volver a intentarlo/i)).toBeDefined();
     });
 
     expect(createdReservations).toHaveLength(1);
     expect(insertAttempt).toBe(1);
 
-    // Step 8: User retries confirmation after connection restores
+    // The failed response must retain the same confirmation draft and idempotency key for safe retry.
+    const savedSessionAfterFailure = persistedSessions.find(
+      (row) => row.venue_id === 'venue-e2e-1'
+    );
+    expect(savedSessionAfterFailure?.state?.reservationDraft?.step).toBe('confirm');
+    const retryKey = savedSessionAfterFailure?.state?.reservationDraft?.idempotencyKey;
+    expect(retryKey).toBeDefined();
+
+    // Reload the customer menu. The widget loads its saved session before the customer retries.
+    firstMenu.unmount();
+    render(<MenuChatbot />);
+    const reloadToggle = screen.getByRole('button', { name: /Open chat|Abrir chat/i });
+    fireEvent.click(reloadToggle);
+    await waitFor(() => {
+      const savedSession = persistedSessions.find((row) => row.venue_id === 'venue-e2e-1');
+      expect(savedSession?.state?.reservationDraft?.step).toBe('confirm');
+      expect(savedSession?.state?.reservationDraft?.idempotencyKey).toBe(retryKey);
+      expect(savedSession?.state?.reservationDraft).toMatchObject({
+        partySize: 4,
+        date: '2026-10-30',
+        time: '20:30',
+        name: 'Hudson Argollo',
+        phone: '+591 71234567',
+      });
+    });
+
+    const reloadedInput = screen.getByPlaceholderText(/Escribe tu mensaje…|Type a message…/i);
+    const reloadedSendBtn = screen.getByRole('button', { name: /Send message/i });
+    const retryAfterReload = async (msg: string) => {
+      fireEvent.change(reloadedInput, { target: { value: msg } });
+      fireEvent.click(reloadedSendBtn);
+      await waitFor(() => expect(screen.getByText(msg)).toBeDefined());
+    };
+
+    // Step 8: Retry the same confirmation after reload and connection recovery.
     simulateTransportFailure = false;
-    await sendUserMessage('sí, confirmar');
+    await retryAfterReload('sí, confirmar');
 
     // Widget should complete and confirm or acknowledge receipt
     await waitFor(() => {
@@ -212,9 +259,14 @@ describe('Customer Menu Chatbot E2E - Reservation Confirmation with Simulated Tr
 
     // VERIFICATION: Only ONE database reservation record exists
     expect(createdReservations).toHaveLength(1);
+    expect(insertAttempt).toBe(2);
     expect(createdReservations[0].customer_name).toBe('Hudson Argollo');
     expect(createdReservations[0].party_size).toBe(4);
     expect(createdReservations[0].status).toBe('pending');
-    expect(createdReservations[0].idempotency_key).toBeDefined();
+    expect(createdReservations[0].idempotency_key).toBe(retryKey);
+    expect(createdReservations[0].customer_phone).toBe('+591 71234567');
+    expect(createdReservations[0].reservation_date).toBe('2026-10-30');
+    expect(createdReservations[0].reservation_time).toBe('20:30');
+    expect(createdReservations[0].status).toBe('pending');
   });
 });
