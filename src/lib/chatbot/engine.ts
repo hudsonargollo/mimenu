@@ -82,7 +82,7 @@ const COPY: Record<ChatbotLang, Copy> = {
   vegetarian:i=>`Vegetarian options:\n${i||'Please ask the restaurant about available options.'}`, vegan:i=>`Vegan options:\n${i||'Please ask the restaurant about available options.'}`, glutenFree:i=>`Gluten-free options:\n${i||'Please ask the restaurant about available options.'}`,
   reserve:'I can send a reservation request. How many guests?', askParty:'Please give the number of guests (1–50).', askDate:'What date would you like?', askTime:'What time?', askName:'What name should I use?', askPhone:'What phone number can the restaurant use to contact you?',
   confirm:d=>`Summary: ${d.name}, ${d.partySize} guests, ${d.date} at ${d.time}. Send this request to the restaurant? Reply yes to send or no to cancel.`,
-  submitted:d=>`Thanks, ${d.name}. I sent your request for ${d.partySize} guests on ${d.date} at ${d.time.} It is pending restaurant confirmation and is not yet a confirmed booking.`,
+  submitted:d=>`Thanks, ${d.name}. I sent your request for ${d.partySize} guests on ${d.date} at ${d.time}. It is pending restaurant confirmation and is not yet a confirmed booking.`,
   cancelled:'Request cancelled. Can I help with anything else?', fallback:'I didn’t understand. Ask about the menu, hours, location, or a reservation.'
  },
  pt: {
@@ -140,7 +140,7 @@ export function processChatbotMessage(message:string, state:ChatbotSessionState,
  if (draft.step==='confirm') {
   if(affirmative.test(n)) {
    const data:ReservationRequest={venueId:venue.id,customerName:draft.name!,customerPhone:draft.phone!,partySize:draft.partySize!,reservationDate:draft.date!,reservationTime:draft.time!,source};
-   return response(c.submitted({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!},{step:'idle'},{actionRequired:'create_reservation',reservationData:data});
+   return response(c.submitted({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),{step:'idle'},{actionRequired:'create_reservation',reservationData:data});
   }
   if(negative.test(n)) return response(c.cancelled,{step:'idle'});
   return response(c.confirm({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),draft);
