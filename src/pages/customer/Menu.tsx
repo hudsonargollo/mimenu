@@ -22,6 +22,7 @@ import { HotnessIndicator } from '@/components/HotnessIndicator';
 import { ItemReviewDialog } from '@/components/ItemReviewDialog';
 import { CyclingOffersBanner } from '@/components/CyclingOffersBanner';
 import { CartDrawerExpress } from '@/components/CartDrawerExpress';
+import { MenuChatbot } from '@/components/chatbot/MenuChatbot';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -411,6 +412,8 @@ const Menu: React.FC = () => {
           </button>
         </div>
       )}
+
+      <MenuChatbot />
 
       {/* Item Review Dialog */}
       <ItemReviewDialog
