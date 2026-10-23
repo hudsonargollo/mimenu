@@ -33,10 +33,22 @@ export interface ReservationDraft {
   time?: string;
   name?: string;
   phone?: string;
+  idempotencyKey?: string;
+}
+
+export interface LastReservationSummary {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  partySize: number;
+  reservationDate: string;
+  reservationTime: string;
+  idempotencyKey: string;
 }
 export interface ChatbotSessionState {
   language: ChatbotLang;
   reservationDraft?: ReservationDraft;
+  lastReservation?: LastReservationSummary;
 }
 export interface ReservationRequest {
   venueId: string;
@@ -46,6 +58,7 @@ export interface ReservationRequest {
   reservationDate: string;
   reservationTime: string;
   source: ChatSource;
+  idempotencyKey?: string;
 }
 export interface ChatbotResponse {
   reply: string;
@@ -62,6 +75,7 @@ type Copy = {
   reserve: string; askParty: string; askDate: string; askTime: string; askName: string; askPhone: string;
   confirm: (d: Required<Pick<ReservationDraft,'name'|'partySize'|'date'|'time'>>) => string;
   submitted: (d: Required<Pick<ReservationDraft,'name'|'partySize'|'date'|'time'>>) => string;
+  alreadySubmitted: string;
   cancelled: string; fallback: string;
 };
 const COPY: Record<ChatbotLang, Copy> = {
@@ -72,7 +86,7 @@ const COPY: Record<ChatbotLang, Copy> = {
   vegetarian:i=>`Opciones vegetarianas:\n${i||'Consulta con el restaurante sobre opciones disponibles.'}`, vegan:i=>`Opciones veganas:\n${i||'Consulta con el restaurante sobre opciones disponibles.'}`, glutenFree:i=>`Opciones sin gluten:\n${i||'Consulta con el restaurante sobre opciones disponibles.'}`,
   reserve:'Te ayudo con una solicitud de reserva. ¿Para cuántas personas?', askParty:'Indícame cuántas personas (de 1 a 50).', askDate:'¿Para qué fecha? Indícala, por favor.', askTime:'¿A qué hora?', askName:'¿A nombre de quién?', askPhone:'¿Qué teléfono de contacto podemos usar?',
   confirm:d=>`Resumen: ${d.name}, ${d.partySize} personas, ${d.date} a las ${d.time}. ¿Envío esta solicitud al restaurante? Responde sí para enviarla o no para cancelar.`,
-  submitted:d=>`Gracias, ${d.name}. Envié tu solicitud para ${d.partySize} personas, ${d.date} a las ${d.time}. Está pendiente de confirmación del restaurante; aún no es una reserva confirmada.`,
+  submitted:d=>`Gracias, ${d.name}. Envié tu solicitud para ${d.partySize} personas, ${d.date} a las ${d.time}. Está pendiente de confirmación del restaurante; aún no es una reserva confirmada.`, alreadySubmitted:'Esta solicitud ya fue enviada y está pendiente de confirmación del restaurante.',
   cancelled:'Solicitud cancelada. ¿Puedo ayudarte con algo más?', fallback:'No entendí la consulta. Puedes preguntar por el menú, horarios, ubicación o una reserva.'
  },
  en: {
@@ -82,7 +96,7 @@ const COPY: Record<ChatbotLang, Copy> = {
   vegetarian:i=>`Vegetarian options:\n${i||'Please ask the restaurant about available options.'}`, vegan:i=>`Vegan options:\n${i||'Please ask the restaurant about available options.'}`, glutenFree:i=>`Gluten-free options:\n${i||'Please ask the restaurant about available options.'}`,
   reserve:'I can send a reservation request. How many guests?', askParty:'Please give the number of guests (1–50).', askDate:'What date would you like?', askTime:'What time?', askName:'What name should I use?', askPhone:'What phone number can the restaurant use to contact you?',
   confirm:d=>`Summary: ${d.name}, ${d.partySize} guests, ${d.date} at ${d.time}. Send this request to the restaurant? Reply yes to send or no to cancel.`,
-  submitted:d=>`Thanks, ${d.name}. I sent your request for ${d.partySize} guests on ${d.date} at ${d.time}. It is pending restaurant confirmation and is not yet a confirmed booking.`,
+  submitted:d=>`Thanks, ${d.name}. I sent your request for ${d.partySize} guests on ${d.date} at ${d.time}. It is pending restaurant confirmation and is not yet a confirmed booking.`, alreadySubmitted:'This request has already been submitted and is pending restaurant confirmation.',
   cancelled:'Request cancelled. Can I help with anything else?', fallback:'I didn’t understand. Ask about the menu, hours, location, or a reservation.'
  },
  pt: {
@@ -92,7 +106,7 @@ const COPY: Record<ChatbotLang, Copy> = {
   vegetarian:i=>`Opções vegetarianas:\n${i||'Consulte o restaurante sobre as opções disponíveis.'}`, vegan:i=>`Opções veganas:\n${i||'Consulte o restaurante sobre as opções disponíveis.'}`, glutenFree:i=>`Opções sem glúten:\n${i||'Consulte o restaurante sobre as opções disponíveis.'}`,
   reserve:'Posso enviar uma solicitação de reserva. Para quantas pessoas?', askParty:'Informe o número de pessoas (1 a 50).', askDate:'Para qual data?', askTime:'A que horas?', askName:'Em nome de quem?', askPhone:'Qual telefone podemos usar para contato?',
   confirm:d=>`Resumo: ${d.name}, ${d.partySize} pessoas, ${d.date} às ${d.time}. Envio a solicitação ao restaurante? Responda sim para enviar ou não para cancelar.`,
-  submitted:d=>`Obrigado, ${d.name}. Enviei sua solicitação para ${d.partySize} pessoas, ${d.date} às ${d.time}. Ela aguarda confirmação do restaurante; ainda não é uma reserva confirmada.`,
+  submitted:d=>`Obrigado, ${d.name}. Enviei sua solicitação para ${d.partySize} pessoas, ${d.date} às ${d.time}. Ela aguarda confirmação do restaurante; ainda não é uma reserva confirmada.`, alreadySubmitted:'Esta solicitação já foi enviada e aguarda confirmação do restaurante.',
   cancelled:'Solicitação cancelada. Posso ajudar em algo mais?', fallback:'Não entendi. Pergunte sobre o cardápio, horários, localização ou reserva.'
  },
  de: {
@@ -102,7 +116,7 @@ const COPY: Record<ChatbotLang, Copy> = {
   vegetarian:i=>`Vegetarische Gerichte:\n${i||'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`, vegan:i=>`Vegane Gerichte:\n${i||'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`, glutenFree:i=>`Glutenfreie Gerichte:\n${i||'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`,
   reserve:'Ich kann eine Reservierungsanfrage senden. Für wie viele Personen?', askParty:'Bitte nennen Sie die Personenzahl (1 bis 50).', askDate:'Für welches Datum?', askTime:'Um wie viel Uhr?', askName:'Auf welchen Namen?', askPhone:'Welche Telefonnummer darf das Restaurant verwenden?',
   confirm:d=>`Zusammenfassung: ${d.name}, ${d.partySize} Personen, ${d.date} um ${d.time}. Anfrage an das Restaurant senden? Antworten Sie mit Ja zum Senden oder Nein zum Abbrechen.`,
-  submitted:d=>`Danke, ${d.name}. Ihre Anfrage für ${d.partySize} Personen am ${d.date} um ${d.time} wurde gesendet. Sie wartet auf die Bestätigung des Restaurants und ist noch keine bestätigte Reservierung.`,
+  submitted:d=>`Danke, ${d.name}. Ihre Anfrage für ${d.partySize} Personen am ${d.date} um ${d.time} wurde gesendet. Sie wartet auf die Bestätigung des Restaurants und ist noch keine bestätigte Reservierung.`, alreadySubmitted:'Diese Anfrage wurde bereits gesendet und wartet auf die Bestätigung des Restaurants.',
   cancelled:'Anfrage abgebrochen. Kann ich sonst helfen?', fallback:'Das habe ich nicht verstanden. Fragen Sie nach Speisekarte, Öffnungszeiten, Anfahrt oder Reservierung.'
  }
 };
@@ -125,8 +139,10 @@ const negative=/^(no|nao|nein|cancelar|cancel|abbrechen|stop)$/i;
 export function processChatbotMessage(message:string, state:ChatbotSessionState, venue:ChatbotVenueContext, menuItems:ChatbotMenuItem[]=[], source:ChatSource='web'):ChatbotResponse {
  const text=message.trim(); const n=normalize(text); const lang=detectLanguage(text,state.language||'es'); const c=COPY[lang];
  let draft:ReservationDraft={step:'idle',...(state.reservationDraft||{})};
- const response=(reply:string,next:ReservationDraft=draft,extra:Partial<ChatbotResponse>={}):ChatbotResponse=>({reply,detectedLang:lang,nextState:{language:lang,reservationDraft:next},...extra});
+ const response=(reply:string,next:ReservationDraft=draft,extra:Partial<ChatbotResponse>={}):ChatbotResponse=>({reply,detectedLang:lang,nextState:{language:lang,reservationDraft:next,lastReservation:state.lastReservation},...extra});
  if (!text) return response(c.fallback);
+ // A repeated affirmative after submission must not start another insert.
+ if (draft.step === 'idle' && state.lastReservation && affirmative.test(n)) return response(c.alreadySubmitted);
  if (draft.step!=='idle' && /^(cancel|cancelar|stop|abbrechen|sair)$/i.test(n)) return response(c.cancelled,{step:'idle'});
  if (draft.step==='party_size') {
   const m=n.match(/\d{1,2}/); const count=m?Number(m[0]):0;
@@ -136,17 +152,17 @@ export function processChatbotMessage(message:string, state:ChatbotSessionState,
  if (draft.step==='date') { if(text.length>80) return response(c.askDate,draft); draft={...draft,date:text,step:'time'}; return response(c.askTime,draft); }
  if (draft.step==='time') { if(text.length>40) return response(c.askTime,draft); draft={...draft,time:text,step:'name'}; return response(c.askName,draft); }
  if (draft.step==='name') { if(text.length<2||text.length>100) return response(c.askName,draft); draft={...draft,name:text,step:'phone'}; return response(c.askPhone,draft); }
- if (draft.step==='phone') { const digits=text.replace(/\D/g,''); if(digits.length<7||digits.length>18) return response(c.askPhone,draft); draft={...draft,phone:text,step:'confirm'}; return response(c.confirm({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),draft); }
+ if (draft.step==='phone') { const digits=text.replace(/\D/g,''); if(digits.length<7||digits.length>18) return response(c.askPhone,draft); draft={...draft,phone:text,step:'confirm',idempotencyKey:draft.idempotencyKey || (globalThis.crypto?.randomUUID?.() ?? `chatbot-${Date.now()}-${Math.random().toString(36).slice(2)}`)}; return response(c.confirm({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),draft); }
  if (draft.step==='confirm') {
   if(affirmative.test(n)) {
-   const data:ReservationRequest={venueId:venue.id,customerName:draft.name!,customerPhone:draft.phone!,partySize:draft.partySize!,reservationDate:draft.date!,reservationTime:draft.time!,source};
+   const data:ReservationRequest={venueId:venue.id,customerName:draft.name!,customerPhone:draft.phone!,partySize:draft.partySize!,reservationDate:draft.date!,reservationTime:draft.time!,source,idempotencyKey:draft.idempotencyKey};
    return response(c.submitted({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),{step:'idle'},{actionRequired:'create_reservation',reservationData:data});
   }
   if(negative.test(n)) return response(c.cancelled,{step:'idle'});
   return response(c.confirm({name:draft.name!,partySize:draft.partySize!,date:draft.date!,time:draft.time!}),draft);
  }
  if (/^(hola|hello|hi|hey|ol[aá]|hallo|guten tag|buenos dias|buenas tardes)\b/i.test(n)) return response(c.welcome(venue.name));
- if (/\b(reserv|booking|book a table|mesa|tisch|reservierung)\b/.test(n)) return response(c.reserve,{step:'party_size'});
+ if (/\b(reserv|booking|book a table|mesa|tisch|reservierung)\b/.test(n)) return response(c.reserve,{step:'party_size',idempotencyKey:globalThis.crypto?.randomUUID?.() ?? `chatbot-${Date.now()}-${Math.random().toString(36).slice(2)}`});
  if (/\b(horario|horarios|hours|opening|offnungszeiten|abre|cierra)\b/.test(n)) return response(c.hours(venue.openingHours||'Ask the restaurant for current hours.'));
  if (/\b(ubicacion|direccion|donde|address|location|anfahrt|standort|endereco|localizacao)\b/.test(n)) return response(c.location(venue.address||'Ask the restaurant for its address.'));
  if (/\b(vegano|vegana|vegan)\b/.test(n)) return response(c.vegan(formatItems(menuItems.filter(i=>i.isVegan))));
