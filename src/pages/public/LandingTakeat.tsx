@@ -1098,7 +1098,7 @@ export const LandingTakeat: React.FC = () => {
                     </div>
                     <div className="flex justify-between text-accent">
                       <span>Taxa perdida em agregadores (23%):</span>
-                      <strong>- R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00 / mês</strong>
+                      <strong>- R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00  / {t.landing.perMonth}</strong>
                     </div>
                   </div>
                 </div>
