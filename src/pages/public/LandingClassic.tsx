@@ -272,11 +272,7 @@ export const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-[1px] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-[#0D0E15] rounded-[11px] flex items-center justify-center">
-                <Flame className="w-5 h-5 text-amber-400 fill-amber-400" aria-hidden="true" />
-              </div>
-            </div>
+            <img src="/mimenu-square.svg" alt="MiMenu" className="h-10 w-10 shrink-0 group-hover:scale-105 transition-transform" />
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-lg tracking-tight text-white">MiMenu</span>
