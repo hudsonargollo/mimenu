@@ -72,7 +72,7 @@ export const LandingTakeat: React.FC = () => {
   const [leadName, setLeadName] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
   const [leadVenueName, setLeadVenueName] = useState("");
-  const [leadSegment, setLeadSegment] = useState("Salão & Mesas");
+  const [leadSegment, setLeadSegment] = useState(t.landing.leadSegmentDefault);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export const LandingTakeat: React.FC = () => {
     e.preventDefault();
     setFormSubmitted(true);
 
-    const msg = `Olá! Tenho interesse no MiMenu para o meu restaurante.\n\n*Nome:* ${leadName || "Responsável"}\n*Restaurante:* ${leadVenueName || "Não informado"}\n*WhatsApp:* ${leadPhone || "Não informado"}\n*Operação:* ${leadSegment}\n\nGostaria de agendar uma demonstração gratuita!`;
+    const msg = `${t.landing.waMsgIntro}\n\n*${t.landing.waName}:* ${leadName || t.landing.waResponsible}\n*${t.landing.waVenue}:* ${leadVenueName || t.landing.waNotInformed}\n*${t.landing.waPhone}:* ${leadPhone || t.landing.waNotInformed}\n*${t.landing.waOp}:* ${leadSegment}\n\n${t.landing.waCta}`;
     const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`;
 
     setTimeout(() => {
@@ -1508,11 +1508,11 @@ export const LandingTakeat: React.FC = () => {
                           onChange={(e) => setLeadSegment(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-primary border border-white/10 text-white text-sm focus:outline-none focus:border-accent transition-colors"
                         >
-                          <option value="Salão & Mesas">Salão, Mesas e Comandas (Garçom Digital)</option>
-                          <option value="Delivery Próprio">Delivery Próprio sem comissão</option>
-                          <option value="Cozinha KDS">Cozinha KDS & Produção</option>
-                          <option value="PDV Balcão">PDV Balcão & Caixa Rápido</option>
-                          <option value="Operação Completa">Operação Completa (Salão + KDS + Delivery)</option>
+                          <option value="Salão & Mesas">{t.landing.opt1}</option>
+                          <option value="Delivery Próprio">{t.landing.opt2}</option>
+                          <option value="Cozinha KDS">{t.landing.opt3}</option>
+                          <option value="PDV Balcão">{t.landing.opt4}</option>
+                          <option value="Operação Completa">{t.landing.opt5}</option>
                         </select>
                       </div>
 
