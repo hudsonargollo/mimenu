@@ -393,7 +393,7 @@ export const LandingTakeat: React.FC = () => {
                   }`}
                 >
                   <Smartphone className="w-4 h-4" />
-                  Cardápio QR & Mesa
+                  {t.landing.tabCardapio}
                 </button>
                 <button
                   onClick={() => setActiveTab("kds")}
@@ -404,7 +404,7 @@ export const LandingTakeat: React.FC = () => {
                   }`}
                 >
                   <ChefHat className="w-4 h-4" />
-                  KDS Cozinha
+                  {t.landing.tabKds}
                 </button>
                 <button
                   onClick={() => setActiveTab("garcom")}
@@ -415,7 +415,7 @@ export const LandingTakeat: React.FC = () => {
                   }`}
                 >
                   <QrCode className="w-4 h-4" />
-                  Garçom Digital
+                  {t.landing.tabGarcom}
                 </button>
                 <button
                   onClick={() => setActiveTab("painel")}
@@ -426,7 +426,7 @@ export const LandingTakeat: React.FC = () => {
                   }`}
                 >
                   <Store className="w-4 h-4" />
-                  PDV & Gestor
+                  {t.landing.tabPdv}
                 </button>
               </div>
 
@@ -458,26 +458,26 @@ export const LandingTakeat: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-5 space-y-4">
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                            Experiência do Cliente na Mesa
+                            {t.landing.tab1Eyebrow}
                           </span>
                           <h3 className="text-2xl sm:text-3xl font-display font-bold">
-                            O cliente escaneia o QR, pede e divide a conta pelo celular
+                            {t.landing.tab1Title}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
-                            Zero fila para ser atendido. Fotos atraentes com alta taxa de conversão, opções obrigatórias de adicionais e cálculo instantâneo da comanda.
+                            {t.landing.tab1Desc}
                           </p>
                           <ul className="space-y-2 text-sm text-white/70">
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Aumento médio de +35% no valor do tíquete</span>
+                              <span>{t.landing.tab1B1}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Pagamento rápido por Pix Direto ou Cartão</span>
+                              <span>{t.landing.tab1B2}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Elimina 100% dos erros de anotação de pedido</span>
+                              <span>{t.landing.tab1B3}</span>
                             </li>
                           </ul>
                         </div>
