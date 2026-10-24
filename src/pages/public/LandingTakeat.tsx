@@ -160,11 +160,11 @@ export const LandingTakeat: React.FC = () => {
       {/* 1. TOP PROMO BANNER */}
       <aside aria-label="Promoção de lançamento" className="bg-primary text-primary-foreground py-2 px-4 text-center text-xs sm:text-sm font-medium border-b border-border flex items-center justify-center gap-2">
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent text-accent-foreground tracking-wide uppercase">
-          Oferta Especial
+          {t.landing.promoBadge}
         </span>
-        <span>Migre seu restaurante para o MiMenu e ganhe <strong>0% de comissão</strong> vitalícia no seu delivery próprio.</span>
+        <span>{t.landing.promoText}</span>
         <a href="#contato" className="underline hover:text-accent transition-colors font-semibold hidden sm:inline">
-          Quero aproveitar &rarr;
+          {t.landing.promoCta} &rarr;
         </a>
       </aside>
 
