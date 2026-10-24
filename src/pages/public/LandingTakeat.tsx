@@ -379,7 +379,7 @@ export const LandingTakeat: React.FC = () => {
             {/* Subtitle */}
             <ScrollReveal direction="up" delay={300}>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
-                Chega de perder até <strong>27% de comissão em agregadores</strong> e sofrer com comandas perdidas. O MiMenu une <strong>Cardápio QR Code na mesa, Garçom Digital, KDS na Cozinha e Delivery Próprio</strong> num sistema só.
+                {t.landing.heroSub}
               </p>
             </ScrollReveal>
 
