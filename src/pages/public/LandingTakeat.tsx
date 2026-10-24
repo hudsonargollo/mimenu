@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLang } from "@/i18n/LanguageProvider";
 import {
   Sparkles,
   QrCode,
@@ -45,6 +46,8 @@ import { Card } from "@/components/ui/card";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export const LandingTakeat: React.FC = () => {
+  const { lang, setLang } = useLang();
+
   const navigate = useNavigate();
 
   // Navigation & Mobile Menu State
@@ -199,9 +202,7 @@ export const LandingTakeat: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-foreground font-display font-extrabold text-2xl shadow-md group-hover:scale-105 transition-transform">
-              M
-            </div>
+            <img src="/mimenu-square.svg" alt="MiMenu" className="h-10 w-10 shrink-0 group-hover:scale-105 transition-transform" />
             <div className="flex flex-col">
               <span className="font-display font-black text-2xl tracking-tight text-primary leading-none">
                 Mi<span className="text-accent">Menu</span>
@@ -323,6 +324,19 @@ export const LandingTakeat: React.FC = () => {
             </div>
           </div>
         )}
+      <div className="hidden sm:flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs absolute right-4 top-6">
+        {(["es","en","pt"] as const).map((l) => (
+          <button
+            key={l}
+            type="button"
+            onClick={() => setLang(l)}
+            aria-pressed={lang === l}
+            className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
       </header>
 
       {/* 3. HERO SECTION */}
