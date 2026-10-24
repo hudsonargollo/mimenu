@@ -1599,33 +1599,33 @@ export const LandingTakeat: React.FC = () => {
                 Soluções MiMenu
               </div>
               <ul className="space-y-2 text-xs">
-                <li><a href="#solucoes" className="hover:text-white transition-colors">Cardápio Digital QR Code</a></li>
-                <li><a href="#solucoes" className="hover:text-white transition-colors">Garçom Digital no Celular</a></li>
-                <li><a href="#solucoes" className="hover:text-white transition-colors">Painel KDS de Cozinha</a></li>
-                <li><a href="#solucoes" className="hover:text-white transition-colors">Delivery Próprio 0% Taxa</a></li>
-                <li><a href="#solucoes" className="hover:text-white transition-colors">PDV Balcão & Caixa Ágil</a></li>
-                <li><a href="#modulos" className="hover:text-white transition-colors">Totem de Autoatendimento</a></li>
+                <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink1}</a></li>
+                <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink2}</a></li>
+                <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink3}</a></li>
+                <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink4}</a></li>
+                <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink5}</a></li>
+                <li><a href="#modulos" className="hover:text-white transition-colors">{t.landing.fLink6}</a></li>
               </ul>
             </div>
 
             {/* Platform column */}
             <div className="lg:col-span-3 space-y-2">
               <div className="font-bold text-white text-xs uppercase tracking-wider mb-3">
-                Plataforma
+                {t.landing.platformTitle}
               </div>
               <ul className="space-y-2 text-xs">
-                <li><a href="#calculadora" className="hover:text-white transition-colors">Calculadora de ROI</a></li>
-                <li><a href="#segmentos" className="hover:text-white transition-colors">Segmentos Atendidos</a></li>
-                <li><a href="#depoimentos" className="hover:text-white transition-colors">Casos de Sucesso</a></li>
-                <li><a href="#faq" className="hover:text-white transition-colors">Perguntas Frequentes</a></li>
-                <li><Link to="/auth" className="hover:text-white transition-colors">Área do Restaurante (Login)</Link></li>
+                <li><a href="#calculadora" className="hover:text-white transition-colors">{t.landing.pLink1}</a></li>
+                <li><a href="#segmentos" className="hover:text-white transition-colors">{t.landing.pLink2}</a></li>
+                <li><a href="#depoimentos" className="hover:text-white transition-colors">{t.landing.pLink3}</a></li>
+                <li><a href="#faq" className="hover:text-white transition-colors">{t.landing.pLink4}</a></li>
+                <li><Link to="/auth" className="hover:text-white transition-colors">{t.landing.pLink5}</Link></li>
               </ul>
             </div>
 
             {/* Compliance column */}
             <div className="lg:col-span-2 space-y-2">
               <div className="font-bold text-white text-xs uppercase tracking-wider mb-3">
-                Segurança
+                {t.landing.securityTitle}
               </div>
               <ul className="space-y-2 text-xs">
                 <li className="text-white/50">Pix Instantâneo</li>
@@ -1638,11 +1638,11 @@ export const LandingTakeat: React.FC = () => {
 
           <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
             <div>
-              © 2024–{new Date().getFullYear()} MiMenu Tecnologia · ClubeMkt Ecosystem. Todos os direitos reservados.
+              © 2024–{new Date().getFullYear()} MiMenu Tecnologia · ClubeMkt Ecosystem. {t.landing.rights}
             </div>
             <div className="flex items-center gap-6">
-              <span className="hover:text-white/80 cursor-pointer">Termos de Uso</span>
-              <span className="hover:text-white/80 cursor-pointer">Política de Privacidade</span>
+              <span className="hover:text-white/80 cursor-pointer">{t.landing.terms}</span>
+              <span className="hover:text-white/80 cursor-pointer">{t.landing.privacy}</span>
             </div>
           </div>
         </div>
@@ -1655,7 +1655,7 @@ export const LandingTakeat: React.FC = () => {
           className="w-full py-3 px-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm shadow-md text-center flex items-center justify-center gap-2"
         >
           <MessageCircle className="w-4 h-4" />
-          Agendar Demonstração Grátis
+          {t.landing.mobileCta}
         </a>
       </div>
     </div>
