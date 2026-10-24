@@ -69,8 +69,8 @@ export const Landing: React.FC = () => {
     {
       id: 0,
       title: "Actualizar Precios",
-      command: "Sube el precio de la Salchipapa Moe Monster a 48 Bs y activa promo 2x1 en Fernet",
-      response: "Listo. Actualice el precio de 'Salchipapa Moe Monster' a 48 Bs y active la oferta '2x1 Fernet Cruceño' en el menu digital con badge de oferta.",
+      command: "Sube el precio de la Salchipapa Monster a 48 Bs y activa promo 2x1 en Fernet",
+      response: "Listo. Actualice el precio de 'Salchipapa Monster' a 48 Bs y active la oferta '2x1 Fernet Cruceño' en el menu digital con badge de oferta.",
       tag: "Precios y Promociones",
       badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30"
     },
@@ -86,7 +86,7 @@ export const Landing: React.FC = () => {
       id: 2,
       title: "Ventas y Telemetria",
       command: "¿Cuales son los 3 platos y tragos mas vendidos del turno de hoy?",
-      response: "Turno actual: 1. Salchipapa Moe Monster (42 pedidos), 2. Chopp Helado Escarchado (68 unidades), 3. Moscow Mule de Autor (29 unidades). Total generado: 5,420 Bs.",
+      response: "Turno actual: 1. Salchipapa Monster (42 pedidos), 2. Chopp Helado Escarchado (68 unidades), 3. Moscow Mule de Autor (29 unidades). Total generado: 5,420 Bs.",
       tag: "Analitica en Vivo",
       badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
     },
@@ -410,7 +410,7 @@ export const Landing: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm text-white truncate">Salchipapa Moe Monster</h4>
+                          <h4 className="font-bold text-sm text-white truncate">Salchipapa Monster</h4>
                           <span className="text-xs font-black text-amber-400">48 Bs</span>
                         </div>
                         <p className="text-[11px] text-slate-400 line-clamp-2 mt-0.5">

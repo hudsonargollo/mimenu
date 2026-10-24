@@ -12,9 +12,9 @@ import {
 
 export const DEFAULT_VENUE: Venue = {
   id: "venue-new",
-  slug: "moes",
-  name: "Moe's Taberna",
-  tagline: "La Taberna Más Prendida de Santa Cruz",
+  slug: "mimenu-demo",
+  name: "MiMenu Demo",
+  tagline: "Demo Restaurant - MiMenu",
   description: "Salchipapas legendarias con queso derretido, nachos monstruosos, fernet bien cruceño, chopp helado escarchado y el mejor ambiente nocturno de Santa Cruz de la Sierra.",
   city: "Santa Cruz de la Sierra",
   address: "Av. San Martín #450, Barrio Equipetrol, Santa Cruz, Bolivia",
@@ -28,14 +28,14 @@ export const DEFAULT_VENUE: Venue = {
   accent_color: "#EF4444", // Flame red
   background_theme: "dark",
   opening_hours: "Martes a Domingo: 18:00 - 03:00",
-  instagram: "@moestaberna.scz",
+  instagram: "@mimenu",
   is_active: true,
 };
 
 export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
   {
     id: "cat-salchipapas",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     key: "salchipapas",
     name: "Salchipapas Legendarias",
     description: "Crocantes, abundantes y bañadas en salsas artesanales",
@@ -44,10 +44,10 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
     items: [
       {
         id: "item-salchipapa-monster",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-salchipapas",
-        name: "Salchipapa Moe's Monster",
-        description: "Nuestra insignia: 450g de papas rústicas crocantes, doble salchicha vienesa ahumada, tocino crocante, huevo frito a caballo, abundante queso cheddar fundido y salsa de ajo secreta Moe's.",
+        name: "Salchipapa Monster",
+        description: "Nuestra insignia: 450g de papas rústicas crocantes, doble salchicha vienesa ahumada, tocino crocante, huevo frito a caballo, abundante queso cheddar fundido y salsa de ajo secreta .",
         price: 45,
         original_price: 52,
         image_url: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80",
@@ -65,7 +65,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-salchipapa-clasica",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-salchipapas",
         name: "Salchipapa Clásica Crujiente",
         description: "Papas corte bastón dorado, rodajas de salchicha de primera, lluvia de orégano, mayonesa casera y ketchup Heinz.",
@@ -83,7 +83,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-salchipapa-mixta",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-salchipapas",
         name: "Salchipapa Mixta Especial",
         description: "Papas fritas con trozos de lomo a la plancha, salchicha frankfurt, queso mozzarella gratinado y salsa golf suave.",
@@ -100,7 +100,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-salchipapa-criolla",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-salchipapas",
         name: "Salchipapa Criolla Camba",
         description: "Papas doradas con chorizo parrillero beniano, huevo frito, plátano maduro frito y llajwa tradicional cruceña.",
@@ -120,7 +120,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
   },
   {
     id: "cat-nachos",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     key: "nachos",
     name: "Nachos Supremos",
     description: "Totopos crocantes de maíz con salsas calientes y frijoles",
@@ -129,9 +129,9 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
     items: [
       {
         id: "item-nachos-supremos",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-nachos",
-        name: "Nachos Supremos Moe's",
+        name: "Nachos Supremos ",
         description: "Montaña de totopos de maíz con queso cheddar fundido caliente, carne picante sazonada, frijoles negros, guacamole fresco, crema agria, jalapeños y pico de gallo.",
         price: 48,
         original_price: 55,
@@ -148,7 +148,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-nachos-cheddar",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-nachos",
         name: "Nachos con Queso Cheddar Clásicos",
         description: "Totopos crujientes de maíz servidos con abundante salsa de queso cheddar fundido y rodajas de jalapeños encurtidos al lado.",
@@ -164,7 +164,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-nachos-texmex",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-nachos",
         name: "Nachos Tex-Mex Pollo BBQ",
         description: "Totopos cubiertos con tiras de pechuga de pollo desmechada en salsa BBQ ahumada, queso gratinado, cebollín y aderezo ranch de la casa.",
@@ -182,7 +182,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
   },
   {
     id: "cat-cervezas",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     key: "cervezas",
     name: "Cervezas & Chopp Helado",
     description: "Servidas a punto de nieve para combatir el calor cruceño",
@@ -191,9 +191,9 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
     items: [
       {
         id: "item-chopp-artesanal",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
-        name: "Chopp Artesanal Moe's (500ml)",
+        name: "Chopp Artesanal (500ml)",
         description: "Cerveza tirada artesanal Rubia o Roja estilo Amber Ale servida en tarro de vidrio escarchado al instante. Ultra refrescante.",
         price: 25,
         image_url: "https://images.unsplash.com/photo-1608270191763-71827471249b?auto=format&fit=crop&w=800&q=80",
@@ -209,7 +209,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-huari-tradicional",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
         name: "Cerveza Huari Tradicional (620ml)",
         description: "La cerveza premium de Bolivia. Elaborada con maltas seleccionadas y agua pura de vertiente andina.",
@@ -226,7 +226,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-huari-miel",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
         name: "Cerveza Huari Miel (330ml)",
         description: "Notas aromáticas de miel pura boliviana, cuerpo ligero y final suavemente dulce.",
@@ -241,7 +241,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-pacena-pilsener",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
         name: "Paceña Pilsener Helada (620ml)",
         description: "La reina de las noches bolivianas, bien fría a punto de nieve.",
@@ -256,7 +256,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-corona-extra",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
         name: "Corona Extra con Limón (355ml)",
         description: "Cerveza importada servida con gajo de limón sutil en el cuello.",
@@ -271,7 +271,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-balde-pacenas",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-cervezas",
         name: "Balde Cervecero 5 Paceñas (620ml)",
         description: "Balde con 5 Paceñas sumergidas en hielo frappe para compartir con el grupo.",
@@ -291,16 +291,16 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
   },
   {
     id: "cat-tragos",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     key: "tragos",
     name: "Tragos & Cocktails",
-    description: "Jarras de Fernet, mezclas clásicas y los míticos shots de Moe",
+    description: "Jarras de Fernet, mezclas clásicas y los míticos shots",
     icon: "Wine",
     order_index: 4,
     items: [
       {
         id: "item-fernet-branca",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
         name: "Fernet Branca con Coca (Jarra 1 Litro)",
         description: "El trago sagrado de la noche cruceña: 70% Coca-Cola fría, 30% Fernet Branca italiano original y abundante hielo frappé.",
@@ -317,11 +317,11 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
         tags: ["Insignia Noche", "Jarra 1L", "Fernet Branca"],
       },
       {
-        id: "item-flaming-moe",
-        venue_id: "venue-moes-taberna-scz",
+        id: "item-flaming-demo",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
-        name: "Shot Flaming Moe (Flambeado en Barra)",
-        description: "El mítico shot de la taberna: licor de zarzamora, ron overproof y licor de hierbas encendido en fuego en barra frente a ti.",
+        name: "Shot Flaming (Flambeado en Barra)",
+        description: "El mítico shot de la casa: licor de zarzamora, ron overproof y licor de hierbas encendido en fuego en barra frente a ti.",
         price: 20,
         image_url: "https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&w=800&q=80",
         is_available: true,
@@ -335,7 +335,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-gin-tonic",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
         name: "Gin Tonic Pepino & Romero",
         description: "Gin destilado, agua tónica premium, rodajas finas de pepino y ramita de romero perfumada.",
@@ -350,7 +350,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-cuba-libre",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
         name: "Cuba Libre Clásico Flor de Caña",
         description: "Ron añejo, Coca-Cola y toque de limón sutil.",
@@ -365,7 +365,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-mojito-cubano",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
         name: "Mojito Cubano Menta Fresca",
         description: "Ron blanco, hierbabuena fresca machacada, azúcar morena, zumo de limón y soda con hielo frappé.",
@@ -380,7 +380,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-caipirinha-maracuya",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-tragos",
         name: "Caipirinha / Caipisangani de Maracuyá",
         description: "Cachaça brasileña o Singani Casa Real con pulpa de maracuyá fresca y hielo picado.",
@@ -397,19 +397,19 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
   },
   {
     id: "cat-merch",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     key: "merch",
-    name: "Merch Oficial Moe's",
-    description: "Lleva la vibra de Moe's contigo: poleras, gorras y vasos chopperos",
+    name: "Merch Oficial ",
+    description: "Lleva la vibra de contigo: poleras, gorras y vasos chopperos",
     icon: "Shirt",
     order_index: 5,
     items: [
       {
-        id: "item-polera-moes",
-        venue_id: "venue-moes-taberna-scz",
+        id: "item-polera-demo",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-merch",
-        name: "Polera Oficial Moe's Taberna Santa Cruz",
-        description: "100% Algodón peinado premium, corte regular fit, estampado serigrafiado con el logo vintage de la taberna.",
+        name: "Polera Oficial MiMenu Demo Santa Cruz",
+        description: "100% Algodón peinado premium, corte regular fit, estampado serigrafiado con el logo vintage de la casa.",
         price: 90,
         image_url: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
         is_available: true,
@@ -421,10 +421,10 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
         tags: ["Merch Oficial", "Tallas S-M-L-XL"],
       },
       {
-        id: "item-gorra-moes",
-        venue_id: "venue-moes-taberna-scz",
+        id: "item-gorra-demo",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-merch",
-        name: "Gorra Trucker Moe's SCZ",
+        name: "Gorra Trucker SCZ",
         description: "Gorra clásica con parche bordado de alta definición, visera curva y malla respirable ajustable.",
         price: 75,
         image_url: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
@@ -438,10 +438,10 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
       },
       {
         id: "item-vaso-choppero-merch",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         category_id: "cat-merch",
-        name: "Tarro Cervecero Chopp Moe's (500ml)",
-        description: "Vaso choppero de vidrio extra grueso grabado en relieve con el sello de Moe's Taberna. Para tener tu propio tarro helado en casa.",
+        name: "Tarro Cervecero Chopp (500ml)",
+        description: "Vaso choppero de vidrio extra grueso grabado en relieve con el sello de MiMenu Demo. Para tener tu propio tarro helado en casa.",
         price: 50,
         image_url: "https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?auto=format&fit=crop&w=800&q=80",
         is_available: true,
@@ -459,7 +459,7 @@ export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [
 export const INITIAL_CYCLING_OFFERS: CyclingOffer[] = [
   {
     id: "offer-happy-hour-fernet",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     title: "⚡ HAPPY HOUR: Fernet Branca 2x1",
     subtitle: "¡2 Jarras de Fernet Branca de 1L por el precio de una!",
     description: "Aprovecha la previa: pide 1 Jarra de Fernet Branca de 1 Litro y la segunda va por cuenta de la casa. Válido de 18:00 a 20:30 hrs.",
@@ -483,17 +483,17 @@ export const INITIAL_CYCLING_OFFERS: CyclingOffer[] = [
   },
   {
     id: "offer-late-night-combo",
-    venue_id: "venue-moes-taberna-scz",
-    title: "🌙 LATE NIGHT COMBO: 2 Huari + Salchipapa Moe's Monster",
+    venue_id: "venue-mimenu-demo",
+    title: "🌙 LATE NIGHT COMBO: 2 Huari + Salchipapa Monster",
     subtitle: "El bajón definitivo para salvar la noche",
-    description: "1 Salchipapa Moe's Monster con doble queso cheddar y tocino + 2 Cervezas Huari 620ml bien heladas.",
+    description: "1 Salchipapa Monster con doble queso cheddar y tocino + 2 Cervezas Huari 620ml bien heladas.",
     badge: "COMBO BAJÓN -16%",
     original_price: 101,
     discount_price: 85,
     image_url: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80",
     is_active: true,
     priority_level: 2,
-    included_item_names: ["1x Salchipapa Moe's Monster", "2x Cerveza Huari 620ml"],
+    included_item_names: ["1x Salchipapa Monster", "2x Cerveza Huari 620ml"],
     schedules: [
       { day_of_week: -1, start_time: "23:00", end_time: "03:00" }
     ],
@@ -507,17 +507,17 @@ export const INITIAL_CYCLING_OFFERS: CyclingOffer[] = [
   },
   {
     id: "offer-combo-previa",
-    venue_id: "venue-moes-taberna-scz",
+    venue_id: "venue-mimenu-demo",
     title: "COMBO PREVIA AMIGOS: Balde 5 Paceñas + Nachos Supremos",
     subtitle: "El combo perfecto para arrancar la noche en grupo",
-    description: "Balde de 5 Paceñas 620ml en hielo frappé + Nachos Supremos Moe's con extra cheddar y guacamole.",
+    description: "Balde de 5 Paceñas 620ml en hielo frappé + Nachos Supremos con extra cheddar y guacamole.",
     badge: "PREVIA AMIGOS -12%",
     original_price: 153,
     discount_price: 135,
     image_url: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=800&q=80",
     is_active: true,
     priority_level: 3,
-    included_item_names: ["1x Balde 5 Paceñas 620ml", "1x Nachos Supremos Moe's"],
+    included_item_names: ["1x Balde 5 Paceñas 620ml", "1x Nachos Supremos "],
     schedules: [
       { day_of_week: 4, start_time: "19:00", end_time: "23:59" },
       { day_of_week: 5, start_time: "19:00", end_time: "23:59" },
@@ -534,18 +534,18 @@ export const INITIAL_CYCLING_OFFERS: CyclingOffer[] = [
 ];
 
 export const INITIAL_TABLES: VenueTable[] = [
-  { id: "tbl-1", venue_id: "venue-moes-taberna-scz", table_number: "1", label: "Mesa 1", qr_code_hash: "SCZ-MOE-T01", zone: "Principal", is_occupied: true, is_active: true },
-  { id: "tbl-2", venue_id: "venue-moes-taberna-scz", table_number: "2", label: "Mesa 2", qr_code_hash: "SCZ-MOE-T02", zone: "Principal", is_occupied: false, is_active: true },
-  { id: "tbl-3", venue_id: "venue-moes-taberna-scz", table_number: "3", label: "Mesa 3", qr_code_hash: "SCZ-MOE-T03", zone: "Principal", is_occupied: true, is_active: true },
-  { id: "tbl-4", venue_id: "venue-moes-taberna-scz", table_number: "4", label: "Mesa 4", qr_code_hash: "SCZ-MOE-T04", zone: "Principal", is_occupied: false, is_active: true },
-  { id: "tbl-5", venue_id: "venue-moes-taberna-scz", table_number: "5", label: "Mesa 5", qr_code_hash: "SCZ-MOE-T05", zone: "Principal", is_occupied: true, is_active: true },
-  { id: "tbl-6", venue_id: "venue-moes-taberna-scz", table_number: "6", label: "Mesa 6", qr_code_hash: "SCZ-MOE-T06", zone: "Terraza", is_occupied: false, is_active: true },
-  { id: "tbl-7", venue_id: "venue-moes-taberna-scz", table_number: "7", label: "Mesa 7", qr_code_hash: "SCZ-MOE-T07", zone: "Terraza", is_occupied: true, is_active: true },
-  { id: "tbl-8", venue_id: "venue-moes-taberna-scz", table_number: "8", label: "Mesa 8", qr_code_hash: "SCZ-MOE-T08", zone: "Terraza", is_occupied: false, is_active: true },
-  { id: "tbl-vip1", venue_id: "venue-moes-taberna-scz", table_number: "VIP 1", label: "Zona VIP 1", qr_code_hash: "SCZ-MOE-VIP1", zone: "VIP", is_occupied: true, is_active: true },
-  { id: "tbl-vip2", venue_id: "venue-moes-taberna-scz", table_number: "VIP 2", label: "Zona VIP 2", qr_code_hash: "SCZ-MOE-VIP2", zone: "VIP", is_occupied: false, is_active: true },
-  { id: "tbl-bar1", venue_id: "venue-moes-taberna-scz", table_number: "Barra 1", label: "Barra Principal 1", qr_code_hash: "SCZ-MOE-BAR1", zone: "Barra", is_occupied: false, is_active: true },
-  { id: "tbl-bar2", venue_id: "venue-moes-taberna-scz", table_number: "Barra 2", label: "Barra Principal 2", qr_code_hash: "SCZ-MOE-BAR2", zone: "Barra", is_occupied: true, is_active: true },
+  { id: "tbl-1", venue_id: "venue-mimenu-demo", table_number: "1", label: "Mesa 1", qr_code_hash: "SCZ-DEMO-T01", zone: "Principal", is_occupied: true, is_active: true },
+  { id: "tbl-2", venue_id: "venue-mimenu-demo", table_number: "2", label: "Mesa 2", qr_code_hash: "SCZ-DEMO-T02", zone: "Principal", is_occupied: false, is_active: true },
+  { id: "tbl-3", venue_id: "venue-mimenu-demo", table_number: "3", label: "Mesa 3", qr_code_hash: "SCZ-DEMO-T03", zone: "Principal", is_occupied: true, is_active: true },
+  { id: "tbl-4", venue_id: "venue-mimenu-demo", table_number: "4", label: "Mesa 4", qr_code_hash: "SCZ-DEMO-T04", zone: "Principal", is_occupied: false, is_active: true },
+  { id: "tbl-5", venue_id: "venue-mimenu-demo", table_number: "5", label: "Mesa 5", qr_code_hash: "SCZ-DEMO-T05", zone: "Principal", is_occupied: true, is_active: true },
+  { id: "tbl-6", venue_id: "venue-mimenu-demo", table_number: "6", label: "Mesa 6", qr_code_hash: "SCZ-DEMO-T06", zone: "Terraza", is_occupied: false, is_active: true },
+  { id: "tbl-7", venue_id: "venue-mimenu-demo", table_number: "7", label: "Mesa 7", qr_code_hash: "SCZ-DEMO-T07", zone: "Terraza", is_occupied: true, is_active: true },
+  { id: "tbl-8", venue_id: "venue-mimenu-demo", table_number: "8", label: "Mesa 8", qr_code_hash: "SCZ-DEMO-T08", zone: "Terraza", is_occupied: false, is_active: true },
+  { id: "tbl-vip1", venue_id: "venue-mimenu-demo", table_number: "VIP 1", label: "Zona VIP 1", qr_code_hash: "SCZ-DEMO-VIP1", zone: "VIP", is_occupied: true, is_active: true },
+  { id: "tbl-vip2", venue_id: "venue-mimenu-demo", table_number: "VIP 2", label: "Zona VIP 2", qr_code_hash: "SCZ-DEMO-VIP2", zone: "VIP", is_occupied: false, is_active: true },
+  { id: "tbl-bar1", venue_id: "venue-mimenu-demo", table_number: "Barra 1", label: "Barra Principal 1", qr_code_hash: "SCZ-DEMO-BAR1", zone: "Barra", is_occupied: false, is_active: true },
+  { id: "tbl-bar2", venue_id: "venue-mimenu-demo", table_number: "Barra 2", label: "Barra Principal 2", qr_code_hash: "SCZ-DEMO-BAR2", zone: "Barra", is_occupied: true, is_active: true },
 ];
 
 export const INITIAL_REVIEWS: MenuItemReview[] = [
@@ -596,7 +596,7 @@ export const INITIAL_REVIEWS: MenuItemReview[] = [
   },
   {
     id: "rev-6",
-    item_id: "item-flaming-moe",
+    item_id: "item-flaming-demo",
     customer_name: "Camila Antelo",
     rating: 5,
     comment: "El show en llamas en la barra es épico para los videos. Sabor muy rico y pega lindo.",

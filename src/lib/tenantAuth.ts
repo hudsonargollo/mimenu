@@ -107,7 +107,7 @@ const JALEO_PASS = 'Jaleo2024!';
 const SUPER_PASS = 'Qwertyytrewq4328@';
 
 const CREDENTIALS: Credential[] = [
-  // Platform super admin (was the old Moe's Taberna demo account).
+  // Platform super admin.
   { identifier: 'admin@mimenu.com', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
   { identifier: 'mimenuadmin', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
   // Jaleo tenant staff.

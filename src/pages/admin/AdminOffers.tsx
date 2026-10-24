@@ -138,7 +138,7 @@ export const AdminOffers: React.FC = () => {
                   <Input
                     value={includedItems}
                     onChange={(e) => setIncludedItems(e.target.value)}
-                    placeholder="Ej. 1x Salchipapa Moe's, 2x Huari 620ml"
+                    placeholder="Ej. 1x Salchipapa Monster, 2x Huari 620ml"
                     className="text-xs"
                   />
                 </div>

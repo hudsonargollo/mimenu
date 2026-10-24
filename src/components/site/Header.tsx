@@ -39,13 +39,8 @@ export function Header() {
           })}
         </nav>
 
-        <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity md:absolute md:left-1/2 md:transform md:-translate-x-1/2" aria-label="Moe's Taberna — Inicio">
-          <span className="font-display text-lg leading-none">
-            <span className="block text-foreground">Moe's</span>
-            <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Taberna
-            </span>
-          </span>
+        <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity md:absolute md:left-1/2 md:transform md:-translate-x-1/2" aria-label="MiMenu — Inicio">
+          <img src="/mimenu-square.svg" alt="MiMenu" className="h-8 w-8" />
         </button>
 
         <div className="flex items-center gap-2">

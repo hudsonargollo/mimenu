@@ -49,7 +49,7 @@ export const menu: MenuCategory[] = [
     name: { es: "Piqueos Para Compartir", en: "Sharing Platters", pt: "Piqueos Para Compartir" },
     items: [
       {
-        name: { es: "Pique Macho Moe's", en: "Moe's Pique Macho", pt: "Pique Macho Moe's" },
+        name: { es: "Pique Macho ", en: "Pique Macho", pt: "Pique Macho " },
         description: { es: "Lomo a la plancha, salchichas, locoto criollo, huevo frito y papas estéreo en montaña abundante", en: "Grilled beef strips, sausage, locoto pepper, fried egg and stereo fries in an abundant mountain", pt: "Lomo na chapa, salsichas, pimenta locoto, ovo frito e batatas em montanha generosa" },
         price: "Bs 65",
         image: "/menu/pique-macho.jpg",
@@ -67,7 +67,7 @@ export const menu: MenuCategory[] = [
         image: "/menu/chicharron.jpg",
       },
       {
-        name: { es: "Salchipapa Moe's Monster", en: "Moe's Monster Salchipapa", pt: "Salchipapa Monstro Moe's" },
+        name: { es: "Salchipapa Monster", en: "Monster Salchipapa", pt: "Salchipapa Monstro " },
         description: { es: "450g de papas rústicas, doble salchicha ahumada, tocino crocante y queso cheddar fundido con salsa de ajo secreta", en: "450g of rustic fries, double smoked sausage, crispy bacon, melted cheddar and secret garlic sauce", pt: "450g de batatas rústicas, dupla salsicha defumada, bacon crocante, cheddar derretido e molho de alho secreto" },
         price: "Bs 45",
         image: "/menu/salchipapa-monster.jpg",
@@ -91,7 +91,7 @@ export const menu: MenuCategory[] = [
         image: "/menu/parrillada.jpg",
       },
       {
-        name: { es: "Tabla del Oriente Moe's", en: "Moe's Oriente Board", pt: "Tábua do Oriente Moe's" },
+        name: { es: "Tabla del Oriente ", en: "Oriente Board", pt: "Tábua do Oriente " },
         description: { es: "Surtido de la casa: cuñapé, anticuchos, empanadas de la bahía, ají con queso y llajwa", en: "House platter: cuñapé, anticuchos, Bahía empanadas, cheese chili and llajwa", pt: "Tábua da casa: cuñapé, anticuchos, empanadas de la Bahía, ají com queijo e llajwa" },
         price: "Bs 90",
         image: "/menu/tabla-oriente.jpg",
@@ -160,10 +160,10 @@ export const menu: MenuCategory[] = [
   },
   {
     key: "drinks-autorales",
-    name: { es: "Cocteles de Autor Moe's", en: "Moe's Signature Cocktails", pt: "Drinks Autorais Moe's" },
+    name: { es: "Cocteles de Autor ", en: "Signature Cocktails", pt: "Drinks Autorais " },
     items: [
       {
-        name: { es: "Yungueñito Moe's", en: "Moe's Yungueñito", pt: "Yungueñito Moe's" },
+        name: { es: "Yungueñito ", en: "Yungueñito", pt: "Yungueñito " },
         description: { es: "Singani Casa Real, coca, limón y azúcar — el ritual del oriente en vaso helado", en: "Casa Real singani, coca leaf, lime and sugar — the lowland ritual in a frosty glass", pt: "Singani Casa Real, folha de coca, limão e açúcar — o ritual do oriente em copo gelado" },
         price: "Bs 45",
         image: "/menu/yunguenito.jpg",
@@ -229,7 +229,7 @@ export const menu: MenuCategory[] = [
     name: { es: "Cervezas & Chopp", en: "Beers & Draft", pt: "Cervezas & Chopp" },
     items: [
       {
-        name: { es: "Chopp Artesanal Moe's (500ml)", en: "Moe's Draft Beer (500ml)", pt: "Chopp Artesanal Moe's (500ml)" },
+        name: { es: "Chopp Artesanal (500ml)", en: "Draft Beer (500ml)", pt: "Chopp Artesanal (500ml)" },
         description: { es: "Rubia o roja estilo Amber Ale, servida en tarro de vidrio escarchado al instante", en: "Blond or red Amber Ale style, served instantly in a frosted glass", pt: "Pilsen ou Amber Ale servida na hora em tarro de vidro escarchado" },
         price: "Bs 25",
         image: "/menu/chopp.jpg",

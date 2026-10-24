@@ -165,7 +165,7 @@ export class MimenuAIEngine {
       totalInteractions: 48,
       lastLearnedAt: new Date().toISOString(),
       topPerformingCombos: [
-        'Salchipapa Moe Monster + 2x Huari 620ml',
+        'Salchipapa Monster + 2x Huari 620ml',
         'Balde 5 Paceñas + Nachos Supremos',
         '2x Fernet Branca Jarra 1L'
       ],
@@ -194,7 +194,7 @@ export class MimenuAIEngine {
 
     // 1. ADD MENU ITEM INTENT
     if (lower.includes('agregar') || lower.includes('añadir') || lower.includes('crear plato') || lower.includes('nuevo item') || lower.includes('nueva cerveza')) {
-      let suggestedName = "Cerveza Artesanal IPA Moe's (500ml)";
+      let suggestedName = "Cerveza Artesanal IPA (500ml)";
       let suggestedPrice = 28;
       let suggestedCategory = "cat-cervezas";
       let suggestedDesc = "Cerveza lupulada de cuerpo medio y aroma cítrico servida en tarro helado.";
@@ -225,7 +225,7 @@ export class MimenuAIEngine {
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `He preparado la propuesta para agregar **${suggestedName}** a la categoría correspondiente con precio de **${this.venue.currency} ${suggestedPrice}**. Puedes confirmar con un clic para publicarlo de inmediato en el menú digital de Moe's Taberna:`,
+        text: `He preparado la propuesta para agregar **${suggestedName}** a la categoría correspondiente con precio de **${this.venue.currency} ${suggestedPrice}**. Puedes confirmar con un clic para publicarlo de inmediato en el menú digital de MiMenu Demo:`,
         timestamp,
         actions: [
           {
@@ -238,7 +238,7 @@ export class MimenuAIEngine {
               description: suggestedDesc,
               price: suggestedPrice,
               image_url: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=800&q=80',
-              tags: ['Novedad', 'Moe Special'],
+              tags: ['Novedad', 'Especial'],
             },
             status: 'pending',
           },
@@ -310,7 +310,7 @@ export class MimenuAIEngine {
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `📊 **Análisis de Satisfacción de Clientes en Moe's Taberna:**\n\n• **Calificación Promedio:** ⭐ ${avgRating} / 5.0 basada en ${this.reviews.length} opiniones.\n• **Platos más elogiados:** *Salchipapa Moe's Monster* (4.9 ⭐) y *Fernet Branca Jarra 1L* (4.9 ⭐).\n• **Palabras más repetidas:** "Cheddar caliente", "Tarro escarchado", "Porción gigante".\n• Hay **${pendingCount} reseñas pendientes** en la cola de moderación.`,
+        text: `📊 **Análisis de Satisfacción de Clientes en MiMenu Demo:**\n\n• **Calificación Promedio:** ⭐ ${avgRating} / 5.0 basada en ${this.reviews.length} opiniones.\n• **Platos más elogiados:** *Salchipapa Monster* (4.9 ⭐) y *Fernet Branca Jarra 1L* (4.9 ⭐).\n• **Palabras más repetidas:** "Cheddar caliente", "Tarro escarchado", "Porción gigante".\n• Hay **${pendingCount} reseñas pendientes** en la cola de moderación.`,
         timestamp,
         dataInsights: {
           title: 'Resumen de Sentimiento de Clientes',

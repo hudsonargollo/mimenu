@@ -29,7 +29,7 @@ export function Footer() {
         </div>
         <div className="text-sm">
           <a
-            href="https://instagram.com/moestaberna.scz"
+            href="https://instagram.com/mimenu"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
@@ -40,7 +40,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Moe's Taberna. {t.footer.rights}
+        © {new Date().getFullYear()} MiMenu. {t.footer.rights}
       </div>
     </footer>
   );

@@ -89,7 +89,7 @@ export const AdminBranding: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-foreground mb-1 block">Nombre de la Taberna / Bar</label>
+                  <label className="text-xs font-bold text-foreground mb-1 block">Nombre del Restaurante / Bar</label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}

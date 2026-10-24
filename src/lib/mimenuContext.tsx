@@ -105,7 +105,7 @@ const INITIAL_CUSTOMERS: CustomerProfile[] = [
     total_spent: 640,
     first_visit_at: "2026-08-10T20:00:00Z",
     last_visit_at: "2026-09-24T22:30:00Z",
-    favorite_items: ["Salchipapa Moe's Monster", "Chopp Artesanal Moe's (500ml)"],
+    favorite_items: ["Salchipapa Monster", "Chopp Artesanal (500ml)"],
     loyalty_tier: "VIP",
     notes: "Comensal frecuente de terraza. Prefiere extra salsa de ajo."
   },
@@ -117,7 +117,7 @@ const INITIAL_CUSTOMERS: CustomerProfile[] = [
     total_spent: 420,
     first_visit_at: "2026-08-22T21:15:00Z",
     last_visit_at: "2026-09-23T23:10:00Z",
-    favorite_items: ["Nachos Supremos Moe's", "Fernet Branca con Coca (Jarra 1L)"],
+    favorite_items: ["Nachos Supremos", "Fernet Branca con Coca (Jarra 1L)"],
     loyalty_tier: "Oro",
     notes: "Suele venir en grupos los viernes por la noche."
   },
@@ -203,14 +203,14 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {
         id: "ord-1001",
         order_number: "1001",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         fulfillment_type: "dine_in",
         table_number: "4",
         customer_name: "Andrés Banzer",
         customer_phone: "+591 78012345",
         items: [
-          { item_id: "item-salchipapa-monster", name: "Salchipapa Moe's Monster", price: 45, quantity: 1, notes: "Extra salsa de ajo" },
-          { item_id: "item-chopp-artesanal", name: "Chopp Artesanal Moe's (500ml)", price: 25, quantity: 2 }
+          { item_id: "item-salchipapa-monster", name: "Salchipapa Monster", price: 45, quantity: 1, notes: "Extra salsa de ajo" },
+          { item_id: "item-chopp-artesanal", name: "Chopp Artesanal (500ml)", price: 25, quantity: 2 }
         ],
         subtotal: 95,
         discount: 0,
@@ -223,14 +223,14 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {
         id: "ord-1002",
         order_number: "1002",
-        venue_id: "venue-moes-taberna-scz",
+        venue_id: "venue-mimenu-demo",
         fulfillment_type: "dine_in",
         table_number: "VIP 1",
         customer_name: "Mariana Justiniano",
         customer_phone: "+591 77345678",
         items: [
           { item_id: "item-fernet-branca", name: "Fernet Branca con Coca (Jarra 1L)", price: 35, quantity: 2 },
-          { item_id: "item-nachos-supremos", name: "Nachos Supremos Moe's", price: 48, quantity: 1 }
+          { item_id: "item-nachos-supremos", name: "Nachos Supremos", price: 48, quantity: 1 }
         ],
         subtotal: 118,
         discount: 0,
@@ -381,7 +381,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateVenue = (updated: Partial<Venue>) => {
     setVenue(prev => ({ ...prev, ...updated }));
-    toast.success('Configuración de la taberna actualizada');
+    toast.success('Configuración actualizada');
   };
 
   // Hotness recalculation

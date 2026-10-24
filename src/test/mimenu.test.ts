@@ -11,12 +11,12 @@ import {
 import { kv, KV_KEYS } from '@/lib/kvStore';
 import { MimenuAIEngine } from '@/lib/aiCopilotEngine';
 
-describe('MIMENU - Moe\'s Taberna Santa Cruz de la Sierra Test Suite', () => {
+describe('MIMENU - Demo Test Suite', () => {
 
   describe('Venue Configuration', () => {
-    it('should be configured for Moe\'s Taberna in Santa Cruz de la Sierra', () => {
-      expect(DEFAULT_VENUE.slug).toBe('moes');
-      expect(DEFAULT_VENUE.name).toBe("Moe's Taberna");
+    it('should be configured for MiMenu Demo', () => {
+      expect(DEFAULT_VENUE.slug).toBe('mimenu-demo');
+      expect(DEFAULT_VENUE.name).toBe("MiMenu Demo");
       expect(DEFAULT_VENUE.city).toBe('Santa Cruz de la Sierra');
       expect(DEFAULT_VENUE.currency).toBe('Bs.');
       expect(DEFAULT_VENUE.currency_code).toBe('BOB');
@@ -94,11 +94,11 @@ describe('MIMENU - Moe\'s Taberna Santa Cruz de la Sierra Test Suite', () => {
   describe('KV Storage Engine (No Supabase Dependency)', () => {
     it('should persist and retrieve objects by namespace key', async () => {
       const testKey = KV_KEYS.venue('test-venue-1');
-      await kv.put(testKey, { name: "Test Moe's", city: "Santa Cruz" });
+      await kv.put(testKey, { name: "Test Demo", city: "Santa Cruz" });
       
       const retrieved = await kv.get<{ name: string; city: string }>(testKey);
       expect(retrieved).toBeDefined();
-      expect(retrieved?.name).toBe("Test Moe's");
+      expect(retrieved?.name).toBe("Test Demo");
       expect(retrieved?.city).toBe("Santa Cruz");
 
       await kv.delete(testKey);
@@ -141,7 +141,7 @@ describe('MIMENU - Moe\'s Taberna Santa Cruz de la Sierra Test Suite', () => {
     });
 
     it('should generate structured actions for updating prices', async () => {
-      const response = await aiEngine.processUserInput('Sube el precio de la Salchipapa Moe Monster a 48 Bs');
+      const response = await aiEngine.processUserInput('Sube el precio de la Salchipapa Monster a 48 Bs');
       expect(response.sender).toBe('ai');
       expect(response.actions).toBeDefined();
       expect(response.actions?.[0].type).toBe('UPDATE_ITEM_PRICE');

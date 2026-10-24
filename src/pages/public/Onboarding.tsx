@@ -262,7 +262,7 @@ export const Onboarding: React.FC = () => {
                   <Input
                     value={venueName}
                     onChange={(e) => setVenueName(e.target.value)}
-                    placeholder="ej. Jaleo, Moe's Taberna"
+                    placeholder="ej. Jaleo, MiMenu Demo"
                     className="h-10 rounded-lg text-xs bg-background"
                     required
                   />

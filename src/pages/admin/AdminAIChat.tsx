@@ -525,7 +525,7 @@ export const AdminAIChat: React.FC = () => {
                   Visor de Base de Datos Cloudflare KV
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Arquitectura 100% libre de Supabase. Todo el estado de la taberna está particionado por namespaces KV.
+                  Arquitectura 100% libre de Supabase. Todo el estado está particionado por namespaces KV.
                 </p>
               </div>
 

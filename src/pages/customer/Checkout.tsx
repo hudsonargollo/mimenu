@@ -88,7 +88,7 @@ const Checkout: React.FC = () => {
       setCreatedOrderNumber(order.order_number);
       setIsSuccess(true);
       clearCart();
-      toast.success("¡Pedido enviado a la cocina de Moe's con éxito!");
+      toast.success("¡Pedido enviado a la cocina con éxito!");
 
     } catch (err) {
       console.error('Error creating order:', err);

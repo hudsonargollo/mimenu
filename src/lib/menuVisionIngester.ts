@@ -33,13 +33,13 @@ export interface IngestionResult {
 // Sample physical menu image presets for instant testing
 export const SAMPLE_MENU_PHOTOS = [
   {
-    id: 'moes_taberna',
-    title: "Moe's Taberna — Carta Santa Cruz",
+    id: 'mimenu_demo',
+    title: "MiMenu Demo — Carta Santa Cruz",
     description: "Menú físico de cervecería artesanal, salchipapas y alitas",
     category: "Cervecería & Bar",
     url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
     sampleText: `
-MOE'S TABERNA - SANTA CRUZ
+MIMENU DEMO - SANTA CRUZ
 === CERVEZAS Y CHOPPS ===
 Chopp Artesanal Rubia 500ml - Refrescante lager dorada con lúpulos nobles - Bs. 25
 Chopp IPA Criolla 500ml - Intenso aroma cítrico y amargor balanceado - Bs. 28
@@ -47,7 +47,7 @@ Pitcher de Cerveza 1.5L - Jarra para compartir con amigos - Bs. 65
 Balde 6 Cervezas Huari - Bien heladas en balde con hielo - Bs. 90
 
 === PIQUEOS Y COMBOS ===
-Salchipapa Monster Moe - Papas fritas rústicas, salchicha alemana, huevo frito y salsa tártara - Bs. 45
+Salchipapa Monster - Papas fritas rústicas, salchicha alemana, huevo frito y salsa tártara - Bs. 45
 Alitas BBQ Ahumadas (12 unidades) - Bañadas en salsa BBQ casera con bastones de apio y aderezo ranch - Bs. 50 (Picante)
 Picada Camba Especial - Cuñapé frito, majadito bites, chorizo parrillero y yuca frita - Bs. 65
 Nachos Supremos con Queso Fundido - Totopos crujientes, guacamole fresco, jalapeños y frijol refrito - Bs. 42 (Vegetariano, Picante)

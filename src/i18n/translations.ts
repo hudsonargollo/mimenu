@@ -40,7 +40,7 @@ export const translations = {
     sections: {
       experienceTitle: "Una experiencia completa",
       experienceLead:
-        "Moe's Taberna une gastronomía cruceña, ambiente nocturno, bar helado y eventos deportivos en un solo lugar en Santa Cruz de la Sierra.",
+        "MiMenu Demo une gastronomía cruceña, ambiente nocturno, bar helado y eventos deportivos en un solo lugar en Santa Cruz de la Sierra.",
       gastronomyTitle: "Gastronomía",
       gastronomyLead:
         "Salchipapas, anticuchos, pique macho y cocteles con singani servidos bien fríos al mejor estilo cruceño.",
@@ -65,7 +65,7 @@ export const translations = {
         "para-compartir": "Para 2 Personas",
         kids: "Menú Kids",
         postres: "Postres",
-        "drinks-autorales": "Cocteles de Autor Moe's",
+        "drinks-autorales": "Cocteles de Autor ",
         "drinks-clasicos": "Cócteles Clásicos",
         cervezas: "Cervezas & Chopp",
         "sin-alcohol": "Bebidas Sin Alcohol",
@@ -74,14 +74,14 @@ export const translations = {
     },
     gallery: {
       title: "Galería",
-      lead: "Fotos reales de Moe's Taberna — sin filtros, sin maquillaje.",
+      lead: "Fotos reales de MiMenu Demo — sin filtros, sin maquillaje.",
     },
     brochure: {
       title: "Sobre & Eventos",
       lead: "Nuestra historia, nuestras instalaciones y nuestro espacio para celebraciones.",
       historyTitle: "De la previa cruceña al destino nocturno",
       historyBody:
-        "Santa Cruz creció despierta toda la noche, y con ella creció la cultura de la previa, el fernet y las salchipapas compartidas. Moe's Taberna nació en 2025 en Equipetrol para celebrar justamente eso: la fiesta cruceña, entre una Huari bien helada y la amistad de siempre.",
+        "Santa Cruz creció despierta toda la noche, y con ella creció la cultura de la previa, el fernet y las salchipapas compartidas. MiMenu Demo nació en 2025 en Equipetrol para celebrar justamente eso: la fiesta cruceña, entre una Huari bien helada y la amistad de siempre.",
       structureTitle: "Instalaciones",
       structureItems: [
         "Salón y terraza bajo las estrellas",
@@ -109,7 +109,7 @@ export const translations = {
       whatsapp: "Chatear por WhatsApp",
     },
     footer: {
-      tagline: "Moe's Taberna — Bar Nocturno",
+      tagline: "MiMenu Demo — Bar Nocturno",
       rights: "Todos los derechos reservados.",
       followUs: "Síguenos en Instagram",
     },
@@ -158,7 +158,7 @@ export const translations = {
     sections: {
       experienceTitle: "A complete experience",
       experienceLead:
-        "Moe's Taberna brings together cruceño gastronomy, nightlife atmosphere, an ice-cold bar and sports events in one place in Santa Cruz de la Sierra.",
+        "MiMenu Demo brings together cruceño gastronomy, nightlife atmosphere, an ice-cold bar and sports events in one place in Santa Cruz de la Sierra.",
       gastronomyTitle: "Gastronomy",
       gastronomyLead:
         "Salchipapas, anticuchos, pique macho and singani cocktails served perfectly cold, cruceño style.",
@@ -183,7 +183,7 @@ export const translations = {
         "para-compartir": "Serves 2",
         kids: "Kids Menu",
         postres: "Desserts",
-        "drinks-autorales": "Moe's Signature Cocktails",
+        "drinks-autorales": "Signature Cocktails",
         "drinks-clasicos": "Classic Cocktails",
         cervezas: "Beers & Draft",
         "sin-alcohol": "Non-Alcoholic Drinks",
@@ -192,14 +192,14 @@ export const translations = {
     },
     gallery: {
       title: "Gallery",
-      lead: "Real photos from Moe's Taberna — no filters, no fluff.",
+      lead: "Real photos from MiMenu Demo — no filters, no fluff.",
     },
     brochure: {
       title: "About & Events",
       lead: "Our story, our facilities and our space for celebrations.",
       historyTitle: "From cruceño pre-party to nightlife destination",
       historyBody:
-        "Santa Cruz grew up awake all night, and with it grew the culture of the pre-party, fernet and shared salchipapas. Moe's Taberna was born in 2025 in Equipetrol to celebrate exactly that: the cruceño party, between the cap of an ice-cold Huari and lifelong friendships.",
+        "Santa Cruz grew up awake all night, and with it grew the culture of the pre-party, fernet and shared salchipapas. MiMenu Demo was born in 2025 in Equipetrol to celebrate exactly that: the cruceño party, between the cap of an ice-cold Huari and lifelong friendships.",
       structureTitle: "Facilities",
       structureItems: [
         "Indoor hall and open-air terrace",
@@ -227,7 +227,7 @@ export const translations = {
       whatsapp: "Chat on WhatsApp",
     },
     footer: {
-      tagline: "Moe's Taberna — Night Bar",
+      tagline: "MiMenu Demo — Night Bar",
       rights: "All rights reserved.",
       followUs: "Follow us on Instagram",
     },
@@ -276,7 +276,7 @@ export const translations = {
     sections: {
       experienceTitle: "Uma experiência completa",
       experienceLead:
-        "Moe's Taberna une gastronomia cruceña, ambiente noturno, bar gelado e eventos esportivos em um só lugar em Santa Cruz de la Sierra.",
+        "MiMenu Demo une gastronomia cruceña, ambiente noturno, bar gelado e eventos esportivos em um só lugar em Santa Cruz de la Sierra.",
       gastronomyTitle: "Gastronomia",
       gastronomyLead:
         "Salchipapas, anticuchos, pique macho e coquetéis com singani servidos bem gelados ao estilo cruceño.",
@@ -301,7 +301,7 @@ export const translations = {
         "para-compartir": "Para 2 Pessoas",
         kids: "Menu Kids",
         postres: "Sobremesas",
-        "drinks-autorales": "Drinks Autorais Moe's",
+        "drinks-autorales": "Drinks Autorais ",
         "drinks-clasicos": "Drinks Clássicos",
         cervezas: "Cervezas & Chopp",
         "sin-alcohol": "Bebidas sem Álcool",
@@ -310,14 +310,14 @@ export const translations = {
     },
     gallery: {
       title: "Galeria",
-      lead: "Fotos reais da Moe's Taberna — sem filtros, sem firulas.",
+      lead: "Fotos reais da MiMenu Demo — sem filtros, sem firulas.",
     },
     brochure: {
       title: "Sobre & Eventos",
       lead: "Nossa história, nossas instalações e nosso espaço para celebrações.",
       historyTitle: "Da previa cruceña ao destino noturno",
       historyBody:
-        "Santa Cruz cresceu acordada toda a noite, e com ela cresceu a cultura da previa, do fernet e das salchipapas compartilhadas. Moe's Taberna nasceu em 2025 em Equipetrol para celebrar exatamente isso: a festa cruceña, entre uma Huari gelada e amizades de longa data.",
+        "Santa Cruz cresceu acordada toda a noite, e com ela cresceu a cultura da previa, do fernet e das salchipapas compartilhadas. MiMenu Demo nasceu em 2025 em Equipetrol para celebrar exatamente isso: a festa cruceña, entre uma Huari gelada e amizades de longa data.",
       structureTitle: "Instalações",
       structureItems: [
         "Salão e terraza a céu aberto",
@@ -345,7 +345,7 @@ export const translations = {
       whatsapp: "Falar no WhatsApp",
     },
     footer: {
-      tagline: "Moe's Taberna — Bar Noturno",
+      tagline: "MiMenu Demo — Bar Noturno",
       rights: "Todos os direitos reservados.",
       followUs: "Siga no Instagram",
     },
