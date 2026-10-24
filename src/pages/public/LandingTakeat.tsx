@@ -1101,7 +1101,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.calcTitle}
               </h2>
               <p className="text-base sm:text-lg text-white/70">
-                Veja o impacto financeiro direto de operar seu delivery próprio e salão com 0% de taxa no MiMenu.
+                {t.landing.calcSub}
               </p>
             </div>
 
