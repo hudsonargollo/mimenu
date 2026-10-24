@@ -841,7 +841,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Visão 360° da Operação
+                {t.landing.visaoTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
                 Um produto para cada momento da sua operação
@@ -1002,7 +1002,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Ecossistema Modular
+                {t.landing.ecossistemaTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
                 Monte o sistema ideal para o seu restaurante
@@ -1098,7 +1098,7 @@ export const LandingTakeat: React.FC = () => {
                 Simulador de Economia Real
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mt-2 mb-4">
-                Calcule quanto você economiza saindo das comissões abusivas
+                {t.landing.calcTitle}
               </h2>
               <p className="text-base sm:text-lg text-white/70">
                 Veja o impacto financeiro direto de operar seu delivery próprio e salão com 0% de taxa no MiMenu.
@@ -1216,7 +1216,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Adaptado ao Seu Negócio
+                {t.landing.adaptadoTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
                 O MiMenu funciona para qualquer tipo de operação
@@ -1294,7 +1294,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Depoimentos Reais
+                {t.landing.depoimentosTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
                 Quem usa todos os dias, recomenda
@@ -1390,7 +1390,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Tire Suas Dúvidas
+                {t.landing.duvidasTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
                 O que donos de restaurante perguntam antes de contratar
