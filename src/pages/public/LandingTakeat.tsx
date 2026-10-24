@@ -1044,7 +1044,7 @@ export const LandingTakeat: React.FC = () => {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-semibold text-white/70">
-                        Pedidos por Mês (Salão + Delivery)
+                        {t.landing.calcOrders}
                       </label>
                       <span className="text-base font-bold text-white bg-white/10 px-3 py-1 rounded-lg">
                         {monthlyOrders} pedidos
@@ -1069,7 +1069,7 @@ export const LandingTakeat: React.FC = () => {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-semibold text-white/70">
-                        Tíquete Médio por Pedido
+                        {t.landing.calcTicket}
                       </label>
                       <span className="text-base font-bold text-white bg-white/10 px-3 py-1 rounded-lg">
                         R$ {averageTicket},00
@@ -1561,7 +1561,7 @@ export const LandingTakeat: React.FC = () => {
             {/* Solutions column */}
             <div className="lg:col-span-3 space-y-2">
               <div className="font-bold text-white text-xs uppercase tracking-wider mb-3">
-                Soluções MiMenu
+                {t.landing.solutionsMiMenu}
               </div>
               <ul className="space-y-2 text-xs">
                 <li><a href="#solucoes" className="hover:text-white transition-colors">{t.landing.fLink1}</a></li>
