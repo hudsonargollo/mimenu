@@ -1008,7 +1008,7 @@ export const LandingTakeat: React.FC = () => {
                 Monte o sistema ideal para o seu restaurante
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
-                Funcionalidades completas para quem quer ir muito além do básico e transformar o negócio em uma máquina de vendas.
+                {t.landing.featuresLead}
               </p>
             </div>
 
@@ -1018,9 +1018,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold mb-4">
                     <QrCode className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">Garçom Digital & QR Mesa</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f1Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Cardápio na mesa onde o próprio cliente faz o pedido ou o garçom lança direto pelo celular em segundos.
+                    {t.landing.f1Desc}
                   </p>
                 </Card>
               </ScrollReveal>
@@ -1030,9 +1030,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold mb-4">
                     <ChefHat className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">Painel KDS de Cozinha</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f2Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Fila de pedidos visual organizada por ordem de chegada com cronômetro e alerta de atraso.
+                    {t.landing.f2Desc}
                   </p>
                 </Card>
               </ScrollReveal>
@@ -1042,9 +1042,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center font-bold mb-4">
                     <MessageCircle className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">IA & Automação WhatsApp</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f3Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Atendente virtual que responde cardápio, envia status do pedido e recupera clientes inativos 24h por dia.
+                    {t.landing.f3Desc}
                   </p>
                 </Card>
               </ScrollReveal>
@@ -1054,9 +1054,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-warning/10 text-warning flex items-center justify-center font-bold mb-4">
                     <Smartphone className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">Totem & Tablet de Mesa</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f4Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Permita que clientes peçam e paguem sozinhos no salão, reduzindo filas e custos com equipe.
+                    {t.landing.f4Desc}
                   </p>
                 </Card>
               </ScrollReveal>
@@ -1066,9 +1066,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold mb-4">
                     <Printer className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">Impressão Térmica Automática</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f5Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Compatível com impressoras EPSON, Bematech e Elgin via USB, Rede ou Wi-Fi sem travar.
+                    {t.landing.f5Desc}
                   </p>
                 </Card>
               </ScrollReveal>
@@ -1078,9 +1078,9 @@ export const LandingTakeat: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold mb-4">
                     <Building2 className="w-5 h-5" />
                   </div>
-                  <h3 className="font-bold text-lg text-primary mb-2">Painel Multi-Lojas & Franquias</h3>
+                  <h3 className="font-bold text-lg text-primary mb-2">{t.landing.f6Title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Gerencie cardápios centralizados, relatórios consolidados e permissões de usuários para várias unidades.
+                    {t.landing.f6Desc}
                   </p>
                 </Card>
               </ScrollReveal>
