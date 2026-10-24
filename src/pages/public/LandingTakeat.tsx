@@ -212,7 +212,7 @@ export const LandingTakeat: React.FC = () => {
                 Mi<span className="text-accent">Menu</span>
               </span>
               <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-                SaaS Gastronômico
+                {t.landing.eyebrow.split("•")[0].trim()}
               </span>
             </div>
           </Link>
@@ -336,7 +336,7 @@ export const LandingTakeat: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-3 text-sm font-bold text-accent-foreground bg-accent rounded-xl shadow-md"
               >
-                Agendar Demonstração Gratuita
+                {t.landing.cta}
               </a>
             </div>
           </div>
@@ -361,7 +361,7 @@ export const LandingTakeat: React.FC = () => {
             <ScrollReveal direction="up" delay={100}>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border shadow-sm mb-6 text-xs sm:text-sm font-semibold text-muted-foreground">
                 <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span>{lang === 'es' ? 'Más de' : lang === 'en' ? 'Over' : 'Mais de'} <strong>3.200 {lang === 'es' ? 'restaurantes y bares' : lang === 'en' ? 'restaurants and bars' : 'restaurantes e bares'}</strong> {lang === 'es' ? 'confían en MiMenu' : lang === 'en' ? 'trust MiMenu' : 'confiam no MiMenu'}</span>
+                <span>{t.landing.badge}</span>
               </div>
             </ScrollReveal>
 
@@ -390,7 +390,7 @@ export const LandingTakeat: React.FC = () => {
                   href="#contato"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base shadow-md hover:shadow-lg active:scale-95 transition-all"
                 >
-                  Agendar Demonstração Gratuita
+                  {t.landing.cta}
                   <ArrowRight className="w-5 h-5" />
                 </a>
                 <a
@@ -789,7 +789,7 @@ export const LandingTakeat: React.FC = () => {
                 Resultados Comprovados
               </span>
               <h2 className="text-3xl sm:text-4xl font-display font-bold mt-2">
-                Números que se repetem em milhares de restaurantes
+                {t.landing.numbersTitle}
               </h2>
             </div>
 
