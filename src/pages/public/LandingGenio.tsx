@@ -1011,7 +1011,7 @@ export const LandingGenio: React.FC = () => {
       <footer className="py-12 bg-[#050608] border-t border-white/[0.08] text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Flame className="w-5 h-5 text-amber-500" />
+            <img src="/mimenu-square.svg" alt="MiMenu" className="h-6 w-6" />
             <span className="font-extrabold text-sm text-white">MiMenu Platform</span>
             <span className="text-slate-600">|</span>
             <span>Cardápio Digital Sem Comissão</span>

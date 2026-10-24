@@ -114,10 +114,13 @@ const Auth = () => {
           {/* Dark Hero Section */}
           <div className="bg-gradient-to-b from-[#1A2B2A] to-[#2A3B3A] text-center space-y-6 p-8 sm:p-10">
             <div className="flex justify-center">
-              <img 
-                src="/logo.jpg" 
-                alt="MiMenu" 
-                className="h-20 w-auto drop-shadow-lg"
+              {/* MiMenu mark. The SVG is wide (1.58:1) so it gets explicit
+                  height + auto width instead of a square box, which would
+                  letterbox the glyph. */}
+              <img
+                src="/mimenu-square.svg"
+                alt="MiMenu"
+                className="h-16 w-auto drop-shadow-lg"
               />
             </div>
             <div className="space-y-3">

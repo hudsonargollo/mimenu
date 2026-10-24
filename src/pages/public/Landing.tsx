@@ -273,10 +273,9 @@ export const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-[1px] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-[#0D0E15] rounded-[11px] flex items-center justify-center">
-                <Flame className="w-5 h-5 text-amber-400 fill-amber-400" aria-hidden="true" />
-              </div>
+            {/* MiMenu mark on a light chip so the purple/orange reads on the dark hero */}
+            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+              <img src="/mimenu-square.svg" alt="MiMenu" className="h-7 w-7" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
@@ -1072,7 +1071,7 @@ export const Landing: React.FC = () => {
       <footer className="py-12 bg-[#060709] border-t border-white/[0.08] text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Flame className="w-5 h-5 text-amber-500" />
+            <img src="/mimenu-square.svg" alt="MiMenu" className="h-6 w-6" />
             <span className="font-extrabold text-sm text-white">MiMenu</span>
             <span className="text-slate-600">|</span>
             <span>ClubeMkt Gastronomy Group</span>
