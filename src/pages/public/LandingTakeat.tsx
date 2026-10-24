@@ -76,7 +76,7 @@ export const LandingTakeat: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
-    document.title = "MiMenu | Sistema de Gestão para Restaurantes, Garçom Digital & Delivery";
+    document.title = t.landing.docTitle;
   }, []);
 
   // ROI calculations
@@ -109,46 +109,11 @@ export const LandingTakeat: React.FC = () => {
   };
 
   const segmentsData = [
-    {
-      id: "hamburgueria",
-      name: "Hamburguerias & Smash",
-      icon: Flame,
-      headline: "Combos rápidos, escolha de ponto da carne e adicionais sem fila",
-      description: "Turbine o faturamento com fotos irresistíveis, seleção obrigatória de adicionais e despacho imediato para a chapa via tela KDS.",
-      bullets: ["Venda cruzada automática (Bebida + Fritas)", "Ponto da carne e molhos customizados", "Impressão direta na chapa e fritadeira"]
-    },
-    {
-      id: "pizzaria",
-      name: "Pizzarias & Trattorias",
-      icon: Pizza,
-      headline: "Pizzas meio a meio, bordas recheadas e controle de forno a lenha",
-      description: "Divisão de sabores por fração com cobrança pela média ou maior valor, controle de entrega por raio e comanda de mesa interativa.",
-      bullets: ["Configurador de 2 ou 3 sabores por pizza", "Cálculo automático de taxa de entrega por km", "Impressão de fichas para o pizzaiolo"]
-    },
-    {
-      id: "bar",
-      name: "Bares, Pubs & Choperias",
-      icon: Beer,
-      headline: "Comanda individual, divisão de conta e pedidos diretos da mesa",
-      description: "Clientes pedem rodadas sem esperar o garçom. Divisão de conta simplificada no Pix ou cartão direto pelo smartphone.",
-      bullets: ["Divisão de conta entre amigos com 1 clique", "Comanda móvel no celular do garçom", "Barra e cozinha sincronizados"]
-    },
-    {
-      id: "restaurante",
-      name: "Restaurantes À la Carte & Buffets",
-      icon: UtensilsCrossed,
-      headline: "Experiência premium com fotos em alta resolução e gestão de salão",
-      description: "Cardápio bilíngue para turistas, notas fiscais, controle de mesas ocupadas e fechamento de caixa sem gargalos no atendimento.",
-      bullets: ["Suporte multilíngue (Português, Ingllês, Espanhol)", "Gestão visual de mesas e ocupação", "DRE financeiro e controle de garçons"]
-    },
-    {
-      id: "cafeteria",
-      name: "Cafés, Padarias & Docerias",
-      icon: Coffee,
-      headline: "Atendimento expresso no balcão e totens de autoatendimento",
-      description: "Agilidade máxima para clientes em trânsito. Pagamento rápido no balcão, leitor de código de barras e controle de estoque de vitrine.",
-      bullets: ["Lançamento de balcão em 3 cliques", "Histórico de compras e cartão fidelidade", "Fechamento de caixa com conferência cega"]
-    }
+    { id: "hamburgueria", name: t.landing.seg1Name, icon: Flame, headline: t.landing.seg1Headline, description: t.landing.seg1Desc, bullets: t.landing.seg1Bullets },
+    { id: "pizzaria", name: t.landing.seg2Name, icon: Pizza, headline: t.landing.seg2Headline, description: t.landing.seg2Desc, bullets: t.landing.seg2Bullets },
+    { id: "bar", name: t.landing.seg3Name, icon: Beer, headline: t.landing.seg3Headline, description: t.landing.seg3Desc, bullets: t.landing.seg3Bullets },
+    { id: "restaurante", name: t.landing.seg4Name, icon: UtensilsCrossed, headline: t.landing.seg4Headline, description: t.landing.seg4Desc, bullets: t.landing.seg4Bullets },
+    { id: "cafeteria", name: t.landing.seg5Name, icon: Coffee, headline: t.landing.seg5Headline, description: t.landing.seg5Desc, bullets: t.landing.seg5Bullets },
   ];
 
   const currentSegment = segmentsData.find(s => s.id === selectedSegment) || segmentsData[0];
