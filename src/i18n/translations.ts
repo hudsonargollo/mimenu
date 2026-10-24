@@ -114,7 +114,7 @@ export const translations = {
       followUs: "Síguenos en Instagram",
     },
     landing: {
-      eyebrow: "SaaS Gastronómico • Para Restaurantes",
+      eyebrow: "MiMenu • Para Restaurantes",
       title: "Mi",
       titleAccent: "Menu",
       heroTitle: "Sistema para Restaurante:",
@@ -438,7 +438,7 @@ export const translations = {
       followUs: "Follow us on Instagram",
     },
     landing: {
-      eyebrow: "Restaurant SaaS • For Restaurants",
+      eyebrow: "MiMenu • For Restaurants",
       title: "Mi",
       titleAccent: "Menu",
       heroTitle: "Restaurant System:",
@@ -775,7 +775,7 @@ export const translations = {
       followUs: "Siga no Instagram",
     },
     landing: {
-      eyebrow: "SaaS para Restaurantes",
+      eyebrow: "MiMenu • Para Restaurantes",
       title: "Mi",
       titleAccent: "Menu",
       heroTitle: "Sistema para Restaurante:",
