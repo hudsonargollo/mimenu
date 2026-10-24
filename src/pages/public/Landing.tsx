@@ -25,6 +25,7 @@ import {
   Sparkle
 } from "lucide-react";
 import { useMimenu } from "@/lib/mimenuContext";
+import { PLANS, planPriceLabel } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 
 export const Landing: React.FC = () => {
@@ -891,100 +892,111 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Pricing Cards Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-            
-            {/* Plan 1: Starter */}
-            <div className="rounded-3xl bg-white/[0.03] border border-white/[0.08] p-8 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Starter</span>
-                <h3 className="text-2xl font-black text-white">Menú Digital QR</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">Ideal para cafeterias, pastelerias y locales que buscan digitalizar su carta.</p>
-                <div className="flex items-baseline gap-1 pt-2">
-                  <span className="text-4xl font-black text-white">Bs. {billingCycle === 'monthly' ? '180' : '150'}</span>
-                  <span className="text-xs text-slate-400">/ mes</span>
+          {/* Pricing Cards Grid — 4 tiers, driven by src/lib/plans.ts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto items-stretch">
+            {PLANS.map((plan) => {
+              const isCustom = plan.id === 'custom';
+              const isFeatured = plan.id === 'pro';
+              const price = planPriceLabel(plan, billingCycle);
+
+              return (
+                <div
+                  key={plan.id}
+                  className={`rounded-3xl p-7 flex flex-col justify-between gap-5 relative ${
+                    isFeatured
+                      ? 'bg-gradient-to-b from-amber-500/15 via-white/[0.04] to-white/[0.02] border-2 border-amber-500/60 shadow-2xl shadow-amber-500/10'
+                      : isCustom
+                        ? 'bg-gradient-to-b from-rose-500/10 via-white/[0.03] to-white/[0.02] border border-rose-500/40'
+                        : 'bg-white/[0.03] border border-white/[0.08]'
+                  } ${isCustom ? 'lg:col-span-2' : ''}`}
+                >
+                  {plan.badge && (
+                    <div
+                      className={`absolute -top-3 left-6 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-lg ${
+                        isCustom ? 'bg-rose-500 text-white' : 'bg-amber-500 text-black'
+                      }`}
+                    >
+                      {plan.badge}
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <span
+                          className={`text-xs font-bold uppercase tracking-wider ${
+                            isFeatured ? 'text-amber-400' : isCustom ? 'text-rose-400' : 'text-slate-400'
+                          }`}
+                        >
+                          {plan.name}
+                        </span>
+                        <h3 className="text-2xl font-black text-white">{plan.tagline}</h3>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span
+                          className={`text-3xl font-black tabular-nums ${
+                            isFeatured ? 'text-amber-400' : isCustom ? 'text-rose-400' : 'text-white'
+                          }`}
+                        >
+                          {price}
+                        </span>
+                        {plan.monthly !== null && <span className="block text-xs text-slate-400">/ mes</span>}
+                        {isCustom && (
+                          <span className="block text-[10px] text-rose-400 font-semibold">setup + mensualidad</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-400 leading-relaxed">{plan.audience}</p>
+                  </div>
+
+                  <ul className="space-y-3 text-xs font-medium text-slate-300 pt-5 border-t border-white/[0.08]">
+                    {plan.features.map((f) => (
+                      <li key={f.label} className="flex items-center gap-2.5">
+                        <Check
+                          className={`w-4 h-4 shrink-0 ${
+                            f.highlight
+                              ? isCustom
+                                ? 'text-rose-400'
+                                : 'text-amber-400'
+                              : 'text-emerald-400'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span className={f.highlight ? 'font-bold text-white' : ''}>{f.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    variant={isFeatured || isCustom ? 'default' : 'outline'}
+                    onClick={() =>
+                      navigate(
+                        isCustom
+                          ? '/proposta'
+                          : `/onboarding?plan=${plan.id}`,
+                      )
+                    }
+                    className={`w-full font-bold text-xs py-5 rounded-xl ${
+                      isFeatured
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black shadow-xl shadow-amber-500/20'
+                        : isCustom
+                          ? 'bg-rose-500 hover:bg-rose-600 text-white font-black'
+                          : 'border-white/10 hover:border-white/30 text-white bg-white/[0.02]'
+                    }`}
+                  >
+                    {plan.ctaLabel}
+                  </Button>
                 </div>
-
-                <ul className="space-y-3 text-xs font-medium text-slate-300 pt-6 border-t border-white/[0.08]">
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Menú digital ultra-rapido (PWA)</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Codigos QR ilimitados con logo</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Cazador de Reseñas de Google Maps</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Fotos sugeridas automaticas</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> 0% comision por ventas</li>
-                </ul>
-              </div>
-
-              <Button
-                variant="outline"
-                onClick={() => navigate('/onboarding')}
-                className="w-full border-white/10 hover:border-white/30 text-white font-bold text-xs py-5 rounded-xl bg-white/[0.02]"
-              >
-                Comenzar Starter
-              </Button>
-            </div>
-
-            {/* Plan 2: Pro (Featured) */}
-            <div className="rounded-3xl bg-gradient-to-b from-amber-500/15 via-white/[0.04] to-white/[0.02] border-2 border-amber-500/60 p-8 flex flex-col justify-between space-y-6 relative shadow-2xl shadow-amber-500/10">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-lg">
-                MÁS ELEGIDO POR RESTAURANTES
-              </div>
-
-              <div className="space-y-4">
-                <span className="text-xs font-bold uppercase text-amber-400 tracking-wider">Pro</span>
-                <h3 className="text-2xl font-black text-white">Gastronomic OS</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">Para restaurantes, bares, cervecerias y gastro-pubs en crecimiento activo.</p>
-                <div className="flex items-baseline gap-1 pt-2">
-                  <span className="text-4xl font-black text-amber-400">Bs. {billingCycle === 'monthly' ? '340' : '290'}</span>
-                  <span className="text-xs text-slate-400">/ mes</span>
-                </div>
-
-                <ul className="space-y-3 text-xs font-medium text-slate-200 pt-6 border-t border-white/[0.08]">
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> <strong>Todo lo incluido en Starter</strong></li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> <strong>Copiloto IA por WhatsApp</strong></li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Carrito Express y Maridajes (+24%)</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Pedidos por Mesa con QR Dinamico</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> Pantalla KDS de Cocina y Barra</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-amber-400 shrink-0" /> CRM de Clientes y Fidelizacion</li>
-                </ul>
-              </div>
-
-              <Button
-                onClick={() => navigate('/onboarding')}
-                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-xs py-6 rounded-xl shadow-xl shadow-amber-500/20"
-              >
-                Probar 14 Dias Gratis
-              </Button>
-            </div>
-
-            {/* Plan 3: Multi-Sucursal */}
-            <div className="rounded-3xl bg-white/[0.03] border border-white/[0.08] p-8 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Grupos & Cadenas</span>
-                <h3 className="text-2xl font-black text-white">Multi-Sucursal</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">Para franquicias, grupos gastronomicos y marcas con varias locaciones.</p>
-                <div className="flex items-baseline gap-1 pt-2">
-                  <span className="text-4xl font-black text-white">Bs. {billingCycle === 'monthly' ? '680' : '590'}</span>
-                  <span className="text-xs text-slate-400">/ mes</span>
-                </div>
-
-                <ul className="space-y-3 text-xs font-medium text-slate-300 pt-6 border-t border-white/[0.08]">
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> <strong>Todo lo incluido en Pro</strong></li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Gestion multi-sucursal unificada</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Integracion con Impresoras Termicas y POS</li>
-                  <li className="flex items-center gap-2.5"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Soporte prioritario y onboarding presencial</li>
-                </ul>
-              </div>
-
-              <Button
-                variant="outline"
-                onClick={() => navigate('/onboarding')}
-                className="w-full border-white/10 hover:border-white/30 text-white font-bold text-xs py-5 rounded-xl bg-white/[0.02]"
-              >
-                Hablar con un Asesor
-              </Button>
-            </div>
-
+              );
+            })}
           </div>
+
+          <p className="text-center text-[11px] text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            El plan <strong className="text-slate-300">Básico</strong> no incluye Copiloto IA ni Analítica IA en el
+            menú dinámico: son exclusivos de Pro y superiores. El plan <strong className="text-slate-300">Custom</strong>{' '}
+            se cotiza con setup fee + mensualidad según el alcance.
+          </p>
 
         </div>
       </section>

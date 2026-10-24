@@ -2,6 +2,18 @@ export type FulfillmentType = 'dine_in' | 'pickup' | 'delivery';
 
 export type HotnessLevel = 1 | 2 | 3 | 4 | 5;
 
+/** Plan + asset data collected during onboarding, used to build the premium landing. */
+export interface LandingAssets {
+  logoFile: string | null;
+  featuredPhotos: string[];
+  plan: 'basic' | 'pro' | 'premium' | 'custom';
+  billingCycle: 'monthly' | 'yearly';
+  hasCustomWebsite: boolean;
+  hasCrm: boolean;
+  hasAiConcierge: boolean;
+  hasAiAnalytics: boolean;
+}
+
 export interface Venue {
   id: string;
   slug: string;
@@ -30,6 +42,8 @@ export interface Venue {
   facebook?: string;
   google_review_url?: string;
   is_active: boolean;
+  /** Onboarding-collected plan and landing assets. */
+  landing_assets?: LandingAssets;
   delivery_zones?: {
     name: string;
     fee: number;
