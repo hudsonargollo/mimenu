@@ -80,7 +80,7 @@ const imageMap: Record<string, string> = {
   "acai.jpg": acaiImg,
   "blue-lagoon.jpg": blueLagoonImg,
   "brigadeiro.jpg": brigaderoImg,
-  "caipirinha.jpg": caiprinhaImg,
+  "caipirinha.jpg": caipirinhaImg,
   "caipitao.jpg": caipitaoImg,
   "carne-sol.jpg": carnesolImg,
   "cassava-fries.jpg": cassavafriesImg,
