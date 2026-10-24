@@ -153,40 +153,7 @@ export const LandingTakeat: React.FC = () => {
 
   const currentSegment = segmentsData.find(s => s.id === selectedSegment) || segmentsData[0];
 
-  const faqItems = [
-    {
-      q: "O que é o MiMenu e como ele ajuda meu restaurante?",
-      a: "O MiMenu é uma plataforma completa de gestão e atendimento gastronômico que reúne Cardápio Digital QR Code na mesa, Garçom Digital no celular, KDS para a cozinha, PDV Balcão e Delivery Próprio com 0% de comissão. Você centraliza toda a operação e aumenta sua margem de lucro."
-    },
-    {
-      q: "Quanto custa o MiMenu e há taxa sobre as minhas vendas?",
-      a: "No MiMenu você tem 0% de comissão sobre seus pedidos de salão, balcão e delivery próprio. Você paga apenas uma assinatura mensal acessível sem surpresas no fim do mês e sem porcentagem sobre o seu suor."
-    },
-    {
-      q: "Preciso comprar equipamentos caros ou maquininhas específicas?",
-      a: "Não! O MiMenu é 100% web e roda em qualquer dispositivo que você já tem: smartphones Android/iOS, tablets comuns, computadores Windows/Mac ou maquininhas Smart POS. Para a cozinha, você pode usar um tablet comum ou impressoras térmicas padrão (USB, Rede ou Bluetooth)."
-    },
-    {
-      q: "Como o KDS de cozinha substitui os papéis de comanda?",
-      a: "Assim que o cliente ou o garçom faz o pedido, ele aparece instantaneamente na tela da cozinha organizado por tempo de preparo e setor (Ex: Chapa, Bar, Sobremesa). Ao finalizar, um toque na tela atualiza o status para pronto e notifica a equipe."
-    },
-    {
-      q: "Posso manter o iFood enquanto uso o MiMenu?",
-      a: "Sim! Você pode continuar atendendo pelo iFood e usar o MiMenu para converter seus clientes em compradores do seu Delivery Próprio sem comissão, além de organizar 100% do seu salão, mesas e balcão."
-    },
-    {
-      q: "Como funciona a divisão de contas na mesa?",
-      a: "O cliente pode visualizar o extrato da mesa em tempo real pelo próprio celular através do QR Code e escolher pagar a sua parte individual ou dividir igualmente entre os amigos, com suporte a Pix e cartões."
-    },
-    {
-      q: "Vocês oferecem suporte aos finais de semana e no horário de pico?",
-      a: "Sim! Nosso suporte é humanizado e funciona 7 dias por semana, inclusive nos horários mais movimentados de sextas, sábados e domingos para que sua operação nunca pare."
-    },
-    {
-      q: "Quanto tempo leva para colocar o MiMenu para rodar no meu restaurante?",
-      a: "A implantação é muito rápida. Em menos de 24 horas seu cardápio com fotos, categorias, mesas e impressoras já pode estar pronto para receber pedidos."
-    }
-  ];
+  const faqItems = t.landing.faq;
 
   return (
     <div className="min-h-screen bg-background text-foreground font-body selection:bg-accent selection:text-accent-foreground antialiased">
