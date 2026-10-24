@@ -1,26 +1,32 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 /**
  * LoadingFallback Component
- * 
+ *
  * A loading fallback component used with React.Suspense for lazy-loaded routes.
- * Displays a centered loading spinner with Portuguese text matching the application's
- * PONTAL Carapitangui beach club theme.
+ * Displays the MiMenu square mark animated with a framer-motion loading bar.
  */
 export const LoadingFallback: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
-      <div className="bg-card px-8 py-6 rounded-2xl shadow-lg border border-border">
-        <div className="flex items-center gap-4">
-          {/* Spinning loader */}
-          <div className="w-7 h-7 border-3 border-amber-500 border-t-transparent rounded-full animate-spin" />
-          
-          {/* Loading text */}
-          <div>
-            <p className="text-foreground font-bold text-sm">Carregando...</p>
-            <p className="text-muted-foreground text-xs mt-0.5">Preparando o cardápio digital</p>
-          </div>
+      <div className="bg-card px-8 py-6 rounded-2xl shadow-lg border border-border flex flex-col items-center gap-4">
+        <motion.img
+          src="/mimenu-square.svg"
+          alt="MiMenu"
+          className="w-16 h-16"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1.6, ease: 'linear' }}
+        />
+        <div className="w-40 h-1.5 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            className="h-full bg-accent rounded-full"
+            initial={{ width: '0%' }}
+            animate={{ width: ['0%', '100%'] }}
+            transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+          />
         </div>
+        <p className="text-muted-foreground text-xs mt-1">Preparando o cardápio digital</p>
       </div>
     </div>
   );
