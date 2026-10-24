@@ -4,11 +4,10 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
 # KV Namespace bindings for storing sessions and data
-# These will be bound when deploying:
-# wrangler kv:namespace create MIMENU_SESSIONS
-# wrangler kv:namespace create MIMENU_DATA
+# Created 2026-10-24 for the WebAR / AI 3D pipeline (menu_item:{id}, ar_task:{id})
 [kv_namespaces]
-# binding = "MIMENU_KV"
+binding = "MIMENU_KV"
+id = "bfb8ba5a9b72487db588779f42883151"
 
 # Environment variables (available at build time and runtime)
 [vars]

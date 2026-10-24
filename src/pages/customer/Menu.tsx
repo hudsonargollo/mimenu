@@ -12,7 +12,8 @@ import {
   MapPin,
   Clock,
   Leaf,
-  AlertCircle
+  AlertCircle,
+  Box
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
@@ -26,6 +27,14 @@ import { MenuChatbot } from '@/components/chatbot/MenuChatbot';
 import { pickLocalText } from '@/lib/venueContext';
 import type { Lang } from '@/i18n/translations';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import ARMenuViewer from '@/components/ARMenuViewer';
+import { useARModels, useARModelsIds } from '@/hooks/useARModels';
 import { toast } from 'sonner';
 
 const Menu: React.FC = () => {
@@ -39,6 +48,7 @@ const Menu: React.FC = () => {
   const [selectedReviewItem, setSelectedReviewItem] = useState<MenuItemDetail | null>(null);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<Lang>('es');
+  const [arPreviewItem, setARPreviewItem] = useState<MenuItemDetail | null>(null);
 
   useEffect(() => {
     document.title = `${venueName} — Menú Digital`;
@@ -48,6 +58,10 @@ const Menu: React.FC = () => {
   const allItems = useMemo(() => {
     return categories.flatMap(cat => cat.items);
   }, [categories]);
+
+  // AR/3D records for chips ("Ver en 3D") fetched from the KV/Functions layer.
+  const arIds = useARModelsIds(useMemo(() => allItems.map((i) => i.id), [allItems]));
+  const arRecords = useARModels(arIds);
 
   // Localized display fields for the current UI language (falls back to the
   // plain Spanish field when the tenant has no translation).
@@ -300,6 +314,18 @@ const Menu: React.FC = () => {
                         <span className="text-[10px] text-white/70 tabular-nums">({item.reviews_count})</span>
                       </button>
                     </div>
+
+                    {/* 3D / AR chip (only when a model exists for this item) */}
+                    {arRecords[item.id]?.ar_status === 'ready' && arRecords[item.id]?.glb_url && (
+                      <button
+                        onClick={() => setARPreviewItem(item)}
+                        aria-label={`Ver ${itemName(item)} en 3D`}
+                        className="absolute top-12 left-3 bg-indigo-600/90 hover:bg-indigo-600 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full flex items-center gap-1 shadow-sm transition-all"
+                      >
+                        <Box className="w-3 h-3" aria-hidden="true" />
+                        <span>Ver en 3D</span>
+                      </button>
+                    )}
                   </div>
 
                   {/* Card Body */}
@@ -435,6 +461,27 @@ const Menu: React.FC = () => {
         isOpen={!!selectedReviewItem}
         onClose={() => setSelectedReviewItem(null)}
       />
+
+      {/* 3D / AR Preview Dialog */}
+      <Dialog
+        open={!!arPreviewItem}
+        onOpenChange={(open) => !open && setARPreviewItem(null)}
+      >
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>{arPreviewItem ? itemName(arPreviewItem) : ''}</DialogTitle>
+          </DialogHeader>
+          {arPreviewItem && arRecords[arPreviewItem.id]?.glb_url && (
+            <ARMenuViewer
+              glbSrc={arRecords[arPreviewItem.id].glb_url!}
+              iosSrc={arRecords[arPreviewItem.id].usdz_url}
+              altText={itemName(arPreviewItem)}
+              productName={itemName(arPreviewItem)}
+              height={280}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Express Slide-Over Cart Drawer */}
       <CartDrawerExpress

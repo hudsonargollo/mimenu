@@ -28,6 +28,8 @@ import { CategoryManagement } from '@/components/CategoryManagement';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import AdminLayout from '@/components/AdminLayout';
 import { MenuPhotoIngesterModal } from '@/components/MenuPhotoIngesterModal';
+import Admin3DModal from '@/components/admin/Admin3DModal';
+import { Box } from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -53,6 +55,7 @@ const AdminProducts = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [arItem, setArItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -523,6 +526,15 @@ const AdminProducts = () => {
                           Editar
                         </Button>
                         <Button
+                          onClick={() => setArItem(item)}
+                          variant="outline"
+                          className="w-full border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-display uppercase tracking-wider shadow-lg hover:shadow-xl rounded-lg transition-all"
+                          size="sm"
+                        >
+                          <Box className="mr-2 h-4 w-4" />
+                          3D / AR
+                        </Button>
+                        <Button
                           onClick={() => handleDelete(item.id, item.name)}
                           variant="destructive"
                           className="w-full shadow-lg hover:shadow-xl rounded-lg transition-all"
@@ -700,6 +712,18 @@ const AdminProducts = () => {
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 3D / AR Manager Dialog */}
+      <Dialog open={!!arItem} onOpenChange={(open) => !open && setArItem(null)}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-xl">
+          <DialogHeader>
+            <DialogTitle>3D / AR Manager</DialogTitle>
+          </DialogHeader>
+          {arItem && (
+            <Admin3DModal menuItem={arItem} />
+          )}
         </DialogContent>
       </Dialog>
 
