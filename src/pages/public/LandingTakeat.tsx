@@ -1151,10 +1151,10 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.adaptadoTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                O MiMenu funciona para qualquer tipo de operação
+                {t.landing.segTitle}
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
-                Do food truck à rede com dezenas de unidades. O sistema que acompanha a sua evolução.
+                {t.landing.segSub}
               </p>
             </div>
 
@@ -1206,13 +1206,13 @@ export const LandingTakeat: React.FC = () => {
                   {React.createElement(currentSegment.icon, { className: "w-7 h-7" })}
                 </div>
                 <div className="text-sm font-bold text-primary">
-                  Veja uma demonstração aplicada a {currentSegment.name}
+                  {t.landing.segDemo} {currentSegment.name}
                 </div>
                 <a
                   href="#contato"
                   className="inline-block w-full py-3 px-4 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-xs shadow-md transition-all"
                 >
-                  Solicitar Demonstração Especializada
+                  {t.landing.segCta}
                 </a>
               </div>
             </div>
@@ -1364,7 +1364,7 @@ export const LandingTakeat: React.FC = () => {
             </div>
 
             <div className="text-center mt-10 text-xs sm:text-sm text-muted-foreground">
-              Ficou com alguma dúvida específica para o seu modelo?{" "}
+              {t.landing.segDoubt}{" "}
               <a href="#contato" className="font-bold text-accent hover:underline">
                 Fale agora com nosso especialista no WhatsApp &rarr;
               </a>
@@ -1396,11 +1396,11 @@ export const LandingTakeat: React.FC = () => {
                   Comece Hoje Mesmo
                 </span>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
-                  Otimize a gestão do seu{" "}
+                  {t.landing.finalTitle}{" "}
                   <span className="text-accent">restaurante agora</span>.
                 </h2>
                 <p className="text-base text-white/70 leading-relaxed max-w-lg">
-                  Junte-se a mais de 3.200 negócios gastronômicos que aumentaram suas margens e organizaram a produção com o MiMenu.
+                  {t.landing.finalSub}
                 </p>
 
                 <ul className="space-y-3 pt-2">
@@ -1434,10 +1434,10 @@ export const LandingTakeat: React.FC = () => {
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                       <h3 className="text-2xl font-display font-bold text-white">
-                        Demonstração Solicitada!
+                        {t.landing.formSuccessTitle}
                       </h3>
                       <p className="text-sm text-white/70">
-                        Estamos abrindo o WhatsApp do nosso especialista para apresentar a melhor solução para o seu negócio.
+                        {t.landing.formSuccessDesc}
                       </p>
                       <button
                         onClick={() => setFormSubmitted(false)}
@@ -1450,10 +1450,10 @@ export const LandingTakeat: React.FC = () => {
                     <form onSubmit={handleLeadSubmit} className="space-y-4">
                       <div className="text-left mb-6">
                         <h3 className="text-xl font-display font-bold text-white">
-                          Agende uma Demonstração Gratuita
+                          {t.landing.formTitle}
                         </h3>
                         <p className="text-xs text-white/50 mt-1">
-                          Preencha em 30 segundos e receba uma demonstração personalizada.
+                          {t.landing.formSub}
                         </p>
                       </div>
 
@@ -1473,7 +1473,7 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          Nome do Restaurante / Negócio
+                          {t.landing.formVenue}
                         </label>
                         <input
                           type="text"
@@ -1501,7 +1501,7 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          Principal Foco da Sua Operação
+                          {t.landing.formFocus}
                         </label>
                         <select
                           value={leadSegment}
@@ -1525,7 +1525,7 @@ export const LandingTakeat: React.FC = () => {
                       </button>
 
                       <div className="text-center text-[11px] text-white/40 pt-2">
-                        🔒 Seus dados estão 100% protegidos. Não enviamos spam.
+                        🔒 {t.landing.formPrivacy}
                       </div>
                     </form>
                   )}
@@ -1551,7 +1551,7 @@ export const LandingTakeat: React.FC = () => {
                 </span>
               </Link>
               <p className="text-xs text-white/50 leading-relaxed max-w-sm">
-                Tecnologia completa para restaurantes, bares e deliveries crescerem com mais eficiência, zero taxas abusivas e máxima lucratividade.
+                {t.landing.footerTagline}
               </p>
               <div className="text-xs text-white/50">
                 Contato: <a href="mailto:contato@mimenu.clubemmt.digital" className="text-white hover:underline">contato@mimenu.clubemmt.digital</a>
