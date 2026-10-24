@@ -1267,7 +1267,7 @@ export const LandingTakeat: React.FC = () => {
                 Quem usa todos os dias, recomenda
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
-                Descubra como donos de restaurantes aumentaram suas margens e organizaram a cozinha com o MiMenu.
+                {t.landing.testimonialsSub}
               </p>
             </div>
 
@@ -1282,7 +1282,7 @@ export const LandingTakeat: React.FC = () => {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed italic mb-6">
-                      "A economia que tivemos saindo das comissões abusivas pagou o MiMenu no primeiro mês. O KDS na cozinha transformou nossa equipe: os pedidos saem 50% mais rápido e os clientes elogiam muito a facilidade do QR Code na mesa."
+                      {t.landing.t1Quote}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 pt-4 border-t border-border">
@@ -1307,7 +1307,7 @@ export const LandingTakeat: React.FC = () => {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed italic mb-6">
-                      "Antes tínhamos que ter 4 garçons correndo no salão no sábado à noite. Com o MiMenu, 2 garçons atendem o dobro de mesas com tranquilidade, porque o cliente pede adicionais e bebidas direto pelo celular sem travar o atendimento."
+                      {t.landing.t2Quote}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 pt-4 border-t border-border">
@@ -1332,7 +1332,7 @@ export const LandingTakeat: React.FC = () => {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed italic mb-6">
-                      "O suporte deles nos finais de semana é sensacional! Qualquer dúvida eles respondem em menos de 5 minutos no WhatsApp. A impressão automática e o fechamento cego de caixa acabaram com as perdas que tínhamos no balcão."
+                      {t.landing.t3Quote}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 pt-4 border-t border-border">
