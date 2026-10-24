@@ -91,13 +91,16 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <AuthProvider>
-          <MimenuProvider>
-            <CartProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
+        {/* BrowserRouter must wrap AuthProvider: AuthProvider calls
+            useNavigate(), and any router hook outside a <Router> throws
+            React Router's invariant and takes down every route. */}
+        <BrowserRouter>
+          <AuthProvider>
+            <MimenuProvider>
+              <CartProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
                   <Routes>
                     {/* Auth route */}
                     <Route path="/auth" element={
@@ -369,11 +372,11 @@ const App = () => {
                       </Suspense>
                     } />
                   </Routes>
-                </BrowserRouter>
-              </TooltipProvider>
-            </CartProvider>
-          </MimenuProvider>
-        </AuthProvider>
+                </TooltipProvider>
+              </CartProvider>
+            </MimenuProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </LanguageProvider>
     </QueryClientProvider>
   );
