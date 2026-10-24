@@ -368,11 +368,11 @@ export const LandingTakeat: React.FC = () => {
             {/* Main Headline */}
             <ScrollReveal direction="up" delay={200}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-primary leading-[1.08] mb-6">
-                Sistema para Restaurante:{" "}
+                {t.landing.heroTitle}{" "}
                 <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  a tecnologia completa
+                  {t.landing.heroAccent}
                 </span>
-                {" "}que cuida da sua gestão
+                {" "}{t.landing.heroTail}
               </h1>
             </ScrollReveal>
 
