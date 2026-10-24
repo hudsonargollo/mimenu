@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, Wifi, WifiOff, ArrowLeft } from "lucide-react";
 import { useConnectionMonitor } from "@/components/ConnectionMonitor";
-import logo from "/logo-pontal.webp";
 
 interface UniformHeaderProps {
   title?: string;
@@ -51,8 +50,8 @@ export const UniformHeader = ({
               )}
               <a href="/admin" className="relative cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0">
                 <img 
-                  src={logo} 
-                  alt="PONTAL Carapitangui" 
+                  src="/mimenu-square.svg" 
+                  alt="MiMenu" 
                   className="h-10 sm:h-12 w-auto drop-shadow-lg"
                 />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -144,8 +143,8 @@ export const UniformHeader = ({
                 )}
                 <a href="/admin" className="relative cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0">
                   <img 
-                    src={logo} 
-                    alt="PONTAL Carapitangui" 
+                    src="/mimenu-square.svg" 
+                    alt="MiMenu" 
                     className="h-8 w-auto drop-shadow-lg"
                   />
                   <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>

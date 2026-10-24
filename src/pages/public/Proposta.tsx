@@ -39,8 +39,8 @@ const Proposta = () => {
           <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto py-12 sm:py-16">
             <div className="mb-4 sm:mb-6 flex justify-center">
               <img
-                src="/logo-pontal.webp"
-                alt="Pontal Carapitangui Logo"
+                src="/mimenu-square.svg"
+                alt="MiMenu"
                 className="h-24 sm:h-32 md:h-48 object-contain drop-shadow-lg"
               />
             </div>

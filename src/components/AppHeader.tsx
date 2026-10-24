@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ConnectionStatusBadge } from "@/components/ConnectionStatusBadge";
 import { useConnectionMonitor } from "@/components/ConnectionMonitor";
-import logo from "/logo-pontal.webp";
 
 export interface HeaderAction {
   label: string;
@@ -77,7 +76,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             {/* Left: Logo */}
             <div className="flex items-center">
               <div className="relative">
-                <img src={logo} alt="PONTAL Carapitangui" className="h-20 w-auto" />
+                <img src="/mimenu-square.svg" alt="MiMenu" className="h-20 w-auto" />
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
             </div>
@@ -130,8 +129,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
               <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
                 <div className="relative">
                   <img
-                    src={logo}
-                    alt="PONTAL Carapitangui"
+                    src="/mimenu-square.svg"
+                    alt="MiMenu"
                     className="h-12 sm:h-16 w-auto drop-shadow-lg"
                   />
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>

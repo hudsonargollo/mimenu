@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { QrCode, MapPin } from "lucide-react";
 import { validateTableId, formatTableDisplay } from "@/lib/tableContext";
-import logo from "/logo-pontal.webp";
+
 import bckMImage from "@/assets/bck-m.webp";
 
 const Welcome = () => {
@@ -26,8 +26,8 @@ const Welcome = () => {
         {/* Logo in Circle */}
         <div className="w-40 h-40 sm:w-48 sm:h-48 mx-auto mb-8 rounded-full border-4 border-secondary bg-white shadow-strong flex items-center justify-center">
           <img 
-            src={logo} 
-            alt="PONTAL Carapitangui" 
+            src="/mimenu-square.svg" 
+            alt="MiMenu" 
             className="w-32 sm:w-40 h-auto"
           />
         </div>
