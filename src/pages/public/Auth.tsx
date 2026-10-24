@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff, User, Mail, Store } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { listTenantAccounts } from "@/lib/tenantAuth";
+import { listTenantAccounts, listTenantCredentials } from "@/lib/tenantAuth";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { Lang } from "@/i18n/translations";
 
@@ -61,37 +61,36 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [selectedRole, setSelectedRole] = useState<'admin' | 'waiter' | 'kitchen' | 'cashier'>('admin');
   // Tenant login: picking a venue scopes the session to that restaurant.
-  const [selectedTenant, setSelectedTenant] = useState<string>(tenants[0]?.slug ?? '');
+  const [selectedTenant, setSelectedTenant] = useState<string>('');
+  const [identifier, setIdentifier] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validation = authSchema.safeParse({ email, name, role: selectedRole });
-    if (!validation.success) {
-      toast.error(validation.error.errors[0].message);
-      return;
-    }
+    const validation = authSchema.safeParse({ email: identifier || 'x@x.com', name: 'user', role: selectedRole });
+    // validation is best-effort; credential check is authoritative
 
     setLoading(true);
 
     try {
-      // Tenant login: the selected venue decides which staff email is used,
-      // so the session is bound to that restaurant.
-      const tenant = tenants.find((t) => t.slug === selectedTenant);
-      if (tenant) {
-        await login(tenant.login.email, tenant.login.name, tenant.login.role);
-      } else {
-        await login(validation.data.email, validation.data.name, validation.data.role);
+      // Resolve credentials (supports email OR restaurant slug/username + password).
+      const { resolveCredential } = await import('@/lib/tenantAuth');
+      const cred = resolveCredential(identifier, password);
+      if (!cred) {
+        toast.error("Credenciales inválidas");
+        return;
       }
 
-      console.log('🔵 Login attempt:', { email: validation.data.email, role: validation.data.role });
-      console.log('✅ Login successful');
+      await login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName);
+
+      console.log('✅ Login successful', cred.email, cred.tenantSlug);
       toast.success("¡Inicio de sesión exitoso!");
 
       // Redirect based on role
-      redirectToRolePage(validation.data.role);
+      redirectToRolePage(cred.role);
     } catch (error: any) {
       console.error('🔴 Auth exception:', error);
       toast.error("Error al procesar la autenticación");
@@ -137,6 +136,7 @@ const Auth = () => {
           {/* White Form Section */}
           <div className="p-8 sm:p-10 bg-white">
             <form onSubmit={handleAuth} className="space-y-6">
+              {/* Quick-pick tenant buttons */}
               {tenants.length > 0 && (
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-[#1A2B2A] block mb-2">
@@ -147,7 +147,7 @@ const Auth = () => {
                       <button
                         key={tenant.slug}
                         type="button"
-                        onClick={() => setSelectedTenant(tenant.slug)}
+                        onClick={() => { setSelectedTenant(tenant.slug); setIdentifier(tenant.slug); }}
                         className={`p-3 rounded-xl border text-left text-xs font-medium transition-all flex items-center gap-2 ${
                           selectedTenant === tenant.slug
                             ? 'bg-[#BC6C25] text-white border-[#BC6C25]'
@@ -162,80 +162,56 @@ const Auth = () => {
                       </button>
                     ))}
                   </div>
+                  <p className="text-[10px] text-gray-400 mt-1">O ingresa el slug/email manualmente abajo.</p>
                 </div>
               )}
 
-              {!selectedTenant && (
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-[#1A2B2A]">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="tu@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      maxLength={255}
-                      className="h-11 text-sm px-4 pt-4 pb-4 pl-10 border border-gray-300 focus:border-[#BC6C25] focus:ring-1 focus:ring-[#BC6C25] rounded-xl transition-all bg-white text-[#1A2B2A] placeholder:text-gray-400"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {!selectedTenant && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-[#1A2B2A]">
-                    Nombre
-                  </Label>
+              <div className="space-y-2">
+                <Label htmlFor="identifier" className="text-sm font-semibold text-[#1A2B2A]">
+                  Usuario / Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
-                    id="name"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Tu nombre"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    id="identifier"
+                    type="text"
+                    placeholder="admin@mimenu.com o jaleo"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
-                    minLength={2}
-                    maxLength={100}
-                    className="h-11 text-sm px-4 pr-4 border border-gray-300 focus:border-[#BC6C25] focus:ring-1 focus:ring-[#BC6C25] rounded-xl transition-all bg-white text-[#1A2B2A] placeholder:text-gray-400"
+                    maxLength={255}
+                    className="h-11 text-sm px-4 pt-4 pb-4 pl-10 border border-gray-300 focus:border-[#BC6C25] focus:ring-1 focus:ring-[#BC6C25] rounded-xl transition-all bg-white text-[#1A2B2A] placeholder:text-gray-400"
                   />
                 </div>
-              )}
+              </div>
 
-              {!selectedTenant && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-[#1A2B2A] block mb-2">
-                    Rol
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {roles.map((role) => {
-                      const Icon = role.icon;
-                      return (
-                        <button
-                          key={role.value}
-                          type="button"
-                          onClick={() => setSelectedRole(role.value as any)}
-                          className={`p-3 rounded-xl border text-xs font-medium transition-all ${
-                            selectedRole === role.value
-                              ? 'bg-[#BC6C25] text-white border-[#BC6C25]'
-                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4 mx-auto mb-1" />
-                          <span>{role.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-semibold text-[#1A2B2A]">
+                  Contraseña
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-11 text-sm px-4 pr-10 border border-gray-300 focus:border-[#BC6C25] focus:ring-1 focus:ring-[#BC6C25] rounded-xl transition-all bg-white text-[#1A2B2A] placeholder:text-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
-              )}
+              </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-11 text-sm font-bold bg-[#BC6C25] hover:bg-[#A85A1F] text-white uppercase tracking-wider rounded-xl border-0 mt-8 transition-colors shadow-md" 
+              <Button
+                type="submit"
+                className="w-full h-11 text-sm font-bold bg-[#BC6C25] hover:bg-[#A85A1F] text-white uppercase tracking-wider rounded-xl border-0 mt-8 transition-colors shadow-md"
                 disabled={loading}
               >
                 {loading ? (

@@ -17,7 +17,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, name: string, role?: User['role']) => void;
+  login: (email: string, name: string, role?: User['role'], password?: string, tenantSlug?: string | null, venueName?: string | null) => void;
   /** Tenant resolved from the login email, if the email belongs to one. */
   tenant: TenantAccount | null;
   logout: () => void;
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((email: string, name: string, role: User['role'] = 'admin') => {
+  const login = useCallback((email: string, name: string, role: User['role'] = 'admin', password?: string, tenantSlugOverride?: string | null, venueNameOverride?: string | null) => {
     // A login that belongs to a registered tenant is bound to that venue;
     // anything else is the platform/demo account.
     const tenant = resolveTenantForLogin(email);
@@ -84,11 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loggedUser: User = {
       id: `user-${Date.now()}`,
       email,
-      name: tenant ? tenant.login.name : name,
+      name: tenant ? tenant.login.name : (name || email),
       role: effectiveRole,
       createdAt: new Date().toISOString(),
-      tenantSlug: tenant ? tenant.slug : null,
-      tenantName: tenant ? tenant.venueName : null,
+      tenantSlug: tenantSlugOverride !== undefined ? tenantSlugOverride : (tenant ? tenant.slug : null),
+      tenantName: venueNameOverride !== undefined ? venueNameOverride : (tenant ? tenant.venueName : null),
     };
     
     setUser(loggedUser);

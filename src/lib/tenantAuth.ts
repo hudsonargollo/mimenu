@@ -87,3 +87,54 @@ export function listTenantAccounts(lang: Lang): TenantAccount[] {
   }
   return out;
 }
+
+/** Credential store for staff logins.
+ *
+ * Supports login by email OR by restaurant slug/username. Passwords live here
+ * (client-side demo store; production would verify against a backend).
+ */
+export interface Credential {
+  identifier: string; // email or slug/username (lowercased)
+  password: string;
+  email: string;
+  name: string;
+  role: StaffRole;
+  tenantSlug: string | null; // null = platform super admin
+  venueName: string | null;
+}
+
+const JALEO_PASS = 'Jaleo2024!';
+const SUPER_PASS = 'Qwertyytrewq4328@';
+
+const CREDENTIALS: Credential[] = [
+  // Platform super admin (was the old Moe's Taberna demo account).
+  { identifier: 'admin@mimenu.com', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
+  { identifier: 'mimenuadmin', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
+  // Jaleo tenant staff.
+  { identifier: 'admin@jaleo.com', password: JALEO_PASS, email: 'admin@jaleo.com', name: 'Jaleo Admin', role: 'admin', tenantSlug: 'jaleo', venueName: 'Jaleo' },
+  { identifier: 'jaleo', password: JALEO_PASS, email: 'admin@jaleo.com', name: 'Jaleo Admin', role: 'admin', tenantSlug: 'jaleo', venueName: 'Jaleo' },
+  { identifier: 'cocina@jaleo.com', password: JALEO_PASS, email: 'cocina@jaleo.com', name: 'Jaleo Cocina', role: 'kitchen', tenantSlug: 'jaleo', venueName: 'Jaleo' },
+  { identifier: 'caja@jaleo.com', password: JALEO_PASS, email: 'caja@jaleo.com', name: 'Jaleo Caja', role: 'cashier', tenantSlug: 'jaleo', venueName: 'Jaleo' },
+  { identifier: 'mozo@jaleo.com', password: JALEO_PASS, email: 'mozo@jaleo.com', name: 'Jaleo Mozo', role: 'waiter', tenantSlug: 'jaleo', venueName: 'Jaleo' },
+];
+
+export function resolveCredential(identifier: string, password: string): Credential | null {
+  const key = (identifier || '').trim().toLowerCase();
+  const cred = CREDENTIALS.find((c) => c.identifier === key);
+  if (!cred) return null;
+  if (cred.password !== password) return null;
+  return cred;
+}
+
+export function listTenantCredentials(): Credential[] {
+  // One entry per tenant (admin) for the quick-pick buttons.
+  const seen = new Set<string>();
+  const out: Credential[] = [];
+  for (const c of CREDENTIALS) {
+    if (c.tenantSlug && c.role === 'admin' && !seen.has(c.tenantSlug)) {
+      seen.add(c.tenantSlug);
+      out.push(c);
+    }
+  }
+  return out;
+}
