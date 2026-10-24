@@ -783,18 +783,18 @@ export const LandingTakeat: React.FC = () => {
                 <div className="text-4xl sm:text-5xl font-display font-extrabold text-secondary mb-2">
                   &lt; 4 min
                 </div>
-                <div className="font-bold text-base text-white mb-1">Tempo de Atendimento</div>
+                <div className="font-bold text-base text-white mb-1">{t.landing.stat1Title}</div>
                 <p className="text-xs text-white/40 leading-relaxed">
-                  Do primeiro clique do cliente até a impressão ou visualização na cozinha KDS.
+                  {t.landing.stat1Desc}
                 </p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
                 <div className="text-4xl sm:text-5xl font-display font-extrabold text-warning mb-2">
                   4.9 / 5
                 </div>
-                <div className="font-bold text-base text-white mb-1">Satisfação dos Clientes</div>
+                <div className="font-bold text-base text-white mb-1">{t.landing.stat2Title}</div>
                 <p className="text-xs text-white/40 leading-relaxed">
-                  Avaliação de donos de restaurantes e clientes finais em todo o Brasil.
+                  {t.landing.stat2Desc}
                 </p>
               </div>
             </div>
