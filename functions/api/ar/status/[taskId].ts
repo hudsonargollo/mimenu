@@ -63,7 +63,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const ready = task.status === 'completed' && !!task.glb_url;
   const queueFailed = task.status === 'failed';
   const meshyFailed = meshy?.status === 'FAILED' || meshy?.status === 'CANCELED';
-  const liveStatus = ready ? 'SUCCEEDED' : queueFailed || meshyFailed ? 'FAILED' : meshy?.status || task.status.toUpperCase();
+  const queueLive =
+    task.status === 'completed' ? 'SUCCEEDED' : task.status === 'failed' ? 'FAILED' : 'IN_PROGRESS';
+  const liveStatus = ready ? 'SUCCEEDED' : queueFailed || meshyFailed ? 'FAILED' : meshy?.status || queueLive;
 
   return json({
     taskId,

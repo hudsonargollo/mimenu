@@ -31,6 +31,7 @@ interface Admin3DModalProps {
 }
 
 const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
+  const providedStatus = initial?.ar_status;
   const [imageUrl, setImageUrl] = useState(menuItem?.image_url || '');
   const [status, setStatus] = useState<ARStatus>(initial?.ar_status || 'none');
   const [glbUrl, setGlbUrl] = useState(initial?.glb_url || '');
@@ -39,6 +40,37 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Hydrate existing AR state when the modal opens (item may already have a
+  // model generated earlier or manually registered).
+  useEffect(() => {
+    if (providedStatus) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch(`/api/ar/menu-item/${menuItem.id}`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.ar_status === 'ready' && data.glb_url) {
+          setStatus('ready');
+          setGlbUrl(data.glb_url);
+          setUsdzUrl(data.usdz_url || '');
+        } else if (data.ar_status === 'generating' && data.task_id) {
+          setTaskId(data.task_id);
+          setStatus('generating');
+        } else if (data.ar_status === 'failed') {
+          setStatus('failed');
+          setError(data.error || 'A última geração falhou.');
+        }
+      } catch {
+        /* non-fatal: modal stays in 'none' state */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [menuItem.id, providedStatus]);
 
   // Poll status while generating (PRD behaviour, ported to /api/ar/status).
   useEffect(() => {
