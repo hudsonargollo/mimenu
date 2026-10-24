@@ -324,6 +324,19 @@ export const LandingTakeat: React.FC = () => {
             </div>
           </div>
         )}
+      <div className="flex sm:hidden items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs absolute right-4 top-6">
+        {(["es","en","pt"] as const).map((l) => (
+          <button
+            key={l}
+            type="button"
+            onClick={() => setLang(l)}
+            aria-pressed={lang === l}
+            className={`rounded-full px-2 py-0.5 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
       <div className="hidden sm:flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs absolute right-4 top-6">
         {(["es","en","pt"] as const).map((l) => (
           <button

@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff, User, Mail, Store } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { listTenantAccounts, listTenantCredentials } from "@/lib/tenantAuth";
+
 import { useLang } from "@/i18n/LanguageProvider";
 import type { Lang } from "@/i18n/translations";
 
@@ -51,7 +51,6 @@ const Auth = () => {
   const navigate = useNavigate();
   const { login, redirectToRolePage } = useAuth();
   const { lang } = useLang();
-  const tenants = listTenantAccounts(lang as Lang);
 
   useEffect(() => {
     document.title = "Login | MiMenu - Menú Digital & SaaS";
@@ -136,36 +135,6 @@ const Auth = () => {
           {/* White Form Section */}
           <div className="p-8 sm:p-10 bg-white">
             <form onSubmit={handleAuth} className="space-y-6">
-              {/* Quick-pick tenant buttons */}
-              {tenants.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-[#1A2B2A] block mb-2">
-                    Restaurante
-                  </Label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {tenants.map((tenant) => (
-                      <button
-                        key={tenant.slug}
-                        type="button"
-                        onClick={() => { setSelectedTenant(tenant.slug); setIdentifier(tenant.slug); }}
-                        className={`p-3 rounded-xl border text-left text-xs font-medium transition-all flex items-center gap-2 ${
-                          selectedTenant === tenant.slug
-                            ? 'bg-[#BC6C25] text-white border-[#BC6C25]'
-                            : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
-                        }`}
-                      >
-                        <Store className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                        <span className="font-semibold">{tenant.venueName}</span>
-                        <span className={`ml-auto text-[10px] uppercase ${selectedTenant === tenant.slug ? 'text-white/80' : 'text-gray-400'}`}>
-                          {tenant.login.role}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-gray-400 mt-1">O ingresa el slug/email manualmente abajo.</p>
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="identifier" className="text-sm font-semibold text-[#1A2B2A]">
                   Usuario / Email

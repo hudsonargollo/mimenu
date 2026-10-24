@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +8,6 @@ import { CartProvider } from "@/lib/cartContext";
 import { MimenuProvider } from "@/lib/mimenuContext";
 import { AuthProvider } from "@/lib/authContext";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
-import { queueManager } from "@/integrations/whatsapp/queue-manager";
 import LoadingFallback from "@/components/LoadingFallback";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -77,16 +76,9 @@ const SystemDiagnostic = lazy(() => import("./pages/debug/SystemDiagnostic"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Initialize WhatsApp notification queue processing
-  useEffect(() => {
-    console.log('Starting WhatsApp notification queue auto-processing...');
-    queueManager.startAutoProcessing();
-    
-    return () => {
-      console.log('Stopping WhatsApp notification queue auto-processing...');
-      queueManager.stopAutoProcessing();
-    };
-  }, []);
+  // WhatsApp notification queue auto-processing disabled: Supabase is not
+  // part of the current architecture and the host does not resolve, which
+  // flooded the console with ERR_NAME_NOT_RESOLVED errors.
 
   return (
     <QueryClientProvider client={queryClient}>
