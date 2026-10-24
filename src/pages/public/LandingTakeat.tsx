@@ -200,19 +200,19 @@ export const LandingTakeat: React.FC = () => {
           {/* Desktop Navigation Links */}
           <nav aria-label="Navegação principal" className="hidden lg:flex items-center gap-8">
             <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              Soluções
+              {t.landing.navSolucoes}
             </a>
             <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              Módulos
+              {t.landing.navModulos}
             </a>
             <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              Calculadora de ROI
+              {t.landing.navCalc}
             </a>
             <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              Segmentos
+              {t.landing.navSegmentos}
             </a>
             <a href="#depoimentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              Quem Usa
+              {t.landing.navQuemUsa}
             </a>
             <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
               FAQ
@@ -225,13 +225,13 @@ export const LandingTakeat: React.FC = () => {
               to="/auth"
               className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-primary rounded-xl hover:bg-muted transition-colors"
             >
-              Já sou cliente
+              {t.landing.navJaSouCliente}
             </Link>
             <a
               href="#contato"
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
             >
-              Agendar Demo
+              {t.landing.navAgendarDemo}
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -254,35 +254,35 @@ export const LandingTakeat: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-base font-semibold text-muted-foreground hover:text-accent"
             >
-              Soluções
+              {t.landing.navSolucoes}
             </a>
             <a
               href="#modulos"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-base font-semibold text-muted-foreground hover:text-accent"
             >
-              Módulos
+              {t.landing.navModulos}
             </a>
             <a
               href="#calculadora"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-base font-semibold text-muted-foreground hover:text-accent"
             >
-              Calculadora de ROI
+              {t.landing.navCalc}
             </a>
             <a
               href="#segmentos"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-base font-semibold text-muted-foreground hover:text-accent"
             >
-              Segmentos
+              {t.landing.navSegmentos}
             </a>
             <a
               href="#depoimentos"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-base font-semibold text-muted-foreground hover:text-accent"
             >
-              Quem Usa
+              {t.landing.navQuemUsa}
             </a>
             <a
               href="#faq"
@@ -296,7 +296,7 @@ export const LandingTakeat: React.FC = () => {
                 to="/auth"
                 className="w-full text-center py-2.5 text-sm font-semibold text-muted-foreground bg-muted rounded-xl"
               >
-                Já sou cliente
+                {t.landing.navJaSouCliente}
               </Link>
               <a
                 href="#contato"
