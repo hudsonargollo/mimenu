@@ -143,9 +143,6 @@ export const LandingTakeat: React.FC = () => {
               <span className="font-display font-black text-2xl tracking-tight text-primary leading-none">
                 Mi<span className="text-accent">Menu</span>
               </span>
-              <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-                {t.landing.eyebrow.split("•")[0].trim()}
-              </span>
             </div>
           </Link>
           <div className="flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs">
