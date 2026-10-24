@@ -47,7 +47,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 export const LandingTakeat: React.FC = () => {
-  const { lang, setLang } = useLang();
+  const { lang, setLang, t } = useLang();
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 400], [0, 120]);
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.6]);
@@ -216,6 +216,19 @@ export const LandingTakeat: React.FC = () => {
               </span>
             </div>
           </Link>
+          <div className="flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs">
+            {(["es","en","pt"] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setLang(l)}
+                aria-pressed={lang === l}
+                className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
 
           {/* Desktop Navigation Links */}
           <nav aria-label="Navegação principal" className="hidden lg:flex items-center gap-8">
@@ -328,32 +341,6 @@ export const LandingTakeat: React.FC = () => {
             </div>
           </div>
         )}
-      <div className="flex sm:hidden items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs absolute right-4 top-6">
-        {(["es","en","pt"] as const).map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLang(l)}
-            aria-pressed={lang === l}
-            className={`rounded-full px-2 py-0.5 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-          >
-            {l}
-          </button>
-        ))}
-      </div>
-      <div className="hidden sm:flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs absolute right-4 top-6">
-        {(["es","en","pt"] as const).map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLang(l)}
-            aria-pressed={lang === l}
-            className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-          >
-            {l}
-          </button>
-        ))}
-      </div>
       </header>
 
       {/* 3. HERO SECTION */}
@@ -374,7 +361,7 @@ export const LandingTakeat: React.FC = () => {
             <ScrollReveal direction="up" delay={100}>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border shadow-sm mb-6 text-xs sm:text-sm font-semibold text-muted-foreground">
                 <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span>Mais de <strong>3.200 restaurantes e bares</strong> confiam no MiMenu</span>
+                <span>{lang === 'es' ? 'Más de' : lang === 'en' ? 'Over' : 'Mais de'} <strong>3.200 {lang === 'es' ? 'restaurantes y bares' : lang === 'en' ? 'restaurants and bars' : 'restaurantes e bares'}</strong> {lang === 'es' ? 'confían en MiMenu' : lang === 'en' ? 'trust MiMenu' : 'confiam no MiMenu'}</span>
               </div>
             </ScrollReveal>
 
