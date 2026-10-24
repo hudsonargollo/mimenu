@@ -16,17 +16,16 @@ export const LoadingFallback: React.FC = () => {
           alt="MiMenu"
           className="w-16 h-16"
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: 'linear' }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
         />
         <div className="w-40 h-1.5 rounded-full bg-muted overflow-hidden">
           <motion.div
             className="h-full bg-accent rounded-full"
             initial={{ width: '0%' }}
             animate={{ width: ['0%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
           />
         </div>
-        <p className="text-muted-foreground text-xs mt-1">Preparando o cardápio digital</p>
       </div>
     </div>
   );
