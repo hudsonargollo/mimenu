@@ -4,13 +4,14 @@ export async function POST(request: Request) {
   try {
     const paymentData = await request.json();
     
-    // Mock payment response for local development
+    // Mock payment response for local development (Bolivia-flavored QR Simple placeholder)
+    const mockQrPayload = `00020100QR-SIMPLE-BOLIVIA-DEV-${Date.now()}`;
     const mockResponse = {
       id: `dev_${Date.now()}`,
       status: 'pending',
-      qrCode: `00020126580014br.gov.bcb.pix0136dev_${Date.now()}520400005303986540${paymentData.amount.toFixed(2)}5802BR5913PONTAL CARAPITANGUI6009SAO PAULO62070503***6304`,
+      qrCode: mockQrPayload,
       qrCodeBase64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-      pixCopyPaste: `00020126580014br.gov.bcb.pix0136dev_${Date.now()}520400005303986540${paymentData.amount.toFixed(2)}5802BR5913PONTAL CARAPITANGUI6009SAO PAULO62070503***6304`,
+      pixCopyPaste: mockQrPayload,
       expirationDate: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       transactionAmount: paymentData.amount,
       _isDev: true

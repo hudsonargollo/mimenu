@@ -11,7 +11,7 @@ import {
 } from '@/types/mimenu';
 
 export const DEFAULT_VENUE: Venue = {
-  id: "venue-moes-taberna-scz",
+  id: "venue-new",
   slug: "moes",
   name: "Moe's Taberna",
   tagline: "La Taberna Más Prendida de Santa Cruz",

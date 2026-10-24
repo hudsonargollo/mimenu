@@ -39,11 +39,11 @@ export function Header() {
           })}
         </nav>
 
-        <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity md:absolute md:left-1/2 md:transform md:-translate-x-1/2" aria-label="Pontal Carapitangui — Início">
+        <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity md:absolute md:left-1/2 md:transform md:-translate-x-1/2" aria-label="Moe's Taberna — Inicio">
           <span className="font-display text-lg leading-none">
-            <span className="block text-foreground">Pontal</span>
+            <span className="block text-foreground">Moe's</span>
             <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Carapitangui
+              Taberna
             </span>
           </span>
         </button>
@@ -54,7 +54,7 @@ export function Header() {
             aria-label="Language"
             className="hidden items-center rounded-full border border-border bg-card p-0.5 text-xs sm:flex"
           >
-            {(["pt", "en"] as const).map((l) => (
+            {(["es", "en", "pt"] as const).map((l) => (
               <button
                 key={l}
                 type="button"
@@ -126,7 +126,7 @@ export function Header() {
                 {t.nav.admin}
               </button>
               <div className="mt-2 flex items-center gap-2 px-3">
-                {(["pt", "en"] as const).map((l) => (
+                {(["es", "en", "pt"] as const).map((l) => (
                   <button
                     key={l}
                     type="button"

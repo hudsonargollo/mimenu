@@ -173,7 +173,7 @@ export class PaymentPollingService {
       }
 
       console.log('Payment approved via polling, sent to kitchen:', { orderId, paymentId });
-      toast.success('Pagamento aprovado! Pedido enviado para a cozinha.');
+      toast.success('¡Pago aprobado! Pedido enviado a la cocina.');
 
       // Trigger WhatsApp payment confirmation notification
       await notificationTriggers.onPaymentConfirmed(orderId);
@@ -202,7 +202,7 @@ export class PaymentPollingService {
       }
 
       console.log('Payment rejected via polling:', { orderId, status });
-      toast.error('Pagamento rejeitado. Tente novamente.');
+      toast.error('Pago rechazado. Intenta nuevamente.');
 
     } catch (error) {
       console.error('Error handling rejected payment:', error);
@@ -247,7 +247,7 @@ export class PaymentPollingService {
       }
 
       console.log('Payment expired via polling timeout:', { orderId });
-      toast.error('Pagamento expirado. Gere um novo pagamento.');
+      toast.error('Pago expirado. Genera un nuevo pago.');
 
     } catch (error) {
       console.error('Error handling payment timeout:', error);

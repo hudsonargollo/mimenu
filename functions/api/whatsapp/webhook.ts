@@ -43,7 +43,7 @@ function normalizePhoneNumber(phone: string): string {
 
 /**
  * Extract phone number from WhatsApp JID format
- * Example: "5573999988888@s.whatsapp.net" -> "5573999988888"
+ * Example: "59170012345@s.whatsapp.net" -> "59170012345"
  */
 function extractPhoneFromJid(jid: string): string {
   const phone = jid.split('@')[0];

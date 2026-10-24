@@ -234,7 +234,7 @@ export function ProductionMonitoring() {
             {healthStatus?.services.whatsapp?.lastConnected && (
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>Última Conexão</span>
-                <span>{new Date(healthStatus.services.whatsapp.lastConnected).toLocaleString('pt-BR')}</span>
+                <span>{new Date(healthStatus.services.whatsapp.lastConnected).toLocaleString('es-BO')}</span>
               </div>
             )}
           </div>
@@ -304,7 +304,7 @@ export function ProductionMonitoring() {
                     <p className="text-xs sm:text-sm text-red-600 mt-1 break-words">{error.error_message}</p>
                   </div>
                   <span className="text-xs text-red-500 font-medium sm:whitespace-nowrap sm:ml-4">
-                    {new Date(error.created_at).toLocaleTimeString('pt-BR')}
+                    {new Date(error.created_at).toLocaleTimeString('es-BO')}
                   </span>
                 </div>
               ))}

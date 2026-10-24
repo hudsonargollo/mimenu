@@ -112,39 +112,39 @@ export function getCommissionStatus(order: Order): CommissionDisplayConfig {
     if (PAYMENT_STATUS_CATEGORIES.CONFIRMED.includes(paymentStatus)) {
       return {
         amount: commissionAmount,
-        displayAmount: commissionAmount.toLocaleString("pt-BR", { 
+        displayAmount: commissionAmount.toLocaleString("es-BO", { 
           style: "currency", 
-          currency: "BRL" 
+          currency: "BOB" 
         }),
         status: 'confirmed',
         className: 'text-green-600 font-semibold',
         icon: 'CheckCircle',
-        tooltip: 'Comissão confirmada - pagamento recebido'
+        tooltip: 'Comisión confirmada - pago recibido'
       };
     }
     
     if (PAYMENT_STATUS_CATEGORIES.PENDING.includes(paymentStatus)) {
       return {
         amount: commissionAmount,
-        displayAmount: commissionAmount.toLocaleString("pt-BR", { 
+        displayAmount: commissionAmount.toLocaleString("es-BO", { 
           style: "currency", 
-          currency: "BRL" 
+          currency: "BOB" 
         }),
         status: 'pending',
         className: 'text-yellow-600 font-semibold',
         icon: 'Clock',
-        tooltip: 'Comissão estimada - aguardando pagamento'
+        tooltip: 'Comisión estimada - esperando pago'
       };
     }
     
     if (PAYMENT_STATUS_CATEGORIES.EXCLUDED.includes(paymentStatus)) {
       return {
         amount: 0,
-        displayAmount: 'R$ 0,00',
+        displayAmount: 'Bs 0,00',
         status: 'excluded',
         className: 'text-gray-400 line-through',
         icon: 'XCircle',
-        tooltip: 'Pagamento falhou ou cancelado - sem comissão'
+        tooltip: 'Pago fallido o cancelado - sin comisión'
       };
     }
   }
@@ -153,39 +153,39 @@ export function getCommissionStatus(order: Order): CommissionDisplayConfig {
   if (ORDER_STATUS_CATEGORIES.PAID.includes(orderStatus)) {
     return {
       amount: commissionAmount,
-      displayAmount: commissionAmount.toLocaleString("pt-BR", { 
+      displayAmount: commissionAmount.toLocaleString("es-BO", { 
         style: "currency", 
-        currency: "BRL" 
+        currency: "BOB" 
       }),
       status: 'confirmed',
       className: 'text-green-600 font-semibold',
       icon: 'CheckCircle',
-      tooltip: 'Comissão confirmada'
+      tooltip: 'Comisión confirmada'
     };
   }
   
   if (ORDER_STATUS_CATEGORIES.PENDING.includes(orderStatus)) {
     return {
       amount: commissionAmount,
-      displayAmount: commissionAmount.toLocaleString("pt-BR", { 
+      displayAmount: commissionAmount.toLocaleString("es-BO", { 
         style: "currency", 
-        currency: "BRL" 
+        currency: "BOB" 
       }),
       status: 'pending',
       className: 'text-yellow-600 font-semibold',
       icon: 'Clock',
-      tooltip: 'Comissão estimada - aguardando pagamento'
+      tooltip: 'Comisión estimada - esperando pago'
     };
   }
   
   // Excluded statuses (cancelled, expired, or unknown)
   return {
     amount: 0,
-    displayAmount: 'R$ 0,00',
+    displayAmount: 'Bs 0,00',
     status: 'excluded',
     className: 'text-gray-400 line-through',
     icon: 'XCircle',
-    tooltip: 'Pedido cancelado - sem comissão'
+    tooltip: 'Pedido cancelado - sin comisión'
   };
 }
 

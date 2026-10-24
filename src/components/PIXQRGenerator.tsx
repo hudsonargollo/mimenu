@@ -45,17 +45,17 @@ const PIXQRGenerator = ({
     isActive: paymentStatus === 'pending',
     onSuccess: () => {
       setPaymentStatus('approved');
-      toast.success('Pagamento aprovado!');
+      toast.success('¡Pago aprobado!');
       onPaymentComplete?.(paymentData?.id || '');
     },
     onError: (error) => {
       console.error('Payment polling error:', error);
       setPaymentStatus('error');
-      toast.error('Erro ao verificar pagamento');
+      toast.error('Error al verificar el pago');
     },
     onTimeout: () => {
       setPaymentStatus('expired');
-      toast.warning('Pagamento expirado');
+      toast.warning('Pago expirado');
     }
   });
 
@@ -99,7 +99,7 @@ const PIXQRGenerator = ({
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to generate PIX');
+          throw new Error(errorData.error || 'Failed to generate QR');
         }
 
         const data = await response.json();
@@ -132,11 +132,11 @@ const PIXQRGenerator = ({
       const now = Date.now();
       setTimeRemaining(Math.max(0, expirationTime - now));
 
-      toast.success('PIX gerado com sucesso!');
+      toast.success('¡QR generado con éxito!');
     } catch (error) {
       console.error('Error generating PIX payment:', error);
       setPaymentStatus('error');
-      toast.error(error instanceof Error ? error.message : 'Erro ao gerar PIX. Tente novamente.');
+      toast.error(error instanceof Error ? error.message : 'Error al generar QR. Intenta nuevamente.');
     } finally {
       setLoading(false);
     }
@@ -147,10 +147,10 @@ const PIXQRGenerator = ({
 
     try {
       await navigator.clipboard.writeText(paymentData.pixCopyPaste);
-      toast.success('Código PIX copiado!');
+      toast.success('¡Código QR copiado!');
     } catch (error) {
       console.error('Error copying to clipboard:', error);
-      toast.error('Erro ao copiar código');
+      toast.error('Error al copiar el código');
     }
   };
 
@@ -167,9 +167,9 @@ const PIXQRGenerator = ({
       case 'expired':
         return <Badge variant="destructive"><AlertCircle className="w-4 h-4 mr-1" />Expirado</Badge>;
       case 'error':
-        return <Badge variant="destructive"><AlertCircle className="w-4 h-4 mr-1" />Erro</Badge>;
+        return <Badge variant="destructive"><AlertCircle className="w-4 h-4 mr-1" />Error</Badge>;
       case 'pending':
-        return <Badge variant="secondary"><Clock className="w-4 h-4 mr-1" />Aguardando</Badge>;
+        return <Badge variant="secondary"><Clock className="w-4 h-4 mr-1" />Esperando</Badge>;
       default:
         return null;
     }
@@ -189,14 +189,14 @@ const PIXQRGenerator = ({
         <DialogHeader>
           <DialogTitle className="flex items-center">
             <QrCode className="w-5 h-5 mr-2" />
-            Gerar PIX
+            Generar QR
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
           {/* Order Summary */}
           <Card className="p-3">
-            <h3 className="font-semibold mb-2 text-sm">Resumo do Pedido</h3>
+            <h3 className="font-semibold mb-2 text-sm">Resumen del Pedido</h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Cliente:</span>
@@ -208,7 +208,7 @@ const PIXQRGenerator = ({
               </div>
               <div className="flex justify-between text-base font-bold border-t pt-2 mt-2">
                 <span>Total:</span>
-                <span className="text-primary">R$ {amount.toFixed(2)}</span>
+                <span className="text-primary">Bs {amount.toFixed(2)}</span>
               </div>
             </div>
           </Card>
@@ -217,13 +217,13 @@ const PIXQRGenerator = ({
           {paymentStatus !== 'idle' && (
             <Card className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold">Status do Pagamento</h3>
+                <h3 className="font-semibold">Estado del Pago</h3>
                 {getStatusBadge()}
               </div>
               
               {paymentStatus === 'pending' && timeRemaining > 0 && (
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-1">Tempo restante:</p>
+                  <p className="text-sm text-muted-foreground mb-1">Tiempo restante:</p>
                   <p className="text-xl font-bold text-primary">{formatTime(timeRemaining)}</p>
                 </div>
               )}
@@ -231,20 +231,20 @@ const PIXQRGenerator = ({
               {paymentStatus === 'approved' && (
                 <div className="text-center text-green-600">
                   <CheckCircle className="w-12 h-12 mx-auto mb-2" />
-                  <p className="font-semibold">Pagamento aprovado!</p>
+                  <p className="font-semibold">¡Pago aprobado!</p>
                 </div>
               )}
 
               {paymentStatus === 'expired' && (
                 <div className="text-center">
                   <AlertCircle className="w-12 h-12 mx-auto mb-2 text-destructive" />
-                  <p className="font-semibold text-destructive">Pagamento expirado</p>
+                  <p className="font-semibold text-destructive">Pago expirado</p>
                   <Button 
                     className="w-full mt-2" 
                     onClick={generatePIXPayment}
                     disabled={loading}
                   >
-                    Gerar Novo PIX
+                    Generar nuevo QR
                   </Button>
                 </div>
               )}
@@ -252,7 +252,7 @@ const PIXQRGenerator = ({
               {paymentStatus === 'error' && (
                 <div className="text-center">
                   <AlertCircle className="w-12 h-12 mx-auto mb-2 text-destructive" />
-                  <p className="font-semibold text-destructive">Erro no pagamento</p>
+                  <p className="font-semibold text-destructive">Error en el pago</p>
                   <Button 
                     className="w-full mt-2" 
                     onClick={generatePIXPayment}
@@ -269,27 +269,27 @@ const PIXQRGenerator = ({
           {paymentStatus === 'pending' && paymentData && (
             <>
               <Card className="p-3 text-center">
-                <h3 className="font-semibold mb-2 text-sm">Escaneie o QR Code</h3>
+                <h3 className="font-semibold mb-2 text-sm">Escanea el código QR</h3>
                 {paymentData.qrCodeBase64 ? (
                   <div className="flex justify-center mb-2">
                     <img
                       src={`data:image/png;base64,${paymentData.qrCodeBase64}`}
-                      alt="QR Code para pagamento"
+                      alt="Código QR para pago"
                       className="w-40 h-40 border rounded-lg"
                     />
                   </div>
                 ) : (
                   <div className="w-40 h-40 bg-gray-100 border rounded-lg mx-auto mb-2 flex items-center justify-center">
-                    <p className="text-sm text-muted-foreground">QR Code não disponível</p>
+                    <p className="text-sm text-muted-foreground">Código QR no disponible</p>
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Abra o app do seu banco e escaneie o código
+                  Abre la app de tu banco y escanea el código
                 </p>
               </Card>
 
               <Card className="p-3">
-                <h3 className="font-semibold mb-2 text-sm">Ou copie o código PIX</h3>
+                <h3 className="font-semibold mb-2 text-sm">O copia el código QR</h3>
                 <div className="bg-gray-50 p-2 rounded-lg mb-2 max-h-20 overflow-y-auto">
                   <p className="text-xs font-mono break-all text-gray-700">
                     {paymentData.pixCopyPaste}
@@ -297,7 +297,7 @@ const PIXQRGenerator = ({
                 </div>
                 <Button onClick={copyPixCode} className="w-full" variant="outline" size="sm">
                   <Copy className="w-4 h-4 mr-2" />
-                  Copiar Código PIX
+                  Copiar código QR
                 </Button>
               </Card>
             </>
@@ -313,12 +313,12 @@ const PIXQRGenerator = ({
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Gerando PIX...
+                  Generando QR...
                 </>
               ) : (
                 <>
                   <QrCode className="w-4 h-4 mr-2" />
-                  Gerar PIX
+                  Generar QR
                 </>
               )}
             </Button>
@@ -326,7 +326,7 @@ const PIXQRGenerator = ({
 
           {/* Close Button */}
           <Button variant="outline" onClick={handleClose} className="w-full">
-            Fechar
+            Cerrar
           </Button>
         </div>
       </DialogContent>

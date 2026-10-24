@@ -162,7 +162,7 @@ export class EvolutionAPIClient {
       phoneNumber = '+' + phoneNumber.substring(1).replace(/\D/g, '');
     }
     
-    // Validate length (should be +55XXXXXXXXXXX = 14 characters for Brazil)
+    // Validate length (should be +591XXXXXXXX = 12 characters for Bolivia)
     if (phoneNumber.length < 12 || phoneNumber.length > 16) {
       throw new Error(`Invalid phone number format: ${phoneNumber}. Must be +[country code][number]`);
     }
@@ -203,21 +203,21 @@ export class EvolutionAPIClient {
 
   /**
    * Format a phone number to the correct format for Evolution API
-   * Accepts formats like: +55 11 99999-9999, (11) 99999-9999, 11999999999
-   * Returns: 5511999999999 (country code + number, no formatting)
+   * Accepts formats like: +591 700 12345, 70012345, 59170012345
+   * Returns: 59170012345 (country code + number, no formatting)
    */
   formatPhoneNumber(phone: string): string {
     // Remove all non-digit characters
     let cleaned = phone.replace(/\D/g, '');
 
-    // If it starts with 0, remove it (common in Brazil)
+    // If it starts with 0, remove it (common in Bolivia)
     if (cleaned.startsWith('0')) {
       cleaned = cleaned.substring(1);
     }
 
-    // If it doesn't start with country code, assume Brazil (55)
-    if (!cleaned.startsWith('55') && cleaned.length <= 11) {
-      cleaned = '55' + cleaned;
+    // If it doesn't start with country code, assume Bolivia (591)
+    if (!cleaned.startsWith('591') && cleaned.length <= 8) {
+      cleaned = '591' + cleaned;
     }
 
     return cleaned;

@@ -46,9 +46,9 @@ export function OrderItemRow({
           {item.item_name}
         </h4>
         <p className="text-sm sm:text-sm text-gray-600 mt-1">
-          {item.unit_price.toLocaleString("pt-BR", { 
+          {item.unit_price.toLocaleString("es-BO", { 
             style: "currency", 
-            currency: "BRL" 
+            currency: "BOB" 
           })} cada
         </p>
       </div>
@@ -84,9 +84,9 @@ export function OrderItemRow({
 
           {/* Subtotal */}
           <span className="text-base sm:text-base font-semibold text-primary min-w-[5rem] sm:min-w-[5rem] text-right transition-all duration-300">
-            {subtotal.toLocaleString("pt-BR", { 
+            {subtotal.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })}
           </span>
 
@@ -107,9 +107,9 @@ export function OrderItemRow({
             {item.quantity}x
           </span>
           <span className="text-base sm:text-base font-semibold text-gray-900 min-w-[5rem] sm:min-w-[5rem] text-right">
-            {subtotal.toLocaleString("pt-BR", { 
+            {subtotal.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })}
           </span>
         </div>

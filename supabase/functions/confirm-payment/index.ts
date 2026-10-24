@@ -439,11 +439,11 @@ async function notifyCustomer(
  */
 async function generatePaymentConfirmationMessage(order: Order): Promise<string> {
   const emoji = '✅';
-  const greeting = `Olá ${order.customer_name}!`;
-  const confirmation = `Seu pagamento foi confirmado! 🎉`;
+  const greeting = `Hola ${order.customer_name}!`;
+  const confirmation = `¡Tu pago fue confirmado! 🎉`;
   const orderInfo = `\n\n📋 *Pedido #${order.order_number}*`;
-  const status = `\n\n👨‍🍳 Seu pedido já está sendo preparado pela nossa equipe!`;
-  const thanks = `\n\nObrigado pela preferência! 🙏`;
+  const status = `\n\n👨‍🍳 Tu pedido ya está siendo preparado por nuestro equipo!`;
+  const thanks = `\n\n¡Gracias por tu preferencia! 🙏`;
 
   return `${emoji} ${greeting}\n\n${confirmation}${orderInfo}${status}${thanks}`;
 }

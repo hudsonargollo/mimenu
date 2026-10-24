@@ -66,30 +66,30 @@ const CheckoutLegacy = () => {
 
   const handleCreateOrder = async () => {
     if (cartState.items.length === 0) {
-      toast.error("Carrinho vazio");
+      toast.error("Carrito vacío");
       return;
     }
 
     if (!customerInfo.name?.trim() || !customerInfo.phone?.trim()) {
-      toast.error("Preencha seu nome e WhatsApp");
+      toast.error("Ingresa tu nombre y tu celular");
       return;
     }
 
-    // Validate phone number (should be 11 digits)
+    // Validate phone number (should be 8 digits)
     const phoneDigits = customerInfo.phone.replace(/\D/g, '');
-    if (phoneDigits.length !== 11) {
-      toast.error("WhatsApp deve ter 11 dígitos");
+    if (phoneDigits.length !== 8) {
+      toast.error("El celular debe tener 8 dígitos");
       return;
     }
 
     // Validate name length
     if (customerInfo.name.trim().length < 2) {
-      toast.error("Nome muito curto");
+      toast.error("El nombre es demasiado corto");
       return;
     }
 
-    // Format phone with +55 prefix for database
-    const formattedPhone = `+55${phoneDigits}`;
+    // Format phone with +591 prefix for database
+    const formattedPhone = `+591${phoneDigits}`;
 
     // Save customer info to sessionStorage
     sessionStorage.setItem("customerInfo", JSON.stringify(customerInfo));
@@ -141,7 +141,7 @@ const CheckoutLegacy = () => {
       // Clear cart after successful order creation
       clearCart();
 
-      toast.success("Pedido criado com sucesso!");
+      toast.success("¡Pedido creado con éxito!");
       
       // Navigate based on user role
       if (isWaiter) {
@@ -153,7 +153,7 @@ const CheckoutLegacy = () => {
       }
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error("Erro ao criar pedido. Tente novamente.");
+      toast.error("Error al crear el pedido. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -163,9 +163,9 @@ const CheckoutLegacy = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="p-6 text-center max-w-md">
-          <p className="text-muted-foreground mb-4">Carrinho vazio</p>
+          <p className="text-muted-foreground mb-4">Carrito vacío</p>
           <Button onClick={() => navigate("/qr")}>
-            Voltar ao Início
+            Volver al Inicio
           </Button>
         </Card>
       </div>
@@ -210,14 +210,14 @@ const CheckoutLegacy = () => {
               <div key={item.id} className="flex items-start sm:items-center justify-between py-3 border-b border-gray-100 last:border-0 gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{item.name}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">R$ {item.price.toFixed(2)} cada</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Bs {item.price.toFixed(2)} cada uno</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
                   <div className="flex items-center gap-1.5 bg-primary/5 rounded-lg p-1">
                     <button
                       onClick={() => removeItem(item.id)}
                       className="w-7 h-7 rounded-md bg-red-500 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center transition-all shadow-sm"
-                      aria-label="Remover um"
+                      aria-label="Quitar uno"
                     >
                       <span className="text-lg leading-none">−</span>
                     </button>
@@ -227,20 +227,20 @@ const CheckoutLegacy = () => {
                     <button
                       onClick={() => addItem(item)}
                       className="w-7 h-7 rounded-md bg-green-500 hover:bg-green-600 active:scale-95 text-white flex items-center justify-center transition-all shadow-sm"
-                      aria-label="Adicionar mais"
+                      aria-label="Agregar uno más"
                     >
                       <span className="text-lg leading-none">+</span>
                     </button>
                   </div>
                   <span className="font-bold text-cyan-600 text-sm sm:text-base min-w-[70px] sm:min-w-[80px] text-right">
-                    R$ {(item.price * item.quantity).toFixed(2)}
+                    Bs {(item.price * item.quantity).toFixed(2)}
                   </span>
                 </div>
               </div>
             ))}
             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-xl p-4 mt-4 flex justify-between items-center shadow-sm">
               <span className="font-bold text-lg sm:text-xl text-primary/70">Total</span>
-              <span className="font-bold text-xl sm:text-2xl text-primary/70">R$ {getTotalPrice().toFixed(2)}</span>
+              <span className="font-bold text-xl sm:text-2xl text-primary/70">Bs {getTotalPrice().toFixed(2)}</span>
             </div>
           </div>
         </Card>
@@ -266,7 +266,7 @@ const CheckoutLegacy = () => {
               <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50 sm:shadow-lg">
                 <div className="p-4 sm:p-6 space-y-4">
                   <p className="text-xs sm:text-sm text-gray-700 bg-white/80 rounded-lg p-3 border border-gray-200">
-                    {isWaiter ? "🎯 Pedido será atribuído a você" : "📱 Atualizações via WhatsApp"}
+                    {isWaiter ? "🎯 El pedido será asignado a ti" : "📱 Actualizaciones vía WhatsApp"}
                   </p>
                   <Button
                     onClick={handleCreateOrder}
@@ -277,11 +277,11 @@ const CheckoutLegacy = () => {
                     {loading ? (
                       <span className="flex items-center gap-2">
                         <span className="animate-spin">⏳</span>
-                        Processando...
+                        Procesando...
                       </span>
                     ) : (
                       <span className="flex items-center gap-2">
-                        {isWaiter ? "✓ Criar Pedido" : "💳 Ir para Pagamento"}
+                        {isWaiter ? "✓ Crear Pedido" : "💳 Ir a Pagar"}
                       </span>
                     )}
                   </Button>

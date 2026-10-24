@@ -38,12 +38,12 @@ export function GeneratePaymentDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Gerar Pagamento - Pedido #{orderNumber}
+            Generar Pago - Pedido #{orderNumber}
           </DialogTitle>
           <div className="text-sm text-muted-foreground">
             <p>{customerName}</p>
             <p className="font-bold text-lg text-primary mt-1">
-              Total: R$ {amount.toFixed(2)}
+              Total: Bs {amount.toFixed(2)}
             </p>
           </div>
         </DialogHeader>
@@ -52,11 +52,11 @@ export function GeneratePaymentDialog({
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="pix" className="flex items-center gap-2">
               <QrCode className="h-4 w-4" />
-              PIX
+              QR
             </TabsTrigger>
             <TabsTrigger value="credit_card" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              Cartão
+              Tarjeta
             </TabsTrigger>
           </TabsList>
 

@@ -130,9 +130,9 @@ export function MobileOrderCard({ order, onGeneratePIX, canGeneratePIX = false, 
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Total do Pedido</span>
             <span className="text-lg font-bold text-gray-900">
-              {order.total_amount.toLocaleString("pt-BR", { 
+              {order.total_amount.toLocaleString("es-BO", { 
                 style: "currency", 
-                currency: "BRL" 
+                currency: "BOB" 
               })}
             </span>
           </div>
@@ -164,7 +164,7 @@ export function MobileOrderCard({ order, onGeneratePIX, canGeneratePIX = false, 
               <div>
                 <span className="text-gray-500 block">Data do Pedido</span>
                 <span className="text-gray-900 font-medium">
-                  {new Date(order.created_at).toLocaleDateString("pt-BR", {
+                  {new Date(order.created_at).toLocaleDateString("es-BO", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "numeric"
@@ -174,7 +174,7 @@ export function MobileOrderCard({ order, onGeneratePIX, canGeneratePIX = false, 
               <div>
                 <span className="text-gray-500 block">Horário</span>
                 <span className="text-gray-900 font-medium">
-                  {new Date(order.created_at).toLocaleTimeString("pt-BR", {
+                  {new Date(order.created_at).toLocaleTimeString("es-BO", {
                     hour: "2-digit",
                     minute: "2-digit"
                   })}
@@ -230,7 +230,7 @@ export function MobileOrderCard({ order, onGeneratePIX, canGeneratePIX = false, 
         {!isExpanded && (
           <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
             <span>
-              {new Date(order.created_at).toLocaleDateString("pt-BR", {
+              {new Date(order.created_at).toLocaleDateString("es-BO", {
                 day: "2-digit",
                 month: "2-digit",
                 hour: "2-digit",

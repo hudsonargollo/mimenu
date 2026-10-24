@@ -1,142 +1,99 @@
 /**
  * Payment Method Selector Component
- * 
- * Provides a toggle interface for customers to choose between PIX and credit card payment methods.
- * Implements accessible radio button pattern with keyboard navigation support.
- * 
- * @module PaymentMethodSelector
+ *
+ * Displays and manages payment method selection for the ordering flow.
+ * For Bolivia/Santa Cruz market, supports:
+ * - QR PAGO (Bolivian QR code payment)
+ * - Credit Card (via MercadoPago Payment Brick)
+ * - Efectivo (cash on delivery/pickup)
  */
 
-import { CreditCard, QrCode } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CreditCard, QrCode, Banknote } from 'lucide-react';
 
-/**
- * Available payment methods
- * @typedef {'pix' | 'credit_card'} PaymentMethod
- */
-export type PaymentMethod = 'pix' | 'credit_card';
+export type PaymentMethod = 'qrpago' | 'card' | 'cash';
 
-/**
- * Props for the PaymentMethodSelector component
- * 
- * @interface PaymentMethodSelectorProps
- * @property {PaymentMethod} selectedMethod - Currently selected payment method
- * @property {function} onMethodChange - Callback invoked when payment method changes
- * @property {boolean} [disabled] - Whether the selector is disabled (e.g., during payment processing)
- */
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod;
-  onMethodChange: (method: PaymentMethod) => void;
-  disabled?: boolean;
+  onSelect: (method: PaymentMethod) => void;
+  showEfectivo?: boolean;
+  currencySymbol?: string;
+  className?: string;
 }
 
+const paymentMethodLabels: Record<PaymentMethod, string> = {
+  qrpago: 'QR PAGO',
+  card: 'Tarjeta de Crédito / Débito',
+  cash: 'Efectivo',
+};
+
+const paymentMethodIcons: Record<PaymentMethod, JSX.Element> = {
+  qrpago: <QrCode className="h-5 w-5" />,
+  card: <CreditCard className="h-5 w-5" />,
+  cash: <Banknote className="h-5 w-5" />,
+};
+
 /**
- * PaymentMethodSelector Component
- * 
- * Renders a two-option toggle for selecting payment method (PIX or Credit Card).
- * Features:
- * - Accessible radio button pattern with ARIA attributes
- * - Keyboard navigation support (Enter/Space to select)
- * - Visual feedback for selected state
- * - Disabled state during payment processing
- * - Minimum 44px touch targets for mobile accessibility
- * 
+ * Payment Method Selector Component
+ *
+ * Renders a horizontal list of payment method options with icons.
+ * Users can select between QR PAGO, credit card, and efectivo.
+ *
  * @component
  * @example
  * ```tsx
  * <PaymentMethodSelector
- *   selectedMethod="pix"
- *   onMethodChange={(method) => setPaymentMethod(method)}
- *   disabled={isProcessing}
+ *   selectedMethod={method}
+ *   onSelect={(m) => setMethod(m)}
  * />
  * ```
  */
-const PaymentMethodSelector = ({
+export default function PaymentMethodSelector({
   selectedMethod,
-  onMethodChange,
-  disabled = false
-}: PaymentMethodSelectorProps) => {
-  /**
-   * Handles keyboard navigation for accessibility
-   * Allows selection via Enter or Space key
-   * 
-   * @param {React.KeyboardEvent} e - Keyboard event
-   * @param {PaymentMethod} method - Payment method to select
-   */
-  const handleKeyDown = (e: React.KeyboardEvent, method: PaymentMethod) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (!disabled) {
-        onMethodChange(method);
-      }
-    }
+  onSelect,
+  showEfectivo = true,
+  currencySymbol = 'Bs',
+  className = '',
+}: PaymentMethodSelectorProps) {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleSelect = (method: PaymentMethod) => {
+    if (method === selectedMethod) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsAnimating(false);
+      onSelect(method);
+    }, 150);
   };
 
-  return (
-    <div 
-      className="w-full"
-      role="radiogroup"
-      aria-label="Selecione o método de pagamento"
-    >
-      <div className="grid grid-cols-2 gap-3 p-1 bg-muted rounded-lg">
-        {/* PIX Option */}
-        <button
-          type="button"
-          role="radio"
-          aria-checked={selectedMethod === 'pix'}
-          aria-label="Pagar com PIX"
-          disabled={disabled}
-          onClick={() => !disabled && onMethodChange('pix')}
-          onKeyDown={(e) => handleKeyDown(e, 'pix')}
-          className={cn(
-            "flex items-center justify-center gap-2 px-4 py-3 rounded-md font-semibold text-sm transition-all duration-200 min-h-[44px]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            selectedMethod === 'pix'
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "bg-transparent text-muted-foreground hover:bg-background hover:text-foreground",
-            disabled && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          <QrCode 
-            className={cn(
-              "w-5 h-5",
-              selectedMethod === 'pix' ? "text-primary-foreground" : "text-muted-foreground"
-            )}
-            aria-hidden="true"
-          />
-          <span>PIX</span>
-        </button>
+  const availableMethods: PaymentMethod[] = showEfectivo
+    ? ['qrpago', 'card', 'cash']
+    : ['qrpago', 'card'];
 
-        {/* Credit Card Option */}
-        <button
-          type="button"
-          role="radio"
-          aria-checked={selectedMethod === 'credit_card'}
-          aria-label="Pagar com Cartão de Crédito"
-          disabled={disabled}
-          onClick={() => !disabled && onMethodChange('credit_card')}
-          onKeyDown={(e) => handleKeyDown(e, 'credit_card')}
-          className={cn(
-            "flex items-center justify-center gap-2 px-4 py-3 rounded-md font-semibold text-sm transition-all duration-200 min-h-[44px]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            selectedMethod === 'credit_card'
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "bg-transparent text-muted-foreground hover:bg-background hover:text-foreground",
-            disabled && "opacity-50 cursor-not-allowed"
-          )}
+  return (
+    <div className={`flex flex-wrap gap-3 ${className}`}>
+      {availableMethods.map(method => (
+        <Card
+          key={method}
+          className={`
+            cursor-pointer transition-all duration-200
+            ${isAnimating ? 'scale-95' : 'scale-100'}
+            ${selectedMethod === method
+              ? 'border-2 border-yellow-400 bg-yellow-400/10 shadow-md'
+              : 'border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50/80'}
+          `}
+          onClick={() => handleSelect(method)}
         >
-          <CreditCard 
-            className={cn(
-              "w-5 h-5",
-              selectedMethod === 'credit_card' ? "text-primary-foreground" : "text-muted-foreground"
-            )}
-            aria-hidden="true"
-          />
-          <span>Cartão de Crédito</span>
-        </button>
-      </div>
+          <CardContent className="flex items-center gap-3 px-4 py-3">
+            {paymentMethodIcons[method]}
+            <span className="text-sm font-medium text-foreground">
+              {paymentMethodLabels[method]}
+            </span>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
-};
-
-export default PaymentMethodSelector;
+}

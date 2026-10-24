@@ -1,5 +1,5 @@
 /**
- * Formats a Brazilian phone number to (XX) 00000-0000 format
+ * Formats a Bolivian phone number to (XX) XXXX-XXXX format
  * @param phone - Raw phone number (digits only or with formatting)
  * @returns Formatted phone string or original if invalid
  */
@@ -9,21 +9,22 @@ export function formatPhoneNumber(phone: string | null | undefined): string {
   // Remove all non-digit characters
   let digits = phone.replace(/\D/g, '');
   
-  // Remove country code if present (55)
-  if (digits.length === 13 && digits.startsWith('55')) {
-    digits = digits.slice(2);
-  } else if (digits.length === 12 && digits.startsWith('55')) {
-    digits = digits.slice(2);
+  // Remove country code if present (591)
+  if (digits.length === 11 && digits.startsWith('591')) {
+    digits = digits.slice(3);
+  } else if (digits.length === 12 && digits.startsWith('591')) {
+    digits = digits.slice(3);
   }
   
-  // Handle 11 digits (DDD + 9 + 8 digits) - mobile with 9
-  if (digits.length === 11) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  // Handle 8 digits (local mobile number without area code for Bolivia)
+  if (digits.length === 8) {
+    return digits;
   }
   
-  // Handle 10 digits (DDD + 8 digits) - landline
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  // Handle 11 digits (591 + 8 digits)
+  if (digits.length === 11 && digits.startsWith('591')) {
+    const localNumber = digits.slice(3);
+    return localNumber;
   }
   
   // Return original if format is not recognized
@@ -31,12 +32,12 @@ export function formatPhoneNumber(phone: string | null | undefined): string {
 }
 
 /**
- * Normalizes a Brazilian phone number to E.164 format (+55XXXXXXXXXXX)
+ * Normalizes a Bolivian phone number to E.164 format (+591XXXXXXXX)
  * @param rawPhone - Raw phone number (digits only or with formatting)
  * @returns Normalized phone string in E.164 format or null if invalid
  * @example
- * normalizePhone("71987654321") // returns "+5571987654321"
- * normalizePhone("(71) 98765-4321") // returns "+5571987654321"
+ * normalizePhone("70012345") // returns "+59170012345"
+ * normalizePhone("59170012345") // returns "+59170012345"
  * normalizePhone("123") // returns null (invalid)
  */
 export function normalizePhone(rawPhone: string): string | null {
@@ -45,13 +46,9 @@ export function normalizePhone(rawPhone: string): string | null {
   // Remove all non-digit characters
   const digits = rawPhone.replace(/\D/g, '');
   
-  // Validate exactly 11 digits
-  if (digits.length !== 11) return null;
+  // Validate exactly 8 digits (Bolivian local mobile)
+  if (digits.length !== 8) return null;
   
-  // Extract and validate DDD (area code)
-  const ddd = parseInt(digits.substring(0, 2));
-  if (ddd < 11 || ddd > 99) return null;
-  
-  // Return E.164 format with +55 country code
-  return `+55${digits}`;
+  // Return E.164 format with +591 country code
+  return `+591${digits}`;
 }

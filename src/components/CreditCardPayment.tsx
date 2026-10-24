@@ -6,7 +6,7 @@
  * client-side before sending to the backend for processing.
  * 
  * @module CreditCardPayment
- * @see {@link https://www.mercadopago.com.br/developers/en/docs/checkout-bricks/payment-brick/introduction}
+ * @see {@link https://www.mercadopago.com.bo/developers/en/docs/checkout-bricks/payment-brick/introduction}
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -22,10 +22,10 @@ import type { PaymentBrickFormData, CardPaymentRequest } from '@/integrations/me
  * 
  * @interface CreditCardPaymentProps
  * @property {string} orderId - Unique identifier for the order being paid
- * @property {number} amount - Payment amount in Brazilian Reais (BRL)
+ * @property {number} amount - Payment amount in Bolivian bolivianos (BOB)
  * @property {string} [customerEmail] - Customer's email address (optional, can be entered in form)
- * @property {string} [customerDocument] - Customer's CPF or CNPJ number (optional, can be entered in form)
- * @property {'CPF' | 'CNPJ'} [customerDocumentType] - Type of document (defaults to 'CPF')
+ * @property {string} [customerDocument] - Customer's CI or CPF number (optional, can be entered in form)
+ * @property {'CI' | 'CPF' | 'CNPJ'} [customerDocumentType] - Type of document (defaults to 'CI')
  * @property {function} onPaymentSuccess - Callback invoked when payment is approved
  * @property {function} onPaymentError - Callback invoked when payment fails or is rejected
  * @property {function} onPaymentPending - Callback invoked when payment is under review
@@ -35,7 +35,7 @@ export interface CreditCardPaymentProps {
   amount: number;
   customerEmail?: string;
   customerDocument?: string;
-  customerDocumentType?: 'CPF' | 'CNPJ';
+  customerDocumentType?: 'CI' | 'CPF' | 'CNPJ';
   onPaymentSuccess: (paymentId: string) => void;
   onPaymentError: (error: string) => void;
   onPaymentPending: () => void;
@@ -44,30 +44,30 @@ export interface CreditCardPaymentProps {
 type PaymentStatus = 'idle' | 'processing' | 'success' | 'error' | 'pending';
 
 /**
- * Maps MercadoPago status detail codes to user-friendly Portuguese messages
+ * Maps MercadoPago status detail codes to user-friendly Spanish messages
  * 
  * @param {string} [statusDetail] - MercadoPago status detail code
- * @returns {string} User-friendly error message in Portuguese
+ * @returns {string} User-friendly error message in Spanish
  * @example
- * getStatusDetailMessage('cc_rejected_insufficient_amount') // Returns: 'Fundos insuficientes no cartão'
+ * getStatusDetailMessage('cc_rejected_insufficient_amount') // Returns: 'Fondos insuficientes en la tarjeta'
  */
 const getStatusDetailMessage = (statusDetail?: string): string => {
   if (!statusDetail) return '';
 
   const messages: Record<string, string> = {
-    'cc_rejected_insufficient_amount': 'Fundos insuficientes no cartão',
-    'cc_rejected_bad_filled_card_number': 'Número de cartão inválido',
-    'cc_rejected_bad_filled_date': 'Data de validade inválida',
-    'cc_rejected_bad_filled_security_code': 'Código de segurança inválido',
-    'cc_rejected_call_for_authorize': 'Entre em contato com seu banco para autorizar o pagamento',
-    'cc_rejected_card_disabled': 'Cartão desabilitado. Entre em contato com seu banco',
-    'cc_rejected_duplicated_payment': 'Pagamento duplicado detectado',
-    'cc_rejected_high_risk': 'Pagamento recusado por motivos de segurança',
-    'cc_rejected_max_attempts': 'Número máximo de tentativas excedido',
-    'cc_rejected_card_error': 'Erro no processamento do cartão',
+    'cc_rejected_insufficient_amount': 'Fondos insuficientes en la tarjeta',
+    'cc_rejected_bad_filled_card_number': 'Número de tarjeta inválido',
+    'cc_rejected_bad_filled_date': 'Fecha de vencimiento inválida',
+    'cc_rejected_bad_filled_security_code': 'Código de seguridad inválido',
+    'cc_rejected_call_for_authorize': 'Contacta a tu banco para autorizar el pago',
+    'cc_rejected_card_disabled': 'Tarjeta deshabilitada. Contacta a tu banco',
+    'cc_rejected_duplicated_payment': 'Pago duplicado detectado',
+    'cc_rejected_high_risk': 'Pago rechazado por motivos de seguridad',
+    'cc_rejected_max_attempts': 'Número máximo de intentos excedido',
+    'cc_rejected_card_error': 'Error al procesar la tarjeta',
   };
 
-  return messages[statusDetail] || 'Pagamento recusado. Tente outro cartão.';
+  return messages[statusDetail] || 'Pago rechazado. Intenta con otra tarjeta.';
 };
 
 /**
@@ -104,7 +104,7 @@ export default function CreditCardPayment({
   amount,
   customerEmail = '',
   customerDocument = '',
-  customerDocumentType = 'CPF',
+  customerDocumentType = 'CI',
   onPaymentSuccess,
   onPaymentError,
   onPaymentPending,
@@ -145,7 +145,7 @@ export default function CreditCardPayment({
           BRICK_CONTAINER_ID,
           {
             amount,
-            locale: 'pt-BR',
+            locale: 'es-BO',
             customization: {
               visual: {
                 hidePaymentButton: true, // We use our own button
@@ -161,7 +161,7 @@ export default function CreditCardPayment({
             onError: (error) => {
               if (isMounted) {
                 console.error('Payment Brick error:', error);
-                setError(error.message || 'Erro ao carregar formulário de pagamento');
+                setError(error.message || 'Error al cargar el formulario de pago');
                 setPaymentStatus('error');
               }
             },
@@ -170,7 +170,7 @@ export default function CreditCardPayment({
       } catch (error) {
         if (isMounted) {
           console.error('Failed to initialize Payment Brick:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao inicializar formulário de pagamento';
+          const errorMessage = error instanceof Error ? error.message : 'Error al inicializar el formulario de pago';
           setError(errorMessage);
           setPaymentStatus('error');
         }
@@ -189,7 +189,7 @@ export default function CreditCardPayment({
   }, [amount]); // Re-initialize if amount changes
 
   /**
-   * Handles payment submission when user clicks "Pagar com Cartão"
+   * Handles payment submission when user clicks "Pagar con Tarjeta"
    * 
    * Process:
    * 1. Validates that Payment Brick is initialized and form is filled
@@ -211,7 +211,7 @@ export default function CreditCardPayment({
       const brickController = paymentBrickService.getBrickController();
       
       if (!brickController) {
-        throw new Error('Formulário de pagamento não inicializado');
+        throw new Error('Formulario de pago no inicializado');
       }
 
       // Get form data from Payment Brick
@@ -219,14 +219,14 @@ export default function CreditCardPayment({
       const formData = await brickController.getFormData();
       
       if (!formData) {
-        throw new Error('Por favor, preencha todos os dados do cartão');
+        throw new Error('Por favor, completa todos los datos de la tarjeta');
       }
 
       // Extract card token from form data
       const token = await paymentBrickService.getCardToken(formData);
 
       if (!token) {
-        throw new Error('Erro ao processar dados do cartão');
+        throw new Error('Error al procesar los datos de la tarjeta');
       }
 
       // Prepare payment request
@@ -238,7 +238,7 @@ export default function CreditCardPayment({
         payer: {
           email: formData.payer.email || customerEmail,
           identification: {
-            type: (formData.payer.identification.type as 'CPF' | 'CNPJ') || customerDocumentType,
+            type: (formData.payer.identification.type as 'CI' | 'CPF' | 'CNPJ') || customerDocumentType,
             number: formData.payer.identification.number || customerDocument,
           },
         },
@@ -259,7 +259,7 @@ export default function CreditCardPayment({
         setIsProcessing(false);
         
         // Get detailed error message based on status detail
-        let errorMessage = response.error || 'Pagamento recusado';
+        let errorMessage = response.error || 'Pago rechazado';
         if (response.statusDetail) {
           const detailMessage = getStatusDetailMessage(response.statusDetail);
           if (detailMessage) {
@@ -274,11 +274,11 @@ export default function CreditCardPayment({
         setIsProcessing(false);
         onPaymentPending();
       } else {
-        throw new Error(response.error || 'Erro ao processar pagamento');
+        throw new Error(response.error || 'Error al procesar el pago');
       }
     } catch (error) {
       console.error('Payment submission error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao processar pagamento';
+      const errorMessage = error instanceof Error ? error.message : 'Error al procesar el pago';
       setError(errorMessage);
       setPaymentStatus('error');
       setIsProcessing(false);
@@ -312,7 +312,7 @@ export default function CreditCardPayment({
         BRICK_CONTAINER_ID,
         {
           amount,
-          locale: 'pt-BR',
+          locale: 'es-BO',
           customization: {
             visual: {
               hidePaymentButton: true,
@@ -325,14 +325,14 @@ export default function CreditCardPayment({
           },
           onError: (error) => {
             console.error('Payment Brick error after retry:', error);
-            setError(error.message || 'Erro ao carregar formulário de pagamento');
+            setError(error.message || 'Error al cargar el formulario de pago');
             setPaymentStatus('error');
           },
         }
       );
     } catch (error) {
       console.error('Failed to retry Payment Brick initialization:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao reinicializar formulário';
+      const errorMessage = error instanceof Error ? error.message : 'Error al reinicializar el formulario';
       setError(errorMessage);
       setPaymentStatus('error');
     }
@@ -345,7 +345,7 @@ export default function CreditCardPayment({
         <div className="flex items-center justify-center min-h-[400px] w-full border border-gray-200 rounded-lg bg-gray-50">
           <div className="text-center space-y-3">
             <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-            <p className="text-sm text-gray-600">Carregando formulário de pagamento...</p>
+            <p className="text-sm text-gray-600">Cargando formulario de pago...</p>
           </div>
         </div>
       )}
@@ -364,11 +364,11 @@ export default function CreditCardPayment({
           <XCircle className="h-4 w-4" />
           <AlertDescription>
             <div className="space-y-2">
-              <p className="font-semibold">Erro no pagamento</p>
+              <p className="font-semibold">Error en el pago</p>
               <p>{error}</p>
-              {error.includes('recusado') && (
+              {error.includes('rechazado') && (
                 <p className="text-sm mt-2">
-                  Verifique os dados do cartão ou tente outro cartão.
+                  Verifica los datos de la tarjeta o prueba con otra tarjeta.
                 </p>
               )}
             </div>
@@ -382,8 +382,8 @@ export default function CreditCardPayment({
           <CheckCircle2 className="h-4 w-4 text-green-600" />
           <AlertDescription>
             <div className="space-y-1">
-              <p className="font-semibold">Pagamento aprovado com sucesso!</p>
-              <p className="text-sm">Seu pedido está sendo preparado.</p>
+              <p className="font-semibold">¡Pago aprobado con éxito!</p>
+              <p className="text-sm">Tu pedido está siendo preparado.</p>
             </div>
           </AlertDescription>
         </Alert>
@@ -394,9 +394,9 @@ export default function CreditCardPayment({
         <Alert className="border-yellow-500 bg-yellow-50 text-yellow-900">
           <AlertDescription>
             <div className="space-y-1">
-              <p className="font-semibold">Pagamento em análise</p>
+              <p className="font-semibold">Pago en revisión</p>
               <p className="text-sm">
-                Você receberá uma notificação quando for aprovado. Isso pode levar alguns minutos.
+                Recibirás una notificación cuando sea aprobado. Esto puede tardar unos minutos.
               </p>
             </div>
           </AlertDescription>
@@ -413,17 +413,17 @@ export default function CreditCardPayment({
         {isProcessing ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Processando pagamento...
+            Procesando pago...
           </>
         ) : paymentStatus === 'success' ? (
           <>
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            Pagamento Aprovado
+            Pago Aprobado
           </>
         ) : (
           <>
             <CreditCard className="mr-2 h-4 w-4" />
-            Pagar com Cartão
+            Pagar con Tarjeta
           </>
         )}
       </Button>
@@ -436,7 +436,7 @@ export default function CreditCardPayment({
           className="w-full"
           size="lg"
         >
-          Tentar Novamente
+          Intentar de nuevo
         </Button>
       )}
     </div>

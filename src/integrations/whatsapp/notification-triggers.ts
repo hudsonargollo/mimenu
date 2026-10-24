@@ -54,17 +54,17 @@ export class NotificationTriggerService {
       const paymentUrl = `${baseUrl}/payment/${orderId}`;
       
       const itemsList = orderData.items
-        .map(item => `• ${item.quantity}x ${item.itemName} - R$ ${(item.quantity * item.unitPrice).toFixed(2)}`)
+        .map(item => `• ${item.quantity}x ${item.itemName} - Bs ${(item.quantity * item.unitPrice).toFixed(2)}`)
         .join('\n');
-
-      const message = `🎉 *Pedido #${orderData.orderNumber} Criado!*\n\n` +
-        `Olá ${orderData.customerName}! Recebemos o seu pedido!\n\n` +
-        `📋 *Itens do Pedido:*\n${itemsList}\n\n` +
-        `💰 *Total: R$ ${orderData.totalAmount.toFixed(2)}*\n\n` +
-        `🔗 *Links Úteis:*\n` +
+      
+      const message = `🎉 *Pedido #${orderData.orderNumber} Creado!*\n\n` +
+        `¡Hola ${orderData.customerName}! Recibimos tu pedido.\n\n` +
+        `📋 *Ítems del Pedido:*\n${itemsList}\n\n` +
+        `💰 *Total: Bs ${orderData.totalAmount.toFixed(2)}*\n\n` +
+        `🔗 *Enlaces Útiles:*\n` +
         `📱 Ver Pedido: ${orderStatusUrl}\n` +
-        `💳 Ir para Pagamento: ${paymentUrl}\n\n` +
-        `Você pode visualizar seu pedido, editá-lo ou prosseguir com o pagamento através dos links acima.`;
+        `💳 Ir al Pago: ${paymentUrl}\n\n` +
+        `Puedes ver tu pedido, editarlo o finalizar el pago a través de los enlaces.`;
 
       // Queue order creation notification with custom message
       const notification: NotificationRequest = {

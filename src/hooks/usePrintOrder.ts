@@ -53,12 +53,12 @@ export function usePrintOrder() {
 
       if (orderError) {
         console.error('Error fetching order:', orderError);
-        toast.error('Erro ao buscar pedido');
+        toast.error('Error al buscar el pedido');
         return null;
       }
 
       if (!order) {
-        toast.error('Pedido não encontrado');
+        toast.error('Pedido no encontrado');
         return null;
       }
 
@@ -70,7 +70,7 @@ export function usePrintOrder() {
 
       if (itemsError) {
         console.error('Error fetching order items:', itemsError);
-        toast.error('Erro ao buscar itens do pedido');
+        toast.error('Error al buscar los ítems del pedido');
         return null;
       }
 
@@ -95,7 +95,7 @@ export function usePrintOrder() {
       };
     } catch (error) {
       console.error('Error fetching order data:', error);
-      toast.error('Erro ao carregar dados do pedido');
+      toast.error('Error al cargar los datos del pedido');
       return null;
     }
   }, []);
@@ -114,16 +114,16 @@ export function usePrintOrder() {
     
     let receipt = '';
     receipt += '\n';
-    receipt += '      *** COZINHA ***\n';
+    receipt += '      *** COCINA ***\n';
     receipt += divider + '\n';
     receipt += `PEDIDO: #${data.order.order_number}\n`;
     receipt += `HORA: ${formatDate(data.order.created_at)}\n`;
     if (data.waiterName && data.waiterName !== 'Cliente') {
-      receipt += `GARCOM: ${data.waiterName}\n`;
+      receipt += `GARZON: ${data.waiterName}\n`;
     }
     receipt += divider + '\n';
     receipt += '\n';
-    receipt += 'ITENS:\n';
+    receipt += 'ITEMS:\n';
     receipt += divider2 + '\n';
     
     data.items.forEach(item => {
@@ -136,7 +136,7 @@ export function usePrintOrder() {
     
     if (data.order.order_notes) {
       receipt += '\n';
-      receipt += '*** OBSERVACOES ***\n';
+      receipt += '*** OBSERVACIONES ***\n';
       receipt += `${data.order.order_notes}\n`;
       receipt += divider + '\n';
     }
@@ -151,7 +151,7 @@ export function usePrintOrder() {
   // Generate customer receipt (clean format with prices)
   const generateCustomerReceipt = (data: PrintOrderData): string => {
     const formatCurrency = (value: number) => {
-      return `R$ ${value.toFixed(2).replace('.', ',')}`;
+      return `Bs ${value.toFixed(2).replace('.', ',')}`;
     };
 
     const formatDate = (dateString: string) => {
@@ -168,17 +168,17 @@ export function usePrintOrder() {
     const divider2 = '--------------------------------';
     
     let receipt = '';
-    receipt += '    PONTAL CARAPITANGUI\n';
-    receipt += '       Açaiteria\n';
+    receipt += '    MIMENU\n';
+    receipt += '       Menú Digital\n';
     receipt += divider + '\n';
     receipt += `Pedido: #${data.order.order_number}\n`;
-    receipt += `Data: ${formatDate(data.order.created_at)}\n`;
+    receipt += `Fecha: ${formatDate(data.order.created_at)}\n`;
     receipt += `Cliente: ${data.order.customer_name}\n`;
     if (data.waiterName && data.waiterName !== 'Cliente') {
-      receipt += `Garcom: ${data.waiterName}\n`;
+      receipt += `Garzon: ${data.waiterName}\n`;
     }
     receipt += divider + '\n';
-    receipt += 'QTD  ITEM                  VALOR\n';
+    receipt += 'CANT  ITEM                  PRECIO\n';
     receipt += divider2 + '\n';
     
     data.items.forEach(item => {
@@ -195,14 +195,14 @@ export function usePrintOrder() {
     receipt += divider2 + '\n';
     
     if (data.order.order_notes) {
-      receipt += 'OBSERVACOES:\n';
+      receipt += 'OBSERVACIONES:\n';
       receipt += `${data.order.order_notes}\n`;
       receipt += divider + '\n';
     }
     
     receipt += `TOTAL: ${formatCurrency(data.order.total_amount)}\n`;
     receipt += divider + '\n';
-    receipt += '  Obrigado pela preferencia!\n';
+    receipt += '  ¡Gracias por su preferencia!\n';
     receipt += `  Tel: ${data.order.customer_phone}\n`;
     receipt += '\n\n\n\n\n\n\n\n';
     
@@ -215,7 +215,7 @@ export function usePrintOrder() {
   // React-to-print handler
   const handlePrint = useReactToPrint({
     contentRef: printRef,
-    documentTitle: `Pedido #${currentOrderData?.order.order_number || ''} - ${receiptType === 'kitchen' ? 'Cozinha' : 'Cliente'}`,
+    documentTitle: `Pedido #${currentOrderData?.order.order_number || ''} - ${receiptType === 'kitchen' ? 'Cocina' : 'Cliente'}`,
     onAfterPrint: () => {
       setIsPrinting(false);
       setCurrentOrderData(null);
@@ -253,7 +253,7 @@ export function usePrintOrder() {
           const success = await printServerClient.print(plainText, data.order.order_number);
           
           if (success) {
-            toast.success('Imprimindo comanda da cozinha...');
+            toast.success('Imprimiendo comanda de cocina...');
             setIsPrinting(false);
             return;
           } else {
@@ -272,7 +272,7 @@ export function usePrintOrder() {
       
     } catch (error) {
       console.error('Error preparing print:', error);
-      toast.error('Erro ao preparar impressão');
+      toast.error('Error al preparar la impresión');
       setIsPrinting(false);
     }
   }, [isPrinting, fetchOrderData, generateKitchenReceipt, handlePrint]);
@@ -304,7 +304,7 @@ export function usePrintOrder() {
           const success = await printServerClient.print(plainText, data.order.order_number);
           
           if (success) {
-            toast.success('Imprimindo comprovante do cliente...');
+            toast.success('Imprimiendo comprobante del cliente...');
             setIsPrinting(false);
             return;
           } else {
@@ -323,7 +323,7 @@ export function usePrintOrder() {
       
     } catch (error) {
       console.error('Error preparing print:', error);
-      toast.error('Erro ao preparar impressão');
+      toast.error('Error al preparar la impresión');
       setIsPrinting(false);
     }
   }, [isPrinting, fetchOrderData, generateCustomerReceipt, handlePrint]);

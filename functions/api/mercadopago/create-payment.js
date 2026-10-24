@@ -63,7 +63,7 @@ export async function onRequestPost(context) {
           {
             id: paymentData.orderId,
             title: paymentData.description,
-            description: `Pedido de ${paymentData.customerName}`,
+            description: `Orden de ${paymentData.customerName}`,
             quantity: 1,
             unit_price: paymentData.amount
           }

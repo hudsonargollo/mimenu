@@ -12,11 +12,11 @@ class MockMercadoPagoService {
 
     // Generate mock data
     const mockPaymentId = `mock_${Date.now()}`;
-    const mockPixCode = `00020126580014br.gov.bcb.pix0136${mockPaymentId}520400005303986540${paymentData.amount.toFixed(2)}5802BR5913PONTAL CARAPITANGUI6009SAO PAULO62070503***6304`;
+    const mockQrCode = `00020100QR-SIMPLE-BOLIVIA-DEV-${mockPaymentId}`;
     
     try {
       // Generate proper QR code
-      const qrCodeDataURL = await QRCode.toDataURL(mockPixCode, {
+      const qrCodeDataURL = await QRCode.toDataURL(mockQrCode, {
         width: 256,
         margin: 2,
         color: {
@@ -31,9 +31,9 @@ class MockMercadoPagoService {
       return {
         id: mockPaymentId,
         status: 'pending',
-        qrCode: mockPixCode,
+        qrCode: mockQrCode,
         qrCodeBase64: mockQRCodeBase64,
-        pixCopyPaste: mockPixCode,
+        pixCopyPaste: mockQrCode,
         expirationDate: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
         transactionAmount: paymentData.amount
       };
@@ -46,9 +46,9 @@ class MockMercadoPagoService {
       return {
         id: mockPaymentId,
         status: 'pending',
-        qrCode: mockPixCode,
+        qrCode: mockQrCode,
         qrCodeBase64: mockQRCodeBase64,
-        pixCopyPaste: mockPixCode,
+        pixCopyPaste: mockQrCode,
         expirationDate: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
         transactionAmount: paymentData.amount
       };

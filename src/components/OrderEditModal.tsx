@@ -345,7 +345,7 @@ export function OrderEditModal({
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1.5">Data do Pedido</label>
               <p className="text-sm font-medium text-gray-900">
-                {new Date(order.created_at).toLocaleString("pt-BR", {
+                {new Date(order.created_at).toLocaleString("es-BO", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
@@ -397,9 +397,9 @@ export function OrderEditModal({
                 <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Total do Pedido</span>
                 {hasValueChanged && (
                   <span className="text-xs text-gray-500 line-through">
-                    {originalTotal.toLocaleString("pt-BR", { 
+                    {originalTotal.toLocaleString("es-BO", { 
                       style: "currency", 
-                      currency: "BRL" 
+                      currency: "BOB" 
                     })}
                   </span>
                 )}
@@ -407,9 +407,9 @@ export function OrderEditModal({
               <span className={`text-2xl sm:text-3xl font-bold transition-colors duration-300 ${
                 hasValueChanged ? 'text-primary' : 'text-gray-900'
               }`}>
-                {orderTotal.toLocaleString("pt-BR", { 
+                {orderTotal.toLocaleString("es-BO", { 
                   style: "currency", 
-                  currency: "BRL" 
+                  currency: "BOB" 
                 })}
               </span>
             </div>
@@ -420,9 +420,9 @@ export function OrderEditModal({
                 <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Comissão (10%)</span>
                 {hasValueChanged && (
                   <span className="text-xs text-gray-500 line-through">
-                    {originalCommission.toLocaleString("pt-BR", { 
+                    {originalCommission.toLocaleString("es-BO", { 
                       style: "currency", 
-                      currency: "BRL" 
+                      currency: "BOB" 
                     })}
                   </span>
                 )}
@@ -430,9 +430,9 @@ export function OrderEditModal({
               <span className={`text-xl sm:text-2xl font-bold transition-colors duration-300 ${
                 hasValueChanged ? 'text-primary' : 'text-green-600'
               }`}>
-                {commission.toLocaleString("pt-BR", { 
+                {commission.toLocaleString("es-BO", { 
                   style: "currency", 
-                  currency: "BRL" 
+                  currency: "BOB" 
                 })}
               </span>
             </div>
@@ -447,16 +447,16 @@ export function OrderEditModal({
                       orderTotal > originalTotal ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {orderTotal > originalTotal ? '+' : ''}
-                      {(orderTotal - originalTotal).toLocaleString("pt-BR", { 
+                      {(orderTotal - originalTotal).toLocaleString("es-BO", { 
                         style: "currency", 
-                        currency: "BRL" 
+                        currency: "BOB" 
                       })}
                     </div>
                     <div className="text-xs text-gray-600 mt-0.5">
                       Comissão: {orderTotal > originalTotal ? '+' : ''}
-                      {(commission - originalCommission).toLocaleString("pt-BR", { 
+                      {(commission - originalCommission).toLocaleString("es-BO", { 
                         style: "currency", 
-                        currency: "BRL" 
+                        currency: "BOB" 
                       })}
                     </div>
                   </div>

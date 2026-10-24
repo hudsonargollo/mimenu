@@ -6,6 +6,9 @@ import { useCart } from '@/lib/cartContext';
 import { Button } from '@/components/ui/button';
 import { TableSelectorModal } from '@/components/TableSelectorModal';
 import { CartDrawerExpress } from '@/components/CartDrawerExpress';
+import { MenuLangSwitch } from '@/components/MenuLangSwitch';
+import { useLang } from '@/i18n/LanguageProvider';
+import { pickLocalText } from '@/lib/venueContext';
 
 interface MimenuHeaderProps {
   onSearchChange?: (term: string) => void;
@@ -21,6 +24,9 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
   const navigate = useNavigate();
   const { venue, selectedTable, fulfillmentType } = useMimenu();
   const { getTotalItems, getTotalPrice } = useCart();
+  const { lang } = useLang();
+  const venueName = pickLocalText(venue.name_i18n, lang) || venue.name;
+  const venueTagline = pickLocalText(venue.tagline_i18n, lang) || venue.tagline;
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
 
@@ -34,7 +40,7 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
         <div className="bg-slate-900 text-slate-200 text-[11px] font-medium py-1 px-4 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-2 mx-auto sm:mx-0">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
-            <span className="font-semibold text-white">{venue.name}</span>
+            <span className="font-semibold text-white">{venueName}</span>
             <span className="text-slate-400">• {venue.city}</span>
             <span className="text-slate-400 hidden md:inline">| {venue.opening_hours}</span>
           </div>
@@ -59,17 +65,20 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-lg tracking-tight text-foreground group-hover:text-amber-500 transition-colors">
-                  {venue.name}
+                  {venueName}
                 </span>
                 <span className="text-[10px] font-bold uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20">
                   SCZ
                 </span>
               </div>
               <p className="text-[11px] text-muted-foreground line-clamp-1">
-                {venue.tagline}
+                {venueTagline}
               </p>
             </div>
           </Link>
+
+          {/* Language Switcher */}
+          <MenuLangSwitch />
 
           {/* Table / Fulfillment Indicator */}
           <div className="flex items-center gap-2">
@@ -126,7 +135,7 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
                 type="text"
                 value={searchValue}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Buscar salchipapas, nachos, tragos, chopp helado..."
+                placeholder={`Buscar platos, entradas, postres en ${venueName}...`}
                 aria-label="Buscar en la carta"
                 className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-muted/40 border border-border focus:outline-hidden focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-foreground placeholder:text-muted-foreground"
               />

@@ -12,7 +12,7 @@ export function Footer() {
         <div>
           <p className="font-display text-lg">{t.footer.tagline}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Praia do Carapitangui • Barra Grande, BA
+            Equipetrol • Santa Cruz de la Sierra, Bolivia
           </p>
         </div>
         <div className="text-sm">
@@ -25,11 +25,11 @@ export function Footer() {
         </div>
         <div className="text-sm">
           <p className="mb-2 font-medium">{t.contact.hours}</p>
-          <p className="text-muted-foreground">9h – 22h</p>
+          <p className="text-muted-foreground">18:00 – 03:00</p>
         </div>
         <div className="text-sm">
           <a
-            href="https://instagram.com/pontalcarapitangui"
+            href="https://instagram.com/moestaberna.scz"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
@@ -40,7 +40,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Pontal Carapitangui. {t.footer.rights}
+        © {new Date().getFullYear()} Moe's Taberna. {t.footer.rights}
       </div>
     </footer>
   );

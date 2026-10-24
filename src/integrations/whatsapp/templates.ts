@@ -23,7 +23,7 @@ export class WhatsAppTemplates {
       return this.generateOrderCreatedFallback(orderData, orderStatusUrl, paymentUrl);
     }
   }
-
+  
   /**
    * Generate order confirmation message (when payment is confirmed)
    */
@@ -36,7 +36,7 @@ export class WhatsAppTemplates {
       return this.generateOrderConfirmationFallback(orderData);
     }
   }
-
+  
   /**
    * Generate ready for pickup message
    */
@@ -49,7 +49,7 @@ export class WhatsAppTemplates {
       return this.generateReadyForPickupFallback(orderData);
     }
   }
-
+  
   /**
    * Generate preparing status message
    */
@@ -62,7 +62,7 @@ export class WhatsAppTemplates {
       return this.generatePreparingFallback(orderData);
     }
   }
-
+  
   /**
    * Generate custom message
    */
@@ -80,7 +80,7 @@ export class WhatsAppTemplates {
       return this.generateCustomMessageFallback(orderData, customText);
     }
   }
-
+  
   /**
    * Generate status update message (legacy support)
    */
@@ -99,34 +99,34 @@ export class WhatsAppTemplates {
         return this.generateStatusUpdateFallback(orderData, status);
     }
   }
-
+  
   // Fallback methods (hardcoded templates)
   
   private static generateOrderCreatedFallback(orderData: OrderData, orderStatusUrl?: string, paymentUrl?: string): string {
     const itemsList = orderData.items
       .map(item => {
         const itemTotal = item.quantity * item.unitPrice;
-        return `• ${item.quantity}x ${item.itemName} - R$ ${itemTotal.toFixed(2)}`;
+        return `• ${item.quantity}x ${item.itemName} - Bs ${itemTotal.toFixed(2)}`
       })
       .join('\n');
-
+    
     // Get first name for personalization
     const firstName = orderData.customerName.split(' ')[0];
-
-    let message = `🎉 *Pedido #${orderData.orderNumber} Criado!*\n\n` +
-      `Olá *${firstName}*! Recebemos o seu pedido!\n\n` +
-      `📋 *Itens do Pedido:*\n${itemsList}\n\n` +
-      `💰 *Total: R$ ${orderData.totalAmount.toFixed(2)}*`;
+    
+    let message = `🎉 *Pedido #${orderData.orderNumber} Creado!*\n\n` +
+      `¡Hola *${firstName}*! Recibimos tu pedido.\n\n` +
+      `📋 *Ítems del Pedido:*\n${itemsList}\n\n` +
+      `💰 *Total: Bs ${orderData.totalAmount.toFixed(2)}*`;
 
     if (orderStatusUrl && paymentUrl) {
-      message += `\n\n🔗 *Links Úteis:*\n` +
+      message += `\n\n🔗 *Links Útiles:*\n` +
         `📱 Ver Pedido: ${orderStatusUrl}\n` +
-        `💳 Ir para Pagamento: ${paymentUrl}\n\n` +
-        `Você pode visualizar seu pedido, editá-lo ou prosseguir com o pagamento através dos links acima.`;
+        `💳 Ir al Pago: ${paymentUrl}\n\n` +
+        `Puedes ver tu pedido, editarlo o finalizar el pago a través de los enlaces.`;
     } else {
-      message += `\n\nEm breve você receberá mais informações sobre o seu pedido! 😊`;
+      message += `\n\n¡Pronto recibirás más información sobre tu pedido! 😊`;
     }
-
+  
     return message;
   }
   
@@ -134,97 +134,63 @@ export class WhatsAppTemplates {
     // Use rotating message variations
     return getPaymentConfirmedMessage(orderData);
   }
-
+  
   private static generateReadyForPickupFallback(orderData: OrderData): string {
     // Use rotating message variations
     return getOrderReadyMessage(orderData);
   }
-
+  
   private static generatePreparingFallback(orderData: OrderData): string {
     // Use rotating message variations
     return getOrderPreparingMessage(orderData);
   }
-
+  
   private static generateStatusUpdateFallback(orderData: OrderData, status: string): string {
     let statusMessage = '';
     let emoji = '';
     let additionalMessage = '';
-
+    
     // Get first name for personalization
     const firstName = orderData.customerName.split(' ')[0];
-
+    
     const itemsList = orderData.items
       .map(item => `• ${item.quantity}x ${item.itemName}`)
       .join('\n');
-
+    
     switch (status) {
       case 'in_preparation':
       case 'preparing':
-        statusMessage = 'em preparo';
+        statusMessage = 'en preparación';
         emoji = '👨‍🍳';
-        additionalMessage = 'Estamos preparando seu pedido com carinho!';
+        additionalMessage = '¡Estamos preparando tu pedido con cariño!';
         break;
       case 'ready':
-        statusMessage = 'pronto para retirada';
+        statusMessage = 'listo para retirar';
         emoji = '✅';
-        additionalMessage = `Por favor, *${firstName}*, retire seu pedido no balcão!`;
+        additionalMessage = `Por favor, *${firstName}*, pasa a recoger tu pedido en el mostrador.`;
         break;
       case 'completed':
         statusMessage = 'finalizado';
         emoji = '🎉';
-        additionalMessage = `Obrigado pela preferência, *${firstName}*!`;
+        additionalMessage = `¡Gracias por tu preferencia, *${firstName}*!`;
         break;
       default:
         statusMessage = status;
         emoji = 'ℹ️';
-        additionalMessage = 'Obrigado pela preferência!';
+        additionalMessage = '¡Gracias por tu preferencia!';
     }
-
-    return `🌴 *Pontal Carapitangui Açaiteria* 🌴
-
-Olá *${firstName}*! 👋
-
-${emoji} *Atualização do Pedido*
-
-📋 *Pedido #${orderData.orderNumber}*
-🪑 *Mesa:* ${orderData.tableNumber}
-
-📝 *Seus Itens:*
-${itemsList}
-
-💰 *Total:* R$ ${orderData.totalAmount.toFixed(2)}
-
-📊 *Status:* ${statusMessage}
-
-${additionalMessage}
-
-🥥🌊`;
+    
+    return `🌴 *MiMenu - Santa Cruz* 🌴\n\n¡Hola *${firstName}*! 👋\n\n${emoji} *Actualización del Pedido*\n\n📋 *Pedido #${orderData.orderNumber}*\n🪑 *Mesa:* ${orderData.tableNumber}\n\n📝 *Tus Ítems:*\n${itemsList}\n\n💰 *Total:* Bs ${orderData.totalAmount.toFixed(2)}\n\n📊 *Estado:* ${statusMessage}\n\n${additionalMessage}\n\n🌊🥥`;
   }
-
+  
   private static generateCustomMessageFallback(orderData: OrderData, customText: string): string {
     // Get first name for personalization
     const firstName = orderData.customerName.split(' ')[0];
-
+    
     const itemsList = orderData.items
       .map(item => `• ${item.quantity}x ${item.itemName}`)
       .join('\n');
-
-    return `🌴 *Pontal Carapitangui Açaiteria* 🌴
-
-Olá *${firstName}*! 👋
-
-📋 *Pedido #${orderData.orderNumber}*
-🪑 *Mesa:* ${orderData.tableNumber}
-
-📝 *Seus Itens:*
-${itemsList}
-
-💰 *Total:* R$ ${orderData.totalAmount.toFixed(2)}
-
----
-
-${customText}
-
-🥥🌊`;
+    
+    return `🌴 *MiMenu - Santa Cruz* 🌴\n\n¡Hola *${firstName}*! 👋\n\n📋 *Pedido #${orderData.orderNumber}*\n🪑 *Mesa:* ${orderData.tableNumber}\n\n📝 *Tus Ítems:*\n${itemsList}\n\n💰 *Total:* Bs ${orderData.totalAmount.toFixed(2)}\n\n---\n\n${customText}\n\n🥥🌊`;
   }
 }

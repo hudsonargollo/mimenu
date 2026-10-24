@@ -7,7 +7,13 @@ export interface Venue {
   slug: string;
   name: string;
   tagline: string;
+  /** Localized venue name, used when the tenant carries translations. */
+  name_i18n?: Record<'es' | 'en' | 'pt', string>;
+  /** Localized venue tagline, used when the tenant carries translations. */
+  tagline_i18n?: Record<'es' | 'en' | 'pt', string>;
   description: string;
+  /** Localized venue description, used when the tenant carries translations. */
+  description_i18n?: Record<'es' | 'en' | 'pt', string>;
   city: string;
   address: string;
   phone: string;
@@ -46,7 +52,11 @@ export interface MenuItemDetail {
   venue_id: string;
   category_id: string;
   name: string;
+  /** Localized names (es / en / pt) when the venue carries them. */
+  name_i18n?: Record<'es' | 'en' | 'pt', string>;
   description: string | null;
+  /** Localized descriptions (es / en / pt) when the venue carries them. */
+  description_i18n?: Record<'es' | 'en' | 'pt', string> | null;
   price: number;
   original_price?: number;
   image_url: string;
@@ -73,6 +83,8 @@ export interface MenuCategoryDetail {
   venue_id: string;
   key: string;
   name: string;
+  /** Localized category names (es / en / pt) when the venue carries them. */
+  name_i18n?: Record<'es' | 'en' | 'pt', string>;
   description?: string;
   icon?: string;
   order_index: number;

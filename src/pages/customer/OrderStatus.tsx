@@ -39,7 +39,7 @@ const OrderStatus = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Status do Pedido | MiMenu";
+    document.title = "Estado del Pedido | MiMenu";
   }, []);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const OrderStatus = () => {
 
       if (orderError || !orderData) {
         console.error('Error loading order:', orderError);
-        toast.error('Erro ao carregar pedido');
+        toast.error('Error al cargar el pedido');
         navigate('/');
         return;
       }
@@ -85,7 +85,7 @@ const OrderStatus = () => {
 
     } catch (error) {
       console.error('Exception loading order:', error);
-      toast.error('Erro ao carregar pedido');
+      toast.error('Error al cargar el pedido');
     } finally {
       setLoading(false);
     }
@@ -109,14 +109,14 @@ const OrderStatus = () => {
       return (
         <Badge className="bg-green-100 text-green-700 border-green-200">
           <CheckCircle className="w-3 h-3 mr-1" />
-          Pago
+          Pagado
         </Badge>
       );
     }
     return (
       <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
         <Clock className="w-3 h-3 mr-1" />
-        Aguardando Pagamento
+        Esperando Pago
       </Badge>
     );
   };
@@ -124,7 +124,7 @@ const OrderStatus = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <p className="text-gray-600">Carregando pedido...</p>
+        <p className="text-gray-600">Cargando pedido...</p>
       </div>
     );
   }
@@ -132,7 +132,7 @@ const OrderStatus = () => {
   if (!order) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <p className="text-gray-600">Pedido não encontrado</p>
+        <p className="text-gray-600">Pedido no encontrado</p>
       </div>
     );
   }
@@ -148,13 +148,13 @@ const OrderStatus = () => {
               size="icon"
               className="text-white hover:bg-white/20 transition-all rounded-lg"
               onClick={() => navigate('/menu')}
-              aria-label="Voltar ao Menu"
+              aria-label="Volver al Menú"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-display uppercase tracking-wider">
-                Acompanhe seu Pedido
+                Estado de tu Pedido
               </h1>
             </div>
           </div>
@@ -167,8 +167,8 @@ const OrderStatus = () => {
         <Card className="p-6 sm:p-8 shadow-soft border-2 border-accent rounded-xl">
           <div className="text-center mb-6">
             <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-              order.payment_status === 'confirmed' 
-                ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
+              order.payment_status === 'confirmed'
+                ? 'bg-gradient-to-br from-green-500 to-emerald-600'
                 : 'bg-gradient-to-br from-yellow-500 to-orange-600'
             }`}>
               {order.payment_status === 'confirmed' ? (
@@ -182,7 +182,7 @@ const OrderStatus = () => {
             </h2>
             {getStatusBadge()}
           </div>
-          
+
           <div className="space-y-3 bg-gray-50 rounded-xl p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">Cliente</span>
@@ -195,9 +195,9 @@ const OrderStatus = () => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Data</span>
+              <span className="text-sm font-medium text-gray-600">Fecha</span>
               <span className="text-sm font-semibold text-gray-900">
-                {new Date(order.created_at).toLocaleString('pt-BR', {
+                {new Date(order.created_at).toLocaleString('es-BO', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
@@ -212,7 +212,7 @@ const OrderStatus = () => {
         {/* Order Items */}
         <Card className="p-6 sm:p-8 shadow-soft border-2 border-accent rounded-xl">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Itens do Pedido</h2>
+            <h2 className="text-xl font-bold text-gray-900">Ítems del Pedido</h2>
             {order.payment_status === 'pending' && (
               <Button
                 onClick={handleEditOrder}
@@ -225,18 +225,18 @@ const OrderStatus = () => {
               </Button>
             )}
           </div>
-          
+
           <div className="space-y-3">
             {orderItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-indigo-50 rounded-xl border border-primary/10">
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900 text-base">{item.item_name}</p>
                   <p className="text-sm text-gray-600 mt-1">
-                    {item.quantity}x R$ {item.unit_price.toFixed(2)}
+                    {item.quantity}x Bs {item.unit_price.toFixed(2)}
                   </p>
                 </div>
                 <p className="font-bold text-lg text-primary">
-                  R$ {(item.quantity * item.unit_price).toFixed(2)}
+                  Bs {(item.quantity * item.unit_price).toFixed(2)}
                 </p>
               </div>
             ))}
@@ -246,7 +246,7 @@ const OrderStatus = () => {
             <div className="bg-gradient-to-r from-primary to-indigo-600 rounded-xl p-5 flex items-center justify-between shadow-lg">
               <span className="text-xl font-bold text-white">Total</span>
               <span className="text-3xl font-bold text-white">
-                R$ {order.total_amount.toFixed(2)}
+                Bs {order.total_amount.toFixed(2)}
               </span>
             </div>
           </div>
@@ -261,7 +261,7 @@ const OrderStatus = () => {
                 className="w-full bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary text-foreground font-display uppercase tracking-wider py-7 text-xl shadow-soft hover:shadow-lg transition-all rounded-xl"
               >
                 <CreditCard className="w-6 h-6 mr-2" />
-                PAGAR AGORA
+                PAGAR AHORA
               </Button>
             </div>
           </div>
@@ -274,10 +274,10 @@ const OrderStatus = () => {
                 <CheckCircle className="w-12 h-12 text-white" />
               </div>
               <h3 className="text-2xl font-display uppercase tracking-wider text-green-900 mb-3">
-                Pagamento Confirmado! ✨
+                ¡Pago Confirmado! ✨
               </h3>
               <p className="text-lg font-body text-green-700 leading-relaxed">
-                Seu pedido está sendo preparado com carinho. Você receberá uma notificação no WhatsApp quando estiver pronto para retirada!
+                Tu pedido se está preparando. ¡Recibirás una notificación en WhatsApp cuando esté listo para recoger!
               </p>
             </div>
           </Card>

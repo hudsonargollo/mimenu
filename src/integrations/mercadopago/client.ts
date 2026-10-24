@@ -2,17 +2,17 @@
  * MercadoPago API Client
  * 
  * Provides a service layer for interacting with MercadoPago payment APIs.
- * Handles both PIX and credit card payments with comprehensive error handling
+ * Handles both QR payments (QR Simple) and credit card payments with comprehensive error handling
  * and retry logic.
  * 
  * Features:
  * - Exponential backoff retry for transient failures
- * - User-friendly error messages in Portuguese
+ * - User-friendly error messages in Spanish (Bolivia)
  * - Request validation
  * - Mock service for development without credentials
  * 
  * @module mercadopago/client
- * @see {@link https://www.mercadopago.com.br/developers/en/reference}
+ * @see {@link https://www.mercadopago.com.bo/developers/en/reference}
  */
 
 import { toast } from "sonner";
@@ -180,59 +180,59 @@ class MercadoPagoService {
   }
 
   /**
-   * Converts technical error messages to user-friendly Portuguese messages
+   * Converts technical error messages to user-friendly Spanish (Bolivia) messages
    * 
    * Maps common error types to clear, actionable messages for customers.
    * 
    * @param {Error} error - Error object
-   * @returns {string} User-friendly error message in Portuguese
+   * @returns {string} User-friendly error message in Spanish (Bolivia)
    * @private
    */
   private getUserFriendlyErrorMessage(error: Error): string {
     const message = error.message.toLowerCase();
     
     if (message.includes('network') || message.includes('connection')) {
-      return 'Erro de conexão. Verifique sua internet e tente novamente.';
+      return 'Error de conexión. Verifica tu internet e intenta nuevamente.';
     }
     
     if (message.includes('timeout')) {
-      return 'Tempo limite excedido. Tente novamente.';
+      return 'Tiempo límite excedido. Intenta nuevamente.';
     }
     
     if (message.includes('invalid') || message.includes('400')) {
-      return 'Dados inválidos. Verifique as informações e tente novamente.';
+      return 'Datos inválidos. Verifica la información e intenta nuevamente.';
     }
     
     if (message.includes('unauthorized') || message.includes('401')) {
-      return 'Erro de autorização. Entre em contato com o suporte.';
+      return 'Error de autorización. Contacta al soporte.';
     }
     
     if (message.includes('forbidden') || message.includes('403')) {
-      return 'Acesso negado. Entre em contato com o suporte.';
+      return 'Acceso denegado. Contacta al soporte.';
     }
     
     if (message.includes('not found') || message.includes('404')) {
-      return 'Pagamento não encontrado.';
+      return 'Pago no encontrado.';
     }
     
     if (message.includes('rate limit') || message.includes('429')) {
-      return 'Muitas tentativas. Aguarde um momento e tente novamente.';
+      return 'Demasiados intentos. Espera un momento e intenta nuevamente.';
     }
     
     if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
-      return 'Erro temporário do servidor. Tente novamente em alguns minutos.';
+      return 'Error temporal del servidor. Intenta nuevamente en unos minutos.';
     }
     
-    return 'Erro inesperado. Tente novamente ou entre em contato com o suporte.';
+    return 'Error inesperado. Intenta nuevamente o contacta al soporte.';
   }
 
   /**
-   * Creates a new PIX payment with MercadoPago
+   * Creates a new QR payment (QR Simple) with MercadoPago
    * 
    * This method:
    * 1. Validates payment data
    * 2. Sends request to backend API
-   * 3. Returns PIX QR code and payment details
+   * 3. Returns the payment QR code and payment details
    * 4. Handles errors with retry logic
    * 
    * @async
@@ -245,7 +245,7 @@ class MercadoPagoService {
     const useMock = !this.accessToken || this.accessToken === "your_mercadopago_access_token_here";
     
     if (useMock) {
-      toast.info("Modo de teste - pagamento simulado");
+      toast.info("Modo de prueba - pago simulado");
       return mockMercadoPagoService.createPayment(paymentData);
     }
 
@@ -481,11 +481,11 @@ class MercadoPagoService {
 
         // Show appropriate toast based on status
         if (data.success && data.status === 'approved') {
-          toast.success('Pagamento aprovado!');
+          toast.success('¡Pago aprobado!');
         } else if (data.status === 'rejected') {
-          toast.error(data.error || 'Pagamento recusado');
+          toast.error(data.error || 'Pago rechazado');
         } else if (data.status === 'in_process') {
-          toast.info('Pagamento em análise');
+          toast.info('Pago en revisión');
         }
 
         return data;
@@ -513,7 +513,7 @@ class MercadoPagoService {
  * ```typescript
  * import { mercadoPagoService } from '@/integrations/mercadopago/client';
  * 
- * // Create PIX payment
+ * // Create QR payment (QR Simple)
  * const payment = await mercadoPagoService.createPayment(paymentData);
  * 
  * // Create card payment

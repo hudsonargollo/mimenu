@@ -90,15 +90,15 @@ serve(async (req) => {
     const evolutionApiKey = Deno.env.get('VITE_EVOLUTION_API_KEY') || 'DD451E404240-4C45-AF35-BFCA6A976927';
     const instanceName = Deno.env.get('VITE_EVOLUTION_INSTANCE_NAME') || 'cocooo';
 
-    const message = `Olá ${waiterName || 'Garçom'}! 👋
+    const message = `Hola ${waiterName || 'Mozo'}! 👋
 
-Você recebeu um link para redefinir sua senha:
+Recibiste un enlace para restablecer tu contraseña:
 
 ${resetData.properties.action_link}
 
-Este link é válido por 1 hora. Clique nele para criar uma nova senha.
+Este enlace es válido por 1 hora. Haz clic en él para crear una nueva contraseña.
 
-Se você não solicitou esta redefinição, ignore esta mensagem.`;
+Si no solicitaste este restablecimiento, ignora este mensaje.`;
 
     const whatsappResponse = await fetch(`${evolutionApiUrl}/message/sendText/${instanceName}`, {
       method: 'POST',
@@ -123,7 +123,7 @@ Se você não solicitou esta redefinição, ignore esta mensagem.`;
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: 'Link de redefinição enviado via WhatsApp'
+        message: 'Enlace de restablecimiento enviado por WhatsApp'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

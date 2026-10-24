@@ -21,6 +21,14 @@ import {
   calculateHotnessScore
 } from '@/data/mimenuData';
 import { toast } from 'sonner';
+import {
+  resolveVenueSlug,
+  findVenueBySlug,
+  defaultVenueSlug,
+  toVenue,
+  categoriesFor,
+  tableCountFor,
+} from '@/lib/venueRegistry';
 
 interface MimenuContextType {
   venue: Venue;
@@ -127,40 +135,27 @@ const INITIAL_CUSTOMERS: CustomerProfile[] = [
 ];
 
 export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Venue state
+  // Venue state — the active tenant, resolved from ?v=<slug> in the URL.
   const [venue, setVenue] = useState<Venue>(() => {
     if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const venueSlug = urlParams.get('v') || urlParams.get('venue');
-      if (venueSlug) {
-        // Try finding in provisioned data
-        try {
-          // Note: In a real app we'd fetch this from KV, but for local simulation/PWA
-          // we use the provisioned_venues.json as a read-only registry
-          const provisioned = require('@/data/provisioned_venues.json');
-          const matched = provisioned.find((v: any) => v.slug === venueSlug);
-          if (matched) {
-            // Only use provisioned if no local changes exist or if explicitly requested
-            return matched;
-          }
-        } catch (e) {}
-      }
+      const { slug, requested, found } = resolveVenueSlug(window.location.search);
+      const matched = findVenueBySlug(slug);
+      if (matched) return toVenue(matched);
+      // A slug was requested but does not exist: fall back to the demo tenant.
+      if (requested && !found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
     }
     const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
     return saved ? JSON.parse(saved) : DEFAULT_VENUE;
   });
 
-  // Categories & items state
+  // Categories & items state — the active tenant's menu.
   const [categories, setCategories] = useState<MenuCategoryDetail[]>(() => {
     if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const venueSlug = urlParams.get('v') || urlParams.get('venue');
-      if (venueSlug) {
-        try {
-          const provisioned = require('@/data/provisioned_venues.json');
-          const matched = provisioned.find((v: any) => v.slug === venueSlug);
-          if (matched && matched.categories) return matched.categories;
-        } catch (e) {}
+      const { slug } = resolveVenueSlug(window.location.search);
+      const matched = findVenueBySlug(slug);
+      if (matched) {
+        const cats = categoriesFor(matched);
+        if (cats.length > 0) return cats;
       }
     }
     const saved = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
@@ -173,31 +168,22 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : INITIAL_CYCLING_OFFERS;
   });
 
-  // Tables state
+  // Tables state — generated from the active tenant's table count.
   const [tables, setTables] = useState<VenueTable[]>(() => {
     if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const venueSlug = urlParams.get('v') || urlParams.get('venue');
-      if (venueSlug) {
-        try {
-          const provisioned = require('@/data/provisioned_venues.json');
-          const matched = provisioned.find((v: any) => v.slug === venueSlug);
-          if (matched && matched.tables) {
-            // Generate tables array if it's just a count
-            if (typeof matched.tables === 'number') {
-              return Array.from({ length: matched.tables }, (_, idx) => ({
-                id: `tbl-${matched.slug}-${idx+1}`,
-                venue_id: matched.id,
-                table_number: (idx + 1).toString(),
-                label: `Mesa ${idx + 1}`,
-                qr_code_hash: `${matched.slug}-m${idx + 1}`,
-                zone: idx < 6 ? 'Principal' : 'Terraza',
-                is_occupied: false,
-                is_active: true
-              }));
-            }
-          }
-        } catch (e) {}
+      const { slug } = resolveVenueSlug(window.location.search);
+      const matched = findVenueBySlug(slug);
+      if (matched) {
+        return Array.from({ length: tableCountFor(matched) }, (_, idx) => ({
+          id: `tbl-${matched.slug}-${idx + 1}`,
+          venue_id: matched.id,
+          table_number: (idx + 1).toString(),
+          label: `Mesa ${idx + 1}`,
+          qr_code_hash: `${matched.slug}-m${idx + 1}`,
+          zone: idx < 6 ? 'Principal' : 'Terraza',
+          is_occupied: false,
+          is_active: true,
+        }));
       }
     }
     const saved = localStorage.getItem(STORAGE_KEYS.TABLES);
@@ -276,6 +262,59 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [fulfillmentType, setFulfillmentTypeState] = useState<FulfillmentType>(() => {
     return (localStorage.getItem(STORAGE_KEYS.FULFILLMENT) as FulfillmentType) || 'dine_in';
   });
+
+  // Tracks the URL search string so tenant switches re-resolve the venue.
+  const [urlSearch, setUrlSearch] = useState<string>(
+    () => (typeof window !== 'undefined' ? window.location.search : '')
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sync = () => setUrlSearch(window.location.search);
+    window.addEventListener('popstate', sync);
+    // SPA navigations do not fire popstate, so also watch pushState/replaceState.
+    const wrap = (method: 'pushState' | 'replaceState') => {
+      const original = history[method];
+      history[method] = function (this: History, ...args: Parameters<History['pushState']>) {
+        original.apply(this, args as []);
+        sync();
+      };
+    };
+    wrap('pushState');
+    wrap('replaceState');
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+
+  // Re-resolve the active tenant when the URL slug changes (SPA navigation,
+  // e.g. the tenant switcher). Without this the venue stays stale.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { slug, requested, found } = resolveVenueSlug(window.location.search);
+    const matched = findVenueBySlug(slug);
+    if (!matched) return;
+    setVenue((current) => {
+      if (current.slug === matched.slug) return current;
+      const next = toVenue(matched);
+      toast.info(`Cambiaste a ${next.name}${requested && !found ? ' (venue no encontrado)' : ''}`);
+      return next;
+    });
+    setCategories((current) => {
+      const cats = categoriesFor(matched);
+      return cats.length > 0 ? cats : current;
+    });
+    setTables(
+      Array.from({ length: tableCountFor(matched) }, (_, idx) => ({
+        id: `tbl-${matched.slug}-${idx + 1}`,
+        venue_id: matched.id,
+        table_number: (idx + 1).toString(),
+        label: `Mesa ${idx + 1}`,
+        qr_code_hash: `${matched.slug}-m${idx + 1}`,
+        zone: idx < 6 ? 'Principal' : 'Terraza',
+        is_occupied: false,
+        is_active: true,
+      }))
+    );
+  }, [urlSearch]);
 
   // Auto-detect table / QR from URL
   useEffect(() => {

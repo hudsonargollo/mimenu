@@ -23,6 +23,8 @@ import { ItemReviewDialog } from '@/components/ItemReviewDialog';
 import { CyclingOffersBanner } from '@/components/CyclingOffersBanner';
 import { CartDrawerExpress } from '@/components/CartDrawerExpress';
 import { MenuChatbot } from '@/components/chatbot/MenuChatbot';
+import { pickLocalText } from '@/lib/venueContext';
+import type { Lang } from '@/i18n/translations';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -36,16 +38,26 @@ const Menu: React.FC = () => {
   const [onlyHot, setOnlyHot] = useState<boolean>(false);
   const [selectedReviewItem, setSelectedReviewItem] = useState<MenuItemDetail | null>(null);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<'es' | 'en' | 'pt'>('es');
+  const [currentLang, setCurrentLang] = useState<Lang>('es');
 
   useEffect(() => {
-    document.title = `${venue.name} — Menú Digital Santa Cruz`;
-  }, [venue.name]);
+    document.title = `${venueName} — Menú Digital`;
+  }, [venueName]);
 
   // Flatten and filter items
   const allItems = useMemo(() => {
     return categories.flatMap(cat => cat.items);
   }, [categories]);
+
+  // Localized display fields for the current UI language (falls back to the
+  // plain Spanish field when the tenant has no translation).
+  const itemName = (item: MenuItemDetail) => pickLocalText(item.name_i18n, currentLang) || item.name;
+  const itemDesc = (item: MenuItemDetail) =>
+    pickLocalText(item.description_i18n, currentLang) || item.description || '';
+  const catName = (cat: { name: string; name_i18n?: Record<Lang, string> }) =>
+    pickLocalText(cat.name_i18n, currentLang) || cat.name;
+  const venueName = pickLocalText(venue.name_i18n, currentLang) || venue.name;
+  const venueDesc = pickLocalText(venue.description_i18n, currentLang) || venue.description;
 
   const filteredItems = useMemo(() => {
     return allItems.filter(item => {
@@ -66,8 +78,8 @@ const Menu: React.FC = () => {
       // Search filter
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
-        const matchesName = item.name.toLowerCase().includes(term);
-        const matchesDesc = item.description?.toLowerCase().includes(term);
+        const matchesName = itemName(item).toLowerCase().includes(term);
+        const matchesDesc = (itemDesc(item) || item.description || '').toLowerCase().includes(term);
         const matchesTags = item.tags?.some(t => t.toLowerCase().includes(term));
         return matchesName || matchesDesc || matchesTags;
       }
@@ -79,12 +91,14 @@ const Menu: React.FC = () => {
     addItem({
       id: item.id,
       name: item.name,
+      name_i18n: item.name_i18n,
       description: item.description,
+      description_i18n: item.description_i18n,
       price: item.price,
       category_id: item.category_id,
       available: item.is_available,
     });
-    toast.success(`Agregaste 1x ${item.name}`, {
+    toast.success(`Agregaste 1x ${itemName(item)}`, {
       description: `${venue.currency} ${item.price}`,
     });
   };
@@ -103,15 +117,15 @@ const Menu: React.FC = () => {
           <div className="relative z-10 max-w-2xl space-y-2">
             <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-amber-400">
               <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
-              <span>Santa Cruz de la Sierra • Noche & Gastronomía</span>
+              <span>{venue.city || 'Santa Cruz de la Sierra'} • {venue.tagline}</span>
             </div>
             
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
-              {venue.name}
+              {venueName}
             </h1>
             
             <p className="text-xs md:text-sm text-slate-300 font-normal leading-relaxed">
-              {venue.description}
+              {venueDesc}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-400">
@@ -154,7 +168,7 @@ const Menu: React.FC = () => {
                     : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {cat.name} ({cat.items.length})
+                {catName(cat)} ({cat.items.length})
               </button>
             ))}
           </div>
@@ -235,7 +249,7 @@ const Menu: React.FC = () => {
                   <div className="relative aspect-16/10 w-full overflow-hidden bg-muted">
                     <img
                       src={item.image_url}
-                      alt={item.name}
+                      alt={itemName(item)}
                       className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
                       loading="lazy"
                     />
@@ -278,7 +292,7 @@ const Menu: React.FC = () => {
                       {/* Review Star Button */}
                       <button
                         onClick={() => setSelectedReviewItem(item)}
-                        aria-label={`Ver opiniones de ${item.name}`}
+                        aria-label={`Ver opiniones de ${itemName(item)}`}
                         className="bg-black/60 hover:bg-black/80 backdrop-blur-xs text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 border border-white/20 transition-all"
                       >
                         <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" aria-hidden="true" />
@@ -292,10 +306,10 @@ const Menu: React.FC = () => {
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div className="space-y-1.5">
                       <h3 className="font-bold text-sm sm:text-base text-foreground leading-snug group-hover:text-amber-500 transition-colors">
-                        {item.name}
+                        {itemName(item)}
                       </h3>
                       <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                        {item.description || 'Preparado al momento con ingredientes seleccionados.'}
+                        {itemDesc(item) || 'Preparado al momento con ingredientes seleccionados.'}
                       </p>
 
                       {/* Tags & Dietary Badges */}
@@ -354,7 +368,7 @@ const Menu: React.FC = () => {
                         <div className="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 rounded-xl p-1">
                           <button
                             onClick={() => removeItem(item.id)}
-                            aria-label={`Quitar uno de ${item.name}`}
+                            aria-label={`Quitar uno de ${itemName(item)}`}
                             className="w-7 h-7 rounded-lg bg-background hover:bg-muted text-foreground flex items-center justify-center transition-all shadow-xs"
                           >
                             <Minus className="w-3.5 h-3.5" aria-hidden="true" />
@@ -369,7 +383,7 @@ const Menu: React.FC = () => {
                           </div>
                           <button
                             onClick={() => handleAddToCart(item)}
-                            aria-label={`Agregar uno más de ${item.name}`}
+                            aria-label={`Agregar uno más de ${itemName(item)}`}
                             className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center transition-all shadow-xs hover:bg-amber-600"
                           >
                             <Plus className="w-3.5 h-3.5" aria-hidden="true" />

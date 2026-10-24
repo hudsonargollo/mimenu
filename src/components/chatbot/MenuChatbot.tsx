@@ -3,6 +3,7 @@ import { MessageCircle, Send, X, Loader2 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { ChatbotLang, ChatbotSessionState } from '@/lib/chatbot/engine';
 import { handleChatTurn, loadSessionState, saveSessionState } from '@/lib/chatbot/service';
+import { pickLocalText } from '@/lib/venueContext';
 
 type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string };
 const labels: Record<ChatbotLang, { title: string; placeholder: string; welcome: string; error: string }> = {
@@ -49,17 +50,17 @@ export function MenuChatbot() {
     const dietary = item.dietary || [];
     return {
       id: item.id,
-      name: item.name,
-      description: item.description,
+      name: pickLocalText(item.name_i18n, lang) || item.name,
+      description: pickLocalText(item.description_i18n, lang) || item.description,
       price: item.price,
-      category: category.name,
+      category: pickLocalText(category.name_i18n, lang) || category.name,
       isAvailable: item.is_available,
       isFeatured: item.is_featured,
       isVegetarian: dietary.includes('Vegetariano') || dietary.includes('Vegetarian'),
       isVegan: dietary.includes('Vegano') || dietary.includes('Vegan'),
       isGlutenFree: dietary.includes('Sin Gluten') || dietary.includes('Gluten-Free'),
     };
-  })), [categories]);
+  })), [categories, lang]);
 
   const submitMessage = async (event: FormEvent) => {
     event.preventDefault();

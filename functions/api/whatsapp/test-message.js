@@ -53,13 +53,13 @@ export async function onRequest(context) {
     console.log('🔵 Attempting to send message directly...');
 
     // Send test message
-    const messageText = message || `🥥 Teste de conexão WhatsApp - Coco Loko Açaiteria ✅
+    const messageText = message || `🥥 Prueba de conexión WhatsApp - Coco Loko Açaiteria ✅
 
-Se você recebeu esta mensagem, o WhatsApp está funcionando corretamente!
+Si recibiste este mensaje, el WhatsApp está funcionando correctamente!
 
-📱 Mensagem enviada em: ${new Date().toLocaleString('pt-BR')}
+📱 Mensaje enviado en: ${new Date().toLocaleString('es-BO')}
 🏪 Sistema: Coco Loko Açaiteria
-✅ Status: Operacional`;
+✅ Estado: Operacional`;
 
     const messagePayload = {
       number: testNumber,
@@ -90,7 +90,7 @@ Se você recebeu esta mensagem, o WhatsApp está funcionando corretamente!
       return new Response(JSON.stringify({
         success: true,
         messageId: data.key?.id || data.messageId,
-        message: 'Mensagem de teste enviada com sucesso!',
+        message: 'Mensaje de prueba enviado con exito!',
         details: data
       }), {
         status: 200,

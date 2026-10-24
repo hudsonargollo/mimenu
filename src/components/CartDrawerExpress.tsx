@@ -28,6 +28,8 @@ import { useCart } from '@/lib/cartContext';
 import { useMimenu } from '@/lib/mimenuContext';
 import { GoogleReviewHunterModal } from '@/components/GoogleReviewHunterModal';
 import { toast } from 'sonner';
+import { useLang } from '@/i18n/LanguageProvider';
+import { pickLocalText } from '@/lib/venueContext';
 
 interface CartDrawerExpressProps {
   isOpen: boolean;
@@ -40,6 +42,8 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
 }) => {
   const { state: cartState, addItem, removeItem, clearCart, getTotalPrice, getTotalItems } = useCart();
   const { venue, selectedTable, fulfillmentType, setFulfillmentType, setSelectedTable, createOrder, getContextualUpsells } = useMimenu();
+  const { lang } = useLang();
+  const venueName = pickLocalText(venue.name_i18n, lang) || venue.name;
 
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -137,7 +141,7 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
       : `Delivery: ${deliveryAddress} (Ref: ${deliveryReference || 'S/R'})`;
 
     const itemsList = confirmedOrder.items.map((i: any) => `• ${i.quantity}x ${i.name} (Bs. ${i.price * i.quantity})`).join('\n');
-    return `*${venue.name.toUpperCase()} — PEDIDO #${confirmedOrder.order_number}*\nTipo: ${fulfillmentType.toUpperCase()}\nDestino: ${destination}\nCliente: ${confirmedOrder.customer_name} (${confirmedOrder.customer_phone})\n\n*DETALLE:*\n${itemsList}\n\nSubtotal: Bs. ${confirmedOrder.subtotal}\n${deliveryFee > 0 ? `Envío Delivery: Bs. ${deliveryFee}\n` : ''}Propina: Bs. ${selectedTip}\n*TOTAL:* Bs. ${confirmedOrder.total}\nMétodo: ${paymentMethod.replace('_', ' ').toUpperCase()}\n\n_Enviado desde MIMENU Santa Cruz_`;
+    return `*${venueName.toUpperCase()} — PEDIDO #${confirmedOrder.order_number}*\nTipo: ${fulfillmentType.toUpperCase()}\nDestino: ${destination}\nCliente: ${confirmedOrder.customer_name} (${confirmedOrder.customer_phone})\n\n*DETALLE:*\n${itemsList}\n\nSubtotal: Bs. ${confirmedOrder.subtotal}\n${deliveryFee > 0 ? `Envío Delivery: Bs. ${deliveryFee}\n` : ''}Propina: Bs. ${selectedTip}\n*TOTAL:* Bs. ${confirmedOrder.total}\nMétodo: ${paymentMethod.replace('_', ' ').toUpperCase()}\n\n_Enviado desde MIMENU Santa Cruz_`;
   };
 
   const handleShareWhatsApp = () => {
@@ -157,7 +161,7 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
             </div>
             <div>
               <DialogTitle className="text-sm font-bold tracking-tight text-white">
-                {confirmedOrder ? 'Pedido Confirmado' : `Tu Comanda • ${venue.name}`}
+                {confirmedOrder ? 'Pedido Confirmado' : `Tu Comanda • ${venueName}`}
               </DialogTitle>
               <p className="text-[11px] text-slate-400 font-medium">
                 {fulfillmentType === 'dine_in' ? `Mesa ${selectedTable || '1'}` : fulfillmentType === 'pickup' ? 'Retiro en Barra' : 'Delivery Directo'}
@@ -323,7 +327,7 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
                     {cartState.items.map((item) => (
                       <div key={item.id} className="py-2 px-1 flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+                          <p className="text-xs font-semibold text-foreground truncate">{pickLocalText(item.name_i18n, lang) || item.name}</p>
                           <p className="text-[10px] text-amber-500 font-bold tabular-nums">{venue.currency} {item.price}</p>
                         </div>
 

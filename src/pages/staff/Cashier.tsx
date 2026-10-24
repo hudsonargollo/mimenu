@@ -100,16 +100,16 @@ const Cashier = () => {
   
   // Load WhatsApp errors for all orders
   const { errors: whatsappErrors, refresh: refreshErrors } = useWhatsAppErrors(orderIds);
-
+  
   // Track unread messages for all orders
   const { unreadCounts, markAsRead } = useUnreadMessages(orderIds);
-
+  
   // Store status management - disabled for now
   const { isOpen: storeIsOpen, loading: storeStatusLoading, toggleStoreStatus } = { isOpen: true, loading: false, toggleStoreStatus: () => {} };
 
   // Set page title
   useEffect(() => {
-    document.title = "Caixa & KDS | MiMenu";
+    document.title = "Caja & KDS | MiMenu";
   }, []);
 
   // Persist waiter filter selection to localStorage
@@ -121,17 +121,15 @@ const Cashier = () => {
     }
   }, [selectedWaiterId]);
 
-
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast.success("Logout realizado com sucesso!");
+    toast.success("¡Sesión cerrada!");
     navigate("/auth");
   };
 
   const formatTimestamp = (timestamp: string | null) => {
     if (!timestamp) return null;
-    return new Date(timestamp).toLocaleString('pt-BR', {
+    return new Date(timestamp).toLocaleString('es-BO', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -216,7 +214,7 @@ const Cashier = () => {
     if (order.payment_confirmed_at) {
       return {
         status: 'confirmed',
-        label: 'Pagamento Confirmado',
+        label: 'Pago Confirmado',
         icon: CheckCircle,
         variant: 'default' as const,
         timestamp: order.payment_confirmed_at,
@@ -226,7 +224,7 @@ const Cashier = () => {
     if (order.payment_expires_at && new Date(order.payment_expires_at) < new Date()) {
       return {
         status: 'expired',
-        label: 'Pagamento Expirado',
+        label: 'Pago Expirado',
         icon: AlertCircle,
         variant: 'destructive' as const,
         timestamp: order.payment_expires_at,
@@ -236,7 +234,7 @@ const Cashier = () => {
     if (order.mercadopago_payment_id) {
       return {
         status: 'pending',
-        label: 'Aguardando Pagamento PIX',
+        label: 'Esperando Pago QR',
         icon: Timer,
         variant: 'outline' as const,
         timestamp: order.payment_expires_at,
@@ -245,7 +243,7 @@ const Cashier = () => {
     
     return {
       status: 'no_payment',
-      label: 'Sem Pagamento Gerado',
+      label: 'Sin Pago Generado',
       icon: CreditCard,
       variant: 'secondary' as const,
       timestamp: null,
@@ -295,7 +293,7 @@ const Cashier = () => {
       setOrders(ordersWithItems);
     } catch (error) {
       console.error("Error loading orders:", error);
-      toast.error("Erro ao carregar pedidos");
+      toast.error("Error al cargar pedidos");
     } finally {
       setLoading(false);
     }
@@ -303,7 +301,7 @@ const Cashier = () => {
 
   const verifyPayment = async (orderId: string) => {
     try {
-      toast.loading("Verificando pagamento no MercadoPago...");
+      toast.loading("Verificando pago en MercadoPago...");
       
       // Get order with payment ID
       const { data: order, error: orderError } = await supabase
@@ -318,7 +316,7 @@ const Cashier = () => {
         setPaymentDialogData({
           orderId,
           status: 'no_payment_id',
-          message: 'Não foi possível verificar o pagamento automaticamente. O pedido não possui um PIX associado.',
+          message: 'No se pudo verificar el pago automáticamente. El pedido no tiene un pago asociado.',
           canConfirmManually: true,
         });
         setPaymentDialogOpen(true);
@@ -334,13 +332,13 @@ const Cashier = () => {
       if (paymentStatus.status === 'approved') {
         // Payment approved, confirm it automatically
         await confirmPaymentManually(orderId);
-        toast.success("✅ Pagamento verificado e confirmado!");
+        toast.success("✅ ¡Pago verificado y confirmado!");
       } else if (paymentStatus.status === 'pending') {
         // Still pending
         setPaymentDialogData({
           orderId,
           status: 'pending',
-          message: 'O pagamento ainda está pendente no MercadoPago. Aguarde alguns instantes ou confirme se o cliente pagou por outro método.',
+          message: 'El pago aún está pendiente en MercadoPago. Espera unos momentos o confirma si el cliente pagó por otro método.',
           canConfirmManually: true,
         });
         setPaymentDialogOpen(true);
@@ -349,7 +347,7 @@ const Cashier = () => {
         setPaymentDialogData({
           orderId,
           status: paymentStatus.status,
-          message: `O pagamento foi ${paymentStatus.status} no MercadoPago. Verifique se o cliente pagou por outro método.`,
+          message: `El pago fue ${paymentStatus.status} en MercadoPago. Verifica si el cliente pagó por otro método.`,
           canConfirmManually: true,
         });
         setPaymentDialogOpen(true);
@@ -361,7 +359,7 @@ const Cashier = () => {
       setPaymentDialogData({
         orderId,
         status: 'error',
-        message: 'Erro ao verificar o pagamento no MercadoPago. Verifique sua conexão ou confirme se o cliente pagou por outro método.',
+        message: 'Error al verificar el pago en MercadoPago. Verifica tu conexión o confirma si el cliente pagó por otro método.',
         canConfirmManually: true,
       });
       setPaymentDialogOpen(true);
@@ -409,13 +407,12 @@ const Cashier = () => {
       }
 
       console.log('Payment confirmed successfully:', result);
-
       // Show success message
       if (result.notificationSent) {
-        toast.success("✅ Pagamento confirmado! Pedido enviado para a cozinha e cliente notificado via WhatsApp.");
+        toast.success("✅ ¡Pago confirmado! Pedido enviado a la cocina y cliente notificado por WhatsApp.");
       } else {
-        toast.success("✅ Pagamento confirmado! Pedido enviado para a cozinha.");
-        toast.info("ℹ️ Notificação WhatsApp não foi enviada (pode já ter sido enviada anteriormente).");
+        toast.success("✅ ¡Pago confirmado! Pedido enviado a la cocina.");
+        toast.info("ℹ️ Notificación WhatsApp no fue enviada (puede que ya haya sido enviada anteriormente).");
       }
 
       // Close payment dialog if open
@@ -425,8 +422,8 @@ const Cashier = () => {
       console.error("Error confirming payment:", error);
       
       // Show user-friendly error message
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast.error(`❌ Erro ao confirmar pagamento: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      toast.error(`❌ Error al confirmar pago: ${errorMessage}`);
     }
   };
 
@@ -461,15 +458,15 @@ const Cashier = () => {
       await notificationTriggers.onOrderStatusChange(orderId, newStatus, oldStatus);
 
       const statusLabels: { [key: string]: string } = {
-        'in_preparation': 'Em Preparo',
-        'ready': 'Pronto',
-        'completed': 'Concluído',
+        'in_preparation': 'En Preparación',
+        'ready': 'Listo',
+        'completed': 'Finalizado',
       };
 
-      toast.success(`Status do pedido atualizado para: ${statusLabels[newStatus] || newStatus}`);
+      toast.success(`Estado del pedido actualizado a: ${statusLabels[newStatus] || newStatus}`);
     } catch (error) {
       console.error("Error updating order status:", error);
-      toast.error("Erro ao atualizar status do pedido");
+      toast.error("Error al actualizar el estado del pedido");
     }
   };
 
@@ -484,10 +481,10 @@ const Cashier = () => {
 
       if (error) throw error;
 
-      toast.success("Pedido marcado como concluído!");
+      toast.success("¡Pedido marcado como finalizado!");
     } catch (error) {
       console.error("Error completing order:", error);
-      toast.error("Erro ao concluir pedido");
+      toast.error("Error al finalizar pedido");
     }
   };
 
@@ -502,10 +499,10 @@ const Cashier = () => {
 
       if (error) throw error;
 
-      toast.success("Pedido cancelado!");
+      toast.success("¡Pedido cancelado!");
     } catch (error) {
       console.error("Error cancelling order:", error);
-      toast.error("Erro ao cancelar pedido");
+      toast.error("Error al cancelar pedido");
     }
   };
 
@@ -528,10 +525,10 @@ const Cashier = () => {
 
       // Remove from local state
       setOrders(orders.filter(o => o.id !== orderId));
-      toast.success("Pedido removido!");
+      toast.success("Pedido eliminado!");
     } catch (error) {
       console.error("Error deleting order:", error);
-      toast.error("Erro ao remover pedido");
+      toast.error("Error al eliminar pedido");
     }
   };
 
@@ -549,19 +546,21 @@ const Cashier = () => {
 
       if (error) throw error;
 
-      toast.success("Cliente notificado via WhatsApp!");
+      toast.success("¡Cliente notificado por WhatsApp!");
     } catch (error) {
       console.error("Error notifying customer:", error);
-      toast.error("Erro ao notificar cliente");
+      toast.error("Error al notificar al cliente");
     }
   };
 
-
+  const formatCurrency = (amount: number) => {
+    return `Bs ${amount.toFixed(2)}`;
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Carregando...</p>
+        <p className="text-muted-foreground">Cargando...</p>
       </div>
     );
   }
@@ -621,7 +620,7 @@ const Cashier = () => {
             <div className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm rounded-lg px-3 py-2 transition-all duration-300">
               <Store className={`h-4 w-4 ${storeIsOpen ? 'text-green-300' : 'text-red-300'}`} />
               <span className="hidden md:inline text-white text-sm font-medium">
-                {storeIsOpen ? 'Aberto' : 'Fechado'}
+                {storeIsOpen ? 'Abierto' : 'Cerrado'}
               </span>
               <Switch
                 checked={storeIsOpen}
@@ -637,7 +636,7 @@ const Cashier = () => {
               size="sm"
             >
               <Plus className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Criar Pedido</span>
+              <span className="hidden sm:inline">Crear Pedido</span>
             </Button>
             <Button
               onClick={() => window.location.href = '/reports'}
@@ -645,7 +644,7 @@ const Cashier = () => {
               size="sm"
             >
               <BarChart3 className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Relatórios</span>
+              <span className="hidden sm:inline">Reportes</span>
             </Button>
             <Button
               onClick={() => window.location.href = '/admin/products'}
@@ -653,7 +652,7 @@ const Cashier = () => {
               size="sm"
             >
               <Package className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Produtos</span>
+              <span className="hidden sm:inline">Productos</span>
             </Button>
           </>
         }
@@ -684,7 +683,7 @@ const Cashier = () => {
                 <div className="text-right">
                   <p className={`text-xs sm:text-sm font-medium transition-colors ${
                     activeTab === 'pending' ? 'text-white/90' : 'text-gray-600 group-hover:text-white/90'
-                  }`}>Aguardando</p>
+                  }`}>Esperando</p>
                   <p className={`text-2xl sm:text-3xl font-bold transition-colors ${
                     activeTab === 'pending' ? 'text-white' : 'text-gray-900 group-hover:text-white'
                   }`}>{pendingOrders.length}</p>
@@ -721,7 +720,7 @@ const Cashier = () => {
                 <div className="text-right">
                   <p className={`text-xs sm:text-sm font-medium transition-colors ${
                     activeTab === 'progress' ? 'text-white/90' : 'text-gray-600 group-hover:text-white/90'
-                  }`}>Em Preparo</p>
+                  }`}>En Preparación</p>
                   <p className={`text-2xl sm:text-3xl font-bold transition-colors ${
                     activeTab === 'progress' ? 'text-white' : 'text-gray-900 group-hover:text-white'
                   }`}>{inProgressOrders.length}</p>
@@ -758,7 +757,7 @@ const Cashier = () => {
                 <div className="text-right">
                   <p className={`text-xs sm:text-sm font-medium transition-colors ${
                     activeTab === 'ready' ? 'text-white/90' : 'text-gray-600 group-hover:text-white/90'
-                  }`}>Prontos</p>
+                  }`}>Listos</p>
                   <p className={`text-2xl sm:text-3xl font-bold transition-colors ${
                     activeTab === 'ready' ? 'text-white' : 'text-gray-900 group-hover:text-white'
                   }`}>{readyOrders.length}</p>
@@ -795,7 +794,7 @@ const Cashier = () => {
                 <div className="text-right">
                   <p className={`text-xs sm:text-sm font-medium transition-colors ${
                     activeTab === 'completed' ? 'text-white/90' : 'text-gray-600 group-hover:text-white/90'
-                  }`}>Concluídos</p>
+                  }`}>Finalizados</p>
                   <p className={`text-2xl sm:text-3xl font-bold transition-colors ${
                     activeTab === 'completed' ? 'text-white' : 'text-gray-900 group-hover:text-white'
                   }`}>{completedOrders.length}</p>
@@ -849,29 +848,26 @@ const Cashier = () => {
           </Card>
         </div>
 
-
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-
-          <TabsContent value="pending" className="space-y-4">
-            {pendingOrders.length === 0 ? (
-              <Card className="p-8 text-center">
-                <div className="flex flex-col items-center">
-                  <Timer className="w-16 h-16 text-gray-300 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido aguardando pagamento</p>
-                  <p className="text-sm text-gray-500">
-                    Pedidos aparecerão aqui quando clientes fizerem novos pedidos
-                  </p>
-                </div>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {pendingOrders.map((order) => {
-                const paymentStatus = getPaymentStatus(order);
-                const PaymentIcon = paymentStatus.icon;
-                
-                return (
-                  <Card key={order.id} className="p-3 sm:p-6 shadow-soft">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsContent value="pending" className="space-y-4">
+          {pendingOrders.length === 0 ? (
+            <Card className="p-8 text-center">
+              <div className="flex flex-col items-center">
+                <Timer className="w-16 h-16 text-gray-300 mb-4" />
+                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido esperando pago</p>
+                <p className="text-sm text-gray-500">
+                  Los pedidos aparecerán aquí cuando los clientes hagan nuevos pedidos
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {pendingOrders.map((order) => {
+              const paymentStatus = getPaymentStatus(order);
+              const PaymentIcon = paymentStatus.icon;
+              
+              return (
+                <Card key={order.id} className="p-3 sm:p-6 shadow-soft">
                     {/* Order Number + Status Badges */}
                     <div className="flex items-start justify-between gap-2 mb-3">
                       <div className="flex items-center gap-2">
@@ -882,7 +878,7 @@ const Cashier = () => {
                           <Badge 
                             variant="destructive" 
                             className="h-5 px-1.5 text-xs font-semibold animate-pulse"
-                            title={`${unreadCounts.get(order.id)} mensagem${(unreadCounts.get(order.id) || 0) > 1 ? 'ns' : ''} não lida${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
+                            title={`${unreadCounts.get(order.id)} mensaje${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''} no leído${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
                           >
                             <MessageSquare className="h-3 w-3 mr-1" />
                             {unreadCounts.get(order.id)}
@@ -891,7 +887,7 @@ const Cashier = () => {
                       </div>
                       <div className="flex gap-1.5 items-center flex-wrap justify-end">
                         <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 border-yellow-200 text-xs px-2 py-1 whitespace-nowrap">
-                          Criado em: {formatTimeWithAMPM(order.created_at)}
+                          Creado: {formatTimeWithAMPM(order.created_at)}
                         </Badge>
                         <StatusBadge 
                           orderStatus={order.status as OrderStatus}
@@ -916,11 +912,11 @@ const Cashier = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-bold text-lg sm:text-xl text-primary whitespace-nowrap">
-                          R$ {Number(order.total_amount).toFixed(2)}
+                          {formatCurrency(Number(order.total_amount))}
                         </p>
                         {paymentStatus.timestamp && (
                           <p className="text-xs text-muted-foreground mt-1 whitespace-nowrap">
-                            {paymentStatus.status === 'pending' ? 'Expira' : 'Pago'}<br/>
+                            {paymentStatus.status === 'pending' ? 'Expira' : 'Pagado'}<br/>
                             {formatTimestamp(paymentStatus.timestamp)?.split(' ')[1]}
                           </p>
                         )}
@@ -930,7 +926,7 @@ const Cashier = () => {
                     {/* Order Items */}
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Itens:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item) => (
                             <div key={item.id} className="flex justify-between text-xs">
@@ -938,7 +934,7 @@ const Cashier = () => {
                                 {item.quantity}x {item.item_name}
                               </span>
                               <span className="font-medium text-gray-900">
-                                R$ {Number(item.unit_price * item.quantity).toFixed(2)}
+                                {formatCurrency(Number(item.unit_price * item.quantity))}
                               </span>
                             </div>
                           ))}
@@ -970,13 +966,13 @@ const Cashier = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Cancelar Pedido</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja cancelar o pedido #{order.order_number}?
+                                ¿Estás seguro de cancelar el pedido #{order.order_number}?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Não</AlertDialogCancel>
+                              <AlertDialogCancel>No</AlertDialogCancel>
                               <AlertDialogAction onClick={() => cancelOrder(order.id)} className="bg-destructive">
-                                Sim, Cancelar
+                                Sí, Cancelar
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -992,7 +988,7 @@ const Cashier = () => {
                             disabled={paymentStatus.status === 'confirmed'}
                           >
                             <DollarSign className="mr-2 h-4 w-4" />
-                            {paymentStatus.status === 'confirmed' ? 'Pagamento Confirmado' : 'Verificar Pagamento'}
+                            {paymentStatus.status === 'confirmed' ? 'Pago Confirmado' : 'Verificar Pago'}
                           </Button>
                           {paymentStatus.status === 'confirmed' && (
                             <Button
@@ -1001,7 +997,7 @@ const Cashier = () => {
                               onClick={() => updateOrderStatus(order.id, 'in_preparation')}
                             >
                               <ChefHat className="mr-2 h-4 w-4" />
-                              Enviar p/ Cozinha
+                              Enviar a Cocina
                             </Button>
                           )}
                         </div>
@@ -1016,26 +1012,27 @@ const Cashier = () => {
                           }}
                         >
                           <CreditCard className="mr-2 h-4 w-4" />
-                          Gerar Pagamento (PIX ou Cartão)
+                          Generar Pago (QR PAGO o Tarjeta)
                         </Button>
                       )}
                       {/* Waiter orders note */}
                       {order.waiter_id && order.mercadopago_payment_id && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                           <p className="text-sm text-blue-900 font-medium">
-                            ✅ Pagamento gerado - Aguardando confirmação
+                            ✅ Pago generado - Esperando confirmación
                           </p>
                         </div>
                       )}
                     </div>
                   </Card>
-                );
-              })}
+              );
+            })}
               </div>
-            )}
-          </TabsContent>
+            )
+          }
+        </TabsContent>
 
-          <TabsContent value="progress" className="space-y-4">
+        <TabsContent value="progress" className="space-y-4">
             {/* Payment Status Summary */}
             {inProgressOrders.length > 0 && (
               <Card className="p-4 sm:p-6 bg-gradient-to-br from-blue-500 to-blue-600 border-0 shadow-xl">
@@ -1044,13 +1041,13 @@ const Cashier = () => {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
                       <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
-                    <h3 className="font-bold text-lg sm:text-xl text-white">Status de Pagamento</h3>
+                    <h3 className="font-bold text-lg sm:text-xl text-white">Estado de Pago</h3>
                   </div>
                   <div className="flex flex-wrap gap-3 sm:gap-4 text-sm">
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                       <div className="w-3 h-3 rounded-full bg-orange-400"></div>
                       <span className="text-white font-medium">
-                        Pendente: <strong className="text-lg">{inProgressPaymentBreakdown.pending}</strong>
+                        Pendiente: <strong className="text-lg">{inProgressPaymentBreakdown.pending}</strong>
                       </span>
                     </div>
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
@@ -1063,7 +1060,7 @@ const Cashier = () => {
                       <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                         <div className="w-3 h-3 rounded-full bg-red-400"></div>
                         <span className="text-white font-medium">
-                          Falhou: <strong className="text-lg">{inProgressPaymentBreakdown.failed}</strong>
+                          Falló: <strong className="text-lg">{inProgressPaymentBreakdown.failed}</strong>
                         </span>
                       </div>
                     )}
@@ -1075,9 +1072,9 @@ const Cashier = () => {
               <Card className="p-8 text-center">
                 <div className="flex flex-col items-center">
                   <ChefHat className="w-16 h-16 text-gray-300 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido em preparo</p>
+                  <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido en preparación</p>
                   <p className="text-sm text-gray-500">
-                    Pedidos aparecerão aqui quando forem enviados para a cozinha
+                    Los pedidos aparecerán aquí cuando sean enviados a la cocina
                   </p>
                 </div>
               </Card>
@@ -1101,7 +1098,7 @@ const Cashier = () => {
                           <Badge 
                             variant="destructive" 
                             className="h-5 px-1.5 text-xs font-semibold animate-pulse"
-                            title={`${unreadCounts.get(order.id)} mensagem${(unreadCounts.get(order.id) || 0) > 1 ? 'ns' : ''} não lida${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
+                            title={`${unreadCounts.get(order.id)} mensaje${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''} no leído${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
                           >
                             <MessageSquare className="h-3 w-3 mr-1" />
                             {unreadCounts.get(order.id)}
@@ -1110,7 +1107,7 @@ const Cashier = () => {
                       </div>
                       <div className="flex gap-1.5 items-center flex-wrap justify-end">
                         <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 border-yellow-200 text-xs px-2 py-1 whitespace-nowrap">
-                          Criado em: {formatTimeWithAMPM(order.created_at)}
+                          Creado: {formatTimeWithAMPM(order.created_at)}
                         </Badge>
                         <StatusBadge 
                           orderStatus={order.status as OrderStatus}
@@ -1137,7 +1134,7 @@ const Cashier = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-bold text-lg sm:text-xl text-primary whitespace-nowrap">
-                          R$ {Number(order.total_amount).toFixed(2)}
+                          {formatCurrency(Number(order.total_amount))}
                         </p>
                       </div>
                     </div>
@@ -1145,7 +1142,7 @@ const Cashier = () => {
                     {/* Order Items */}
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Itens:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item) => (
                             <div key={item.id} className="flex justify-between text-xs">
@@ -1153,7 +1150,7 @@ const Cashier = () => {
                                 {item.quantity}x {item.item_name}
                               </span>
                               <span className="font-medium text-gray-900">
-                                R$ {Number(item.unit_price * item.quantity).toFixed(2)}
+                                {formatCurrency(Number(item.unit_price * item.quantity))}
                               </span>
                             </div>
                           ))}
@@ -1192,13 +1189,13 @@ const Cashier = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Cancelar Pedido</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja cancelar o pedido #{order.order_number}?
+                                ¿Estás seguro de cancelar el pedido #{order.order_number}?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Não</AlertDialogCancel>
+                              <AlertDialogCancel>No</AlertDialogCancel>
                               <AlertDialogAction onClick={() => cancelOrder(order.id)} className="bg-destructive">
-                                Sim, Cancelar
+                                Sí, Cancelar
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -1227,7 +1224,7 @@ const Cashier = () => {
                             onClick={() => updateOrderStatus(order.id, 'in_preparation')}
                           >
                             <ChefHat className="mr-2 h-4 w-4" />
-                            Iniciar Preparo
+                            Iniciar Preparación
                           </Button>
                         )}
                         {order.status === 'in_preparation' && (
@@ -1236,7 +1233,7 @@ const Cashier = () => {
                             onClick={() => updateOrderStatus(order.id, 'ready')}
                           >
                             <Package className="mr-2 h-4 w-4" />
-                            Marcar como Pronto
+                            Marcar como Listo
                           </Button>
                         )}
                       </div>
@@ -1246,10 +1243,9 @@ const Cashier = () => {
               })}
               </div>
             )}
-          </TabsContent>
+        </TabsContent>
 
-          <TabsContent value="ready" className="space-y-4">
-            {/* Payment Status Summary */}
+        <TabsContent value="ready" className="space-y-4">
             {readyOrders.length > 0 && (
               <Card className="p-4 sm:p-6 bg-gradient-to-br from-green-500 to-green-600 border-0 shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1257,13 +1253,13 @@ const Cashier = () => {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
                       <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
-                    <h3 className="font-bold text-lg sm:text-xl text-white">Status de Pagamento</h3>
+                    <h3 className="font-bold text-lg sm:text-xl text-white">Estado de Pago</h3>
                   </div>
                   <div className="flex flex-wrap gap-3 sm:gap-4 text-sm">
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                       <div className="w-3 h-3 rounded-full bg-orange-400"></div>
                       <span className="text-white font-medium">
-                        Pendente: <strong className="text-lg">{readyPaymentBreakdown.pending}</strong>
+                        Pendiente: <strong className="text-lg">{readyPaymentBreakdown.pending}</strong>
                       </span>
                     </div>
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
@@ -1276,7 +1272,7 @@ const Cashier = () => {
                       <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                         <div className="w-3 h-3 rounded-full bg-red-400"></div>
                         <span className="text-white font-medium">
-                          Falhou: <strong className="text-lg">{readyPaymentBreakdown.failed}</strong>
+                          Falló: <strong className="text-lg">{readyPaymentBreakdown.failed}</strong>
                         </span>
                       </div>
                     )}
@@ -1288,9 +1284,9 @@ const Cashier = () => {
               <Card className="p-8 text-center">
                 <div className="flex flex-col items-center">
                   <Package className="w-16 h-16 text-gray-300 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido pronto</p>
+                  <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido listo</p>
                   <p className="text-sm text-gray-500">
-                    Pedidos aparecerão aqui quando a cozinha marcar como prontos
+                    Los pedidos aparecerán aquí cuando la cocina marque como listos
                   </p>
                 </div>
               </Card>
@@ -1312,7 +1308,7 @@ const Cashier = () => {
                           <Badge 
                             variant="destructive" 
                             className="h-5 px-1.5 text-xs font-semibold animate-pulse"
-                            title={`${unreadCounts.get(order.id)} mensagem${(unreadCounts.get(order.id) || 0) > 1 ? 'ns' : ''} não lida${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
+                            title={`${unreadCounts.get(order.id)} mensaje${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''} no leído${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
                           >
                             <MessageSquare className="h-3 w-3 mr-1" />
                             {unreadCounts.get(order.id)}
@@ -1321,191 +1317,7 @@ const Cashier = () => {
                       </div>
                       <div className="flex gap-1.5 items-center flex-wrap justify-end">
                         <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 border-yellow-200 text-xs px-2 py-1 whitespace-nowrap">
-                          Criado em: {formatTimeWithAMPM(order.created_at)}
-                        </Badge>
-                        <StatusBadge 
-                          orderStatus={order.status as OrderStatus}
-                          paymentStatus={order.payment_status as PaymentStatus}
-                          showBoth={false}
-                          compact={true}
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Customer Info + Total */}
-                    <div className="flex items-start justify-between gap-4 mb-3 sm:mb-4">
-                      <div className="flex-1">
-                        <OrderCardInfo
-                          orderId={order.id}
-                          orderNumber={order.order_number}
-                          customerName={order.customer_name}
-                          customerPhone={order.customer_phone}
-                          waiterId={order.waiter_id}
-                          createdAt={order.created_at}
-                          paymentConfirmedAt={order.payment_confirmed_at}
-                          readyAt={order.ready_at}
-                        />
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-bold text-lg sm:text-xl text-primary whitespace-nowrap">
-                          R$ {Number(order.total_amount).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Order Items */}
-                    {order.items && order.items.length > 0 && (
-                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Itens:</p>
-                        <div className="space-y-1">
-                          {order.items.map((item) => (
-                            <div key={item.id} className="flex justify-between text-xs">
-                              <span className="text-gray-600">
-                                {item.quantity}x {item.item_name}
-                              </span>
-                              <span className="font-medium text-gray-900">
-                                R$ {Number(item.unit_price * item.quantity).toFixed(2)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* WhatsApp Error Indicator */}
-                    {orderErrors.length > 0 && (
-                      <div className="mb-3">
-                        <WhatsAppErrorIndicator errors={orderErrors} orderId={order.id} />
-                      </div>
-                    )}
-                    
-                    {/* Action Buttons */}
-                    <div className="border-t pt-3 space-y-2">
-                      {/* View Details and Edit Buttons */}
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setIsDetailsDialogOpen(true);
-                          }}
-                          className="flex-1"
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          Detalhes
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openEditDialog(order.id)}
-                          className="flex-1"
-                        >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
-                        </Button>
-                      </div>
-
-                      {/* Notification Controls */}
-                      <div className="border-t pt-2">
-                        <NotificationControls
-                          orderId={order.id}
-                          orderNumber={order.order_number}
-                          customerPhone={order.customer_phone}
-                          customerName={order.customer_name}
-                          orderStatus={order.status}
-                          notificationHistory={orderNotificationHistory}
-                          onNotificationSent={refreshNotifications}
-                        />
-                      </div>
-
-                      {/* Complete Order Button */}
-                      <Button
-                        className="w-full min-h-[44px] text-base bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-accent/90"
-                        onClick={() => completeOrder(order.id)}
-                      >
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Marcar como Entregue
-                      </Button>
-                    </div>
-                  </Card>
-                );
-              })}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="completed" className="space-y-4">
-            {/* Payment Status Summary */}
-            {completedOrders.length > 0 && (
-              <Card className="p-4 sm:p-6 bg-gradient-to-br from-primary/50 to-primary border-0 shadow-xl">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </div>
-                    <h3 className="font-bold text-lg sm:text-xl text-white">Status de Pagamento</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-3 sm:gap-4 text-sm">
-                    <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                      <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-                      <span className="text-white font-medium">
-                        Pendente: <strong className="text-lg">{completedPaymentBreakdown.pending}</strong>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                      <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                      <span className="text-white font-medium">
-                        Confirmado: <strong className="text-lg">{completedPaymentBreakdown.confirmed}</strong>
-                      </span>
-                    </div>
-                    {completedPaymentBreakdown.failed > 0 && (
-                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                        <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                        <span className="text-white font-medium">
-                          Falhou: <strong className="text-lg">{completedPaymentBreakdown.failed}</strong>
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            )}
-            {completedOrders.length === 0 ? (
-              <Card className="p-8 text-center">
-                <div className="flex flex-col items-center">
-                  <CheckCircle className="w-16 h-16 text-gray-300 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido concluído</p>
-                  <p className="text-sm text-gray-500">
-                    Pedidos aparecerão aqui quando forem finalizados
-                  </p>
-                </div>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {completedOrders.map((order) => {
-                return (
-                  <Card key={order.id} className="p-3 sm:p-6 shadow-soft border-l-4 border-l-purple-500">
-                    {/* Order Number + Status Badges */}
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-base sm:text-xl text-gray-900">
-                          Pedido #{order.order_number}
-                        </h3>
-                        {(unreadCounts.get(order.id) || 0) > 0 && (
-                          <Badge 
-                            variant="destructive" 
-                            className="h-5 px-1.5 text-xs font-semibold animate-pulse"
-                            title={`${unreadCounts.get(order.id)} mensagem${(unreadCounts.get(order.id) || 0) > 1 ? 'ns' : ''} não lida${(unreadCounts.get(order.id) || 0) > 1 ? 's' : ''}`}
-                          >
-                            <MessageSquare className="h-3 w-3 mr-1" />
-                            {unreadCounts.get(order.id)}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex gap-1.5 items-center flex-wrap justify-end">
-                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 border-yellow-200 text-xs px-2 py-1 whitespace-nowrap">
-                          Criado em: {formatTimeWithAMPM(order.created_at)}
+                          Creado: {formatTimeWithAMPM(order.created_at)}
                         </Badge>
                         <StatusBadge 
                           orderStatus={order.status as OrderStatus}
@@ -1537,7 +1349,7 @@ const Cashier = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-bold text-lg sm:text-xl text-primary whitespace-nowrap">
-                          R$ {Number(order.total_amount).toFixed(2)}
+                          {formatCurrency(Number(order.total_amount))}
                         </p>
                       </div>
                     </div>
@@ -1545,7 +1357,7 @@ const Cashier = () => {
                     {/* Order Items */}
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Itens:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">📋 Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item) => (
                             <div key={item.id} className="flex justify-between text-xs">
@@ -1553,14 +1365,21 @@ const Cashier = () => {
                                 {item.quantity}x {item.item_name}
                               </span>
                               <span className="font-medium text-gray-900">
-                                R$ {Number(item.unit_price * item.quantity).toFixed(2)}
+                                {formatCurrency(Number(item.unit_price * item.quantity))}
                               </span>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
-
+                    
+                    {/* WhatsApp Error Indicator */}
+                    {orderErrors.length > 0 && (
+                      <div className="mb-3">
+                        <WhatsAppErrorIndicator errors={orderErrors} orderId={order.id} />
+                      </div>
+                    )}
+                    
                     {/* View Details Button */}
                     <div className="border-t pt-3">
                       <Button
@@ -1573,7 +1392,7 @@ const Cashier = () => {
                         className="w-full"
                       >
                         <Eye className="mr-2 h-4 w-4" />
-                        Ver Detalhes
+                        Ver Detalles
                       </Button>
                     </div>
                   </Card>
@@ -1581,16 +1400,105 @@ const Cashier = () => {
               })}
               </div>
             )}
-          </TabsContent>
+        </TabsContent>
 
-          <TabsContent value="cancelled" className="space-y-4">
+        <TabsContent value="completed" className="space-y-4">
+            {/* Payment Status Summary */}
+            {completedOrders.length > 0 && (
+              <Card className="p-4 sm:p-6 bg-gradient-to-br from-primary/50 to-primary border-0 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                      <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    </div>
+                    <h3 className="font-bold text-lg sm:text-xl text-white">Estado de Pago</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3 sm:gap-4 text-sm">
+                    <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                      <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+                      <span className="text-white font-medium">
+                        Pendiente: <strong className="text-lg">{completedPaymentBreakdown.pending}</strong>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                      <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                      <span className="text-white font-medium">
+                        Confirmado: <strong className="text-lg">{completedPaymentBreakdown.confirmed}</strong>
+                      </span>
+                    </div>
+                    {completedPaymentBreakdown.failed > 0 && (
+                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                        <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                        <span className="text-white font-medium">
+                          Falló: <strong className="text-lg">{completedPaymentBreakdown.failed}</strong>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            )}
+            {completedOrders.length === 0 ? (
+              <Card className="p-8 text-center">
+                <div className="flex flex-col items-center">
+                  <CheckCircle className="w-16 h-16 text-gray-300 mb-4" />
+                  <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido finalizado</p>
+                  <p className="text-sm text-gray-500">
+                    Los pedidos aparecerán aquí cuando sean finalizados
+                  </p>
+                </div>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {completedOrders.map((order) => {
+                return (
+                  <Card key={order.id} className="p-4 shadow-soft border-l-4 border-l-purple-500">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg">Pedido #{order.order_number}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {order.customer_name} • {formatPhoneNumber(order.customer_phone)}
+                        </p>
+                        {order.waiter_id && (
+                          <p className="text-sm text-muted-foreground">
+                            👤 Camarero: <span className="font-medium">{getWaiterName(order.waiter_id)}</span>
+                          </p>
+                        )}
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            Creado: {formatTimestamp(order.created_at)}
+                          </p>
+                          {order.cancelled_at && (
+                            <p className="text-xs text-muted-foreground">
+                              Cancelado: {formatTimestamp(order.cancelled_at)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="destructive" className="mb-2">
+                          <AlertCircle className="mr-1 h-3 w-3" /> {order.status === 'expired' ? 'Expirado' : 'Cancelado'}
+                        </Badge>
+                        <p className="font-bold text-muted-foreground">
+                          {formatCurrency(Number(order.total_amount))}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+              </div>
+            )}
+        </TabsContent>
+
+        <TabsContent value="cancelled" className="space-y-4">
             {cancelledOrders.length === 0 ? (
               <Card className="p-8 text-center">
                 <div className="flex flex-col items-center">
                   <AlertCircle className="w-16 h-16 text-gray-300 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido cancelado</p>
+                  <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido cancelado</p>
                   <p className="text-sm text-gray-500">
-                    Pedidos cancelados aparecerão aqui
+                    Los pedidos cancelados aparecerán aquí
                   </p>
                 </div>
               </Card>
@@ -1610,12 +1518,12 @@ const Cashier = () => {
                         </p>
                         {order.waiter_id && (
                           <p className="text-sm text-muted-foreground">
-                            👤 Garçom: <span className="font-medium">{getWaiterName(order.waiter_id)}</span>
+                            👤 Camarero: <span className="font-medium">{getWaiterName(order.waiter_id)}</span>
                           </p>
                         )}
                         <div className="mt-2 space-y-1">
                           <p className="text-xs text-muted-foreground">
-                            Criado: {formatTimestamp(order.created_at)}
+                            Creado: {formatTimestamp(order.created_at)}
                           </p>
                           {order.cancelled_at && (
                             <p className="text-xs text-muted-foreground">
@@ -1629,7 +1537,7 @@ const Cashier = () => {
                           <AlertCircle className="mr-1 h-3 w-3" /> {order.status === 'expired' ? 'Expirado' : 'Cancelado'}
                         </Badge>
                         <p className="font-bold text-muted-foreground">
-                          R$ {Number(order.total_amount).toFixed(2)}
+                          {formatCurrency(Number(order.total_amount))}
                         </p>
                       </div>
                     </div>
@@ -1638,8 +1546,8 @@ const Cashier = () => {
               })}
               </div>
             )}
-          </TabsContent>
-        </Tabs>
+        </TabsContent>
+      </Tabs>
 
       {/* Order Details Dialog */}
       <OrderDetailsDialog
@@ -1664,7 +1572,7 @@ const Cashier = () => {
           customerPhone={selectedOrderForPayment.customer_phone}
           onPaymentComplete={() => {
             loadOrders();
-            toast.success('Pagamento gerado com sucesso!');
+            toast.success('Pago generado con éxito!');
           }}
         />
       )}

@@ -21,64 +21,24 @@ export function getPaymentConfirmedMessage(orderData: OrderData): string {
   const itemsList = orderData.items
     .map(item => `• ${item.quantity}x ${item.itemName}`)
     .join('\n');
-
+  
   const variations = [
     // Variation 1: Super casual and friendly
-    `E aí, *${firstName}*! 😊
-
-Seu pedido acabou de ser confirmado e já tá sendo preparado aqui!
-
-${itemsList}
-
-💰 Total: R$ ${orderData.totalAmount.toFixed(2)}
-
-Fica tranquilo que em uns 15-20 min tá pronto. Te aviso quando puder buscar! 🥥`,
-
+    `¡Ey, *${firstName}*! 😊\n\nTu pedido fue confirmado y ya se está preparando.\n\n${itemsList}\n\n💰 Total: Bs ${orderData.totalAmount.toFixed(2)}\n\nTranquilo, en unos 15-20 min estará listo. ¡Te aviso cuando puedas recogerlo! 🥥`,
+    
     // Variation 2: Warm and conversational
-    `Oi, *${firstName}*! 👋
-
-Confirmado! Já comecei a preparar seu pedido aqui.
-
-${itemsList}
-
-💵 R$ ${orderData.totalAmount.toFixed(2)}
-
-Daqui uns 15-20 minutos tá prontinho. Te mando mensagem quando estiver pronto pra você buscar! 🌴`,
-
+    `Hola, *${firstName}*! 👋\n\nConfirmado. Ya empecé a preparar tu pedido.\n\n${itemsList}\n\n💵 Bs ${orderData.totalAmount.toFixed(2)}\n\nEn unos 15-20 minutos estará listo. ¡Te escribo cuando esté para recoger! 🌴`,
+    
     // Variation 3: Friendly and direct
-    `Opa, *${firstName}*! ✌️
-
-Recebi seu pedido e já tô fazendo aqui!
-
-${itemsList}
-
-💰 R$ ${orderData.totalAmount.toFixed(2)}
-
-Uns 15-20 min e tá pronto. Te chamo quando puder pegar! 🥥`,
-
+    `¡Guay, *${firstName}*! ✌️\n\nRecibí tu pedido y ya lo estoy haciendo.\n\n${itemsList}\n\n💰 Bs ${orderData.totalAmount.toFixed(2)}\n\nUnos 15-20 min y está listo. ¡Te llamo cuando puedas pasar! 🥥`,
+    
     // Variation 4: Upbeat and casual
-    `Fala, *${firstName}*! 🤙
-
-Beleza, pedido confirmado! Já tô preparando tudo aqui pra você.
-
-${itemsList}
-
-💵 R$ ${orderData.totalAmount.toFixed(2)}
-
-Em 15-20 min tá na mão. Já te aviso! 🌊`,
-
+    `¡Hola, *${firstName}*! 🤙\n\n¡Bien, pedido confirmado! Ya estoy preparando todo para ti.\n\n${itemsList}\n\n💵 Bs ${orderData.totalAmount.toFixed(2)}\n\nEn 15-20 min está en tus manos. ¡Te aviso! 🌊`,
+    
     // Variation 5: Simple and friendly
-    `Oi, *${firstName}*! 😄
-
-Confirmado! Seu pedido já tá sendo feito.
-
-${itemsList}
-
-💰 R$ ${orderData.totalAmount.toFixed(2)}
-
-15-20 minutos e te chamo pra buscar! 🥥🌴`
+    `Hola, *${firstName}*! 😄\n\nConfirmado. Tu pedido ya se está haciendo.\n\n${itemsList}\n\n💰 Bs ${orderData.totalAmount.toFixed(2)}\n\n¡15-20 minutos y te llamo para recoger! 🥥🌴`
   ];
-
+  
   return getRandomVariation(variations);
 }
 
@@ -91,54 +51,24 @@ export function getOrderReadyMessage(orderData: OrderData): string {
   const itemsList = orderData.items
     .map(item => `• ${item.quantity}x ${item.itemName}`)
     .join('\n');
-
+  
   const variations = [
     // Variation 1: Excited and friendly
-    `*${firstName}*, prontinho! 🎉
-
-Pode vir buscar aqui no balcão!
-
-${itemsList}
-
-Te espero aqui! 🥥`,
-
+    `*${firstName}*, ¡listo! 🎉\n\nPuedes pasar a recogerlo en el mostrador.\n\n${itemsList}\n\n¡Te espero aquí! 🥥`,
+    
     // Variation 2: Warm and inviting
-    `Oi, *${firstName}*! 👋
-
-Seu pedido tá pronto! Vem buscar aqui no balcão.
-
-${itemsList}
-
-Até já! 🌴`,
-
+    `Hola, *${firstName}*! 👋\n\nTu pedido está listo. Pasa a recoger en el mostrador.\n\n${itemsList}\n\n¡Hasta luego! 🌴`,
+    
     // Variation 3: Casual and direct
-    `E aí, *${firstName}*! 🤙
-
-Pronto! Pode vir pegar aqui no balcão.
-
-${itemsList}
-
-Te aguardo! 🥥`,
-
+    `¡Ey, *${firstName}*! 🤙\n\nListo. Puedes pasar a recoger en el mostrador.\n\n${itemsList}\n\n¡Te aguardo! 🥥`,
+    
     // Variation 4: Friendly and simple
-    `Opa, *${firstName}*! ✌️
-
-Tá pronto! Cola aqui pra buscar.
-
-${itemsList}
-
-Valeu! 🌊`,
-
+    `¡Guay, *${firstName}*! ✌️\n\nEstá listo. Pasa a recoger.\n\n${itemsList}\n\n¡Gracias! 🌊`,
+    
     // Variation 5: Warm and welcoming
-    `*${firstName}*, pronto! 😊
-
-Vem buscar aqui no balcão!
-
-${itemsList}
-
-Te espero! 🥥🌴`
+    `*${firstName}*, ¡listo! 😊\n\nPasa a recoger en el mostrador.\n\n${itemsList}\n\n¡Te espero! 🥥🌴`
   ];
-
+  
   return getRandomVariation(variations);
 }
 
@@ -151,85 +81,55 @@ export function getOrderPreparingMessage(orderData: OrderData): string {
   const itemsList = orderData.items
     .map(item => `• ${item.quantity}x ${item.itemName}`)
     .join('\n');
-
+  
   const variations = [
     // Variation 1: Friendly and reassuring
-    `Oi, *${firstName}*! 👨‍🍳
-
-Já tô fazendo seu pedido aqui!
-
-${itemsList}
-
-Daqui uns 15-20 min tá pronto. Te aviso! 🥥`,
-
+    `Hola, *${firstName}*! 👨‍🍳\n\n¡Ya estoy preparando tu pedido!\n\n${itemsList}\n\nEn unos 15-20 min estará listo. ¡Te aviso! 🥥`,
+    
     // Variation 2: Casual and warm
-    `E aí, *${firstName}*! 👋
-
-Seu pedido já tá sendo feito aqui na cozinha!
-
-${itemsList}
-
-Aguarda aí que logo tá pronto! 🌴`,
-
+    `¡Ey, *${firstName}*! 👋\n\nTu pedido ya se está haciendo en la cocina.\n\n${itemsList}\n\n¡Espera un momento que pronto está listo! 🌴`,
+    
     // Variation 3: Simple and friendly
-    `Opa, *${firstName}*! 🤙
-
-Tô preparando seu pedido!
-
-${itemsList}
-
-Uns 15-20 min e te chamo! 🥥`,
-
+    `¡Guay, *${firstName}*! 🤙\n\n¡Estoy preparando tu pedido!\n\n${itemsList}\n\n¡15-20 min y te llamo! 🥥`,
+    
     // Variation 4: Warm and conversational
-    `Fala, *${firstName}*! ✌️
-
-Já comecei a fazer aqui!
-
-${itemsList}
-
-Rapidinho tá pronto. Te aviso! 🌊`,
-
+    `¡Hola, *${firstName}*! ✌️\n\n¡Ya empecé a hacerlo aquí!\n\n${itemsList}\n\n¡Rápido estará listo. ¡Te aviso! 🌊`,
+    
     // Variation 5: Friendly and direct
-    `*${firstName}*! 😊
-
-Tô fazendo seu pedido agora!
-
-${itemsList}
-
-15-20 min e te chamo! 🥥🌴`
+    `*${firstName}*! 😊\n\n¡Estoy preparando tu pedido ahora!\n\n${itemsList}\n\n¡15-20 min y te llamo! 🥥🌴`
   ];
-
+  
   return getRandomVariation(variations);
 }
 
 /**
- * Get notification type label in Portuguese
+ * Get notification type label in Spanish (Bolivia)
  */
 export function getNotificationTypeLabel(type: string): string {
   const labels: Record<string, string> = {
-    'order_created': 'Pedido Criado',
-    'payment_confirmed': 'Pagamento Confirmado',
-    'preparing': 'Em Preparo',
-    'in_preparation': 'Em Preparo',
-    'ready': 'Pronto para Retirada',
-    'custom': 'Mensagem Personalizada',
-    'confirmation': 'Confirmação',
-    'status_update': 'Atualização de Status',
+    'order_created': 'Pedido Creado',
+    'payment_confirmed': 'Pago Confirmado',
+    'preparing': 'En Preparación',
+    'in_preparation': 'En Preparación',
+    'ready': 'Listo para Retirar',
+    'custom': 'Mensaje Personalizado',
+    'confirmation': 'Confirmación',
+    'status_update': 'Actualización de Estado',
   };
-
+  
   return labels[type] || type;
 }
 
 /**
- * Get notification status label in Portuguese
+ * Get notification status label in Spanish (Bolivia)
  */
 export function getNotificationStatusLabel(status: string): string {
   const labels: Record<string, string> = {
-    'pending': 'Pendente',
+    'pending': 'Pendiente',
     'sent': 'Enviada',
-    'failed': 'Falhou',
+    'failed': 'Falló',
     'cancelled': 'Cancelada',
   };
-
+  
   return labels[status] || status;
 }

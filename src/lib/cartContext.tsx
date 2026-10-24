@@ -3,7 +3,11 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 export interface CartItem {
   id: string;
   name: string;
+  /** Localized names (es / en / pt) when the tenant carries them. */
+  name_i18n?: Record<'es' | 'en' | 'pt', string>;
   description: string | null;
+  /** Localized descriptions (es / en / pt) when the tenant carries them. */
+  description_i18n?: Record<'es' | 'en' | 'pt', string> | null;
   price: number;
   category_id: string;
   available: boolean;

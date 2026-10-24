@@ -26,24 +26,24 @@ export type Order = Tables<"orders">;
  * ```typescript
  * const config: CommissionDisplayConfig = {
  *   amount: 5.50,
- *   displayAmount: "R$ 5,50",
+ *   displayAmount: "Bs 5,50",
  *   status: "confirmed",
  *   className: "text-green-600 font-semibold",
  *   icon: "CheckCircle",
- *   tooltip: "Comissão confirmada"
+ *   tooltip: "Comisión confirmada"
  * };
  * ```
  */
 export interface CommissionDisplayConfig {
   /**
-   * Raw commission amount in BRL
+   * Raw commission amount in BOB (Bolivian boliviano)
    * Calculated as order total * commission rate
    */
   amount: number;
 
   /**
    * Formatted display string with currency symbol
-   * Localized to pt-BR format (e.g., "R$ 5,50")
+   * Localized to es-BO format (e.g., "Bs 5,50")
    */
   displayAmount: string;
 
@@ -107,7 +107,7 @@ export interface CommissionStats {
    */
   confirmed: {
     /**
-     * Total confirmed commission amount in BRL
+     * Total confirmed commission amount in BOB (Bolivian boliviano)
      * Sum of commissions from all paid/completed orders
      */
     total: number;
@@ -123,7 +123,7 @@ export interface CommissionStats {
    */
   estimated: {
     /**
-     * Total estimated commission amount in BRL
+     * Total estimated commission amount in BOB (Bolivian boliviano)
      * Sum of potential commissions from pending orders
      */
     total: number;
@@ -168,7 +168,7 @@ export type OrderStatusCategory = 'PAID' | 'PENDING' | 'EXCLUDED';
  */
 export interface CommissionCalculationResult {
   /**
-   * Raw commission amount in BRL
+   * Raw commission amount in BOB (Bolivian boliviano)
    */
   amount: number;
 

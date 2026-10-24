@@ -47,15 +47,15 @@ export function PaymentConfirmationDialog({
   const getStatusBadge = () => {
     switch (paymentStatus.status) {
       case 'approved':
-        return <Badge className="bg-green-500">Aprovado</Badge>;
+        return <Badge className="bg-green-500">Aprobado</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-500">Pendente</Badge>;
+        return <Badge className="bg-yellow-500">Pendiente</Badge>;
       case 'rejected':
-        return <Badge className="bg-red-500">Rejeitado</Badge>;
+        return <Badge className="bg-red-500">Rechazado</Badge>;
       case 'no_payment_id':
-        return <Badge className="bg-gray-500">Sem PIX</Badge>;
+        return <Badge className="bg-gray-500">Sin QR</Badge>;
       case 'error':
-        return <Badge className="bg-orange-500">Erro</Badge>;
+        return <Badge className="bg-orange-500">Error</Badge>;
       default:
         return <Badge className="bg-gray-500">{paymentStatus.status}</Badge>;
     }
@@ -77,7 +77,7 @@ export function PaymentConfirmationDialog({
           <div className="flex flex-col items-center gap-4 mb-2">
             {getStatusIcon()}
             <AlertDialogTitle className="text-center text-xl">
-              Status do Pagamento
+              Estado del Pago
             </AlertDialogTitle>
           </div>
           <div className="flex justify-center mb-4">
@@ -90,10 +90,10 @@ export function PaymentConfirmationDialog({
           {paymentStatus.canConfirmManually && (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800 font-medium text-center">
-                O cliente pagou em dinheiro ou outro método?
+                ¿El cliente pagó en efectivo u otro método?
               </p>
               <p className="text-xs text-blue-600 text-center mt-2">
-                Você pode confirmar o pagamento manualmente
+                Puedes confirmar el pago manualmente
               </p>
             </div>
           )}
@@ -112,7 +112,7 @@ export function PaymentConfirmationDialog({
               className="w-full sm:w-auto"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
-              Verificar Novamente
+              Verificar de nuevo
             </Button>
           )}
           {paymentStatus.canConfirmManually && (
@@ -120,7 +120,7 @@ export function PaymentConfirmationDialog({
               onClick={handleConfirm}
               className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
             >
-              Confirmar Pagamento
+              Confirmar Pago
             </AlertDialogAction>
           )}
         </AlertDialogFooter>

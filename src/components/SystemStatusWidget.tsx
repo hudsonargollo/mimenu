@@ -91,9 +91,9 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat('es-BO', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'BOB'
     }).format(value);
   };
 
@@ -165,7 +165,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
 
           {/* Last updated */}
           <div className="mt-4 pt-4 border-t border-white/20 flex items-center justify-between text-xs text-purple-200">
-            <span>Atualizado: {lastUpdated.toLocaleTimeString('pt-BR')}</span>
+            <span>Atualizado: {lastUpdated.toLocaleTimeString('es-BO')}</span>
             <Button
               variant="ghost"
               size="sm"
@@ -372,7 +372,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900">Última atualização</p>
-              <p className="text-sm text-gray-500">{lastUpdated.toLocaleString('pt-BR')}</p>
+              <p className="text-sm text-gray-500">{lastUpdated.toLocaleString('es-BO')}</p>
             </div>
             <Button onClick={loadAnalytics} variant="outline" className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4" />

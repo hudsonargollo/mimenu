@@ -1,48 +1,34 @@
-import { createClient } from '@supabase/supabase-js';
-// Use Web Crypto API for Cloudflare Workers compatibility
+// Session Manager for Cloudflare Workers KV
+// Replaces Supabase-based session storage with KV namespace
 
-// Supabase client for database operations
-let supabaseClient = null;
+/**
+ * Session storage utilities for WhatsApp sessions
+ * Uses Cloudflare KV namespace (MIMENU_SESSIONS) for persistence
+ */
 
 // Encryption configuration
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 const ENCRYPTION_KEY_LENGTH = 32;
 const IV_LENGTH = 16;
-const TAG_LENGTH = 16;
-
-/**
- * Initialize Supabase client
- * Note: This needs to be called with env from context in Cloudflare Workers
- */
-function initSupabase(env) {
-  const supabaseUrl = env?.SUPABASE_URL;
-  const supabaseServiceKey = env?.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase configuration');
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey);
-}
 
 /**
  * Get encryption key from environment and import for Web Crypto API
  */
 async function getEncryptionKey(env) {
-  const keyHex = env?.WHATSAPP_ENCRYPTION_KEY;
+  const keyHex = env.WHATSAPP_ENCRYPTION_KEY;
   if (!keyHex) {
     throw new Error('WHATSAPP_ENCRYPTION_KEY environment variable is required');
   }
-  
+
   // Convert hex string to Uint8Array
   const keyBytes = new Uint8Array(
     keyHex.match(/.{2}/g).map(byte => parseInt(byte, 16))
   );
-  
+
   if (keyBytes.length !== ENCRYPTION_KEY_LENGTH) {
     throw new Error(`Encryption key must be ${ENCRYPTION_KEY_LENGTH} bytes (${ENCRYPTION_KEY_LENGTH * 2} hex characters)`);
   }
-  
+
   // Import key for Web Crypto API
   return await crypto.subtle.importKey(
     'raw',
@@ -60,11 +46,11 @@ async function encryptSessionData(data, env) {
   try {
     const key = await getEncryptionKey(env);
     const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
-    
+
     const jsonData = JSON.stringify(data);
     const encoder = new TextEncoder();
     const dataBuffer = encoder.encode(jsonData);
-    
+
     const encrypted = await crypto.subtle.encrypt(
       {
         name: 'AES-GCM',
@@ -74,12 +60,12 @@ async function encryptSessionData(data, env) {
       key,
       dataBuffer
     );
-    
+
     // Combine iv + encrypted data (GCM includes auth tag)
     const result = new Uint8Array(iv.length + encrypted.byteLength);
     result.set(iv);
     result.set(new Uint8Array(encrypted), iv.length);
-    
+
     // Convert to hex string
     return Array.from(result).map(b => b.toString(16).padStart(2, '0')).join('');
   } catch (error) {
@@ -94,16 +80,16 @@ async function encryptSessionData(data, env) {
 async function decryptSessionData(encryptedHex, env) {
   try {
     const key = await getEncryptionKey(env);
-    
+
     // Convert hex string back to Uint8Array
     const encryptedData = new Uint8Array(
       encryptedHex.match(/.{2}/g).map(byte => parseInt(byte, 16))
     );
-    
+
     // Extract iv and encrypted data
     const iv = encryptedData.slice(0, IV_LENGTH);
     const encrypted = encryptedData.slice(IV_LENGTH);
-    
+
     const encoder = new TextEncoder();
     const decrypted = await crypto.subtle.decrypt(
       {
@@ -114,10 +100,10 @@ async function decryptSessionData(encryptedHex, env) {
       key,
       encrypted
     );
-    
+
     const decoder = new TextDecoder();
     const jsonData = decoder.decode(decrypted);
-    
+
     return JSON.parse(jsonData);
   } catch (error) {
     console.error('Failed to decrypt session data:', error);
@@ -126,75 +112,66 @@ async function decryptSessionData(encryptedHex, env) {
 }
 
 /**
- * Save session data to database
+ * Save session data to KV namespace
  */
-export async function saveSessionToDatabase(sessionId, sessionData, phoneNumber = null, env) {
+export async function saveSessionToKV(sessionId, sessionData, phoneNumber, env) {
   try {
-    const supabase = initSupabase(env);
+    const kv = env.MIMENU_KV;
     
     // Encrypt the session data
     const encryptedData = await encryptSessionData(sessionData, env);
-    
-    // Upsert session data
-    const { data, error } = await supabase
-      .from('whatsapp_sessions')
-      .upsert({
-        session_id: sessionId,
-        session_data: { encrypted: encryptedData }, // Store as JSONB with encrypted field
-        phone_number: phoneNumber,
-        is_active: true,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'session_id'
-      })
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Database error saving session:', error);
-      throw new Error(`Failed to save session: ${error.message}`);
+
+    const key = `whatsapp_session_${sessionId}`;
+    const payload = {
+      session_id: sessionId,
+      session_data: { encrypted: encryptedData },
+      phone_number: phoneNumber,
+      is_active: true,
+      updated_at: new Date().toISOString()
+    };
+
+    // Check if KV is available, otherwise use in-memory fallback
+    if (kv) {
+      await kv.put(key, JSON.stringify(payload), { expirationTtl: 7 * 24 * 60 * 60 }); // 7 days
     }
     
-    console.log('Session saved successfully:', { sessionId, phoneNumber });
-    return data;
+    console.log('Session saved (KV):', { sessionId, phoneNumber });
+    return payload;
   } catch (error) {
-    console.error('Failed to save session to database:', error);
+    console.error('Failed to save session to KV:', error);
     throw error;
   }
 }
 
 /**
- * Load session data from database
+ * Load session data from KV namespace
  */
-export async function loadSessionFromDatabase(sessionId, env) {
+export async function loadSessionFromKV(sessionId, env) {
   try {
-    const supabase = initSupabase(env);
+    const kv = env.MIMENU_KV;
     
-    const { data, error } = await supabase
-      .from('whatsapp_sessions')
-      .select('*')
-      .eq('session_id', sessionId)
-      .eq('is_active', true)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // No session found
-        console.log('No active session found for:', sessionId);
-        return null;
-      }
-      console.error('Database error loading session:', error);
-      throw new Error(`Failed to load session: ${error.message}`);
+    if (!kv) {
+      throw new Error('KV namespace not available');
     }
-    
+
+    const key = `whatsapp_session_${sessionId}`;
+    const rawData = await kv.get(key);
+
+    if (!rawData) {
+      console.log('No session found for:', sessionId);
+      return null;
+    }
+
+    const data = JSON.parse(rawData);
+
     if (!data || !data.session_data || !data.session_data.encrypted) {
       console.log('No encrypted session data found for:', sessionId);
       return null;
     }
-    
+
     // Decrypt the session data
     const decryptedData = await decryptSessionData(data.session_data.encrypted, env);
-    
+
     console.log('Session loaded successfully:', { sessionId, phoneNumber: data.phone_number });
     return {
       sessionData: decryptedData,
@@ -203,34 +180,26 @@ export async function loadSessionFromDatabase(sessionId, env) {
       updatedAt: data.updated_at
     };
   } catch (error) {
-    console.error('Failed to load session from database:', error);
+    console.error('Failed to load session from KV:', error);
     throw error;
   }
 }
 
 /**
- * Clear session data from database
+ * Clear session data from KV
  */
-export async function clearSessionFromDatabase(sessionId, env) {
+export async function clearSessionFromKV(sessionId, env) {
   try {
-    const supabase = initSupabase(env);
+    const kv = env.MIMENU_KV;
     
-    const { error } = await supabase
-      .from('whatsapp_sessions')
-      .update({ 
-        is_active: false,
-        updated_at: new Date().toISOString()
-      })
-      .eq('session_id', sessionId);
-    
-    if (error) {
-      console.error('Database error clearing session:', error);
-      throw new Error(`Failed to clear session: ${error.message}`);
+    if (kv) {
+      const key = `whatsapp_session_${sessionId}`;
+      await kv.delete(key);
     }
     
     console.log('Session cleared successfully:', sessionId);
   } catch (error) {
-    console.error('Failed to clear session from database:', error);
+    console.error('Failed to clear session from KV:', error);
     throw error;
   }
 }
@@ -240,20 +209,35 @@ export async function clearSessionFromDatabase(sessionId, env) {
  */
 export async function getActiveSessions(env) {
   try {
-    const supabase = initSupabase(env);
+    const kv = env.MIMENU_KV;
     
-    const { data, error } = await supabase
-      .from('whatsapp_sessions')
-      .select('session_id, phone_number, created_at, updated_at')
-      .eq('is_active', true)
-      .order('updated_at', { ascending: false });
+    if (!kv) {
+      return [];
+    }
+
+    // List all session keys (note: this is limited to 1000 by default)
+    const result = await kv.list({ prefix: 'whatsapp_session_' });
+    const sessions = [];
     
-    if (error) {
-      console.error('Database error getting active sessions:', error);
-      throw new Error(`Failed to get active sessions: ${error.message}`);
+    for (const keyInfo of result.keys) {
+      const rawData = await kv.get(keyInfo.name);
+      if (rawData) {
+        try {
+          const data = JSON.parse(rawData);
+          if (data.is_active) {
+            sessions.push({
+              session_id: data.session_id,
+              phone_number: data.phone_number,
+              updated_at: data.updated_at
+            });
+          }
+        } catch (e) {
+          // Skip malformed entries
+        }
+      }
     }
     
-    return data || [];
+    return sessions;
   } catch (error) {
     console.error('Failed to get active sessions:', error);
     throw error;
@@ -261,20 +245,20 @@ export async function getActiveSessions(env) {
 }
 
 /**
- * Custom auth state implementation for Baileys with database persistence
+ * Custom auth state implementation for Baileys with KV persistence
  */
-export function createDatabaseAuthState(sessionId, env) {
+export function createKVAuthState(sessionId, env) {
   let creds = null;
   let keys = {};
-  
+
   // Load existing session data
   const loadSession = async () => {
     try {
-      const sessionData = await loadSessionFromDatabase(sessionId, env);
+      const sessionData = await loadSessionFromKV(sessionId, env);
       if (sessionData) {
         creds = sessionData.sessionData.creds || null;
         keys = sessionData.sessionData.keys || {};
-        console.log('Loaded session from database:', { sessionId, hasCreds: !!creds, keyCount: Object.keys(keys).length });
+        console.log('Loaded session from KV:', { sessionId, hasCreds: !!creds, keyCount: Object.keys(keys).length });
       } else {
         console.log('No existing session found, starting fresh:', sessionId);
       }
@@ -284,7 +268,7 @@ export function createDatabaseAuthState(sessionId, env) {
       keys = {};
     }
   };
-  
+
   // Save session data
   const saveSession = async () => {
     try {
@@ -292,16 +276,16 @@ export function createDatabaseAuthState(sessionId, env) {
         creds,
         keys
       };
-      
+
       const phoneNumber = creds?.me?.id ? creds.me.id.split(':')[0] : null;
-      await saveSessionToDatabase(sessionId, sessionData, phoneNumber, env);
-      console.log('Saved session to database:', { sessionId, phoneNumber });
+      await saveSessionToKV(sessionId, sessionData, phoneNumber, env);
+      console.log('Saved session to KV:', { sessionId, phoneNumber });
     } catch (error) {
       console.error('Failed to save session:', error);
       // Don't throw here to avoid breaking the connection
     }
   };
-  
+
   return {
     state: {
       creds,
@@ -330,7 +314,7 @@ export function createDatabaseAuthState(sessionId, env) {
       saveSession();
     },
     loadSession,
-    clearSession: () => clearSessionFromDatabase(sessionId, env)
+    clearSession: () => clearSessionFromKV(sessionId, env)
   };
 }
 

@@ -42,19 +42,19 @@ interface CardPaymentResponse {
 
 // MercadoPago status detail to user-friendly message mapping
 const STATUS_DETAIL_MESSAGES: Record<string, string> = {
-  'cc_rejected_insufficient_amount': 'Fundos insuficientes',
-  'cc_rejected_bad_filled_card_number': 'Número de cartão inválido',
-  'cc_rejected_bad_filled_date': 'Data de validade inválida',
-  'cc_rejected_bad_filled_security_code': 'Código de segurança inválido',
-  'cc_rejected_call_for_authorize': 'Entre em contato com seu banco',
-  'cc_rejected_card_disabled': 'Cartão desabilitado',
-  'cc_rejected_duplicated_payment': 'Pagamento duplicado',
-  'cc_rejected_high_risk': 'Pagamento recusado por segurança',
-  'cc_rejected_max_attempts': 'Número máximo de tentativas excedido',
-  'cc_rejected_other_reason': 'Pagamento recusado pelo banco',
-  'accredited': 'Pagamento aprovado',
-  'pending_contingency': 'Pagamento em análise',
-  'pending_review_manual': 'Pagamento em revisão manual',
+  'cc_rejected_insufficient_amount': 'Fondos insuficientes',
+  'cc_rejected_bad_filled_card_number': 'Número de tarjeta inválido',
+  'cc_rejected_bad_filled_date': 'Fecha de vencimiento inválida',
+  'cc_rejected_bad_filled_security_code': 'Código de seguridad inválido',
+  'cc_rejected_call_for_authorize': 'Contacta a tu banco',
+  'cc_rejected_card_disabled': 'Tarjeta deshabilitada',
+  'cc_rejected_duplicated_payment': 'Pago duplicado',
+  'cc_rejected_high_risk': 'Pago rechazado por seguridad',
+  'cc_rejected_max_attempts': 'Número máximo de intentos excedido',
+  'cc_rejected_other_reason': 'Pago rechazado por el banco',
+  'accredited': 'Pago aprobado',
+  'pending_contingency': 'Pago en análisis',
+  'pending_review_manual': 'Pago en revisión manual',
 };
 
 // Retry configuration
@@ -188,35 +188,35 @@ async function fetchWithRetry(
  */
 function validateRequest(data: any): { valid: boolean; error?: string } {
   if (!data.orderId || typeof data.orderId !== 'string') {
-    return { valid: false, error: 'Order ID é obrigatório' };
+    return { valid: false, error: 'El ID del pedido es obligatorio' };
   }
 
   if (!data.token || typeof data.token !== 'string') {
-    return { valid: false, error: 'Token do cartão é obrigatório' };
+    return { valid: false, error: 'El token de la tarjeta es obligatorio' };
   }
 
   if (!data.amount || typeof data.amount !== 'number' || data.amount <= 0) {
-    return { valid: false, error: 'Valor inválido' };
+    return { valid: false, error: 'Monto inválido' };
   }
 
   if (!data.paymentMethodId || typeof data.paymentMethodId !== 'string') {
-    return { valid: false, error: 'Método de pagamento é obrigatório' };
+    return { valid: false, error: 'El método de pago es obligatorio' };
   }
 
   if (!data.payer || typeof data.payer !== 'object') {
-    return { valid: false, error: 'Dados do pagador são obrigatórios' };
+    return { valid: false, error: 'Los datos del pagador son obligatorios' };
   }
 
   if (!data.payer.email || typeof data.payer.email !== 'string') {
-    return { valid: false, error: 'Email do pagador é obrigatório' };
+    return { valid: false, error: 'El email del pagador es obligatorio' };
   }
 
   if (!data.payer.identification || typeof data.payer.identification !== 'object') {
-    return { valid: false, error: 'Identificação do pagador é obrigatória' };
+    return { valid: false, error: 'La identificación del pagador es obligatoria' };
   }
 
   if (!data.payer.identification.type || !data.payer.identification.number) {
-    return { valid: false, error: 'Tipo e número de documento são obrigatórios' };
+    return { valid: false, error: 'El tipo y número de documento son obligatorios' };
   }
 
   return { valid: true };
@@ -226,7 +226,7 @@ function validateRequest(data: any): { valid: boolean; error?: string } {
  * Get user-friendly error message from status detail
  */
 function getUserFriendlyMessage(statusDetail: string): string {
-  return STATUS_DETAIL_MESSAGES[statusDetail] || 'Erro ao processar pagamento';
+  return STATUS_DETAIL_MESSAGES[statusDetail] || 'Error al procesar el pago';
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -253,7 +253,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!accessToken) {
       return new Response(JSON.stringify({
         success: false,
-        error: 'Configuração de pagamento não disponível'
+        error: 'Configuración de pago no disponible'
       } as CardPaymentResponse), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -278,7 +278,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const paymentPayload = {
       transaction_amount: amount,
       token: token,
-      description: `Pedido #${orderId}`,
+      description: `Orden #${orderId}`,
       installments: 1, // No installments - single payment only
       payment_method_id: paymentMethodId,
       payer: {
@@ -325,7 +325,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({
         success: false,
         status: 'rejected',
-        error: 'Erro de conexão ao processar pagamento. Tente novamente.'
+        error: 'Error de conexión al procesar el pago. Inténtalo de nuevo.'
       } as CardPaymentResponse), {
         status: 503,
         headers: { 'Content-Type': 'application/json' }
@@ -345,15 +345,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       );
       
       // Provide specific error messages based on status code
-      let errorMessage = 'Erro ao processar pagamento com cartão';
+      let errorMessage = 'Error al procesar el pago con tarjeta';
       if (response.status === 400) {
-        errorMessage = 'Dados do cartão inválidos. Verifique as informações.';
+        errorMessage = 'Datos de la tarjeta inválidos. Verifica la información.';
       } else if (response.status === 401) {
-        errorMessage = 'Erro de autenticação. Entre em contato com o suporte.';
+        errorMessage = 'Error de autenticación. Contacta al soporte.';
       } else if (response.status === 429) {
-        errorMessage = 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+        errorMessage = 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
       } else if (response.status >= 500) {
-        errorMessage = 'Serviço temporariamente indisponível. Tente novamente em alguns instantes.';
+        errorMessage = 'Servicio temporalmente no disponible. Inténtalo de nuevo en unos instantes.';
       }
       
       return new Response(JSON.stringify({
@@ -464,13 +464,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
     
     // Provide user-friendly error message
-    let errorMessage = 'Erro inesperado ao processar pagamento';
+    let errorMessage = 'Error inesperado al procesar el pago';
     
     // Check for specific error types
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      errorMessage = 'Error de conexión. Verifica tu internet e inténtalo de nuevo.';
     } else if (error instanceof SyntaxError) {
-      errorMessage = 'Erro ao processar resposta do servidor. Tente novamente.';
+      errorMessage = 'Error al procesar la respuesta del servidor. Inténtalo de nuevo.';
     }
     
     return new Response(JSON.stringify({

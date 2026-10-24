@@ -9,21 +9,26 @@ interface Ctx {
 
 const LanguageContext = React.createContext<Ctx | null>(null);
 
-const STORAGE_KEY = "pontal-lang";
+const STORAGE_KEY = "mimenu-lang";
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = React.useState<Lang>("pt");
+  const [lang, setLangState] = React.useState<Lang>("es");
 
   React.useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved === "pt" || saved === "en") {
+      if (saved === "es" || saved === "en" || saved === "pt") {
         setLangState(saved);
         return;
       }
-      const browser = navigator.language.toLowerCase();
-      if (browser.startsWith("pt")) setLangState("pt");
-      else setLangState("en");
+      // Legacy key from the Brazilian-market era (pt/en only)
+      const legacy = localStorage.getItem("pontal-lang") as Lang | null;
+      if (legacy === "en" || legacy === "pt") {
+        setLangState(legacy);
+        return;
+      }
+      // Spanish (Bolivian market) is the default language
+      setLangState("es");
     } catch {
       // ignore
     }

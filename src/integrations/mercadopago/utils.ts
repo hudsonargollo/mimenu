@@ -92,25 +92,23 @@ export function getPaymentStatusIcon(status: string): string {
 }
 
 /**
- * Validate Brazilian phone number format
+ * Validate Bolivian phone number format
  */
-export function validateBrazilianPhone(phone: string): boolean {
-  // Format: +5511999999999 (country code + area code + number)
-  const phoneRegex = /^\+55\d{2}9?\d{8}$/;
+export function validateBolivianPhone(phone: string): boolean {
+  // Format: +591XXXXXXXX (country code + 8 digits)
+  const phoneRegex = /^\+591\d{8}$/;
   return phoneRegex.test(phone);
 }
 
 /**
- * Format Brazilian phone number for display
+ * Format Bolivian phone number for display
  */
-export function formatBrazilianPhone(phone: string): string {
-  // Remove +55 and format as (XX) 9XXXX-XXXX
-  if (phone.startsWith('+55')) {
-    const number = phone.substring(3);
-    if (number.length === 11) {
-      return `(${number.substring(0, 2)}) ${number.substring(2, 7)}-${number.substring(7)}`;
-    } else if (number.length === 10) {
-      return `(${number.substring(0, 2)}) ${number.substring(2, 6)}-${number.substring(6)}`;
+export function formatBolivianPhone(phone: string): string {
+  // Remove +591 and format as XXXX-XXXX
+  if (phone.startsWith('+591')) {
+    const number = phone.substring(4);
+    if (number.length === 8) {
+      return `${number.substring(0, 4)}-${number.substring(4)}`;
     }
   }
   return phone;

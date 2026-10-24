@@ -269,9 +269,9 @@ export const AddItemsModal = ({
                               </p>
                             )}
                             <p className="text-lg font-bold text-primary mt-2">
-                              {item.price.toLocaleString("pt-BR", {
+                              {item.price.toLocaleString("es-BO", {
                                 style: "currency",
-                                currency: "BRL",
+                                currency: "BOB",
                               })}
                             </p>
                           </div>
@@ -328,9 +328,9 @@ export const AddItemsModal = ({
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Total Atual:</span>
                     <span className="font-semibold">
-                      {currentTotal.toLocaleString("pt-BR", {
+                      {currentTotal.toLocaleString("es-BO", {
                         style: "currency",
-                        currency: "BRL",
+                        currency: "BOB",
                       })}
                     </span>
                   </div>
@@ -338,27 +338,27 @@ export const AddItemsModal = ({
                     <span className="text-gray-600">Itens Adicionados:</span>
                     <span className="font-semibold text-primary">
                       +{" "}
-                      {addedAmount.toLocaleString("pt-BR", {
+                      {addedAmount.toLocaleString("es-BO", {
                         style: "currency",
-                        currency: "BRL",
+                        currency: "BOB",
                       })}
                     </span>
                   </div>
                   <div className="border-t border-primary/20 pt-2 flex justify-between">
                     <span className="font-bold text-gray-900">Novo Total:</span>
                     <span className="font-bold text-lg text-primary">
-                      {newTotal.toLocaleString("pt-BR", {
+                      {newTotal.toLocaleString("es-BO", {
                         style: "currency",
-                        currency: "BRL",
+                        currency: "BOB",
                       })}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Nova Comissão (10%):</span>
                     <span className="font-semibold">
-                      {newCommission.toLocaleString("pt-BR", {
+                      {newCommission.toLocaleString("es-BO", {
                         style: "currency",
-                        currency: "BRL",
+                        currency: "BOB",
                       })}
                     </span>
                   </div>

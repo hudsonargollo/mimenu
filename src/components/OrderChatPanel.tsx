@@ -184,7 +184,7 @@ export function OrderChatPanel({ orderId, customerPhone }: OrderChatPanelProps) 
             )}
           >
             <span>
-              {new Date(message.timestamp).toLocaleTimeString('pt-BR', {
+              {new Date(message.timestamp).toLocaleTimeString('es-BO', {
                 hour: '2-digit',
                 minute: '2-digit',
               })}

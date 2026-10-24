@@ -42,9 +42,9 @@ export function CommissionCards({ orders }: CommissionCardsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-green-600 mb-2">
-            {confirmedCommission.toLocaleString("pt-BR", { 
+            {confirmedCommission.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })}
           </div>
           <p className="text-sm text-gray-600">
@@ -63,9 +63,9 @@ export function CommissionCards({ orders }: CommissionCardsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-yellow-600 mb-2">
-            {estimatedCommission.toLocaleString("pt-BR", { 
+            {estimatedCommission.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })}
           </div>
           <p className="text-sm text-gray-600">

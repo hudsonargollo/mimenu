@@ -3,11 +3,17 @@ compatibility_date = "2024-11-06"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
+# KV Namespace bindings for storing sessions and data
+# These will be bound when deploying:
+# wrangler kv:namespace create MIMENU_SESSIONS
+# wrangler kv:namespace create MIMENU_DATA
+[kv_namespaces]
+# binding = "MIMENU_KV"
+
 # Environment variables (available at build time and runtime)
 [vars]
-# Frontend environment variables
-VITE_SUPABASE_URL = "https://jxmxavugxuzqgfvjjxdb.supabase.co"
-VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4bXhhdnVneHV6cWdmdmpqeGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NDkxOTksImV4cCI6MjA5MjAyNTE5OX0.MpvGoIzNCzrTRQeaHLumpoJ_TeratCavqZ6N-Qns-eA"
+# Frontend environment variables - REMOVED: SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY
+# Authentication is now email-based, no external DB needed
 
 # MercadoPago Configuration (PIX and Credit Card Payments)
 # Public key is used by Payment Brick SDK for credit card tokenization
@@ -20,12 +26,7 @@ VITE_EVOLUTION_API_URL = "http://wppapi.clubemkt.digital"
 VITE_EVOLUTION_API_KEY = "DD451E404240-4C45-AF35-BFCA6A976927"
 VITE_EVOLUTION_INSTANCE_NAME = "cocooo"
 
-# Server-side environment variables (for Cloudflare Functions)
-SUPABASE_URL = "https://jxmxavugxuzqgfvjjxdb.supabase.co"
-SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4bXhhdnVneHV6cWdmdmpqeGRiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjQ0OTE5OSwiZXhwIjoyMDkyMDI1MTk5fQ.Idi5qlKnOgfCOkVIujNALfxZwXcMTlXoaj_Cem2IdfE"
-
 # MercadoPago Access Token (for payment processing in Cloudflare Functions)
-# Used by /api/mercadopago/create-card-payment endpoint
 MERCADOPAGO_ACCESS_TOKEN = "APP_USR-4813437808298526-110522-fa108581dfa5cb10a87458875e5c8136-1769074499"
 
 # WhatsApp Configuration

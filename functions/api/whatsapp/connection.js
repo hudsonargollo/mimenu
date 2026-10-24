@@ -289,7 +289,7 @@ export async function onRequest(context) {
           if (logoutResponse.ok) {
             return new Response(JSON.stringify({
               success: true,
-              message: 'WhatsApp desconectado com sucesso'
+              message: 'WhatsApp desconectado con exito'
             }), {
               status: 200,
               headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -307,7 +307,7 @@ export async function onRequest(context) {
         } catch (error) {
           return new Response(JSON.stringify({
             success: false,
-            message: 'Erro ao desconectar WhatsApp',
+            message: 'Error al desconectar WhatsApp',
             error: error.message
           }), {
             status: 500,

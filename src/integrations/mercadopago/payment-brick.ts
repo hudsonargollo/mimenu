@@ -8,7 +8,7 @@
  * - Dynamic SDK loading
  * - Payment Brick initialization and configuration
  * - Secure client-side card tokenization
- * - Error handling with user-friendly Portuguese messages
+ * - Error handling with user-friendly Spanish (Bolivia) messages
  * - Automatic cleanup and unmounting
  * 
  * Security:
@@ -17,7 +17,7 @@
  * - Tokens are single-use and expire quickly
  * 
  * @module payment-brick
- * @see {@link https://www.mercadopago.com.br/developers/en/docs/checkout-bricks/payment-brick/introduction}
+ * @see {@link https://www.mercadopago.com.bo/developers/en/reference}
  */
 
 import type {
@@ -36,27 +36,27 @@ declare global {
 }
 
 /**
- * Error messages in Portuguese for user-friendly feedback
+ * Error messages in Spanish (Bolivia) for user-friendly feedback
  */
 const ERROR_MESSAGES = {
-  SDK_LOAD_FAILED: 'Erro ao carregar sistema de pagamento. Verifique sua conexão.',
-  SDK_INIT_FAILED: 'Erro ao inicializar sistema de pagamento.',
-  PUBLIC_KEY_MISSING: 'Configuração de pagamento inválida. Entre em contato com o suporte.',
-  BRICK_CREATE_FAILED: 'Erro ao carregar formulário de pagamento.',
-  BRICK_NOT_INITIALIZED: 'Formulário de pagamento não inicializado.',
-  TOKEN_NOT_FOUND: 'Token não encontrado nos dados do formulário.',
-  TOKENIZATION_FAILED: 'Erro ao processar dados do cartão.',
-  INVALID_CARD_NUMBER: 'Número de cartão inválido.',
-  INVALID_EXPIRY: 'Data de validade inválida.',
-  INVALID_CVV: 'Código de segurança inválido.',
-  INVALID_CARDHOLDER: 'Nome do titular inválido.',
+  SDK_LOAD_FAILED: 'Error al cargar el sistema de pago. Verifica tu conexión.',
+  SDK_INIT_FAILED: 'Error al inicializar el sistema de pago.',
+  PUBLIC_KEY_MISSING: 'Configuración de pago inválida. Contacta al soporte.',
+  BRICK_CREATE_FAILED: 'Error al cargar el formulario de pago.',
+  BRICK_NOT_INITIALIZED: 'Formulario de pago no inicializado.',
+  TOKEN_NOT_FOUND: 'Token no encontrado en los datos del formulario.',
+  TOKENIZATION_FAILED: 'Error al procesar los datos de la tarjeta.',
+  INVALID_CARD_NUMBER: 'Número de tarjeta inválido.',
+  INVALID_EXPIRY: 'Fecha de vencimiento inválida.',
+  INVALID_CVV: 'Código de seguridad inválido.',
+  INVALID_CARDHOLDER: 'Nombre del titular inválido.',
   INVALID_DOCUMENT: 'Documento inválido.',
-  NETWORK_ERROR: 'Erro de conexão. Verifique sua internet.',
-  GENERIC_ERROR: 'Erro inesperado. Tente novamente.',
+  NETWORK_ERROR: 'Error de conexión. Verifica tu internet.',
+  GENERIC_ERROR: 'Error inesperado. Intenta nuevamente.',
 } as const;
 
 /**
- * Maps MercadoPago error codes and messages to user-friendly Portuguese messages
+ * Maps MercadoPago error codes and messages to user-friendly Spanish (Bolivia) messages
  * 
  * Handles various error types:
  * - Network errors (connection, timeout)
@@ -65,7 +65,7 @@ const ERROR_MESSAGES = {
  * - Generic errors
  * 
  * @param {any} error - Error object from MercadoPago SDK or network request
- * @returns {string} User-friendly error message in Portuguese
+ * @returns {string} User-friendly error message in Spanish (Bolivia)
  * @private
  */
 function getErrorMessage(error: any): string {
@@ -191,7 +191,7 @@ class PaymentBrickService {
    * 1. Validates that public key is configured
    * 2. Loads the MercadoPago SDK script if not already loaded
    * 3. Creates a MercadoPago instance with the public key
-   * 4. Sets locale to pt-BR for Brazilian Portuguese
+ * - Sets locale to es-BO for Bolivian Spanish
    * 
    * @async
    * @returns {Promise<void>}
@@ -219,7 +219,7 @@ class PaymentBrickService {
 
       // Initialize MercadoPago instance
       this.mp = new window.MercadoPago(this.publicKey, {
-        locale: 'pt-BR'
+        locale: 'es-BO'
       });
 
       this.isInitialized = true;
@@ -243,7 +243,7 @@ class PaymentBrickService {
    * 
    * Configuration:
    * - No installments (single payment only)
-   * - Portuguese (pt-BR) locale
+ * - Portuguese (pt-BR) locale
    * - Custom button hidden (we use our own)
    * 
    * @async

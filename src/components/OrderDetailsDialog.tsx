@@ -172,7 +172,7 @@ export function OrderDetailsDialog({
 
   const formatTimestamp = (timestamp: string | null) => {
     if (!timestamp) return 'N/A';
-    return new Date(timestamp).toLocaleString('pt-BR', {
+    return new Date(timestamp).toLocaleString('es-BO', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

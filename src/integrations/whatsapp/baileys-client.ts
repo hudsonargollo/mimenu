@@ -217,38 +217,28 @@ export class BaileysWhatsAppClient {
   }
 
   /**
-   * Format phone number for Brazilian WhatsApp
+   * Format phone number for Bolivian WhatsApp
    */
   formatPhoneNumber(phone: string): string {
-    // Remove any non-digit characters
+    // Remove all non-digit characters
     const cleaned = phone.replace(/\D/g, '');
     
     if (!cleaned) {
       throw new Error('Phone number cannot be empty');
     }
-
-    // If it starts with 55 (Brazil country code), validate and use as is
-    if (cleaned.startsWith('55')) {
-      if (cleaned.length >= 12 && cleaned.length <= 14) {
+    
+    // If it starts with 591 (Bolivia country code), validate and use as is
+    if (cleaned.startsWith('591')) {
+      if (cleaned.length === 11 && (['6', '7'].includes(cleaned.substring(3, 4)))) {
         return cleaned;
       } else {
-        throw new Error('Invalid Brazilian phone number length');
+        throw new Error('Invalid Bolivian phone number');
       }
     }
     
-    // If it starts with 0, remove it and add Brazil country code
-    if (cleaned.startsWith('0')) {
-      const withoutZero = cleaned.substring(1);
-      if (withoutZero.length >= 10 && withoutZero.length <= 11) {
-        return '55' + withoutZero;
-      } else {
-        throw new Error('Invalid phone number length after removing leading zero');
-      }
-    }
-    
-    // If it's a local Brazilian number, add Brazil country code
-    if (cleaned.length === 10 || cleaned.length === 11) {
-      return '55' + cleaned;
+    // If it's a local Bolivian number (8 digits starting with 6 or 7), add 591 country code
+    if (cleaned.length === 8 && (['6', '7'].includes(cleaned.substring(0, 1)))) {
+      return '591' + cleaned;
     }
     
     // For international numbers, validate length

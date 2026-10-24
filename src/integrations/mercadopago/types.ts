@@ -81,7 +81,7 @@ export type OrderStatus = typeof PAYMENT_STATUS_MAP[MercadoPagoStatus];
 // Payment Brick types
 export interface PaymentBrickConfig {
   amount: number;
-  locale: 'pt-BR';
+  locale: 'es-BO';
   customization?: {
     visual?: {
       hidePaymentButton?: boolean;
@@ -166,7 +166,7 @@ export interface CardPaymentRequest {
   payer: {
     email: string;
     identification: {
-      type: 'CPF' | 'CNPJ';
+      type: string;
       number: string;
     };
   };

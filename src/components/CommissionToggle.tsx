@@ -304,9 +304,9 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
             </div>
             
             <div className="text-3xl font-bold text-green-600 mb-2">
-              {confirmedCommission.toLocaleString("pt-BR", { 
+              {confirmedCommission.toLocaleString("es-BO", { 
                 style: "currency", 
-                currency: "BRL" 
+                currency: "BOB" 
               })}
             </div>
             <p className="text-sm text-gray-600">
@@ -350,9 +350,9 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
             </div>
             
             <div className="text-3xl font-bold text-yellow-600 mb-2">
-              {estimatedCommission.toLocaleString("pt-BR", { 
+              {estimatedCommission.toLocaleString("es-BO", { 
                 style: "currency", 
-                currency: "BRL" 
+                currency: "BOB" 
               })}
             </div>
             <p className="text-sm text-gray-600">
@@ -375,18 +375,18 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
             <TrendingUp className="w-5 h-5 text-purple-200" />
           </div>
           <div className="text-3xl font-bold text-white mb-1">
-            {totalCommission.toLocaleString("pt-BR", { 
+            {totalCommission.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })}
           </div>
           <p className="text-xs text-purple-200">
-            {confirmedCommission.toLocaleString("pt-BR", { 
+            {confirmedCommission.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
-            })} confirmadas + {estimatedCommission.toLocaleString("pt-BR", { 
+              currency: "BOB" 
+            })} confirmadas + {estimatedCommission.toLocaleString("es-BO", { 
               style: "currency", 
-              currency: "BRL" 
+              currency: "BOB" 
             })} estimadas
           </p>
         </div>

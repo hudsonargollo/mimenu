@@ -1,5 +1,6 @@
-// Cloudflare Pages Function to generate PIX for waiter orders
-// This creates a MercadoPago payment and stores PIX data in the order
+// Cloudflare Pages Function to generate QR PAGO for orders
+// This creates a MercadoPago payment and stores QR PAGO data in the order
+// Used for the Bolivia/Santa Cruz market
 
 // Type definitions for Cloudflare Pages Functions
 type PagesFunction<Env = unknown> = (context: {
@@ -85,12 +86,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Check if PIX already exists and is not expired
+    // Check if QR PAGO already exists and is not expired
     if (order.pix_qr_code && order.pix_expires_at) {
       const expiresAt = new Date(order.pix_expires_at);
       if (expiresAt > new Date()) {
         return new Response(JSON.stringify({
-          error: 'PIX already generated and not expired',
+          error: 'QR PAGO already generated and not expired',
           qrCode: order.pix_qr_code,
           expiresAt: order.pix_expires_at
         }), {
@@ -105,7 +106,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     
     const paymentPayload = {
       transaction_amount: order.total_amount,
-      description: `Pedido Garçom #${order.id.slice(0, 8)} - ${order.customer_name || 'Cliente'}`,
+      description: `Orden del mozo #${order.id.slice(0, 8)} - ${order.customer_name || 'Cliente'}`,
       payment_method_id: 'pix',
       date_of_expiration: expirationDate,
       payer: {
@@ -150,14 +151,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     if (!pixData || !pixData.qr_code) {
       return new Response(JSON.stringify({ 
-        error: 'Failed to generate PIX QR code' 
+        error: 'Failed to generate QR PAGO code' 
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Update order with PIX data
+    // Update order with QR PAGO data
     const updateResponse = await fetch(`${supabaseUrl}/rest/v1/orders?id=eq.${orderId}`, {
       method: 'PATCH',
       headers: {
@@ -176,13 +177,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     if (!updateResponse.ok) {
       const error = await updateResponse.text();
-      console.error('Failed to update order with PIX data:', error);
+      console.error('Failed to update order with QR PAGO data:', error);
       throw new Error(`Failed to update order: ${error}`);
     }
 
-    console.log(`PIX generated for order ${orderId}`);
+    console.log(`QR PAGO generated for order ${orderId}`);
 
-    // Return PIX data
+    // Return QR PAGO data
     return new Response(JSON.stringify({
       success: true,
       qrCode: pixData.qr_code,
@@ -196,10 +197,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
 
   } catch (error) {
-    console.error('Generate PIX error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Generate QR PAGO error:', error);
     return new Response(JSON.stringify({
       success: false,
-      error: error.message || 'Internal server error'
+      error: errorMessage || 'Internal server error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { notificationUtils } from './RealtimeNotifications';
+// REMOVED: supabase import - no longer using Supabase real-time
 
 interface ConnectionMonitorProps {
   onConnectionChange?: (isConnected: boolean) => void;
 }
 
+// Simple client-side connection monitoring
+// No external real-time subscriptions - local state management only
 export function ConnectionMonitor({ onConnectionChange }: ConnectionMonitorProps) {
   const [isConnected, setIsConnected] = useState(true);
   const previousConnectionState = useRef(true);
@@ -16,37 +17,25 @@ export function ConnectionMonitor({ onConnectionChange }: ConnectionMonitorProps
       if (connected !== previousConnectionState.current) {
         setIsConnected(connected);
         onConnectionChange?.(connected);
-        
-        if (connected) {
-          notificationUtils.connectionRestored();
-        } else {
-          notificationUtils.connectionLost();
-        }
-        
         previousConnectionState.current = connected;
       }
     };
 
-    // Simple connection monitoring using channel subscription status
-    let testChannel: any = null;
-    
-    const monitorConnection = () => {
-      // Create a test channel to monitor connection
-      testChannel = supabase
-        .channel('connection-test')
-        .subscribe((status) => {
-          console.log('Connection status:', status);
-          const connected = status === 'SUBSCRIBED';
-          handleConnectionChange(connected);
-        });
+    // Simple connection monitoring using browser online/offline events
+    const handleOnline = () => {
+      handleConnectionChange(true);
     };
 
-    monitorConnection();
+    const handleOffline = () => {
+      handleConnectionChange(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      if (testChannel) {
-        supabase.removeChannel(testChannel);
-      }
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, [onConnectionChange]);
 
@@ -60,40 +49,48 @@ export function useConnectionMonitor() {
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connected');
 
   useEffect(() => {
-    let testChannel: any = null;
-    
-    const handleConnectionChange = (connected: boolean) => {
-      setIsConnected(connected);
-      setConnectionStatus(connected ? 'connected' : 'disconnected');
+    const handleOnline = () => {
+      setIsConnected(true);
+      setConnectionStatus('connected');
     };
 
-    // Monitor connection using a test channel
-    const monitorConnection = () => {
-      testChannel = supabase
-        .channel('connection-monitor')
-        .subscribe((status) => {
-          console.log('Connection monitor status:', status);
-          const connected = status === 'SUBSCRIBED';
-          handleConnectionChange(connected);
-        });
+    const handleOffline = () => {
+      setIsConnected(false);
+      setConnectionStatus('disconnected');
     };
 
-    monitorConnection();
+    const handleConnectivityChange = () => {
+      if (navigator.onLine) {
+        handleOnline();
+      } else {
+        handleOffline();
+      }
+    };
+
+    // Check initial state
+    handleConnectivityChange();
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      if (testChannel) {
-        supabase.removeChannel(testChannel);
-      }
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
   const reconnect = () => {
     setConnectionStatus('connecting');
     
-    // Simple reconnection approach
+    // Force a page reload as reconnection method
     setTimeout(() => {
-      // Force a page reload as a simple reconnection method
-      window.location.reload();
+      if (navigator.onLine) {
+        setConnectionStatus('connected');
+        setIsConnected(true);
+      } else {
+        setConnectionStatus('disconnected');
+        setIsConnected(false);
+      }
     }, 1000);
   };
 

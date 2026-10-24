@@ -26,7 +26,7 @@ export class PaymentRecoveryService {
       const currentAttempts = this.recoveryAttempts.get(orderId) || 0;
       if (currentAttempts >= maxRecoveryAttempts) {
         console.error(`Max recovery attempts reached for order ${orderId}`);
-        toast.error('Não foi possível processar o pagamento. Entre em contato com o suporte.');
+        toast.error('No se pudo procesar el pago. Contacta con el soporte.');
         return false;
       }
 
@@ -53,7 +53,6 @@ export class PaymentRecoveryService {
 
       // Wait before recovery attempt
       await this.sleep(options.recoveryDelayMs || this.RECOVERY_DELAY_MS);
-
       // Create new payment
       const paymentResponse = await mercadoPagoService.createPayment({
         orderId: order.id,
@@ -87,7 +86,7 @@ export class PaymentRecoveryService {
         orderId: orderId,
         onSuccess: () => {
           this.recoveryAttempts.delete(orderId);
-          toast.success('Pagamento processado com sucesso!');
+          toast.success('¡Pago procesado con éxito!');
         },
         onError: (error) => {
           console.error('Recovery payment failed:', error);
@@ -106,7 +105,7 @@ export class PaymentRecoveryService {
       });
 
       console.log('Payment recovery initiated:', { orderId, paymentId: paymentResponse.id });
-      toast.info('Tentando processar o pagamento novamente...');
+      toast.info('Intentando procesar el pago nuevamente...');
       
       return true;
 
@@ -120,7 +119,7 @@ export class PaymentRecoveryService {
           this.recoverPayment(options);
         }, this.RECOVERY_DELAY_MS);
       } else {
-        toast.error('Não foi possível processar o pagamento. Entre em contato com o suporte.');
+        toast.error('No se pudo procesar el pago. Contacta con el soporte.');
       }
       
       return false;
@@ -133,7 +132,6 @@ export class PaymentRecoveryService {
   static canRecoverOrder(orderStatus: string): boolean {
     return ['pending_payment', 'expired', 'cancelled'].includes(orderStatus);
   }
-
   /**
    * Get recovery attempt count for an order
    */
@@ -180,11 +178,11 @@ export class PaymentRecoveryService {
 
       if (order.status === 'expired') {
         toast.error(
-          `Pagamento expirado para ${order.customer_name}. Clique aqui para gerar um novo pagamento.`,
+          `Pago expirado para ${order.customer_name}. Haz clic aquí para generar un nuevo pago.`,
           {
             duration: 10000,
             action: {
-              label: 'Novo Pagamento',
+              label: 'Nuevo Pago',
               onClick: () => this.recoverPayment({ orderId })
             }
           }

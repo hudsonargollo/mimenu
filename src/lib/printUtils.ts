@@ -20,7 +20,7 @@ export const thermalPrintConfig = {
       }
     }
   `,
-  documentTitle: 'Order Receipt',
+  documentTitle: 'Comanda de Pedido',
 };
 
 /**
@@ -39,16 +39,16 @@ export const standardPrintConfig = {
       }
     }
   `,
-  documentTitle: 'Report',
+  documentTitle: 'Reporte',
 };
 
 /**
- * Format currency for Brazilian Real (BRL)
+ * Format currency for Bolivian boliviano (BOB)
  */
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
+  return new Intl.NumberFormat('es-BO', {
     style: 'currency',
-    currency: 'BRL',
+    currency: 'BOB',
   }).format(amount);
 };
 
@@ -57,7 +57,7 @@ export const formatCurrency = (amount: number): string => {
  */
 export const formatReceiptDateTime = (date: string | Date): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('pt-BR', {
+  return new Intl.DateTimeFormat('es-BO', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -71,7 +71,7 @@ export const formatReceiptDateTime = (date: string | Date): string => {
  */
 export const formatReportDate = (date: string | Date): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('pt-BR', {
+  return new Intl.DateTimeFormat('es-BO', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -83,11 +83,11 @@ export const formatReportDate = (date: string | Date): string => {
  */
 export const getOrderStatusLabel = (status: string): string => {
   const statusLabels: Record<string, string> = {
-    pending: 'Pendente',
-    paid: 'Pago',
-    in_preparation: 'Em Preparo',
-    ready: 'Pronto',
-    delivered: 'Entregue',
+    pending: 'Pendiente',
+    paid: 'Pagado',
+    in_preparation: 'En Preparación',
+    ready: 'Listo',
+    delivered: 'Entregado',
     cancelled: 'Cancelado',
   };
   return statusLabels[status] || status;
