@@ -123,7 +123,7 @@ export const LandingTakeat: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-body selection:bg-accent selection:text-accent-foreground antialiased">
       {/* 1. TOP PROMO BANNER */}
-      <aside aria-label="Promoção de lançamento" className="bg-primary text-primary-foreground py-2 px-4 text-center text-xs sm:text-sm font-medium border-b border-border flex items-center justify-center gap-2">
+      <aside aria-label={t.landing.promoAria} className="bg-primary text-primary-foreground py-2 px-4 text-center text-xs sm:text-sm font-medium border-b border-border flex items-center justify-center gap-2">
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent text-accent-foreground tracking-wide uppercase">
           {t.landing.promoBadge}
         </span>
@@ -163,7 +163,7 @@ export const LandingTakeat: React.FC = () => {
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav aria-label="Navegação principal" className="hidden lg:flex items-center gap-8">
+          <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-8">
             <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
               {t.landing.navSolucoes}
             </a>
@@ -343,7 +343,7 @@ export const LandingTakeat: React.FC = () => {
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
                   <div className="text-xs">
-                    <div className="font-bold text-primary">0% de Comissão</div>
+                    <div className="font-bold text-primary">{t.landing.commissionBadge}</div>
                     <div className="text-muted-foreground">Nas suas vendas</div>
                   </div>
                 </div>
@@ -353,7 +353,7 @@ export const LandingTakeat: React.FC = () => {
                   </div>
                   <div className="text-xs">
                     <div className="font-bold text-primary">Nota 4.9 de 5.0</div>
-                    <div className="text-muted-foreground">+90k avaliações</div>
+                    <div className="text-muted-foreground">{t.landing.reviewsCount}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5">
@@ -517,7 +517,7 @@ export const LandingTakeat: React.FC = () => {
                                 </div>
                                 <div>
                                   <div className="text-sm font-semibold">Gin Tropical com Frutas Vermelhas</div>
-                                  <div className="text-xs text-white/40">Sem açúcar · Gelo extra</div>
+                                  <div className="text-xs text-white/40">{t.landing.noSugar}</div>
                                 </div>
                               </div>
                               <div className="text-right">
@@ -575,7 +575,7 @@ export const LandingTakeat: React.FC = () => {
                               <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">04:12 min</span>
                             </div>
                             <div className="text-sm font-bold text-white">1x Picanha na Chapa 400g</div>
-                            <div className="text-xs text-white/40 mt-1">Obs: Ao ponto p/ mal, farofa à parte</div>
+                            <div className="text-xs text-white/40 mt-1">{t.landing.obsSteak}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 text-xs font-bold">
                               Marcar como Pronto
                             </button>
@@ -587,7 +587,7 @@ export const LandingTakeat: React.FC = () => {
                               <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Pronto</span>
                             </div>
                             <div className="text-sm font-bold text-white">2x Pizza Calabresa Especial</div>
-                            <div className="text-xs text-white/40 mt-1">Borda vulcão catupiry</div>
+                            <div className="text-xs text-white/40 mt-1">{t.landing.crustBorder}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-success hover:bg-success/90 text-success-foreground text-xs font-bold">
                               Despachar para Motoboy
                             </button>
@@ -629,7 +629,7 @@ export const LandingTakeat: React.FC = () => {
 
                         <div className="md:col-span-7 bg-secondary/20 p-5 rounded-2xl border border-white/10">
                           <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-                            <span className="text-xs font-semibold text-white/40">Garçom: Carlos Silva · Turno Noite</span>
+                            <span className="text-xs font-semibold text-white/40">{t.landing.waiterName}</span>
                             <span className="text-xs font-bold text-emerald-400">8 Mesas Ativas</span>
                           </div>
                           <div className="grid grid-cols-3 gap-2">
@@ -694,10 +694,10 @@ export const LandingTakeat: React.FC = () => {
                             <div className="p-3 rounded-xl bg-white/5">
                               <div className="text-xs text-white/40">Pedidos Totais</div>
                               <div className="text-lg font-bold text-white">94 pedidos</div>
-                              <div className="text-[10px] text-white/40">Tíquete médio R$ 58</div>
+                              <div className="text-[10px] text-white/40">{t.landing.avgTicket}</div>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
-                              <div className="text-xs text-white/40">Comissão Paga</div>
+                              <div className="text-xs text-white/40">{t.landing.commissionPaid}</div>
                               <div className="text-lg font-bold text-accent">R$ 0,00</div>
                               <div className="text-[10px] text-emerald-400">Economia de R$ 1.260</div>
                             </div>
@@ -1256,7 +1256,7 @@ export const LandingTakeat: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-primary">Rodrigo Carvalho</div>
-                      <div className="text-xs text-muted-foreground">Sócio do Brasa Burguer & Co.</div>
+                      <div className="text-xs text-muted-foreground">{t.landing.t1Role}</div>
                     </div>
                   </div>
                 </Card>
@@ -1280,7 +1280,7 @@ export const LandingTakeat: React.FC = () => {
                       ML
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-primary">Mariana Leitão</div>
+                      <div className="text-sm font-bold text-primary">{t.landing.t2Name}</div>
                       <div className="text-xs text-muted-foreground">Gerente Geral da Trattoria Di Napoli</div>
                     </div>
                   </div>
@@ -1306,7 +1306,7 @@ export const LandingTakeat: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-primary">Gustavo Santos</div>
-                      <div className="text-xs text-muted-foreground">Proprietário do Pub do Porto</div>
+                      <div className="text-xs text-muted-foreground">{t.landing.t3Role}</div>
                     </div>
                   </div>
                 </Card>
@@ -1420,7 +1420,7 @@ export const LandingTakeat: React.FC = () => {
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Implantação assistida:</strong> nosso time ajuda a cadastrar seu cardápio</span>
+                    <span><strong className="text-white">Implantação assistida:</strong> {t.landing.implantDesc}</span>
                   </li>
                 </ul>
               </div>
@@ -1593,7 +1593,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.securityTitle}
               </div>
               <ul className="space-y-2 text-xs">
-                <li className="text-white/50">Pix Instantâneo</li>
+                <li className="text-white/50">{t.landing.pixInstant}</li>
                 <li className="text-white/50">SSL 256-bit Encrypted</li>
                 <li className="text-white/50">Hospedagem Cloudflare</li>
                 <li className="text-white/50">LGPD Compliant</li>
