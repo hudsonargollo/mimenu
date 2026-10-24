@@ -1094,11 +1094,11 @@ export const LandingTakeat: React.FC = () => {
                   <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-xs text-white/70 space-y-1">
                     <div className="flex justify-between">
                       <span>Faturamento Bruto Mensal:</span>
-                      <strong className="text-white">R$ {totalGrossRevenue.toLocaleString("pt-BR")},00</strong>
+                      <strong className="text-white">R$ {totalGrossRevenue.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00</strong>
                     </div>
                     <div className="flex justify-between text-accent">
                       <span>Taxa perdida em agregadores (23%):</span>
-                      <strong>- R$ {marketplaceLostCommissions.toLocaleString("pt-BR")},00 / mês</strong>
+                      <strong>- R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00 / mês</strong>
                     </div>
                   </div>
                 </div>
@@ -1113,10 +1113,10 @@ export const LandingTakeat: React.FC = () => {
                   <div>
                     <div className="text-xs text-white/70 font-medium">Economia Mensal Direta</div>
                     <div className="text-3xl sm:text-4xl font-display font-black text-white mt-1">
-                      R$ {(marketplaceLostCommissions + upsellGain).toLocaleString("pt-BR")},00
+                      R$ {(marketplaceLostCommissions + upsellGain).toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
                     </div>
                     <div className="text-[11px] text-emerald-400 font-medium mt-1">
-                      (R$ {marketplaceLostCommissions.toLocaleString("pt-BR")} em taxas + R$ {upsellGain.toLocaleString("pt-BR")} em upsell)
+                      (R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} em taxas + R$ {upsellGain.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} em upsell)
                     </div>
                   </div>
 
@@ -1125,7 +1125,7 @@ export const LandingTakeat: React.FC = () => {
                       Economia Estimada em 1 Ano
                     </div>
                     <div className="text-2xl sm:text-3xl font-display font-extrabold text-success mt-1">
-                      R$ {annualSavings.toLocaleString("pt-BR")},00
+                      R$ {annualSavings.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
                     </div>
                   </div>
 
