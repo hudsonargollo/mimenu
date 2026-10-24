@@ -452,7 +452,7 @@ export const LandingTakeat: React.FC = () => {
 
                 {/* Shared wrapper for tab content with reveal */}
                 <div className="p-4 sm:p-8">
-                  {/* Tab Content 1: Cardápio QR */}
+                  {/* Tab Content 1 */}
                   {activeTab === "cardapio" && (
                     <ScrollReveal direction="left" stagger>
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
@@ -597,7 +597,7 @@ export const LandingTakeat: React.FC = () => {
                     </ScrollReveal>
                   )}
 
-                  {/* Tab Content 3: Garçom Digital */}
+                  {/* Tab Content 3 */}
                   {activeTab === "garcom" && (
                     <ScrollReveal direction="left" stagger>
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
@@ -767,7 +767,7 @@ export const LandingTakeat: React.FC = () => {
         </section>
       </ScrollReveal>
 
-      {/* 6. CORE OPERATIONAL PILLARS (SOLUÇÕES) */}
+      {/* 6. CORE OPERATIONAL PILLARS */}
       <ScrollReveal direction="up" delay={100}>
         <section id="solucoes" className="py-20 sm:py-28 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1142,7 +1142,7 @@ export const LandingTakeat: React.FC = () => {
         </section>
       </ScrollReveal>
 
-      {/* 9. SEGMENTS MATRIX (PARA QUALQUER OPERAÇÃO) */}
+      {/* 9. SEGMENTS MATRIX */}
       <ScrollReveal direction="up" delay={100}>
         <section id="segmentos" className="py-20 sm:py-28 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
