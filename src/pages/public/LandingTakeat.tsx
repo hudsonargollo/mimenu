@@ -544,26 +544,26 @@ export const LandingTakeat: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-5 space-y-4">
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                            KDS Cozinha em Tempo Real
+                            {t.landing.kdsEyebrow}
                           </span>
                           <h3 className="text-2xl sm:text-3xl font-display font-bold">
-                            Adeus papel e comandas perdidas. Sua cozinha na velocidade máxima
+                            {t.landing.kdsTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
-                            Separação automática de praças de produção (Chapa, Fritura, Bar e Montagem). Cronômetro inteligente com alertas sonoros de tempo de espera.
+                            {t.landing.kdsDesc}
                           </p>
                           <ul className="space-y-2 text-sm text-white/70">
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Tempo médio de expedição cai em 45%</span>
+                              <span>{t.landing.kdsB1}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Mudança de status com 1 toque na tela</span>
+                              <span>{t.landing.kdsB2}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Sincronização com garçons e clientes</span>
+                              <span>{t.landing.kdsB3}</span>
                             </li>
                           </ul>
                         </div>
@@ -603,26 +603,26 @@ export const LandingTakeat: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-5 space-y-4">
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                            Comanda Móvel & Garçom
+                            {t.landing.garcomEyebrow}
                           </span>
                           <h3 className="text-2xl sm:text-3xl font-display font-bold">
-                            Mais mesas atendidas com menos equipe e menos correria
+                            {t.landing.garcomTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
-                            O garçom lança o pedido no celular em menos de 8 segundos. O item cai instantaneamente na cozinha sem necessidade de andar até o caixa.
+                            {t.landing.garcomDesc}
                           </p>
                           <ul className="space-y-2 text-sm text-white/70">
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Redução de até 50% nos custos de salão</span>
+                              <span>{t.landing.garcomB1}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Controle de comissão e gorjeta por garçom</span>
+                              <span>{t.landing.garcomB2}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Transferência de itens entre mesas com 1 toque</span>
+                              <span>{t.landing.garcomB3}</span>
                             </li>
                           </ul>
                         </div>
@@ -660,26 +660,26 @@ export const LandingTakeat: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                         <div className="md:col-span-5 space-y-4">
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                            PDV Balcão & Gestão Financeira
+                            {t.landing.pdvEyebrow}
                           </span>
                           <h3 className="text-2xl sm:text-3xl font-display font-bold">
-                            DRE em tempo real, fechamento de caixa e controle total
+                            {t.landing.pdvTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
-                            Acompanhe faturamento por hora, produtos mais vendidos, margem líquida e relatórios consolidados pelo celular ou computador.
+                            {t.landing.pdvDesc}
                           </p>
                           <ul className="space-y-2 text-sm text-white/70">
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Fechamento cego de caixa à prova de desvios</span>
+                              <span>{t.landing.pdvB1}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Controle de estoque com baixa automática</span>
+                              <span>{t.landing.pdvB2}</span>
                             </li>
                             <li className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-success" />
-                              <span>Exportação instantânea para sua contabilidade</span>
+                              <span>{t.landing.pdvB3}</span>
                             </li>
                           </ul>
                         </div>
