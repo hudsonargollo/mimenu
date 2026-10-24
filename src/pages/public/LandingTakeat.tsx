@@ -288,7 +288,7 @@ export const LandingTakeat: React.FC = () => {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div style={{ y: heroY }} className="text-center max-w-4xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto">
             {/* Social proof badge */}
             <ScrollReveal direction="up" delay={100}>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border shadow-sm mb-6 text-xs sm:text-sm font-semibold text-muted-foreground">
@@ -376,12 +376,12 @@ export const LandingTakeat: React.FC = () => {
                 </div>
               </div>
             </ScrollReveal>
-          </motion.div>
+          </div>
         </div>
 
           {/* 4. INTERACTIVE PRODUCT SHOWCASE / MOCKUP TABS */}
           <ScrollReveal direction="up" delay={100}>
-            <div className="mt-14 max-w-5xl mx-auto">
+            <div className="relative z-20 mt-14 max-w-5xl mx-auto">
               {/* Tab switchers */}
               <div className="flex items-center justify-center gap-2 p-1.5 bg-card border border-border rounded-2xl shadow-sm mb-6 max-w-2xl mx-auto overflow-x-auto">
                 <button
