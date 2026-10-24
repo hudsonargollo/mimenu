@@ -44,9 +44,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ScrollReveal from "@/components/ScrollReveal";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export const LandingTakeat: React.FC = () => {
   const { lang, setLang } = useLang();
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 400], [0, 120]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.6]);
 
   const navigate = useNavigate();
 
@@ -354,18 +358,18 @@ export const LandingTakeat: React.FC = () => {
 
       {/* 3. HERO SECTION */}
       <section className="relative pt-12 pb-20 lg:pt-16 lg:pb-32 overflow-hidden">
-        {/* Subtle Background Glows */}
-        <div
+        {/* Parallax background glows */}
+        <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10"
-          style={{
+          style={{ y: heroY, opacity: heroOpacity,
             background:
-              "radial-gradient(ellipse 80% 50% at 50% -20%, hsla(20, 52%, 44%, 0.08) 0%, hsla(20, 52%, 44%, 0) 70%), radial-gradient(ellipse 60% 40% at 85% 60%, hsla(20, 52%, 44%, 0.06) 0%, hsla(20, 52%, 44%, 0) 65%)"
+              "radial-gradient(ellipse 80% 50% at 50% -20%, hsla(20, 52%, 44%, 0.12) 0%, hsla(20, 52%, 44%, 0) 70%), radial-gradient(ellipse 60% 40% at 85% 60%, hsla(20, 52%, 44%, 0.08) 0%, hsla(20, 52%, 44%, 0) 65%)"
           }}
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
+          <motion.div style={{ y: heroY }} className="text-center max-w-4xl mx-auto">
             {/* Social proof badge */}
             <ScrollReveal direction="up" delay={100}>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border shadow-sm mb-6 text-xs sm:text-sm font-semibold text-muted-foreground">
@@ -453,7 +457,8 @@ export const LandingTakeat: React.FC = () => {
                 </div>
               </div>
             </ScrollReveal>
-          </div>
+          </motion.div>
+        </div>
 
           {/* 4. INTERACTIVE PRODUCT SHOWCASE / MOCKUP TABS */}
           <ScrollReveal direction="up" delay={100}>
@@ -786,7 +791,6 @@ export const LandingTakeat: React.FC = () => {
               </div>
             </div>
           </ScrollReveal>
-        </div>
       </section>
 
       {/* 5. NUMBERS & RESULTS STRIP */}
@@ -802,7 +806,7 @@ export const LandingTakeat: React.FC = () => {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
                 <div className="text-4xl sm:text-5xl font-display font-extrabold text-accent mb-2">
                   +35%
