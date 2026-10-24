@@ -730,18 +730,18 @@ export const LandingTakeat: React.FC = () => {
                 <div className="text-4xl sm:text-5xl font-display font-extrabold text-accent mb-2">
                   +35%
                 </div>
-                <div className="font-bold text-base text-white mb-1">Aumento no Tíquete Médio</div>
+                <div className="font-bold text-base text-white mb-1">{t.landing.stat3Title}</div>
                 <p className="text-xs text-white/40 leading-relaxed">
-                  Com fotos apetitosas e combos sugeridos automaticamente no cardápio digital.
+                  {t.landing.stat3Desc}
                 </p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
                 <div className="text-4xl sm:text-5xl font-display font-extrabold text-success mb-2">
                   0%
                 </div>
-                <div className="font-bold text-base text-white mb-1">Taxas ou Comissões</div>
+                <div className="font-bold text-base text-white mb-1">{t.landing.stat4Title}</div>
                 <p className="text-xs text-white/40 leading-relaxed">
-                  Todo o lucro do seu salão e delivery próprio fica 100% no seu bolso.
+                  {t.landing.stat4Desc}
                 </p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
@@ -776,10 +776,10 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.visaoTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                Um produto para cada momento da sua operação
+                {t.landing.pillarsTitle}
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
-                Do caixa à cozinha, da mesa ao delivery. Combine as ferramentas que fazem sentido para a sua rotina.
+                {t.landing.pillarsSub}
               </p>
             </div>
 
@@ -791,29 +791,29 @@ export const LandingTakeat: React.FC = () => {
                     <Store className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-display font-bold text-primary mb-3">
-                    Venda em 3 cliques com PDV Ágil
+                    {t.landing.p1Title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                    Abra caixa, registre pedidos de balcão, lance mesas, cobre no Pix ou Cartão e feche o turno sem travar a fila.
+                    {t.landing.p1Desc}
                   </p>
                   <ul className="space-y-3 text-sm text-muted-foreground">
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Fechamento de caixa cego para evitar divergências</span>
+                      <span>{t.landing.p1B1}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Impressão térmica instantânea para balcão e produção</span>
+                      <span>{t.landing.p1B2}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Divisão rápida de comanda por cliente ou por item</span>
+                      <span>{t.landing.p1B3}</span>
                     </li>
                   </ul>
                 </Card>
@@ -826,29 +826,29 @@ export const LandingTakeat: React.FC = () => {
                     <Bike className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-display font-bold text-primary mb-3">
-                    Delivery Próprio com 0% de Comissão
+                    {t.landing.p2Title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                    Tenha seu próprio site de delivery integrado ao WhatsApp. Mantenha o lucro 100% no seu restaurante e crie sua base própria de clientes.
+                    {t.landing.p2Desc}
                   </p>
                   <ul className="space-y-3 text-sm text-muted-foreground">
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Cálculo inteligente de frete por km ou por bairro</span>
+                      <span>{t.landing.p2B1}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Link personalizado ideal para a Bio do Instagram</span>
+                      <span>{t.landing.p2B2}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Cupons de desconto automáticos para fidelizar clientes</span>
+                      <span>{t.landing.p2B3}</span>
                     </li>
                   </ul>
                 </Card>
@@ -861,29 +861,29 @@ export const LandingTakeat: React.FC = () => {
                     <ChefHat className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-display font-bold text-primary mb-3">
-                    KDS Cozinha: Produção sem Papel
+                    {t.landing.p3Title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                    O KDS organiza a fila de preparação por tempo de chegada e praça de trabalho, eliminando atrasos e erros de despacho.
+                    {t.landing.p3Desc}
                   </p>
                   <ul className="space-y-3 text-sm text-muted-foreground">
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Alerta visual e sonoro por tempo de espera</span>
+                      <span>{t.landing.p3B1}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Divisão entre chapa, fritadeira, bar e montagem</span>
+                      <span>{t.landing.p3B2}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Sincronizado automaticamente com o celular dos garçons</span>
+                      <span>{t.landing.p3B3}</span>
                     </li>
                   </ul>
                 </Card>
@@ -896,29 +896,29 @@ export const LandingTakeat: React.FC = () => {
                     <TrendingUp className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-display font-bold text-primary mb-3">
-                    Gestão Financeira & DRE em Tempo Real
+                    {t.landing.p4Title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                    Veja o faturamento, tíquete médio, custos operacionais e margem de contribuição a cada venda efetuada no salão ou delivery.
+                    {t.landing.p4Desc}
                   </p>
                   <ul className="space-y-3 text-sm text-muted-foreground">
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>DRE consolidado automático pronto para visualização</span>
+                      <span>{t.landing.p4B1}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Curva ABC dos pratos mais lucrativos da sua casa</span>
+                      <span>{t.landing.p4B2}</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
-                      <span>Relatórios com exportação fácil para contabilidade</span>
+                      <span>{t.landing.p4B3}</span>
                     </li>
                   </ul>
                 </Card>
@@ -937,7 +937,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.ecossistemaTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                Monte o sistema ideal para o seu restaurante
+                {t.landing.modulosTitle}
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
                 {t.landing.featuresLead}
