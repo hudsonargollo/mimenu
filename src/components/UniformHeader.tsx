@@ -50,7 +50,7 @@ export const UniformHeader = ({
               )}
               <a href="/admin" className="relative cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0">
                 <img 
-                  src="/mimenu-square.svg" 
+                  src="/mimenu.svg" 
                   alt="MiMenu" 
                   className="h-10 sm:h-12 w-auto drop-shadow-lg"
                 />
@@ -143,7 +143,7 @@ export const UniformHeader = ({
                 )}
                 <a href="/admin" className="relative cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0">
                   <img 
-                    src="/mimenu-square.svg" 
+                    src="/mimenu.svg" 
                     alt="MiMenu" 
                     className="h-8 w-auto drop-shadow-lg"
                   />

@@ -275,7 +275,7 @@ export const Landing: React.FC = () => {
           <Link to="/" className="flex items-center gap-3 group">
             {/* MiMenu mark on a light chip so the purple/orange reads on the dark hero */}
             <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
-              <img src="/mimenu-square.svg" alt="MiMenu" className="h-7 w-7" />
+              <img src="/mimenu.svg" alt="MiMenu" className="h-7 w-7" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
@@ -1071,7 +1071,7 @@ export const Landing: React.FC = () => {
       <footer className="py-12 bg-[#060709] border-t border-white/[0.08] text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src="/mimenu-square.svg" alt="MiMenu" className="h-6 w-6" />
+            <img src="/mimenu.svg" alt="MiMenu" className="h-6 w-6" />
             <span className="font-extrabold text-sm text-white">MiMenu</span>
             <span className="text-slate-600">|</span>
             <span>ClubeMkt Gastronomy Group</span>

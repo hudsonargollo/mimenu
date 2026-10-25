@@ -187,7 +187,7 @@ export const Onboarding: React.FC = () => {
       <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md border-b border-border">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/mimenu-square.svg" alt="MiMenu" className="h-7 w-7 shrink-0" />
+            <img src="/mimenu.svg" alt="MiMenu" className="h-7 w-7 shrink-0" />
             <span className="font-bold text-base tracking-tight">MiMenu Setup</span>
           </Link>
 

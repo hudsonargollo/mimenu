@@ -76,7 +76,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             {/* Left: Logo */}
             <div className="flex items-center">
               <div className="relative">
-                <img src="/mimenu-square.svg" alt="MiMenu" className="h-20 w-auto" />
+                <img src="/mimenu.svg" alt="MiMenu" className="h-20 w-auto" />
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
               <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
                 <div className="relative">
                   <img
-                    src="/mimenu-square.svg"
+                    src="/mimenu.svg"
                     alt="MiMenu"
                     className="h-12 sm:h-16 w-auto drop-shadow-lg"
                   />

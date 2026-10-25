@@ -61,7 +61,7 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
           <Link to="/" className="flex items-center gap-3 group">
             {/* MiMenu mark (square variant) */}
             <img
-              src="/mimenu-square.svg"
+              src="/mimenu.svg"
               alt="MiMenu"
               className="h-9 w-9 shrink-0 group-hover:scale-105 transition-transform"
             />

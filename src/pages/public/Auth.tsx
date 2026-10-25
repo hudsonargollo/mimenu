@@ -70,7 +70,7 @@ const Auth = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden">
-              <img src="/mimenu-square.svg" alt="MiMenu" className="h-7 w-7" />
+              <img src="/mimenu.svg" alt="MiMenu" className="h-7 w-7" />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-lg tracking-tight text-white">Mi<span className="text-amber-400">Menu</span></span>

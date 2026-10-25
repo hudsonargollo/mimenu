@@ -12,7 +12,7 @@ export const LoadingFallback: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
       <div className="bg-card px-8 py-6 rounded-2xl shadow-lg border border-border flex flex-col items-center gap-4">
         <motion.img
-          src="/mimenu-square.svg"
+          src="/mimenu.svg"
           alt="MiMenu"
           className="w-16 h-16"
           animate={{ rotate: 360 }}

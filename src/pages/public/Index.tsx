@@ -106,8 +106,8 @@ const Index = () => {
       <div className="relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-16 text-center text-white">
           <img 
-            src="/mimenu-square.svg" 
-            alt="MiMenu" 
+            src="/mimenu.svg"
+            alt="MiMenu"
             className="h-24 sm:h-32 mx-auto mb-8 sm:mb-12 rounded-lg"
           />
           <div className="grid grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">

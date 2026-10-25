@@ -200,7 +200,7 @@ export const LandingTakeat: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/mimenu-square.svg" alt="MiMenu" className="h-10 w-10 shrink-0 group-hover:scale-105 transition-transform" />
+            <img src="/mimenu.svg" alt="MiMenu" className="h-10 w-10 shrink-0 group-hover:scale-105 transition-transform" />
             <div className="flex flex-col">
               <span className="font-display font-black text-2xl tracking-tight text-[#111827] leading-none">
                 Mi<span className="text-[#E11D48]">Menu</span>

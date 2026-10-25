@@ -48,6 +48,7 @@ const WaiterDiagnostic = lazy(() => import("./pages/waiter/WaiterDiagnostic"));
 
 // Lazy load public pages
 const LandingTakeat = lazy(() => import("./pages/public/LandingTakeat"));
+const LandingARSelfHosted = lazy(() => import("./pages/public/LandingARSelfHosted"));
 const Landing = lazy(() => import("./pages/public/Landing"));
 const LandingGenio = lazy(() => import("./pages/public/LandingGenio"));
 const LandingTakeatOld = lazy(() => import("./pages/public/LandingTakeatOld"));
@@ -176,6 +177,11 @@ const App = () => {
                     <Route path="/contract-management" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <ContractManagement />
+                      </Suspense>
+                    } />
+                    <Route path="/mi-menu-ar" element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <LandingARSelfHosted />
                       </Suspense>
                     } />
 

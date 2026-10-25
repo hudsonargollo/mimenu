@@ -40,7 +40,7 @@ export function Header() {
         </nav>
 
         <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity md:absolute md:left-1/2 md:transform md:-translate-x-1/2" aria-label="MiMenu — Inicio">
-          <img src="/mimenu-square.svg" alt="MiMenu" className="h-8 w-8" />
+          <img src="/mimenu.svg" alt="MiMenu" className="h-8 w-8" />
         </button>
 
         <div className="flex items-center gap-2">

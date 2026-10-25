@@ -26,7 +26,7 @@ const Welcome = () => {
         {/* Logo in Circle */}
         <div className="w-40 h-40 sm:w-48 sm:h-48 mx-auto mb-8 rounded-full border-4 border-secondary bg-white shadow-strong flex items-center justify-center">
           <img 
-            src="/mimenu-square.svg" 
+            src="/mimenu.svg" 
             alt="MiMenu" 
             className="w-32 sm:w-40 h-auto"
           />

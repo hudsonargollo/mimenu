@@ -72,7 +72,7 @@ function HomePage() {
             className="mb-6"
           >
             <img
-              src="/mimenu-square.svg"
+              src="/mimenu.svg"
               alt="MiMenu"
               className="h-48 md:h-56 object-contain mx-auto drop-shadow-lg"
             />
