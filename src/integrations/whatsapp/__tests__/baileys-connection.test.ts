@@ -22,7 +22,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
       const mockStatus = {
         isConnected: true,
         connectionState: 'connected',
-        phoneNumber: '5511999999999',
+        phoneNumber: '59171234567',
         lastConnected: '2024-01-01T10:00:00Z',
         monitoring: {
           retryCount: 0,
@@ -139,7 +139,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
         json: () => Promise.resolve(mockResponse)
       });
 
-      const result = await client.sendMessage('5511999999999', 'Test message');
+      const result = await client.sendMessage('59171234567', 'Test message');
 
       expect(mockFetch).toHaveBeenCalledWith('/api/whatsapp/connection?action=send', {
         method: 'POST',
@@ -147,7 +147,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          to: '5511999999999',
+          to: '59171234567',
           message: 'Test message'
         })
       });
@@ -167,7 +167,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
         json: () => Promise.resolve(mockError)
       });
 
-      const result = await client.sendMessage('5511999999999', 'Test message');
+      const result = await client.sendMessage('59171234567', 'Test message');
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('WhatsApp not connected');
@@ -176,7 +176,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
     it('should handle network error during message sending', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      const result = await client.sendMessage('5511999999999', 'Test message');
+      const result = await client.sendMessage('59171234567', 'Test message');
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Network error');
@@ -298,22 +298,22 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
   });
 
   describe('Phone Number Formatting', () => {
-    it('should format Brazilian phone numbers correctly', () => {
-      // Test cases for Brazilian phone number formatting
-      expect(client.formatPhoneNumber('11999999999')).toBe('5511999999999');
-      expect(client.formatPhoneNumber('011999999999')).toBe('5511999999999');
-      expect(client.formatPhoneNumber('5511999999999')).toBe('5511999999999');
-      expect(client.formatPhoneNumber('+55 11 99999-9999')).toBe('5511999999999');
+    it('should format Bolivian phone numbers correctly', () => {
+      // Test cases for Bolivian phone number formatting (+591 country code)
+      expect(client.formatPhoneNumber('71234567')).toBe('59171234567');
+      expect(client.formatPhoneNumber('071234567')).toBe('59171234567');
+      expect(client.formatPhoneNumber('59171234567')).toBe('59171234567');
+      expect(client.formatPhoneNumber('+591 712-34567')).toBe('59171234567');
     });
 
-    it('should handle landline numbers', () => {
-      expect(client.formatPhoneNumber('1133334444')).toBe('551133334444');
-      expect(client.formatPhoneNumber('01133334444')).toBe('551133334444');
+    it('should reject landline numbers (mobiles must start with 6 or 7)', () => {
+      expect(() => client.formatPhoneNumber('21234567')).toThrow('Invalid phone number format or length');
+      expect(() => client.formatPhoneNumber('021234567')).toThrow('Invalid phone number format or length');
     });
 
     it('should validate phone number length', () => {
       expect(() => client.formatPhoneNumber('123')).toThrow('Invalid phone number format or length');
-      expect(() => client.formatPhoneNumber('55119999999999999')).toThrow('Invalid Brazilian phone number length');
+      expect(() => client.formatPhoneNumber('59171234567890')).toThrow('Invalid Bolivian phone number');
     });
 
     it('should handle empty phone numbers', () => {
@@ -321,7 +321,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
       expect(() => client.formatPhoneNumber('   ')).toThrow('Phone number cannot be empty');
     });
 
-    it('should handle international numbers', () => {
+    it('should handle international numbers other than Bolivia', () => {
       expect(client.formatPhoneNumber('1234567890123')).toBe('1234567890123');
       expect(() => client.formatPhoneNumber('123456789012345678')).toThrow('Invalid phone number format or length');
     });
@@ -430,7 +430,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
       const mockStatus = {
         isConnected: true,
         connectionState: 'connected',
-        phoneNumber: '5511999999999',
+        phoneNumber: '59171234567',
         lastConnected: '2024-01-01T10:00:00Z',
         monitoring: {
           retryCount: 0,
@@ -448,7 +448,7 @@ describe('Baileys WhatsApp Connection Integration Tests', () => {
       const status = await client.connect();
 
       expect(status.isConnected).toBe(true);
-      expect(status.phoneNumber).toBe('5511999999999');
+      expect(status.phoneNumber).toBe('59171234567');
     });
 
     it('should handle session expiration and re-authentication', async () => {

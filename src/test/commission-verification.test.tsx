@@ -28,8 +28,8 @@ const mockPaidOrder: Order = {
   id: '1',
   order_number: 1,
   waiter_id: 'waiter-1',
-  customer_name: 'João Silva',
-  customer_phone: '11987654321',
+  customer_name: 'Juan Perez',
+  customer_phone: '71234567',
   total_amount: 100.00,
   commission_amount: 10.00,
   status: 'paid',
@@ -42,7 +42,7 @@ const mockPendingOrder: Order = {
   order_number: 2,
   waiter_id: 'waiter-1',
   customer_name: 'Maria Santos',
-  customer_phone: '11987654322',
+  customer_phone: '71234568',
   total_amount: 50.00,
   commission_amount: 5.00,
   status: 'pending_payment',
@@ -55,7 +55,7 @@ const mockInPreparationOrder: Order = {
   order_number: 3,
   waiter_id: 'waiter-1',
   customer_name: 'Pedro Costa',
-  customer_phone: '11987654323',
+  customer_phone: '71234569',
   total_amount: 75.00,
   commission_amount: 7.50,
   status: 'in_preparation',
@@ -68,7 +68,7 @@ const mockCancelledOrder: Order = {
   order_number: 4,
   waiter_id: 'waiter-1',
   customer_name: 'Ana Lima',
-  customer_phone: '11987654324',
+  customer_phone: '71234570',
   total_amount: 30.00,
   commission_amount: 0,
   status: 'cancelled',
@@ -164,10 +164,10 @@ describe('Commission Status Display', () => {
     expect(status.amount).toBe(0);
   });
 
-  it('should format currency correctly in Brazilian format', () => {
+  it('should format currency correctly in Bolivian format', () => {
     const status = getCommissionStatus(mockPaidOrder);
     
-    expect(status.displayAmount).toMatch(/R\$/);
+    expect(status.displayAmount).toMatch(/Bs/);
     expect(status.displayAmount).toContain('10,00');
   });
 });
@@ -200,17 +200,17 @@ describe('Order Categorization', () => {
 });
 
 describe('CommissionToggle Component', () => {
-  it('should render with updated title "Suas Comissões do Período"', () => {
+  it('should render with updated title "Tus Comisiones del Período"', () => {
     render(<CommissionToggle orders={[mockPaidOrder]} />);
     
-    expect(screen.getByText('Suas Comissões do Período')).toBeInTheDocument();
+    expect(screen.getByText('Tus Comisiones del Período')).toBeInTheDocument();
   });
 
   it('should display date range for commission period', () => {
     render(<CommissionToggle orders={[mockPaidOrder, mockPendingOrder]} />);
     
     // Should show date range or period
-    const dateElements = screen.getAllByText(/jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez|2024/i);
+    const dateElements = screen.getAllByText(/ene|fev|mar|abr|may|jun|jul|ago|sep|oct|nov|dic|2024/i);
     expect(dateElements.length).toBeGreaterThan(0);
   });
 
@@ -224,16 +224,16 @@ describe('CommissionToggle Component', () => {
   it('should display correct confirmed commission amount', () => {
     render(<CommissionToggle orders={[mockPaidOrder]} />);
     
-    // Should show R$ 10,00 for confirmed (multiple instances expected)
-    const amounts = screen.getAllByText(/R\$\s*10,00/);
+    // Should show Bs. 10,00 for confirmed (multiple instances expected)
+    const amounts = screen.getAllByText(/Bs\.?\s*10,00/);
     expect(amounts.length).toBeGreaterThan(0);
   });
 
   it('should display correct estimated commission amount', () => {
     render(<CommissionToggle orders={[mockPendingOrder]} />);
     
-    // Should show R$ 5,00 for estimated (multiple instances expected)
-    const amounts = screen.getAllByText(/R\$\s*5,00/);
+    // Should show Bs. 5,00 for estimated (multiple instances expected)
+    const amounts = screen.getAllByText(/Bs\.?\s*5,00/);
     expect(amounts.length).toBeGreaterThan(0);
   });
 
@@ -241,15 +241,15 @@ describe('CommissionToggle Component', () => {
     render(<CommissionToggle orders={[mockPaidOrder, mockPendingOrder]} />);
     
     // Total should be 10 + 5 = 15
-    expect(screen.getByText(/R\$\s*15,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Bs\.?\s*15,00/)).toBeInTheDocument();
   });
 
   it('should display order counts for each category', () => {
     render(<CommissionToggle orders={[mockPaidOrder, mockPendingOrder]} />);
     
     // Multiple instances of order counts expected (in breakdown and detail sections)
-    const paidCounts = screen.getAllByText(/1.*pedido pago/i);
-    const pendingCounts = screen.getAllByText(/1.*pedido pendente/i);
+    const paidCounts = screen.getAllByText(/1.*pedido pagado/i);
+    const pendingCounts = screen.getAllByText(/1.*pedido pendiente/i);
     expect(paidCounts.length).toBeGreaterThan(0);
     expect(pendingCounts.length).toBeGreaterThan(0);
   });
@@ -257,8 +257,8 @@ describe('CommissionToggle Component', () => {
   it('should have toggle buttons for switching views', () => {
     render(<CommissionToggle orders={[mockPaidOrder, mockPendingOrder]} />);
     
-    const receivedButton = screen.getByRole('button', { name: /recebidas/i });
-    const pendingButton = screen.getByRole('button', { name: /a receber/i });
+    const receivedButton = screen.getByRole('button', { name: /recibidas/i });
+    const pendingButton = screen.getByRole('button', { name: /a recibir/i });
     
     expect(receivedButton).toBeInTheDocument();
     expect(pendingButton).toBeInTheDocument();
@@ -277,16 +277,16 @@ describe('CommissionCards Component', () => {
   it('should render two cards for confirmed and estimated commissions', () => {
     render(<CommissionCards orders={[mockPaidOrder, mockPendingOrder]} />);
     
-    expect(screen.getByText('Comissões Confirmadas')).toBeInTheDocument();
-    expect(screen.getByText('Comissões Estimadas')).toBeInTheDocument();
+    expect(screen.getByText('Comisiones Confirmadas')).toBeInTheDocument();
+    expect(screen.getByText('Comisiones Estimadas')).toBeInTheDocument();
   });
 
   it('should display correct amounts in each card', () => {
     render(<CommissionCards orders={[mockPaidOrder, mockPendingOrder]} />);
     
-    // Confirmed: R$ 10,00
-    // Estimated: R$ 5,00
-    const amounts = screen.getAllByText(/R\$/);
+    // Confirmed: Bs. 10,00
+    // Estimated: Bs. 5,00
+    const amounts = screen.getAllByText(/Bs\.?/);
     expect(amounts.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -304,17 +304,17 @@ describe('CommissionDisplay Component', () => {
     const config = getCommissionStatus(mockPaidOrder);
     render(<CommissionDisplay config={config} showIcon={true} />);
     
-    expect(screen.getByText(/R\$\s*10,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Bs\.?\s*10,00/)).toBeInTheDocument();
   });
 
   it('should support different size variants', () => {
     const config = getCommissionStatus(mockPaidOrder);
     const { rerender } = render(<CommissionDisplay config={config} size="sm" />);
     
-    expect(screen.getByText(/R\$\s*10,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Bs\.?\s*10,00/)).toBeInTheDocument();
     
     rerender(<CommissionDisplay config={config} size="lg" />);
-    expect(screen.getByText(/R\$\s*10,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Bs\.?\s*10,00/)).toBeInTheDocument();
   });
 
   it('should show tooltip on hover', async () => {
@@ -323,7 +323,7 @@ describe('CommissionDisplay Component', () => {
     
     // Tooltip is rendered but may not be visible initially
     // Check that the component renders with the correct config
-    expect(screen.getByText(/R\$\s*10,00/)).toBeInTheDocument();
+    expect(screen.getByText(/Bs\.?\s*10,00/)).toBeInTheDocument();
     
     // Verify tooltip trigger exists
     const tooltipTrigger = container.querySelector('[data-state]');

@@ -1,131 +1,74 @@
 import { describe, it, expect } from 'vitest';
 import { formatPhoneNumber } from '../phoneUtils';
 
+/**
+ * Bolivian number behavior (production implementation):
+ * - `formatPhoneNumber` strips a 591 country code and returns 8-digit local
+ *   numbers unchanged (display formatting is applied at the presentation layer).
+ * - Unrecognized lengths are returned as-is.
+ */
 describe('phoneUtils', () => {
   describe('formatPhoneNumber', () => {
-    describe('valid inputs', () => {
-      it('should format 11-digit phone number correctly', () => {
-        const result = formatPhoneNumber('11987654321');
-        
-        expect(result).toBe('(11) 98765-4321');
+    describe('bolivian mobile numbers', () => {
+      it('returns 8-digit local mobile unchanged', () => {
+        const result = formatPhoneNumber('71234567');
+
+        expect(result).toBe('71234567');
       });
 
-      it('should format phone number with existing formatting', () => {
-        const result = formatPhoneNumber('(11) 98765-4321');
-        
-        expect(result).toBe('(11) 98765-4321');
+      it('strips 591 country code from 11-digit input', () => {
+        const result = formatPhoneNumber('59171234567');
+
+        expect(result).toBe('71234567');
       });
 
-      it('should format phone number with mixed formatting', () => {
-        const result = formatPhoneNumber('11-98765-4321');
-        
-        expect(result).toBe('(11) 98765-4321');
+      it('returns original for unrecognized 12-digit input (production behavior)', () => {
+        expect(formatPhoneNumber('591712345670')).toBe('591712345670');
       });
 
-      it('should format phone number with spaces', () => {
-        const result = formatPhoneNumber('11 98765 4321');
-        
-        expect(result).toBe('(11) 98765-4321');
+      it('handles formatting characters and returns local digits', () => {
+        expect(formatPhoneNumber('+591 7 123-4567')).toBe('71234567');
+        expect(formatPhoneNumber('591-7123-4567')).toBe('71234567');
+        expect(formatPhoneNumber('591 (7) 123 4567')).toBe('71234567');
       });
 
-      it('should format phone number with parentheses only', () => {
-        const result = formatPhoneNumber('(11)987654321');
-        
-        expect(result).toBe('(11) 98765-4321');
-      });
-
-      it('should handle different area codes', () => {
-        expect(formatPhoneNumber('21987654321')).toBe('(21) 98765-4321');
-        expect(formatPhoneNumber('85987654321')).toBe('(85) 98765-4321');
-        expect(formatPhoneNumber('47987654321')).toBe('(47) 98765-4321');
+      it('preserves non-Bolivian 11-digit numbers as-is', () => {
+        expect(formatPhoneNumber('11987654321')).toBe('11987654321');
       });
     });
 
     describe('invalid inputs', () => {
-      it('should return N/A for null', () => {
-        const result = formatPhoneNumber(null);
-        
-        expect(result).toBe('N/A');
+      it('returns N/A for null', () => {
+        expect(formatPhoneNumber(null)).toBe('N/A');
       });
 
-      it('should return N/A for undefined', () => {
-        const result = formatPhoneNumber(undefined);
-        
-        expect(result).toBe('N/A');
+      it('returns N/A for undefined', () => {
+        expect(formatPhoneNumber(undefined)).toBe('N/A');
       });
 
-      it('should return original for empty string', () => {
-        const result = formatPhoneNumber('');
-        
-        expect(result).toBe('N/A');
+      it('returns N/A for empty string', () => {
+        expect(formatPhoneNumber('')).toBe('N/A');
       });
 
-      it('should return original for too short number', () => {
-        const result = formatPhoneNumber('1198765432');
-        
-        expect(result).toBe('1198765432');
+      it('returns original for unrecognized digit lengths', () => {
+        expect(formatPhoneNumber('+5511987654321')).toBe('+5511987654321'); // 13 digits, unrecognized
+        expect(formatPhoneNumber('591712345670')).toBe('591712345670'); // 12 digits -> 9 local, unrecognized
       });
 
-      it('should return original for too long number', () => {
-        const result = formatPhoneNumber('119876543210');
-        
-        expect(result).toBe('119876543210');
+      it('returns original for non-numeric string', () => {
+        expect(formatPhoneNumber('invalid-phone')).toBe('invalid-phone');
       });
 
-      it('should return original for 10-digit number (old format)', () => {
-        const result = formatPhoneNumber('1187654321');
-        
-        expect(result).toBe('1187654321');
+      it('returns stripped digits for partially numeric string forming 8 digits', () => {
+        expect(formatPhoneNumber('11abc654321')).toBe('11654321');
       });
 
-      it('should return original for non-numeric string', () => {
-        const result = formatPhoneNumber('invalid-phone');
-        
-        expect(result).toBe('invalid-phone');
+      it('returns original string for whitespace-only input', () => {
+        expect(formatPhoneNumber('   ')).toBe('   ');
       });
 
-      it('should return original for partially numeric string', () => {
-        const result = formatPhoneNumber('11abc654321');
-        
-        expect(result).toBe('11abc654321');
-      });
-    });
-
-    describe('edge cases', () => {
-      it('should handle phone with plus sign prefix', () => {
-        const result = formatPhoneNumber('+5511987654321');
-        
-        expect(result).toBe('+5511987654321'); // 13 digits, returns original
-      });
-
-      it('should handle phone with country code', () => {
-        const result = formatPhoneNumber('5511987654321');
-        
-        expect(result).toBe('5511987654321'); // 13 digits, returns original
-      });
-
-      it('should handle phone with dots', () => {
-        const result = formatPhoneNumber('11.98765.4321');
-        
-        expect(result).toBe('(11) 98765-4321');
-      });
-
-      it('should handle phone with multiple special characters', () => {
-        const result = formatPhoneNumber('(11)-98765.4321');
-        
-        expect(result).toBe('(11) 98765-4321');
-      });
-
-      it('should handle whitespace-only string', () => {
-        const result = formatPhoneNumber('   ');
-        
-        expect(result).toBe('   ');
-      });
-
-      it('should handle string with only special characters', () => {
-        const result = formatPhoneNumber('()- ');
-        
-        expect(result).toBe('()- ');
+      it('returns original string for only special characters', () => {
+        expect(formatPhoneNumber('()- ')).toBe('()- ');
       });
     });
   });

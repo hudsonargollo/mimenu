@@ -20,7 +20,7 @@ describe('Phone Number Encryption', () => {
 
   describe('encryptPhoneNumber', () => {
     it('should encrypt a phone number', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const encrypted = await encryptPhoneNumber(phoneNumber);
 
       expect(encrypted).toBeDefined();
@@ -29,7 +29,7 @@ describe('Phone Number Encryption', () => {
     });
 
     it('should produce different encrypted values for same input', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const encrypted1 = await encryptPhoneNumber(phoneNumber);
       const encrypted2 = await encryptPhoneNumber(phoneNumber);
 
@@ -44,7 +44,7 @@ describe('Phone Number Encryption', () => {
 
   describe('decryptPhoneNumber', () => {
     it('should decrypt an encrypted phone number', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const encrypted = await encryptPhoneNumber(phoneNumber);
       const decrypted = await decryptPhoneNumber(encrypted);
 
@@ -52,7 +52,7 @@ describe('Phone Number Encryption', () => {
     });
 
     it('should handle multiple encrypt/decrypt cycles', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       
       const encrypted1 = await encryptPhoneNumber(phoneNumber);
       const decrypted1 = await decryptPhoneNumber(encrypted1);
@@ -74,7 +74,7 @@ describe('Phone Number Encryption', () => {
 
   describe('encryptPhoneNumberSafe', () => {
     it('should encrypt when encryption is configured', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const encrypted = await encryptPhoneNumberSafe(phoneNumber);
 
       expect(encrypted).toBeDefined();
@@ -86,7 +86,7 @@ describe('Phone Number Encryption', () => {
       const originalKey = import.meta.env.VITE_PHONE_ENCRYPTION_KEY;
       delete import.meta.env.VITE_PHONE_ENCRYPTION_KEY;
 
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const result = await encryptPhoneNumberSafe(phoneNumber);
 
       expect(result).toBe(phoneNumber);
@@ -98,7 +98,7 @@ describe('Phone Number Encryption', () => {
 
   describe('decryptPhoneNumberSafe', () => {
     it('should decrypt encrypted phone numbers', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const encrypted = await encryptPhoneNumber(phoneNumber);
       const decrypted = await decryptPhoneNumberSafe(encrypted);
 
@@ -106,14 +106,14 @@ describe('Phone Number Encryption', () => {
     });
 
     it('should return plain text phone numbers as-is', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const result = await decryptPhoneNumberSafe(phoneNumber);
 
       expect(result).toBe(phoneNumber);
     });
 
     it('should handle non-base64 strings', async () => {
-      const phoneNumber = '+55 (11) 98765-4321';
+      const phoneNumber = '+591 712-34567';
       const result = await decryptPhoneNumberSafe(phoneNumber);
 
       expect(result).toBe(phoneNumber);
@@ -153,11 +153,11 @@ describe('Phone Number Encryption', () => {
   });
 
   describe('Integration Tests', () => {
-    it('should handle Brazilian phone numbers correctly', async () => {
+    it('should handle Bolivian phone numbers correctly', async () => {
       const testNumbers = [
-        '+5511987654321',
-        '+5521987654321',
-        '+5585987654321',
+        '+5917****4567',
+        '+5916****4567',
+        '+5912****4567',
       ];
 
       for (const number of testNumbers) {
@@ -168,7 +168,7 @@ describe('Phone Number Encryption', () => {
     });
 
     it('should maintain data integrity across encryption/decryption', async () => {
-      const phoneNumber = '+5511987654321';
+      const phoneNumber = '+5917****4567';
       const iterations = 10;
 
       let current = phoneNumber;

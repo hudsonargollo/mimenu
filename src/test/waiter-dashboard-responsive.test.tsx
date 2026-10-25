@@ -151,16 +151,16 @@ describe('Responsive Behavior Tests', () => {
 
   describe('Formatting Display Verification', () => {
     it('should format phone numbers correctly on mobile', () => {
-      const phone = '11987654321';
+      const phone = '71234567';
       const formatted = formatPhoneNumber(phone);
-      expect(formatted).toBe('(11) 98765-4321');
+      expect(formatted).toBe('71234567'); // 8-digit Bolivian mobile returned unchanged
     });
 
     it('should format phone numbers correctly on desktop', () => {
       global.innerWidth = 1280;
-      const phone = '11987654321';
+      const phone = '71234567';
       const formatted = formatPhoneNumber(phone);
-      expect(formatted).toBe('(11) 98765-4321');
+      expect(formatted).toBe('71234567'); // 8-digit Bolivian mobile returned unchanged
     });
 
     it('should format order numbers consistently across devices', () => {
@@ -169,11 +169,11 @@ describe('Responsive Behavior Tests', () => {
       expect(formatted).toBe('Pedido #123');
     });
 
-    it('should format phone numbers with proper Brazilian format', () => {
+    it('should format phone numbers with proper Bolivian format', () => {
       const testCases = [
-        { input: '11987654321', expected: '(11) 98765-4321' },
-        { input: '21987654321', expected: '(21) 98765-4321' },
-        { input: '85987654321', expected: '(85) 98765-4321' },
+        { input: '71234567', expected: '71234567' },
+        { input: '61234567', expected: '61234567' },
+        { input: '21234567', expected: '21234567' },
       ];
 
       testCases.forEach(({ input, expected }) => {

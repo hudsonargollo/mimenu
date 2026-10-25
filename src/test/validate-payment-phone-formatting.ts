@@ -1,92 +1,103 @@
 /**
  * Test script to validate phone number formatting
- * Tests various input formats and edge cases
+ * Tests various input formats and edge cases for Bolivian phone numbers
  */
 
-// Test formatPhoneNumber function
+// Bolivian phone number formatter
 const formatPhoneNumber = (phone: string): string => {
+  if (!phone) return 'N/A';
+  
   // Remove all non-digit characters
   const digits = phone.replace(/\D/g, '');
   
-  // Extract last 11 digits (DDD + 9 digits)
-  const last11 = digits.slice(-11);
+  // Handle Bolivian numbers: 591 + 8 digits = 11 digits total
+  // Expected format: 7XX XXXX or 6XX XXXX (8 digits)
   
-  if (last11.length !== 11) return phone; // Return original if invalid
+  // If we have 11 digits starting with 591, strip the country code
+  if (digits.length === 11 && digits.startsWith('591')) {
+    const local = digits.slice(3);
+    return `${local}`;  // e.g., "71234567"
+  }
   
-  // Format as (DDD) 00000-0000
-  const ddd = last11.substring(0, 2);
-  const firstPart = last11.substring(2, 7);
-  const secondPart = last11.substring(7, 11);
+  // If we have 8 digits, format as XXXX XXXX
+  if (digits.length === 8) {
+    const firstPart = digits.slice(0, 4);
+    const secondPart = digits.slice(4, 8);
+    return `${firstPart} ${secondPart}`;  // e.g., "7123 4567"
+  }
   
-  return `(${ddd}) ${firstPart}-${secondPart}`;
+  // If we have 7 digits, pad with leading zero
+  if (digits.length === 7) {
+    const padded = '0' + digits;
+    const firstPart = padded.slice(0, 4);
+    const secondPart = padded.slice(4, 8);
+    return `${firstPart} ${secondPart}`;
+  }
+  
+  // Return original if format is not recognized
+  return phone;
 };
 
-// Test cases
+// Test cases for Bolivian phone numbers
 const testCases = [
   {
-    name: 'Full international format (+55)',
-    input: '+5511999999999',
-    expected: '(11) 99999-9999',
+    name: 'Full Bolivian international format (+591)',
+    input: '+59171234567',
+    expected: '712 34567',
     shouldFormat: true
   },
   {
-    name: 'International without + sign',
-    input: '5511999999999',
-    expected: '(11) 99999-9999',
+    name: 'Bolivian format without + sign',
+    input: '59171234567',
+    expected: '712 34567',
     shouldFormat: true
   },
   {
-    name: 'National format (11 digits)',
-    input: '11999999999',
-    expected: '(11) 99999-9999',
+    name: 'Local Bolivian mobile format (8 digits)',
+    input: '71234567',
+    expected: '712 34567',
     shouldFormat: true
   },
   {
-    name: 'With spaces and dashes',
-    input: '11 99999-9999',
-    expected: '(11) 99999-9999',
+    name: 'Local Bolivian format with space',
+    input: '71234567',
+    expected: '712 34567',
     shouldFormat: true
   },
   {
     name: 'Already formatted',
-    input: '(11) 99999-9999',
-    expected: '(11) 99999-9999',
+    input: '712 34567',
+    expected: '712 34567',
     shouldFormat: true
   },
   {
-    name: 'Different area code (21)',
-    input: '+5521987654321',
-    expected: '(21) 98765-4321',
+    name: 'Short number (7 digits, padded)',
+    input: '1234567',
+    expected: '0123 4567',
     shouldFormat: true
   },
   {
-    name: 'São Paulo mobile (11)',
-    input: '11987654321',
-    expected: '(11) 98765-4321',
-    shouldFormat: true
-  },
-  {
-    name: 'Extra digits at start (should use last 11)',
-    input: '999911987654321',
-    expected: '(11) 98765-4321',
-    shouldFormat: true
-  },
-  {
-    name: 'Short number (10 digits)',
-    input: '1199999999',
-    expected: '1199999999',
+    name: 'Extra digits (should use last 8)',
+    input: '1234567890123',
+    expected: '34567',
     shouldFormat: false
   },
   {
-    name: 'Very short number',
+    name: 'Short number (6 digits)',
     input: '123456',
     expected: '123456',
     shouldFormat: false
   },
   {
+    name: 'Very short number',
+    input: '12345',
+    expected: '12345',
+    shouldFormat: false
+  },
+  {
     name: 'Empty string',
     input: '',
-    expected: '',
+    expected: 'N/A',
     shouldFormat: false
   },
   {
@@ -94,10 +105,16 @@ const testCases = [
     input: '()- ',
     expected: '()- ',
     shouldFormat: false
+  },
+  {
+    name: 'Bolivian number with dashes',
+    input: '712-34567',
+    expected: '712 34567',
+    shouldFormat: true
   }
 ];
 
-console.log('🧪 Testing Phone Number Formatter\n');
+console.log('Testing Bolivian Phone Number Formatter');
 console.log('='.repeat(70));
 
 let passedTests = 0;
@@ -109,54 +126,18 @@ testCases.forEach((testCase, index) => {
   
   if (passed) {
     passedTests++;
-    console.log(`✅ Test ${index + 1}: ${testCase.name}`);
+    console.log('PASS: ' + testCase.name);
   } else {
     failedTests++;
-    console.log(`❌ Test ${index + 1}: ${testCase.name}`);
-    console.log(`   Expected: "${testCase.expected}"`);
-    console.log(`   Got:      "${result}"`);
+    console.log('FAIL: ' + testCase.name);
+    console.log('   Expected: ' + testCase.expected);
+    console.log('   Got:      ' + result);
   }
   
-  console.log(`   Input:  "${testCase.input}"`);
-  console.log(`   Output: "${result}"`);
+  console.log('   Input:  ' + testCase.input);
+  console.log('   Output: ' + result);
   console.log('');
 });
 
 console.log('='.repeat(70));
-console.log(`\n📊 Results: ${passedTests} passed, ${failedTests} failed\n`);
-
-// Edge case analysis
-console.log('📋 Edge Cases Verified:\n');
-console.log('✓ International format with +55 prefix');
-console.log('✓ International format without + sign');
-console.log('✓ National format (11 digits only)');
-console.log('✓ Already formatted numbers');
-console.log('✓ Numbers with spaces and dashes');
-console.log('✓ Different area codes (11, 21, etc.)');
-console.log('✓ Extra digits (uses last 11)');
-console.log('✓ Short numbers (returns original)');
-console.log('✓ Empty strings (returns original)');
-console.log('✓ Invalid input (returns original)');
-console.log('');
-
-// Manual test checklist
-console.log('📋 Manual Testing Checklist:\n');
-console.log('1. ✓ Test with various input formats');
-console.log('   - Create orders with different phone formats');
-console.log('   - Verify all display as "(DDD) 00000-0000"');
-console.log('');
-console.log('2. ✓ Verify output format is always consistent');
-console.log('   - Check order summary on payment page');
-console.log('   - Confirm format matches Brazilian standard');
-console.log('');
-console.log('3. ✓ Test edge cases');
-console.log('   - Short numbers should display as-is');
-console.log('   - Invalid formats should not break the page');
-console.log('');
-
-if (failedTests === 0) {
-  console.log('✅ All automated tests passed!');
-  console.log('👉 Phone number formatting is working correctly');
-} else {
-  console.log('⚠️  Some tests failed. Review implementation.');
-}
+console.log('\nResults: ' + passedTests + ' passed, ' + failedTests + ' failed\n');

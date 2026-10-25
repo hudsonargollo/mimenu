@@ -221,10 +221,16 @@ export class BaileysWhatsAppClient {
    */
   formatPhoneNumber(phone: string): string {
     // Remove all non-digit characters
-    const cleaned = phone.replace(/\D/g, '');
+    let cleaned = phone.replace(/\D/g, '');
     
     if (!cleaned) {
       throw new Error('Phone number cannot be empty');
+    }
+    
+    // Strip a single leading zero (matches the centralized phone validator,
+    // which accepts the 0 + 8-digit form)
+    if (cleaned.startsWith('0')) {
+      cleaned = cleaned.substring(1);
     }
     
     // If it starts with 591 (Bolivia country code), validate and use as is
