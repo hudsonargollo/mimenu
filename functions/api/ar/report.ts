@@ -42,10 +42,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const taskId = body.taskId?.trim();
-  const status = body.status?.trim();
-  if (!taskId || !status || !['completed', 'failed'].includes(status)) {
+  const rawStatus = body.status?.trim();
+  if (rawStatus !== 'completed' && rawStatus !== 'failed') {
     return json({ error: "taskId and status ('completed' | 'failed') are required." }, 400);
   }
+  const status: ARTaskStatus = rawStatus;
+
   if (status === 'completed' && !body.glbUrl) {
     return json({ error: "status 'completed' requires glbUrl." }, 400);
   }
