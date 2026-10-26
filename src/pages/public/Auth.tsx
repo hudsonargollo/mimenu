@@ -100,14 +100,13 @@ const Auth = () => {
         </div>
 
         {/* Auth card */}
-        <div className="rounded-3xl border border-border bg-card/40 p-1 shadow-2xl shadow-black/40 backdrop-blur-md">
-          <div className="rounded-[22px] bg-card/80 p-6 sm:p-8">
+          <div className="rounded-3xl border border-border bg-card/40 p-1 shadow-2xl shadow-black/40 backdrop-blur-md">
+            <div className="rounded-[22px] bg-card/80 p-6 sm:p-8">
             <div className="mb-6 space-y-1">
               <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
                 Acceso restringido
               </div>
-              <h1 className="text-2xl font-black tracking-tight text-foreground">{t.nav.admin}</h1>
               <p className="text-sm text-muted-foreground">Ingresa con tu usuario y contraseña.</p>
             </div>
 
@@ -121,7 +120,7 @@ const Auth = () => {
                   <Input
                     id="identifier"
                     type="text"
-                    placeholder="admin@mimenu.com o jaleo"
+                    placeholder="su email"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
