@@ -18,16 +18,13 @@ interface Env {
   MESHY_API_KEY?: string;
   AR_WORKER_URL?: string;
   AR_WORKER_TOKEN?: string;
+  AR_GENERATOR_PROVIDER?: string;
 }
 
 const MESHY_IMAGE_TO_3D_URL = 'https://api.meshy.ai/openapi/v1/image-to-3d';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
-
-  if (!env.MESHY_API_KEY) {
-    return json({ success: false, error: 'MESHY_API_KEY is not configured in environment variables.' }, 500);
-  }
 
   let body: { menuItemId?: string; imageUrl?: string; itemName?: string };
   try {
@@ -65,32 +62,45 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     }
 
-    // 1. Trigger Meshy Image-to-3D API (USDZ is generated natively by Meshy,
-    //    so the VPS worker only needs to download + host the files).
-    const meshyRes = await fetch(MESHY_IMAGE_TO_3D_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.MESHY_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        image_url: imageUrl,
-        enable_pbr: true,
-        target_formats: ['glb', 'usdz'],
-      }),
-    });
+    // 1. Kick off generation with the configured backend ('meshy' or 'trellis2').
+    //    trellis2: the task is purely queue-side — the VPS worker drives the
+    //    TRELLIS.2 backend (Hugging Face Space, or self-hosted GPU box later)
+    //    and reports back via /api/ar/report, so no external call happens here.
+    const provider: 'meshy' | 'trellis2' =
+      (env.AR_GENERATOR_PROVIDER || '').trim().toLowerCase() === 'trellis2' ? 'trellis2' : 'meshy';
 
-    if (!meshyRes.ok) {
-      const errText = await meshyRes.text();
-      await updateMenuItemAR(env, menuItemId, { ar_status: 'failed', error: `Meshy API error: ${errText.slice(0, 300)}` });
-      return json({ success: false, error: `Meshy API error (${meshyRes.status}): ${errText.slice(0, 300)}` }, 502);
-    }
+    let taskId: string;
+    if (provider === 'trellis2') {
+      taskId = crypto.randomUUID();
+    } else {
+      if (!env.MESHY_API_KEY) {
+        return json({ success: false, error: 'MESHY_API_KEY is not configured in environment variables.' }, 500);
+      }
+      const meshyRes = await fetch(MESHY_IMAGE_TO_3D_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${env.MESHY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          enable_pbr: true,
+          target_formats: ['glb', 'usdz'],
+        }),
+      });
 
-    const meshyJson = (await meshyRes.json()) as { result?: string };
-    const taskId = meshyJson.result;
-    if (!taskId) {
-      await updateMenuItemAR(env, menuItemId, { ar_status: 'failed', error: 'Meshy did not return a task id.' });
-      return json({ success: false, error: 'Meshy did not return a task id.' }, 502);
+      if (!meshyRes.ok) {
+        const errText = await meshyRes.text();
+        await updateMenuItemAR(env, menuItemId, { ar_status: 'failed', error: `Meshy API error: ${errText.slice(0, 300)}` });
+        return json({ success: false, error: `Meshy API error (${meshyRes.status}): ${errText.slice(0, 300)}` }, 502);
+      }
+
+      const meshyJson = (await meshyRes.json()) as { result?: string };
+      taskId = meshyJson.result || '';
+      if (!taskId) {
+        await updateMenuItemAR(env, menuItemId, { ar_status: 'failed', error: 'Meshy did not return a task id.' });
+        return json({ success: false, error: 'Meshy did not return a task id.' }, 502);
+      }
     }
 
     // 2. Update KV store with generating state (PRD key schema: menu_item:{id})
@@ -108,6 +118,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       menuItemId,
       imageUrl,
       itemName: body.itemName?.trim() || undefined,
+      provider,
       status: 'pending',
     });
 
@@ -122,7 +133,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
             Authorization: `Bearer ${env.AR_WORKER_TOKEN}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ taskId, menuItemId, imageUrl, itemName: body.itemName }),
+          body: JSON.stringify({ taskId, menuItemId, imageUrl, itemName: body.itemName, provider }),
         });
         enqueued = enqueueRes.ok;
       } catch (err) {

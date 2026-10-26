@@ -29,6 +29,8 @@ export interface ARTaskRecord {
   imageUrl: string;
   itemName?: string;
   status: ARTaskStatus;
+  /** Generation backend: 'meshy' (Meshy task API) or 'trellis2' (self-hosted/TRELLIS.2 Space via VPS worker). */
+  provider?: 'meshy' | 'trellis2';
   createdAt: number;
   updatedAt?: number;
   claimedAt?: number;

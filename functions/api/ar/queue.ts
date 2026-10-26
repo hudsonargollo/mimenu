@@ -54,7 +54,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (authError) return authError;
   if (!env.MIMENU_KV) return json({ error: 'MIMENU_KV namespace not bound.' }, 500);
 
-  let body: { action?: string; taskId?: string; menuItemId?: string; imageUrl?: string; itemName?: string };
+  let body: { action?: string; taskId?: string; menuItemId?: string; imageUrl?: string; itemName?: string; provider?: string };
   try {
     body = await request.json();
   } catch {
@@ -66,7 +66,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const claimed = await claimARTask(env, body.taskId);
     if (!claimed && body.menuItemId && body.imageUrl) {
       // Orphan claim (task key missing, e.g. KV eviction): re-register it.
-      await setTaskPending(env, body.taskId, body.menuItemId, body.imageUrl, body.itemName);
+      await setTaskPending(env, body.taskId, body.menuItemId, body.imageUrl, body.itemName, body.provider);
       return json({ claimed: false, requeued: true, taskId: body.taskId });
     }
     return json({ claimed: !!claimed, taskId: body.taskId, task: claimed });
@@ -79,7 +79,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (existing && (existing.status === 'completed' || existing.status === 'processing')) {
       return json({ success: true, taskId, alreadyRegistered: true });
     }
-    await setTaskPending(env, taskId, body.menuItemId, body.imageUrl, body.itemName);
+    await setTaskPending(env, taskId, body.menuItemId, body.imageUrl, body.itemName, body.provider);
     return json({ success: true, taskId });
   }
 
@@ -91,10 +91,18 @@ async function setTaskPending(
   taskId: string,
   menuItemId: string,
   imageUrl: string,
-  itemName?: string
+  itemName?: string,
+  provider?: string
 ) {
   const { setARTask } = await import('../../lib/kv-ar');
-  await setARTask(env, taskId, { menuItemId, imageUrl, itemName, status: 'pending' });
+  await setARTask(env, taskId, {
+    menuItemId,
+    imageUrl,
+    itemName,
+    /** Provider preserved for re-registered (KV-evicted) tasks; unknown provider falls back to meshy for legacy tasks. */
+    provider: provider === 'trellis2' ? 'trellis2' : provider === 'meshy' ? 'meshy' : undefined,
+    status: 'pending',
+  });
 }
 
 export const onRequestOptions: PagesFunction = async () => new Response(null, { status: 204 });

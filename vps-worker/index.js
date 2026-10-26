@@ -33,6 +33,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +52,15 @@ const CFG = {
   MESHY_API_URL: 'https://api.meshy.ai/openapi/v1/image-to-3d',
   STALE_TASK_MS: 12 * 60 * 60 * 1000, // 12h hard timeout
   DOWNLOAD_TIMEOUT_MS: 120_000,
+  // --- trellis2 backend (provider='trellis2' tasks) -------------------------
+  HF_TOKEN: process.env.HF_TOKEN || '',
+  TRELLIS2_PYTHON: process.env.TRELLIS2_PYTHON || 'python3',
+  TRELLIS_SPACE: process.env.TRELLIS_SPACE || 'microsoft/TRELLIS.2',
+  TRELLIS_RESOLUTION: process.env.TRELLIS_RESOLUTION || '512',
+  TRELLIS_DECIMATION: Number(process.env.TRELLIS_DECIMATION || 500_000),
+  TRELLIS_TEXTURE_SIZE: Number(process.env.TRELLIS_TEXTURE_SIZE || 2048),
+  TRELLIS_TIMEOUT_MS: Number(process.env.TRELLIS_TIMEOUT_MS || 9 * 60 * 1000),
+  TRELLIS_WORK_DIR: process.env.TRELLIS_WORK_DIR || '/tmp/mimenu-trellis',
 };
 
 for (const [k, v] of Object.entries({
@@ -126,6 +136,7 @@ const server = http.createServer(async (req, res) => {
       menuItemId,
       imageUrl,
       itemName,
+      provider: json.provider === 'trellis2' ? 'trellis2' : 'meshy',
       status: 'pending',
       createdAt: existing?.createdAt || Date.now(),
       updatedAt: Date.now(),
@@ -183,6 +194,8 @@ async function download(url, destPath) {
 // ------------------------------------------------------------ Pipeline ------
 
 async function processTask(task) {
+  if (task.provider === 'trellis2') return processTrellisTask(task);
+
   const { taskId, menuItemId } = task;
   console.log(`[task:${taskId}] Checking Meshy status for ${menuItemId}...`);
 
@@ -254,6 +267,95 @@ async function processTask(task) {
   console.log(`[task:${taskId}] ✔ 3D asset pipeline complete for item ${menuItemId}`);
 }
 
+// --------------------------------------------------- trellis2 provider ------
+
+/**
+ * Drive the TRELLIS.2 backend for provider='trellis2' tasks:
+ *   input image -> (Gradio Space / self-hosted GPU box) -> .glb -> hosted.
+ * The helper (trellis_client.py) holds a single Gradio session for
+ * image_to_3d + extract_glb because the latent state lives server-side.
+ */
+async function processTrellisTask(task) {
+  const { taskId, menuItemId, imageUrl } = task;
+
+  const glbPath = path.join(CFG.MODELS_DIR, `${menuItemId}.glb`);
+  const glbUrl = `${CFG.MODELS_BASE_URL}/${encodeURIComponent(menuItemId)}.glb`;
+
+  // Idempotent resume: a previous run already hosted the asset — just re-report.
+  if (fs.existsSync(glbPath)) {
+    console.log(`[task:${taskId}] trellis2: asset already hosted for ${menuItemId}, re-reporting`);
+    await report(taskId, 'completed', { glbUrl, menuItemId });
+    task.status = 'completed';
+    task.updatedAt = Date.now();
+    saveState();
+    return;
+  }
+
+  const workDir = path.join(CFG.TRELLIS_WORK_DIR, taskId);
+  fs.mkdirSync(workDir, { recursive: true });
+
+  const mapped = /\.([A-Za-z0-9]{3,4})(?:[?#].*)?$/.exec(imageUrl);
+  const ext = (mapped ? mapped[1] : 'png').toLowerCase();
+  const imgPath = path.join(workDir, `input.${ext}`);
+  console.log(`[task:${taskId}] trellis2: fetching input image ${imageUrl}`);
+  await download(imageUrl, imgPath);
+
+  const args = [
+    path.join(__dirname, 'trellis_client.py'),
+    '--image', imgPath,
+    '--out', workDir,
+    '--space', CFG.TRELLIS_SPACE,
+    '--resolution', String(CFG.TRELLIS_RESOLUTION),
+    '--decimation', String(CFG.TRELLIS_DECIMATION),
+    '--texture-size', String(CFG.TRELLIS_TEXTURE_SIZE),
+  ];
+
+  console.log(`[task:${taskId}] trellis2: running backend (${CFG.TRELLIS_SPACE}, res ${CFG.TRELLIS_RESOLUTION})...`);
+  const t0 = Date.now();
+  await new Promise((resolve, reject) => {
+    execFile(
+      CFG.TRELLIS2_PYTHON,
+      args,
+      {
+        timeout: CFG.TRELLIS_TIMEOUT_MS,
+        killSignal: 'SIGKILL',
+        maxBuffer: 64 * 1024 * 1024,
+        env: { ...process.env, HF_TOKEN: CFG.HF_TOKEN },
+      },
+      (err, stdout, stderr) => {
+        if (stdout) stdout.split(/\r?\n/).filter(Boolean).forEach((line) => console.log(`  | ${line}`));
+        if (err) {
+          const detail = (stderr || '').split(/\r?\n/).filter(Boolean).pop() || err.message;
+          reject(new Error(`trellis2 helper failed: ${detail}`));
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+  console.log(`[task:${taskId}] trellis2: backend finished in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+
+  const modelGlb = path.join(workDir, 'model.glb');
+  if (!fs.existsSync(modelGlb)) throw new Error('trellis2 helper produced no model.glb');
+
+  // Atomic publish into the nginx static dir.
+  const tmp = `${glbPath}.tmp`;
+  fs.copyFileSync(modelGlb, tmp);
+  fs.renameSync(tmp, glbPath);
+  console.log(`[task:${taskId}] trellis2: published ${glbPath}`);
+
+  // USDZ is not emitted natively by TRELLIS.2; iOS Quick Look needs a
+  // GLB→USDZ conversion step (planned on this worker). The web viewer and
+  // Android Scene Viewer already work with the GLB alone.
+  await report(taskId, 'completed', { glbUrl, menuItemId });
+  task.status = 'completed';
+  task.updatedAt = Date.now();
+  saveState();
+
+  fs.rmSync(workDir, { recursive: true, force: true });
+  console.log(`[task:${taskId}] ✔ trellis2 pipeline complete for item ${menuItemId}`);
+}
+
 // --------------------------------------------------------------- Report -----
 
 async function report(taskId, status, extra = {}) {
@@ -312,6 +414,7 @@ async function pullQueue() {
       menuItemId: t.menuItemId,
       imageUrl: t.imageUrl,
       itemName: t.itemName,
+      provider: t.provider === 'trellis2' || cjson?.task?.provider === 'trellis2' ? 'trellis2' : 'meshy',
       status: 'processing',
       createdAt: t.createdAt,
       updatedAt: Date.now(),
@@ -343,16 +446,35 @@ async function pollTasks() {
     }
   }
 
-  // 3. Process open tasks sequentially.
+  // 3. Process open tasks sequentially (with per-task backoff after errors).
   const open = Object.values(tasks).filter((t) => t.status === 'pending' || t.status === 'processing');
   if (open.length) console.log(`[loop] Processing ${open.length} open task(s)...`);
   for (const task of open) {
+    if (task.nextAttemptTs && Date.now() < task.nextAttemptTs) continue;
     task.status = 'processing';
     try {
       await processTask(task);
     } catch (err) {
       console.error(`[task:${task.taskId}] Error:`, err.message);
-      // Keep the task open — retried next loop. Never report failed transiently.
+      const quota = /quota|exceeded your|rate.?limit/i.test(err.message || '');
+      if (quota) {
+        // ZeroGPU-style quota: retrying sooner than the reset period is pointless,
+        // and hot-looping the Space just burns sessions. Fail after 3 strikes.
+        task.failCount = (task.failCount || 0) + 1;
+        if (task.failCount >= 3) {
+          console.error(`[task:${task.taskId}] Quota exceeded ${task.failCount}× — failing the task.`);
+          task.status = 'failed';
+          task.error = err.message.slice(0, 300);
+          await report(task.taskId, 'failed', { error: task.error, menuItemId: task.menuItemId });
+        } else {
+          // ~24h cooldown for daily quota, 2h for generic rate limits.
+          task.nextAttemptTs = Date.now() + (/day|23:|reset|hun/i.test(err.message) ? 20 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000);
+          console.error(`[task:${task.taskId}] Backing off until ${new Date(task.nextAttemptTs).toISOString()}`);
+        }
+      } else {
+        // Generic transient failure — short backoff, keep the task open.
+        task.nextAttemptTs = Date.now() + 60_000;
+      }
     }
     saveState();
   }
@@ -368,6 +490,11 @@ console.log('VPS AR Worker started. Polling every', CFG.POLL_INTERVAL_MS, 'ms.')
 console.log('  Cloudflare:  ', CFG.AR_WORKER_URL);
 console.log('  Models dir:  ', CFG.MODELS_DIR);
 console.log('  Public base: ', CFG.MODELS_BASE_URL);
+if (CFG.HF_TOKEN) {
+  console.log('  trellis2:    HF token set (Space quota authenticated)');
+} else {
+  console.warn('  trellis2:    HF_TOKEN not set — trellis2 tasks will fail quota auth');
+}
 
 await pollTasks();
 setInterval(pollTasks, CFG.POLL_INTERVAL_MS).unref?.();

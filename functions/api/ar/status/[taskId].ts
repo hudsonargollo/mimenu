@@ -41,8 +41,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!task) return json({ error: 'Task not found.' }, 404);
 
   // Live Meshy view while the queue entry is still open (progress bar support).
+  // trellis2 tasks never touch Meshy — the VPS worker drives that backend and
+  // reports via /api/ar/report.
   let meshy: MeshyTask | null = null;
-  if (env.MESHY_API_KEY && (task.status === 'pending' || task.status === 'processing')) {
+  if (
+    env.MESHY_API_KEY &&
+    task.provider !== 'trellis2' &&
+    (task.status === 'pending' || task.status === 'processing')
+  ) {
     try {
       const res = await fetch(`https://api.meshy.ai/openapi/v1/image-to-3d/${taskId}`, {
         headers: { Authorization: `Bearer ${env.MESHY_API_KEY}` },
@@ -69,6 +75,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   return json({
     taskId,
+    provider: task.provider ?? 'meshy',
     status: liveStatus,
     ar_status: ready ? 'ready' : queueFailed || meshyFailed ? 'failed' : 'generating',
     progress: meshy?.progress ?? (ready ? 100 : 0),

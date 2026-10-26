@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# VPS worker imports secrets at runtime — never track these
+vps-worker/vps-worker.env
+vps-worker/state.json
+vps-worker/__pycache__/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

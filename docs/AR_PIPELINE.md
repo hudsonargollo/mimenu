@@ -101,6 +101,37 @@ curl -X POST https://mimenu.clubemkt.digital/api/ar/report \
   -d '{"taskId":"<id>","status":"failed","error":"manual abort"}'
 ```
 
+## trellis2 provider (2026-10-26)
+
+Second generation backend, selected per task via Pages env var
+`AR_GENERATOR_PROVIDER` (`plain_text`; `meshy` = default, `trellis2` = TRELLIS.2).
+`/api/ar/generate` only branches on it; everything else (queue, report, KV)
+is provider-agnostic. `ar_task:{id}` records carry `provider`.
+
+- **Backend today:** the official `microsoft/TRELLIS.2` Hugging Face Space
+  (ZeroGPU A10G) via its Gradio API — proven end-to-end: image → GLB in ~1 min
+  (21s generate + 36s extract).
+- **Backend later:** self-hosted TRELLIS.2 on a GPU box (≥24 GB VRAM, CUDA 12.4,
+  conda env; any deployment exposing the same Gradio endpoints via
+  `TRELLIS_SPACE`). A 4B model, MIT license, PBR GLB output (WebP textures).
+- **Worker flow** (`vps-worker/index.js` → `vps-worker/trellis_client.py`):
+  fetch image → alpha-masked? skip preprocess : Space preprocess →
+  `image_to_3d` → `extract_glb` (same Gradio session; latent state lives
+  server-side) → publish `{menuItemId}.glb` to the models dir → report.
+- **Worker config** (`vps-worker.env`): `HF_TOKEN` (ZeroGPU quota auth),
+  `TRELLIS2_PYTHON` (env with `gradio_client` + `numpy` + `pillow`),
+  `TRELLIS_SPACE`, `TRELLIS_RESOLUTION` (512), `TRELLIS_DECIMATION` (500000),
+  `TRELLIS_TEXTURE_SIZE` (2048), `TRELLIS_TIMEOUT_MS` (9min).
+- **Quota safety:** a token-holding *free* HF account gets ~**2.5 min GPU/day**
+  from ZeroGPU — enough for a probe, not production. The worker detects quota
+  errors, backs off (per-task `nextAttemptTs`) and fails the task after 3
+  strikes.
+- **Known gap:** TRELLIS.2 emits **GLB only** — Android Scene Viewer AR and the
+  web `<model-viewer>` preview work, but iOS Quick Look needs a GLB→USDZ step
+  (to be added on this worker). The no-gap alternative remains Meshy
+  (flip `AR_GENERATOR_PROVIDER` back).
+- Debug artifacts per failed run: `/tmp/mimenu-trellis/<taskId>/trellis_debug.log`.
+
 ## Do NOT
 
 - Do **not** run `wrangler deploy` in this repo: `wrangler.jsonc` defines a bare
