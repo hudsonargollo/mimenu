@@ -232,39 +232,7 @@ const Menu: React.FC = () => {
           items={filteredItems}
           currentLang={currentLang}
           onAddToCart={handleAddToCart}
-        />
-              const qtyInCart = getItemQuantity(item.id);
-
-              return (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="group relative flex flex-col justify-between bg-card hover:bg-card/90 border border-border rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-200"
-                >
-                  {/* Product Image & Badges */}
-                  <div className="relative aspect-16/10 w-full overflow-hidden bg-muted">
-                    <img
-                      src={item.image_url}
-                      alt={itemName(item)}
-                      className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
-                      loading="lazy"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
-
-                    {/* Top Badges */}
-                    <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2">
-                      <div className="flex flex-wrap gap-1">
-                        {item.is_best_seller && (
-                          <span className="bg-amber-500 text-slate-950 text-[10px] font-bold uppercase px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
-                            <Star className="w-3 h-3 fill-current" aria-hidden="true" />
-                            <span>MÁS VENDIDO</span>
-                          </span>
-                        )}
-                        {item.original_price && (
+                            {item.original_price && (
                           <span className="bg-rose-600 text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded shadow-xs">
                             PROMO
                           </span>
