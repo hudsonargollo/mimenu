@@ -265,14 +265,13 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Tracks the URL search string so tenant switches re-resolve the venue.
   const [urlSearch, setUrlSearch] = useState<string>(
-    () => (typeof window !== 'undefined' ? window.location.search : '')
+    () => (typeof window !== 'undefined' ? window.location.search + window.location.pathname : '')
   );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const sync = () => setUrlSearch(window.location.search);
+    const sync = () => setUrlSearch(window.location.search + window.location.pathname);
     window.addEventListener('popstate', sync);
-    // SPA navigations do not fire popstate, so also watch pushState/replaceState.
     const wrap = (method: 'pushState' | 'replaceState') => {
       const original = history[method];
       history[method] = function (this: History, ...args: Parameters<History['pushState']>) {
@@ -285,11 +284,10 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => window.removeEventListener('popstate', sync);
   }, []);
 
-  // Re-resolve the active tenant when the URL slug changes (SPA navigation,
-  // e.g. the tenant switcher). Without this the venue stays stale.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const { slug, requested, found } = resolveVenueSlug(window.location.search);
+    // resolveVenueSlug now also checks pathname internally
     const matched = findVenueBySlug(slug);
     if (!matched) return;
     setVenue((current) => {
