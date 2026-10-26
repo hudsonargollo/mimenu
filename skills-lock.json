@@ -79,6 +79,12 @@
       "skillPath": "skills/brand-identity/SKILL.md",
       "computedHash": "dd53f05b4e24fdc5c4f6f53b80c64a075a815be7f6676b98d38a733e8f69922f"
     },
+    "brand-profile": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/brand-profile/SKILL.md",
+      "computedHash": "9474d7a77bd4b7f4d6061f87aae979f73b01e1ec8d53d58ff3782115dcd6c2ba"
+    },
     "brand-style-guide": {
       "source": "rampstackco/claude-skills",
       "sourceType": "github",
@@ -367,6 +373,12 @@
       "skillPath": "skills/landing-page-copy/SKILL.md",
       "computedHash": "90d278331dbc544bf2950a0ffcfb1cd9f40dcb4344ad5fde83b4aeb3c5ee6d23"
     },
+    "landing-page-factory-orchestrator": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/landing-page-factory-orchestrator/SKILL.md",
+      "computedHash": "6642c7ab4c23ecd99014ad78ca2dfd7576309e629fc2b488ffd468224ebfac05"
+    },
     "launch-runbook": {
       "source": "rampstackco/claude-skills",
       "sourceType": "github",
@@ -426,6 +438,36 @@
       "sourceType": "github",
       "skillPath": "skills/oss-contribution-research/SKILL.md",
       "computedHash": "4379f24f57147d7f796cbc3f6eed4ea8f200a491d09b3b4eeb861784150ee64e"
+    },
+    "page-build": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/page-build/SKILL.md",
+      "computedHash": "fc4ef392608a7fb74d0e2c6c21ffe0826e372209dc8956a824ec663ca4b327f2"
+    },
+    "page-copy": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/page-copy/SKILL.md",
+      "computedHash": "0334d3c10cc05003e2e920fa7347133d46602e5307872129c116dcfc65326060"
+    },
+    "page-qa": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/page-qa/SKILL.md",
+      "computedHash": "51dbfb45a293023926ff706afea41cee303354807e10942359f895793af4dde7"
+    },
+    "page-strategy": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/page-strategy/SKILL.md",
+      "computedHash": "aa377e2e10c22d698b37bc09b117009ad542850241685979b14c3843d54438ab"
+    },
+    "page-visuals": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/page-visuals/SKILL.md",
+      "computedHash": "0b0a6087742e3cfdd8894968749b03d55099e45d32e7aa66e5c7bcc1a886ccf0"
     },
     "paid-media-strategy": {
       "source": "rampstackco/claude-skills",
@@ -582,6 +624,12 @@
       "sourceType": "github",
       "skillPath": "skills/seo-traffic-diagnosis/SKILL.md",
       "computedHash": "41ea75df933f537702477cd7c8c4cfa39ed3e58131be8074d0c223329cc133bf"
+    },
+    "site-extract": {
+      "source": "TheMattBerman/landing-page-factory",
+      "sourceType": "github",
+      "skillPath": "skills/site-extract/SKILL.md",
+      "computedHash": "252b3873d063d9d04e2f70a77a89d859ce1266ae6b38c02a24d09cfd9a1074ab"
     },
     "skill-creation-walkthrough": {
       "source": "rampstackco/claude-skills",

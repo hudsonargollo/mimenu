@@ -44,6 +44,7 @@ export interface PlanCapabilities {
   kds: boolean;
   multiBranch: boolean;
   posIntegration: boolean;
+  flipDeck: boolean;
 }
 
 export const PLANS: Plan[] = [
@@ -70,6 +71,7 @@ export const PLANS: Plan[] = [
       kds: false,
       multiBranch: false,
       posIntegration: false,
+      flipDeck: false,
     },
     collectsLandingAssets: false,
     ctaLabel: 'Comenzar con Básico',
@@ -100,6 +102,7 @@ export const PLANS: Plan[] = [
       kds: true,
       multiBranch: false,
       posIntegration: false,
+      flipDeck: false,
     },
     collectsLandingAssets: true,
     ctaLabel: 'Probar 14 días gratis',
@@ -127,6 +130,7 @@ export const PLANS: Plan[] = [
       kds: true,
       multiBranch: false,
       posIntegration: false,
+      flipDeck: false,
     },
     collectsLandingAssets: true,
     ctaLabel: 'Hablar con un asesor',
@@ -156,6 +160,7 @@ export const PLANS: Plan[] = [
       kds: true,
       multiBranch: true,
       posIntegration: true,
+      flipDeck: true,
     },
     collectsLandingAssets: true,
     ctaLabel: 'Pedir propuesta a medida',
