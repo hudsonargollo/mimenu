@@ -94,6 +94,7 @@ export async function loadSessionState(
 
     return {
       language: (data.language as any) || 'es',
+      userName: data.state?.userName,
       reservationDraft: data.state?.reservationDraft || { step: 'idle' },
       lastReservation: data.state?.lastReservation || undefined
     };
@@ -119,6 +120,7 @@ export async function saveSessionState(
         session_key: sessionKey,
         language: state.language || 'es',
         state: {
+          userName: state.userName,
           reservationDraft: state.reservationDraft || { step: 'idle' },
           lastReservation: state.lastReservation || null
         },
