@@ -44,10 +44,51 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ScrollReveal from "@/components/ScrollReveal";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, animate, useReducedMotion } from "framer-motion";
+
+interface CountUpProps {
+  to: number;
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}
+
+/**
+ * CountUp — animates a numeric stat from 0 to `to` when it mounts.
+ * Honors prefers-reduced-motion (renders the final value immediately).
+ */
+const CountUp: React.FC<CountUpProps> = ({ to, decimals = 0, prefix = "", suffix = "", className }) => {
+  const reduced = useReducedMotion();
+  const ref = React.useRef<HTMLSpanElement>(null);
+
+  React.useEffect(() => {
+    const format = (v: number) => `${prefix}${v.toFixed(decimals)}${suffix}`;
+    if (reduced) {
+      if (ref.current) ref.current.textContent = format(to);
+      return;
+    }
+    const controls = animate(0, to, {
+      duration: 1.6,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (v) => {
+        if (ref.current) ref.current.textContent = format(v);
+      },
+    });
+    return () => controls.stop();
+  }, [to, decimals, prefix, suffix, reduced]);
+
+  return (
+    <span ref={ref} className={className}>
+      {prefix}{(reduced ? to : 0).toFixed(decimals)}{suffix}
+    </span>
+  );
+};
 
 export const LandingTakeat: React.FC = () => {
   const { lang, setLang, t } = useLang();
+  /** Currency symbol per locale (Bolivia market uses Bs). */
+  const CUR = lang === "es" ? "Bs" : lang === "pt" ? "R$" : "$";
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 400], [0, 120]);
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.6]);
@@ -327,7 +368,7 @@ export const LandingTakeat: React.FC = () => {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-card hover:bg-muted text-foreground font-bold text-base border border-border hover:shadow transition-all"
                 >
                   <Play className="w-4 h-4 fill-accent text-accent" />
-                  Ver Como Funciona em 2 Minutos
+                  {t.landing.ctaSecondary2}
                 </a>
               </div>
             </ScrollReveal>
@@ -341,7 +382,7 @@ export const LandingTakeat: React.FC = () => {
                   </div>
                   <div className="text-xs">
                     <div className="font-bold text-primary">{t.landing.commissionBadge}</div>
-                    <div className="text-muted-foreground">Nas suas vendas</div>
+                    <div className="text-muted-foreground">{t.landing.trustSales}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5">
@@ -349,7 +390,7 @@ export const LandingTakeat: React.FC = () => {
                     <Star className="w-4 h-4 fill-primary" />
                   </div>
                   <div className="text-xs">
-                    <div className="font-bold text-primary">Nota 4.9 de 5.0</div>
+                    <div className="font-bold text-primary">{t.landing.trustRating}</div>
                     <div className="text-muted-foreground">{t.landing.reviewsCount}</div>
                   </div>
                 </div>
@@ -358,8 +399,8 @@ export const LandingTakeat: React.FC = () => {
                     <Clock className="w-4 h-4" />
                   </div>
                   <div className="text-xs">
-                    <div className="font-bold text-primary">Suporte 7 Dias</div>
-                    <div className="text-muted-foreground">Com time humano</div>
+                    <div className="font-bold text-primary">{t.landing.trustSupport}</div>
+                    <div className="text-muted-foreground">{t.landing.trustSupportSub}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5">
@@ -367,8 +408,8 @@ export const LandingTakeat: React.FC = () => {
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div className="text-xs">
-                    <div className="font-bold text-primary">Sem Fidelidade</div>
-                    <div className="text-muted-foreground">Cancele quando quiser</div>
+                    <div className="font-bold text-primary">{t.landing.trustNoLock}</div>
+                    <div className="text-muted-foreground">{t.landing.trustNoLockSub}</div>
                   </div>
                 </div>
               </div>
@@ -379,76 +420,69 @@ export const LandingTakeat: React.FC = () => {
           {/* 4. INTERACTIVE PRODUCT SHOWCASE / MOCKUP TABS */}
           <ScrollReveal direction="up" delay={100}>
             <div className="relative z-20 mt-14 max-w-5xl mx-auto">
-              {/* Tab switchers */}
-              <div className="flex items-center justify-center gap-2 p-1.5 bg-card border border-border rounded-2xl shadow-sm mb-6 max-w-2xl mx-auto overflow-x-auto">
-                <button
-                  onClick={() => setActiveTab("cardapio")}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
-                    activeTab === "cardapio"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-primary hover:bg-muted"
-                  }`}
-                >
-                  <Smartphone className="w-4 h-4" />
-                  {t.landing.tabCardapio}
-                </button>
-                <button
-                  onClick={() => setActiveTab("kds")}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
-                    activeTab === "kds"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-primary hover:bg-muted"
-                  }`}
-                >
-                  <ChefHat className="w-4 h-4" />
-                  {t.landing.tabKds}
-                </button>
-                <button
-                  onClick={() => setActiveTab("garcom")}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
-                    activeTab === "garcom"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-primary hover:bg-muted"
-                  }`}
-                >
-                  <QrCode className="w-4 h-4" />
-                  {t.landing.tabGarcom}
-                </button>
-                <button
-                  onClick={() => setActiveTab("painel")}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
-                    activeTab === "painel"
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-primary hover:bg-muted"
-                  }`}
-                >
-                  <Store className="w-4 h-4" />
-                  {t.landing.tabPdv}
-                </button>
+              {/* Tab switchers — sliding active pill */}
+              <div className="flex items-center justify-center gap-1 p-1.5 bg-card/80 backdrop-blur border border-border rounded-2xl shadow-lg mb-8 max-w-2xl mx-auto overflow-x-auto">
+                {([
+                  { id: "cardapio", icon: Smartphone, label: t.landing.tabCardapio },
+                  { id: "kds", icon: ChefHat, label: t.landing.tabKds },
+                  { id: "garcom", icon: QrCode, label: t.landing.tabGarcom },
+                  { id: "painel", icon: Store, label: t.landing.tabPdv },
+                ] as const).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap flex items-center gap-2 transition-colors duration-200 ${
+                      activeTab === tab.id
+                        ? "text-primary-foreground"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    {activeTab === tab.id && (
+                      <motion.span
+                        layoutId="showcase-tab-pill"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-md shadow-primary/30"
+                        aria-hidden
+                      />
+                    )}
+                    <tab.icon className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10">{tab.label}</span>
+                  </button>
+                ))}
               </div>
 
               {/* Showcase Display Screen */}
-              <div className="relative rounded-3xl bg-primary text-primary-foreground shadow-xl border border-border overflow-hidden">
+              <div className="relative rounded-3xl bg-gradient-to-br from-primary via-[#33208f] to-[#4d28ab] text-primary-foreground shadow-2xl shadow-primary/30 border border-white/10 overflow-hidden">
+                {/* glow behind the frame */}
+                <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[36rem] h-64 rounded-full bg-accent/20 blur-3xl" />
                 {/* Screen Top Bar */}
-                <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6 p-4">
+                <div className="relative flex items-center justify-between p-4 border-b border-white/10 bg-black/20">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-destructive" />
-                    <div className="w-3 h-3 rounded-full bg-warning" />
-                    <div className="w-3 h-3 rounded-full bg-success" />
-                    <span className="ml-3 text-xs font-mono text-muted-foreground hidden sm:inline">
+                    <div className="w-3 h-3 rounded-full bg-destructive/80" />
+                    <div className="w-3 h-3 rounded-full bg-warning/80" />
+                    <div className="w-3 h-3 rounded-full bg-success/80" />
+                    <span className="ml-3 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] sm:text-xs font-mono text-white/50 hidden sm:inline">
                       mimenu.live/demo-restaurant
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-success/20 text-success flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                      Tempo Real Ativo
+                      {t.landing.liveBadge}
                     </span>
                   </div>
                 </div>
 
-                {/* Shared wrapper for tab content with reveal */}
+                {/* Shared wrapper for tab content with crossfade */}
                 <div className="p-4 sm:p-8">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={activeTab}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.28, ease: "easeOut" }}
+                    >
                   {/* Tab Content 1 */}
                   {activeTab === "cardapio" && (
                     <ScrollReveal direction="left" stagger>
@@ -497,13 +531,13 @@ export const LandingTakeat: React.FC = () => {
                                   🍔
                                 </div>
                                 <div>
-                                  <div className="text-sm font-semibold">Burger Smash Duplo Artesanal</div>
-                                  <div className="text-xs text-white/40">Ponto: Ao ponto · + Bacon crocante</div>
+                                  <div className="text-sm font-semibold">Hamburguesa Smash Doble Artesanal</div>
+                                  <div className="text-xs text-white/40">Término: Al punto · + Tocino crocante</div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-sm font-bold">R$ 44,90</div>
-                                <span className="text-[10px] text-emerald-400 font-medium">Na Cozinha (KDS)</span>
+                                <div className="text-sm font-bold">Bs 44,90</div>
+                                <span className="text-[10px] text-emerald-400 font-medium">En Cocina (KDS)</span>
                               </div>
                             </div>
 
@@ -513,21 +547,21 @@ export const LandingTakeat: React.FC = () => {
                                   🍹
                                 </div>
                                 <div>
-                                  <div className="text-sm font-semibold">Gin Tropical com Frutas Vermelhas</div>
+                                  <div className="text-sm font-semibold">Gin Tropical con Frutos Rojos</div>
                                   <div className="text-xs text-white/40">{t.landing.noSugar}</div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-sm font-bold">R$ 32,00</div>
-                                <span className="text-[10px] text-blue-400 font-medium">Pronto no Bar</span>
+                                <div className="text-sm font-bold">Bs 32,00</div>
+                                <span className="text-[10px] text-blue-400 font-medium">Listo en la Barra</span>
                               </div>
                             </div>
                           </div>
 
                           <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/40">
-                            <span>Total da Mesa: <strong className="text-white text-sm">R$ 76,90</strong></span>
+                            <span>Total de la Mesa: <strong className="text-white text-sm">Bs 76,90</strong></span>
                             <button className="px-3 py-1.5 rounded-lg bg-accent text-accent-foreground font-bold text-xs hover:bg-accent/90">
-                              Pedir a Conta & Dividir
+                              Pedir la Cuenta y Dividir
                             </button>
                           </div>
                         </div>
@@ -571,22 +605,22 @@ export const LandingTakeat: React.FC = () => {
                               <span className="font-bold text-amber-400 font-mono">MESA 04</span>
                               <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">04:12 min</span>
                             </div>
-                            <div className="text-sm font-bold text-white">1x Picanha na Chapa 400g</div>
+                            <div className="text-sm font-bold text-white">1x Picaña a la Plancha 400g</div>
                             <div className="text-xs text-white/40 mt-1">{t.landing.obsSteak}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 text-xs font-bold">
-                              Marcar como Pronto
+                              Marcar como Listo
                             </button>
                           </div>
 
                           <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
                             <div className="flex items-center justify-between text-xs mb-2">
                               <span className="font-bold text-emerald-400 font-mono">DELIVERY #109</span>
-                              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Pronto</span>
+                              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Listo</span>
                             </div>
                             <div className="text-sm font-bold text-white">2x Pizza Calabresa Especial</div>
                             <div className="text-xs text-white/40 mt-1">{t.landing.crustBorder}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-success hover:bg-success/90 text-success-foreground text-xs font-bold">
-                              Despachar para Motoboy
+                              Despachar al Repartidor
                             </button>
                           </div>
                         </div>
@@ -632,17 +666,17 @@ export const LandingTakeat: React.FC = () => {
                           <div className="grid grid-cols-3 gap-2">
                             <div className="p-3 rounded-xl bg-white/5 text-center border border-white/5">
                               <div className="text-xs text-white/40">Mesa 01</div>
-                              <div className="text-base font-bold text-white">R$ 145,00</div>
-                              <span className="text-[10px] text-amber-400">Comendo</span>
+                              <div className="text-base font-bold text-white">Bs 145,00</div>
+                              <span className="text-[10px] text-amber-400">Comiendo</span>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5 text-center border border-white/5">
                               <div className="text-xs text-white/40">Mesa 02</div>
-                              <div className="text-base font-bold text-white">R$ 89,50</div>
-                              <span className="text-[10px] text-blue-400">Pedindo conta</span>
+                              <div className="text-base font-bold text-white">Bs 89,50</div>
+                              <span className="text-[10px] text-blue-400">Pidiendo la cuenta</span>
                             </div>
                             <div className="p-3 rounded-xl bg-emerald-900/30 text-center border border-emerald-500/20">
                               <div className="text-xs text-emerald-300">Mesa 03</div>
-                              <div className="text-base font-bold text-white">Livre</div>
+                              <div className="text-base font-bold text-white">Libre</div>
                               <span className="text-[10px] text-emerald-400">Abrir Comanda</span>
                             </div>
                           </div>
@@ -684,9 +718,9 @@ export const LandingTakeat: React.FC = () => {
                         <div className="md:col-span-7 bg-secondary/20 p-5 rounded-2xl border border-white/10 space-y-3">
                           <div className="grid grid-cols-3 gap-3">
                             <div className="p-3 rounded-xl bg-white/5">
-                              <div className="text-xs text-white/40">Faturamento Hoje</div>
-                              <div className="text-lg font-bold text-emerald-400">R$ 5.480,00</div>
-                              <div className="text-[10px] text-emerald-500">+18% vs ontem</div>
+                              <div className="text-xs text-white/40">Facturación Hoy</div>
+                              <div className="text-lg font-bold text-emerald-400">Bs 5.480,00</div>
+                              <div className="text-[10px] text-emerald-500">+18% vs ayer</div>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
                               <div className="text-xs text-white/40">Pedidos Totais</div>
@@ -695,74 +729,109 @@ export const LandingTakeat: React.FC = () => {
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
                               <div className="text-xs text-white/40">{t.landing.commissionPaid}</div>
-                              <div className="text-lg font-bold text-accent">R$ 0,00</div>
-                              <div className="text-[10px] text-emerald-400">Economia de R$ 1.260</div>
+                              <div className="text-lg font-bold text-accent">Bs 0,00</div>
+                              <div className="text-[10px] text-emerald-400">Ahorro de Bs 1.260</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </ScrollReveal>
                   )}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
           </ScrollReveal>
       </section>
 
-      {/* 5. NUMBERS & RESULTS STRIP */}
-      <ScrollReveal direction="up" delay={100}>
-        <section className="bg-primary text-primary-foreground py-16 sm:py-20 border-y border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Resultados Comprovados
+      {/* 5. NUMBERS & RESULTS STRIP — purple gradient + glass stat tiles */}
+      <section className="relative overflow-hidden border-y border-white/10 text-primary-foreground bg-gradient-to-br from-[#2b1273] via-[#3c1a8c] to-[#4d28ab]">
+        {/* Ambient accent glows */}
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-accent/25 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-32 -right-16 w-96 h-96 rounded-full bg-white/10 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-accent/10 blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <ScrollReveal direction="up" delay={100}>
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-accent-foreground bg-accent/20 border border-accent/30 backdrop-blur-sm">
+                <Sparkle className="w-3.5 h-3.5 text-accent" />
+                {t.landing.resultsEyebrow}
               </span>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold mt-2">
+              <h2 className="text-3xl sm:text-4xl font-display font-bold mt-4">
                 {t.landing.numbersTitle}
               </h2>
             </div>
+          </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-                <div className="text-4xl sm:text-5xl font-display font-extrabold text-accent mb-2">
-                  +35%
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Stat 1: Ticket promedio */}
+            <ScrollReveal direction="up" delay={150}>
+              <div className="group h-full p-7 rounded-3xl bg-white/[0.07] border border-white/15 backdrop-blur-sm text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/[0.12] hover:-translate-y-1.5 hover:border-accent/40">
+                <div className="w-11 h-11 mx-auto mb-5 rounded-2xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent transition-transform duration-300 group-hover:scale-110">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div className="text-4xl sm:text-5xl font-display font-extrabold text-accent mb-2 tabular-nums">
+                  <CountUp to={35} prefix="+" suffix="%" />
                 </div>
                 <div className="font-bold text-base text-white mb-1">{t.landing.stat3Title}</div>
-                <p className="text-xs text-white/40 leading-relaxed">
+                <p className="text-xs text-white/50 leading-relaxed">
                   {t.landing.stat3Desc}
                 </p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-                <div className="text-4xl sm:text-5xl font-display font-extrabold text-success mb-2">
-                  0%
+            </ScrollReveal>
+
+            {/* Stat 2: 0% comisiones */}
+            <ScrollReveal direction="up" delay={280}>
+              <div className="group h-full p-7 rounded-3xl bg-white/[0.07] border border-white/15 backdrop-blur-sm text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/[0.12] hover:-translate-y-1.5 hover:border-success/40">
+                <div className="w-11 h-11 mx-auto mb-5 rounded-2xl bg-success/15 border border-success/30 flex items-center justify-center text-success transition-transform duration-300 group-hover:scale-110">
+                  <BadgePercent className="w-5 h-5" />
+                </div>
+                <div className="text-4xl sm:text-5xl font-display font-extrabold text-success mb-2 tabular-nums">
+                  <CountUp to={0} suffix="%" />
                 </div>
                 <div className="font-bold text-base text-white mb-1">{t.landing.stat4Title}</div>
-                <p className="text-xs text-white/40 leading-relaxed">
+                <p className="text-xs text-white/50 leading-relaxed">
                   {t.landing.stat4Desc}
                 </p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-                <div className="text-4xl sm:text-5xl font-display font-extrabold text-secondary mb-2">
+            </ScrollReveal>
+
+            {/* Stat 3: velocidad */}
+            <ScrollReveal direction="up" delay={410}>
+              <div className="group h-full p-7 rounded-3xl bg-white/[0.07] border border-white/15 backdrop-blur-sm text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/[0.12] hover:-translate-y-1.5 hover:border-warning/40">
+                <div className="w-11 h-11 mx-auto mb-5 rounded-2xl bg-warning/15 border border-warning/30 flex items-center justify-center text-warning transition-transform duration-300 group-hover:scale-110">
+                  <Timer className="w-5 h-5" />
+                </div>
+                <div className="text-4xl sm:text-5xl font-display font-extrabold text-warning mb-2 tabular-nums">
                   &lt; 4 min
                 </div>
                 <div className="font-bold text-base text-white mb-1">{t.landing.stat1Title}</div>
-                <p className="text-xs text-white/40 leading-relaxed">
+                <p className="text-xs text-white/50 leading-relaxed">
                   {t.landing.stat1Desc}
                 </p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-                <div className="text-4xl sm:text-5xl font-display font-extrabold text-warning mb-2">
-                  4.9 / 5
+            </ScrollReveal>
+
+            {/* Stat 4: rating */}
+            <ScrollReveal direction="up" delay={540}>
+              <div className="group h-full p-7 rounded-3xl bg-white/[0.07] border border-white/15 backdrop-blur-sm text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/[0.12] hover:-translate-y-1.5 hover:border-indigo-300/40">
+                <div className="w-11 h-11 mx-auto mb-5 rounded-2xl bg-indigo-400/15 border border-indigo-300/30 flex items-center justify-center text-indigo-300 transition-transform duration-300 group-hover:scale-110">
+                  <Star className="w-5 h-5" />
+                </div>
+                <div className="text-4xl sm:text-5xl font-display font-extrabold text-indigo-300 mb-2 tabular-nums">
+                  <CountUp to={4.9} decimals={1} suffix=" / 5" />
                 </div>
                 <div className="font-bold text-base text-white mb-1">{t.landing.stat2Title}</div>
-                <p className="text-xs text-white/40 leading-relaxed">
+                <p className="text-xs text-white/50 leading-relaxed">
                   {t.landing.stat2Desc}
                 </p>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
-        </section>
-      </ScrollReveal>
+        </div>
+      </section>
 
       {/* 6. CORE OPERATIONAL PILLARS */}
       <ScrollReveal direction="up" delay={100}>
@@ -1069,7 +1138,7 @@ export const LandingTakeat: React.FC = () => {
                         {t.landing.calcTicket}
                       </label>
                       <span className="text-base font-bold text-white bg-white/10 px-3 py-1 rounded-lg">
-                        R$ {averageTicket},00
+                        {CUR} {averageTicket},00
                       </span>
                     </div>
                     <input
@@ -1082,20 +1151,20 @@ export const LandingTakeat: React.FC = () => {
                       className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-accent"
                     />
                     <div className="flex justify-between text-[10px] text-white/40 mt-1">
-                      <span>R$ 20</span>
-                      <span>R$ 100</span>
-                      <span>R$ 200+</span>
+                      <span>{CUR} 20</span>
+                      <span>{CUR} 100</span>
+                      <span>{CUR} 200+</span>
                     </div>
                   </div>
 
                   <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-xs text-white/70 space-y-1">
                     <div className="flex justify-between">
-                      <span>Faturamento Bruto Mensal:</span>
-                      <strong className="text-white">R$ {totalGrossRevenue.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00</strong>
+                      <span>{t.landing.calcGrossLabel}</span>
+                      <strong className="text-white">{CUR} {totalGrossRevenue.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00</strong>
                     </div>
                     <div className="flex justify-between text-accent">
-                      <span>Taxa perdida em agregadores (23%):</span>
-                      <strong>- R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00  / {t.landing.perMonth}</strong>
+                      <span>{t.landing.calcFeeLabel}</span>
+                      <strong>- {CUR} {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00  / {t.landing.perMonth}</strong>
                     </div>
                   </div>
                 </div>
@@ -1104,25 +1173,25 @@ export const LandingTakeat: React.FC = () => {
                 <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-accent/20 to-secondary/20 border border-accent/30 text-center space-y-6">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-accent text-accent-foreground">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Lucro Recuperado Estimado
+                    {t.landing.calcRecovered}
                   </span>
 
                   <div>
-                    <div className="text-xs text-white/70 font-medium">Economia Mensal Direta</div>
+                    <div className="text-xs text-white/70 font-medium">{t.landing.calcMonthlyDirect}</div>
                     <div className="text-3xl sm:text-4xl font-display font-black text-white mt-1">
-                      R$ {(marketplaceLostCommissions + upsellGain).toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
+                      {CUR} {(marketplaceLostCommissions + upsellGain).toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
                     </div>
                     <div className="text-[11px] text-emerald-400 font-medium mt-1">
-                      (R$ {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} em taxas + R$ {upsellGain.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} em upsell)
+                      ({CUR} {marketplaceLostCommissions.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} {t.landing.calcFeesPart} {CUR} {upsellGain.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")} {t.landing.calcUpsellPart})
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-white/10">
                     <div className="text-xs text-white/40 uppercase tracking-wider font-semibold">
-                      Economia Estimada em 1 Ano
+                      {t.landing.calcAnnual}
                     </div>
                     <div className="text-2xl sm:text-3xl font-display font-extrabold text-success mt-1">
-                      R$ {annualSavings.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
+                      {CUR} {annualSavings.toLocaleString(lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US")},00
                     </div>
                   </div>
 
@@ -1130,7 +1199,7 @@ export const LandingTakeat: React.FC = () => {
                     href="#contato"
                     className="block w-full py-3.5 px-6 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-sm shadow-lg transition-all"
                   >
-                    Garantir Essa Economia no Meu Restaurante &rarr;
+                    {t.landing.calcGuaranteeCta} &rarr;
                   </a>
                 </div>
               </div>
@@ -1417,7 +1486,7 @@ export const LandingTakeat: React.FC = () => {
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Implantação assistida:</strong> {t.landing.implantDesc}</span>
+                    <span><strong className="text-white">Implantación asistida:</strong> {t.landing.implantDesc}</span>
                   </li>
                 </ul>
               </div>
