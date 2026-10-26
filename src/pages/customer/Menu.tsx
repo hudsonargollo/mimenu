@@ -23,6 +23,7 @@ import { HotnessIndicator } from '@/components/HotnessIndicator';
 import { ItemReviewDialog } from '@/components/ItemReviewDialog';
 import { CyclingOffersBanner } from '@/components/CyclingOffersBanner';
 import { CartDrawerExpress } from '@/components/CartDrawerExpress';
+import { FlipDeck } from '@/components/FlipDeck';
 import { MenuChatbot } from '@/components/chatbot/MenuChatbot';
 import { pickLocalText } from '@/lib/venueContext';
 import type { Lang } from '@/i18n/translations';
