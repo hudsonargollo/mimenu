@@ -723,7 +723,7 @@ export const LandingTakeat: React.FC = () => {
                               <div className="text-[10px] text-emerald-500">+18% vs ayer</div>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
-                              <div className="text-xs text-white/40">Pedidos Totais</div>
+                              <div className="text-xs text-white/40">Pedidos Totales</div>
                               <div className="text-lg font-bold text-white">94 pedidos</div>
                               <div className="text-[10px] text-white/40">{t.landing.avgTicket}</div>
                             </div>
@@ -1093,7 +1093,7 @@ export const LandingTakeat: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                Simulador de Economia Real
+                Simulador de Ahorro Real
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mt-2 mb-4">
                 {t.landing.calcTitle}
@@ -1295,7 +1295,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.depoimentosTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                Quem usa todos os dias, recomenda
+                Quienes lo usan todos los días, lo recomiendan
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground">
                 {t.landing.testimonialsSub}
@@ -1347,7 +1347,7 @@ export const LandingTakeat: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-primary">{t.landing.t2Name}</div>
-                      <div className="text-xs text-muted-foreground">Gerente Geral da Trattoria Di Napoli</div>
+                      <div className="text-xs text-muted-foreground">Gerente General de Trattoria Di Napoli</div>
                     </div>
                   </div>
                 </Card>
@@ -1391,7 +1391,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.duvidasTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                O que donos de restaurante perguntam antes de contratar
+                Lo que los dueños de restaurante preguntan antes de contratar
               </h2>
             </div>
 
@@ -1432,7 +1432,7 @@ export const LandingTakeat: React.FC = () => {
             <div className="text-center mt-10 text-xs sm:text-sm text-muted-foreground">
               {t.landing.segDoubt}{" "}
               <a href="#contato" className="font-bold text-accent hover:underline">
-                Fale agora com nosso especialista no WhatsApp &rarr;
+                Habla ahora con nuestro especialista por WhatsApp &rarr;
               </a>
             </div>
           </div>
@@ -1459,11 +1459,11 @@ export const LandingTakeat: React.FC = () => {
               {/* Left Value Column */}
               <div className="lg:col-span-6 space-y-6">
                 <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                  Comece Hoje Mesmo
+                  Empieza Hoy Mismo
                 </span>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
                   {t.landing.finalTitle}{" "}
-                  <span className="text-accent">restaurante agora</span>.
+                  <span className="text-accent">restaurante ahora</span>.
                 </h2>
                 <p className="text-base text-white/70 leading-relaxed max-w-lg">
                   {t.landing.finalSub}
@@ -1474,13 +1474,13 @@ export const LandingTakeat: React.FC = () => {
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Sem fidelidade:</strong> use enquanto fizer sentido para o seu restaurante</span>
+                    <span><strong className="text-white">Sin fidelidad:</strong> úsalo mientras tenga sentido para tu restaurante</span>
                   </li>
                   <li className="flex items-center gap-3 text-sm text-white/80">
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Suporte 7 dias por semana:</strong> atendimento humanizado via WhatsApp</span>
+                    <span><strong className="text-white">Soporte 7 días por semana:</strong> atención humana por WhatsApp</span>
                   </li>
                   <li className="flex items-center gap-3 text-sm text-white/80">
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
@@ -1509,7 +1509,7 @@ export const LandingTakeat: React.FC = () => {
                         onClick={() => setFormSubmitted(false)}
                         className="text-xs text-accent hover:underline pt-2"
                       >
-                        Preencher novamente
+                        Volver a completar
                       </button>
                     </div>
                   ) : (
@@ -1525,7 +1525,7 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          Seu Nome Completo
+                          Tu Nombre Completo
                         </label>
                         <input
                           type="text"
@@ -1553,7 +1553,7 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          WhatsApp (com DDD)
+                          WhatsApp (con código de área)
                         </label>
                         <input
                           type="tel"
@@ -1587,7 +1587,7 @@ export const LandingTakeat: React.FC = () => {
                         className="w-full py-4 px-6 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all mt-6"
                       >
                         <MessageCircle className="w-5 h-5" />
-                        Falar com Especialista no WhatsApp
+                        Hablar con Especialista por WhatsApp
                       </button>
 
                       <div className="text-center text-[11px] text-white/40 pt-2">
@@ -1620,7 +1620,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.footerTagline}
               </p>
               <div className="text-xs text-white/50">
-                Contato: <a href="mailto:contato@mimenu.clubemmt.digital" className="text-white hover:underline">contato@mimenu.clubemmt.digital</a>
+                Contato: <a href="mailto:contato@mimenu.clubemkt.digital" className="text-white hover:underline">contato@mimenu.clubemkt.digital</a>
               </div>
             </div>
 
