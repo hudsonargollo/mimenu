@@ -50,6 +50,9 @@ const Menu: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<Lang>('es');
   const [arPreviewItem, setARPreviewItem] = useState<MenuItemDetail | null>(null);
 
+  const venueName = pickLocalText(venue.name_i18n, currentLang) || venue.name;
+  const venueDesc = pickLocalText(venue.description_i18n, currentLang) || venue.description;
+
   useEffect(() => {
     document.title = `${venueName} — Menú Digital`;
   }, [venueName]);
@@ -70,8 +73,6 @@ const Menu: React.FC = () => {
     pickLocalText(item.description_i18n, currentLang) || item.description || '';
   const catName = (cat: { name: string; name_i18n?: Record<Lang, string> }) =>
     pickLocalText(cat.name_i18n, currentLang) || cat.name;
-  const venueName = pickLocalText(venue.name_i18n, currentLang) || venue.name;
-  const venueDesc = pickLocalText(venue.description_i18n, currentLang) || venue.description;
 
   const filteredItems = useMemo(() => {
     return allItems.filter(item => {
