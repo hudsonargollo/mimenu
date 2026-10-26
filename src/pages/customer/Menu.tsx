@@ -34,6 +34,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import ARMenuViewer from '@/components/ARMenuViewer';
+import FlipDeck from '@/components/FlipDeck';
 import { useARModels, useARModelsIds } from '@/hooks/useARModels';
 import { toast } from 'sonner';
 
@@ -226,28 +227,12 @@ const Menu: React.FC = () => {
           ))}
         </div>
 
-        {/* Products Grid */}
-        {filteredItems.length === 0 ? (
-          <div className="text-center py-16 bg-muted/20 rounded-2xl border border-dashed border-border">
-            <UtensilsCrossed className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" aria-hidden="true" />
-            <h3 className="text-base font-bold text-foreground">No encontramos platos con esos filtros</h3>
-            <p className="text-xs text-muted-foreground mt-1">Prueba seleccionando otra categoría o limpiando la búsqueda.</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-4 text-xs"
-              onClick={() => {
-                setActiveCategoryKey('all');
-                setSearchTerm('');
-                setOnlyHot(false);
-              }}
-            >
-              Restablecer Filtros
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => {
+        {/* Flip Deck (default template) */}
+        <FlipDeck
+          items={filteredItems}
+          currentLang={currentLang}
+          onAddToCart={handleAddToCart}
+        />
               const qtyInCart = getItemQuantity(item.id);
 
               return (
