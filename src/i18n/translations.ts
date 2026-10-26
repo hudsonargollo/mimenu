@@ -203,7 +203,7 @@ export const translations = {
       navQuemUsa: "Quién Usa",
       navJaSouCliente: "Ya soy cliente",
       navAgendarDemo: "Agendar Demo",
-      docTitle: "MiMenu | Sistema de Gestión para Restaurantes, Mesero Digital & Delivery",
+      docTitle: "MiMenu | Menú QR Inteligente, KDS y Delivery Propio para Restaurantes en Bolivia",
       seg1Name: "Hamburgueserías & Smash",
       seg1Headline: "Combos rápidos, elección del punto de la carne y adicionales sin fila",
       seg1Desc: "Impulsa la facturación con fotos irresistibles, selección obligatoria de adicionales y despacho inmediato a la plancha vía pantalla KDS.",

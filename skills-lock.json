@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "findable-polish": {
+      "source": "arm-pz/findable-polish",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "83fa60c2b12e8226299ec99124cc86782efae66ff85e056fa0b4bc13b06e3f66"
+    }
+  }
+}
