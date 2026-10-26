@@ -186,57 +186,35 @@ export const LandingTakeat: React.FC = () => {
               </span>
             </div>
           </Link>
-          <div className="flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs">
-            {(["es","en","pt"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLang(l)}
-                aria-pressed={lang === l}
-                className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs">
+              {(["es","en","pt"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  aria-pressed={lang === l}
+                  className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+            <div className="hidden sm:flex items-center gap-3">
+              <Link
+                to="/auth"
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-primary rounded-xl hover:bg-muted transition-colors"
               >
-                {l}
-              </button>
-            ))}
-          </div>
-
-          {/* Desktop Navigation Links */}
-          <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-8">
-            <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              {t.landing.navSolucoes}
-            </a>
-            <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              {t.landing.navModulos}
-            </a>
-            <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              {t.landing.navCalc}
-            </a>
-            <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              {t.landing.navSegmentos}
-            </a>
-            <a href="#depoimentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              {t.landing.navQuemUsa}
-            </a>
-            <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">
-              FAQ
-            </a>
-          </nav>
-
-          {/* Desktop Right CTA Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
-            <Link
-              to="/auth"
-              className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-primary rounded-xl hover:bg-muted transition-colors"
-            >
-              {t.landing.navJaSouCliente}
-            </Link>
-            <a
-              href="#contato"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
-            >
-              {t.landing.navAgendarDemo}
-              <ArrowRight className="w-4 h-4" />
-            </a>
+                {t.landing.navJaSouCliente}
+              </Link>
+              <a
+                href="#contato"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
+              >
+                {t.landing.navAgendarDemo}
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
           </div>
 
           {/* Mobile Menu Toggle Button */}
