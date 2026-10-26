@@ -142,7 +142,7 @@ export const LandingTakeat: React.FC = () => {
     setFormSubmitted(true);
 
     const msg = `${t.landing.waMsgIntro}\n\n*${t.landing.waName}:* ${leadName || t.landing.waResponsible}\n*${t.landing.waVenue}:* ${leadVenueName || t.landing.waNotInformed}\n*${t.landing.waPhone}:* ${leadPhone || t.landing.waNotInformed}\n*${t.landing.waOp}:* ${leadSegment}\n\n${t.landing.waCta}`;
-    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`;
+    const whatsappUrl = `https://wa.me/59170000000?text=${encodeURIComponent(msg)}`;
 
     setTimeout(() => {
       window.open(whatsappUrl, "_blank");
