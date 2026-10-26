@@ -187,19 +187,16 @@ export const LandingTakeat: React.FC = () => {
             </div>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5 rounded-full border border-border bg-card p-0.5 text-xs">
-              {(["es","en","pt"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  aria-pressed={lang === l}
-                  className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value as "es" | "en" | "pt")}
+              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium uppercase"
+              aria-label="Language"
+            >
+              <option value="es">🇪🇸 ES</option>
+              <option value="en">🇺🇸 EN</option>
+              <option value="pt">🇧🇷 PT</option>
+            </select>
             <div className="hidden sm:flex items-center gap-3">
               <Link
                 to="/auth"
