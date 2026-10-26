@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { MessageCircle, Send, X, Loader2, Mic, MicOff, Volume2, VolumeX, AlertCircle } from 'lucide-react';
+import { MessageCircle, Send, X, Loader2, Mic, MicOff, Volume2, VolumeX, AlertCircle, Pause, Play } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { ChatbotLang, ChatbotSessionState } from '@/lib/chatbot/engine';
 import { handleChatTurn, loadSessionState, saveSessionState } from '@/lib/chatbot/service';
@@ -34,7 +34,7 @@ const labels: Record<ChatbotLang, { title: string; placeholder: string; welcome:
   }
 };
 
-// Map ChatbotLang to BCP-47 language tags for Web Speech API
+// Map ChatbotLang to BCP-47 language tags for Web Speech API (speech-to-text)
 const LANG_TAGS: Record<ChatbotLang, string> = {
   es: 'es-ES',
   en: 'en-US',
@@ -42,55 +42,22 @@ const LANG_TAGS: Record<ChatbotLang, string> = {
   de: 'de-DE'
 };
 
-// Type definitions for Web Speech API (with vendor prefixes)
+// Web Speech API type definitions (for speech-to-text input)
 interface SpeechRecognitionInstance {
   start: () => void;
   stop: () => void;
   abort: () => void;
   addEventListener: (event: string, handler: (...args: unknown[]) => void) => void;
-  removeEventListener: (event: string, handler: (...args: unknown[]) => void) => void;
   lang: string;
   continuous: boolean;
   interimResults: boolean;
   maxAlternatives: number;
-}
-interface SpeechSynthesisVoice {
-  name: string;
-  lang: string;
-  default: boolean;
-}
-interface SpeechSynthesisUtteranceInstance {
-  text: string;
-  lang: string;
-  voice: SpeechSynthesisVoice | null;
-  rate: number;
-  pitch: number;
-  volume: number;
-  onend: (() => void) | null;
-  onerror: ((e: { error: string }) => void) | null;
-  onstart: (() => void) | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const W = typeof window !== 'undefined' ? (window as any) : {};
 const SpeechRecognitionCtor: (new (opts?: { lang?: string; continuous?: boolean; interimResults?: boolean }) => SpeechRecognitionInstance) | null =
   W.SpeechRecognition || W.webkitSpeechRecognition || null;
-const SpeechSynthesisUtteranceCtor: (new (text?: string) => SpeechSynthesisUtteranceInstance) | null =
-  W.SpeechSynthesisUtterance || null;
-const speechSynthesis: { speak: (u: SpeechSynthesisUtteranceInstance) => void; cancel: () => void; getVoices: () => SpeechSynthesisVoice[]; addEventListener?: (e: string, h: () => void) => void; removeEventListener?: (e: string, h: () => void) => void } | null =
-  W.speechSynthesis || null;
-
-/** Finds the best voice for a given language tag. */
-function getVoiceForLang(langTag: string): SpeechSynthesisVoice | null {
-  if (!speechSynthesis) return null;
-  const voices = speechSynthesis.getVoices();
-  const prefix = langTag.split('-')[0];
-  const exact = voices.find(v => v.lang === langTag);
-  if (exact) return exact;
-  const prefixMatch = voices.find(v => v.lang.startsWith(prefix));
-  if (prefixMatch) return prefixMatch;
-  return voices[0] || null;
-}
 
 export function MenuChatbot() {
   const { venue, categories } = useMimenu();
@@ -112,9 +79,12 @@ export function MenuChatbot() {
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: 'welcome', role: 'assistant', text: labels.es.welcome }]);
   const [voiceInputActive, setVoiceInputActive] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioQueueRef = useRef<string | null>(null); // URL of audio waiting to play after current finishes
 
   useEffect(() => {
     let active = true;
@@ -122,10 +92,13 @@ export function MenuChatbot() {
       if (!active || !saved) return;
       setSessionState(saved);
       setLang(saved.language || 'es');
-      // Personalize welcome if name exists
       if (saved.userName) {
         const l = saved.language || 'es';
-        const personalized = labels[l].welcome.replace('¡Hola!', `¡Hola ${saved.userName}!`).replace('Hello!', `Hi ${saved.userName}!`).replace('Olá!', `Oi ${saved.userName}!`).replace('Hallo!', `Hallo ${saved.userName}!`);
+        const personalized = labels[l].welcome
+          .replace('¡Hola!', `¡Hola ${saved.userName}!`)
+          .replace('Hello!', `Hi ${saved.userName}!`)
+          .replace('Olá!', `Oi ${saved.userName}!`)
+          .replace('Hallo!', `Hallo ${saved.userName}!`);
         setMessages([{ id: 'welcome', role: 'assistant', text: personalized }]);
       }
     });
@@ -135,6 +108,26 @@ export function MenuChatbot() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy, open]);
+
+  // Initialize audio element
+  useEffect(() => {
+    audioRef.current = new Audio();
+    audioRef.current.onended = () => {
+      setCurrentlyPlaying(null);
+      // Play queued audio if any
+      if (audioQueueRef.current) {
+        const next = audioQueueRef.current;
+        audioQueueRef.current = null;
+        setCurrentlyPlaying(next);
+        audioRef.current!.src = next;
+        audioRef.current!.play().catch(console.error);
+      }
+    };
+    audioRef.current.onerror = () => {
+      console.error('Audio playback failed');
+      setCurrentlyPlaying(null);
+    };
+  }, []);
 
   // Initialize SpeechRecognition once
   useEffect(() => {
@@ -178,19 +171,46 @@ export function MenuChatbot() {
     };
   })), [categories, lang]);
 
-  const speak = (reply: string, targetLang: ChatbotLang) => {
-    if (!ttsEnabled || !speechSynthesis || !SpeechSynthesisUtteranceCtor) return;
-    const voice = getVoiceForLang(LANG_TAGS[targetLang]);
-    const utter = new SpeechSynthesisUtteranceCtor(reply);
-    utter.lang = LANG_TAGS[targetLang];
-    utter.voice = voice;
-    utter.rate = 1.0;
-    utter.pitch = 1.0;
-    utter.volume = 1.0;
-    utter.onend = null;
-    utter.onerror = null;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
+  /** Fetches natural neural-voice audio from the Edge Function and plays it. */
+  const playAudioFromTTS = async (replyText: string, targetLang: ChatbotLang) => {
+    if (!ttsEnabled || !audioRef.current) return;
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: replyText, lang: targetLang }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('TTS fetch failed:', errorData.error || res.statusText);
+        return;
+      }
+      const blob = await res.blob();
+      const audioUrl = URL.createObjectURL(blob);
+
+      if (currentlyPlaying && audioRef.current.paused === false) {
+        // Queue this audio to play after the current one finishes
+        audioQueueRef.current = audioUrl;
+      } else {
+        setCurrentlyPlaying(audioUrl);
+        audioRef.current.src = audioUrl;
+        audioRef.current.play().catch(err => {
+          console.error('Audio play error:', err);
+          setCurrentlyPlaying(null);
+        });
+      }
+    } catch (error) {
+      console.error('TTS playback error:', error);
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+    setCurrentlyPlaying(null);
+    audioQueueRef.current = null;
   };
 
   const handleSubmit = async (message: string, inputMode: 'text' | 'voice') => {
@@ -211,8 +231,8 @@ export function MenuChatbot() {
       setLang(result.response.detectedLang);
       setMessages(current => [...current, { id: `${Date.now()}-assistant`, role: 'assistant', text: result.response.reply, inputMode }]);
       // Speak the response only when the user's last input was via voice
-      if (inputMode === 'voice' && ttsEnabled && speechSynthesis && SpeechSynthesisUtteranceCtor) {
-        speak(result.response.reply, result.response.detectedLang);
+      if (inputMode === 'voice' && ttsEnabled) {
+        await playAudioFromTTS(result.response.reply, result.response.detectedLang);
       }
     } catch (error) {
       console.error('Chatbot turn failed:', error);
@@ -251,11 +271,20 @@ export function MenuChatbot() {
   };
 
   const toggleTts = () => {
-    if (speechSynthesis) {
-      if (ttsEnabled) {
-        speechSynthesis.cancel();
-      }
-      setTtsEnabled(!ttsEnabled);
+    if (ttsEnabled) {
+      stopAudio();
+    }
+    setTtsEnabled(!ttsEnabled);
+  };
+
+  const replayLastVoice = async () => {
+    // Find the last assistant message that was triggered by voice input
+    const lastVoiceReply = messages
+      .slice()
+      .reverse()
+      .find(m => m.role === 'assistant' && m.inputMode === 'voice');
+    if (lastVoiceReply) {
+      await playAudioFromTTS(lastVoiceReply.text, lang);
     }
   };
 
@@ -269,17 +298,26 @@ export function MenuChatbot() {
               <p className="text-xs text-slate-300">{venue.name}</p>
             </div>
             <div className="flex items-center gap-1">
-              {speechSynthesis && (
+              {currentlyPlaying && (
                 <button
                   type="button"
-                  onClick={toggleTts}
-                  aria-label={ttsEnabled ? 'Desactivar voz' : 'Activar voz'}
-                  className={`p-1 rounded hover:bg-white/10 ${ttsEnabled ? 'text-amber-400' : 'text-slate-500'}`}
-                  title={ttsEnabled ? 'Voiced responses ON' : 'Voiced responses OFF'}
+                  onClick={stopAudio}
+                  aria-label="Stop audio"
+                  className="p-1 rounded hover:bg-white/10 text-amber-300"
+                  title="Detener audio"
                 >
-                  {ttsEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  <Pause className="h-4 w-4" />
                 </button>
               )}
+              <button
+                type="button"
+                onClick={toggleTts}
+                aria-label={ttsEnabled ? 'Desactivar voz' : 'Activar voz'}
+                className={`p-1 rounded hover:bg-white/10 ${ttsEnabled ? 'text-amber-400' : 'text-slate-500'}`}
+                title={ttsEnabled ? 'Voz natural ON' : 'Voz natural OFF'}
+              >
+                {ttsEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+              </button>
               <select
                 aria-label="Chat language"
                 value={lang}
@@ -330,7 +368,7 @@ export function MenuChatbot() {
                 onClick={toggleVoiceInput}
                 disabled={busy || voiceInputActive}
                 aria-label={voiceInputActive ? 'Detener grabación' : 'Hablar'}
-                title={voiceInputActive ? 'Detener' : 'Hablar (Web Speech)'}
+                title={voiceInputActive ? 'Detener' : 'Hablar (reconocimiento de voz)'}
                 className={`rounded-lg px-2.5 text-slate-950 disabled:opacity-50 transition-colors ${
                   voiceInputActive
                     ? 'bg-rose-500 hover:bg-rose-600 text-white'
@@ -349,12 +387,13 @@ export function MenuChatbot() {
               <Send className="h-4 w-4" />
             </button>
           </form>
-          {!speechSynthesis && (
+          {!SpeechRecognitionCtor && (
             <div className="px-3 pb-2 text-[10px] text-muted-foreground flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
-              <span>Voice responses not supported in this browser.</span>
+              <span>Voice input not supported in this browser. Try Chrome or Edge.</span>
             </div>
           )}
+          <audio ref={audioRef} onPlay={() => {}} />
         </section>
       )}
       <button
