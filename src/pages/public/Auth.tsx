@@ -66,8 +66,8 @@ const Auth = () => {
       </div>
 
       <div className="w-full max-w-md relative z-10 px-4">
-        {/* Brand + language */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Brand */}
+        <div className="flex items-center justify-center mb-6">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-card flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden border border-border">
               <img src="/mimenu.svg" alt="MiMenu" className="h-7 w-7" />
@@ -77,31 +77,10 @@ const Auth = () => {
               <span className="text-[10px] font-medium text-muted-foreground -mt-0.5">Área de acceso</span>
             </div>
           </div>
-
-          <div
-            role="group"
-            aria-label="Language"
-            className="flex items-center rounded-full border border-border bg-card/50 p-0.5 text-xs backdrop-blur"
-          >
-            {(["es", "en", "pt"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLang(l)}
-                aria-pressed={lang === l}
-                className={`rounded-full px-2.5 py-1 font-medium uppercase transition-colors ${
-                  lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Auth card */}
-          <div className="rounded-3xl border border-border bg-card/40 p-1 shadow-2xl shadow-black/40 backdrop-blur-md">
-            <div className="rounded-[22px] bg-card/80 p-6 sm:p-8">
+        <div className="rounded-3xl border border-border bg-card/60 p-6 sm:p-8 shadow-2xl shadow-black/40 backdrop-blur-md">
             <div className="mb-6 space-y-1">
               <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
@@ -176,11 +155,9 @@ const Auth = () => {
                 Acceso restringido, monitoreado y auditable.
               </p>
             </div>
-          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default Auth;
