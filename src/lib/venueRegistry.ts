@@ -67,9 +67,17 @@ export function resolveVenueSlug(search: string): { slug: string; requested: str
   const requested = params.get('v') || params.get('venue');
   if (requested) {
     const found = !!findVenueBySlug(requested);
-    return { slug: found ? requested : defaultVenueSlug(), requested, found };
+    return { slug: found ? requested : DEFAULT_VENUE_SLUG, requested, found };
   }
-  return { slug: defaultVenueSlug(), requested: null, found: true };
+  // Path-based slug: /jaleo, /demo, /whateverrestaurant
+  if (typeof window !== 'undefined') {
+    const seg = window.location.pathname.split('/').filter(Boolean)[0];
+    if (seg && !isReservedSlug(seg)) {
+      const found = !!findVenueBySlug(seg);
+      if (found) return { slug: seg, requested: seg, found: true };
+    }
+  }
+  return { slug: DEFAULT_VENUE_SLUG, requested: null, found: false };
 }
 
 /**

@@ -203,6 +203,11 @@ const App = () => {
                         <Menu />
                       </Suspense>
                     } />
+                    <Route path="/:venueSlug" element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Menu />
+                      </Suspense>
+                    } />
                     <Route path="/checkout" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <Checkout />
