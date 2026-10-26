@@ -190,13 +190,22 @@ export const LandingTakeat: React.FC = () => {
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as "es" | "en" | "pt")}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium uppercase"
+              className="rounded-full border border-border bg-card px-2 py-1.5 text-base leading-none"
               aria-label="Language"
             >
-              <option value="es">🇪🇸 ES</option>
-              <option value="en">🇺🇸 EN</option>
-              <option value="pt">🇧🇷 PT</option>
+              <option value="es">🇪🇸</option>
+              <option value="en">🇺🇸</option>
+              <option value="pt">🇧🇷</option>
             </select>
+            {/* Desktop Navigation Links */}
+            <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-6">
+              <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navSolucoes}</a>
+              <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navModulos}</a>
+              <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navCalc}</a>
+              <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navSegmentos}</a>
+              <a href="#depoimentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navQuemUsa}</a>
+              <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">FAQ</a>
+            </nav>
             <div className="hidden sm:flex items-center gap-3">
               <Link
                 to="/auth"
