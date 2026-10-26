@@ -1,11 +1,653 @@
 {
   "version": 1,
   "skills": {
+    "accessibility-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility-audit/SKILL.md",
+      "computedHash": "681b19566034425eef439ef03662dbb6bfb6e8703c99891f2471bf552647a8ee"
+    },
+    "ads-creative-development": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ads-creative-development/SKILL.md",
+      "computedHash": "3bee75014aac7d5aff443b7af91786a9152779855cc1e1a73abc3b7bf4a65e81"
+    },
+    "ads-performance-analytics": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ads-performance-analytics/SKILL.md",
+      "computedHash": "739f47afbae08262d65c7d7ec72e2bbcdb120214d2b4136c340bf4efc3bec0f4"
+    },
+    "after-action-report": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/after-action-report/SKILL.md",
+      "computedHash": "de1d2cc3ec6e7ba4a50d76d03c040d73f6246026a159205efdeb9806aba2784f"
+    },
+    "ai-content-collaboration": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-content-collaboration/SKILL.md",
+      "computedHash": "f5961f57553eec329965b3263461b195163d3d3b95b28bc2fc812500b214f008"
+    },
+    "analytics-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/analytics-strategy/SKILL.md",
+      "computedHash": "b10cd6c8d3ef9358fa1de14e635d07bc83e6820f2a8a76f2faf11fd1eea18d92"
+    },
+    "art-direction": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/art-direction/SKILL.md",
+      "computedHash": "dd5db20d204fd68773cfdb6638172195c1138e45e5537cd1319d1af18466e4d8"
+    },
+    "backup-and-disaster-recovery": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/backup-and-disaster-recovery/SKILL.md",
+      "computedHash": "5fe7a5f2ff8b0194c84340d4fa4c74b15070a2495947466ada2cfc5b0e6199fa"
+    },
+    "beta-program-management": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/beta-program-management/SKILL.md",
+      "computedHash": "c1bc50765a1e360d9bc55fa01407a69e47addb8697972bacab6c039f8516a653"
+    },
+    "brand-archetype-system": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-archetype-system/SKILL.md",
+      "computedHash": "3aefd5e4cc7cf5797895afd551a50d36ab0468583a9bcf7b741145efc2f91ebf"
+    },
+    "brand-discovery": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-discovery/SKILL.md",
+      "computedHash": "8b3d64fe482c0856df18301071fb5c170793543b5051958469cbfd5ad63c4d42"
+    },
+    "brand-ideation": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-ideation/SKILL.md",
+      "computedHash": "a09de28ea7fc8242902eef8851765ab0f6a35d5ab986f92aaa6910a02a11f63f"
+    },
+    "brand-identity": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-identity/SKILL.md",
+      "computedHash": "dd53f05b4e24fdc5c4f6f53b80c64a075a815be7f6676b98d38a733e8f69922f"
+    },
+    "brand-style-guide": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-style-guide/SKILL.md",
+      "computedHash": "1f60438e2fbc90aa39ddcca8d51fdfbb0be655251b2e595cf4f323aadd06cf8d"
+    },
+    "brand-voice": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-voice/SKILL.md",
+      "computedHash": "4ddb48625e1f7352330202325b411e66516eea149d3f782bed931954309ab648"
+    },
+    "calculator-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/calculator-design/SKILL.md",
+      "computedHash": "acbe9c380ea1819b15e52a0f8be6042d486eb57eb1ad74b77ad2f497f24b6a40"
+    },
+    "chatbot-flow-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/chatbot-flow-design/SKILL.md",
+      "computedHash": "226861aad65cd5a4acffb93e687f861148cc8f7a9b1ff6a7ae93258dcdde4523"
+    },
+    "code-review-web": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/code-review-web/SKILL.md",
+      "computedHash": "81062ec0cc53b787bd40d3ca33c0138bbdf6cd8d59ca7febc5acf0e03d311292"
+    },
+    "comparison-tool-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/comparison-tool-design/SKILL.md",
+      "computedHash": "78ee909eb4fd3e0694db0b02b391108cf891a91bd7d6a55ef5fe8cfb5571c5f8"
+    },
+    "competitor-experience-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/competitor-experience-audit/SKILL.md",
+      "computedHash": "6dcc5f80d9ef3d07d505511c456229363511a0d23df736c137abd0bfab3284ce"
+    },
+    "content-and-copy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-and-copy/SKILL.md",
+      "computedHash": "228677c7a51aea54a3a17ab6980b4d9ec7fc93dee0e24773ef68c43d784d042b"
+    },
+    "content-brief-authoring": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-brief-authoring/SKILL.md",
+      "computedHash": "ff61f9313b972e972902207bbad791e0be40a7c38d37bff0a7e00ea2edf935b6"
+    },
+    "content-distribution": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-distribution/SKILL.md",
+      "computedHash": "3a9bd30cf0f17f59089f8cb634c7a6056b18b61d4707537fe07a2ec56c766470"
+    },
+    "content-migration": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-migration/SKILL.md",
+      "computedHash": "3da4270e49b78e3fabb0066f4ea34ea7adc7d49b351594fcb5dece04436614c7"
+    },
+    "content-refresh-system": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-refresh-system/SKILL.md",
+      "computedHash": "397d7b39577bf6cd9d3766503de35f106e30227d3a1b142d9738bbce5de95b15"
+    },
+    "content-repurposing": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-repurposing/SKILL.md",
+      "computedHash": "fb4fe25a283a6eff2d1005c3af80116bf05a0890acdc11f9606285ff4c887548"
+    },
+    "content-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-strategy/SKILL.md",
+      "computedHash": "126154e31ba922120548ff0b6e86e285ba0e4d7b7a59bac78a1ab75982dd71c6"
+    },
+    "cost-optimization": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cost-optimization/SKILL.md",
+      "computedHash": "69387f944c68e0d1c42dd66ace8f46e30f997d7af6ce5e66635e8afc9b2b3348"
+    },
+    "creative-brief": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/creative-brief/SKILL.md",
+      "computedHash": "8eba563bf499f084930f512d97810aa0ccce1e4669fbc045777f49de44d1986f"
+    },
+    "creative-brief-selector": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/creative-brief-selector/SKILL.md",
+      "computedHash": "36b1be7a2daee0e739b1d442c297461f36bc831680a196feda28d21608d7a303"
+    },
+    "creative-direction": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/creative-direction/SKILL.md",
+      "computedHash": "1c8b0f2d14870a3ead7d9368db2facced35b343d6a14a00c08465894429f4ca7"
+    },
+    "cro-optimization": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cro-optimization/SKILL.md",
+      "computedHash": "4a2ce3adafe27244864f3314221cce8ec4b0ade58ca45bf1c9b0767fa4f579ae"
+    },
+    "data-warehouse-experimentation": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/data-warehouse-experimentation/SKILL.md",
+      "computedHash": "ecc99669b496516a12c31885597bfb4db9d95d9c2332e95db86b3735a0f3d97e"
+    },
+    "dependency-management": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dependency-management/SKILL.md",
+      "computedHash": "c4ad91e923f1eb6dcac2e2e58c073931869226e5ad2a923e6aecc636989d0b48"
+    },
+    "design-standards": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/design-standards/SKILL.md",
+      "computedHash": "e305489052b7c3ef9eb01e4c282b24d2f54ae164340a83e2f987e3eacbe2d975"
+    },
+    "design-system": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/design-system/SKILL.md",
+      "computedHash": "7c2b0b9b406c80221124dc0983423a8c88df4773c1cee0300454ac300f82d24d"
+    },
+    "discovery-research-synthesis": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/discovery-research-synthesis/SKILL.md",
+      "computedHash": "e2046d129e01f7e6aa553c646dc4b668994e86de851a0aa6216126ae32e7440c"
+    },
+    "dispatch-authoring": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dispatch-authoring/SKILL.md",
+      "computedHash": "92589d29c3e24856a579f1d8d60489bdaa42393854809a9981c4e9e138f6f49a"
+    },
+    "documentation-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-strategy/SKILL.md",
+      "computedHash": "f543693f3dbac6dd8397fcaff7a0ae062820b043ad393c451a000a9db4f2ed57"
+    },
+    "domain-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/domain-strategy/SKILL.md",
+      "computedHash": "8f76afb553c9db60e7eee0ddaaa4fa470a15d8e4be88bdcc8d6da56a49732a6d"
+    },
+    "editorial-qa": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/editorial-qa/SKILL.md",
+      "computedHash": "dd9955275b557c7422f25e71113450bffd4bdbec6de6227173fc10bf7aa75989"
+    },
+    "email-deliverability": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/email-deliverability/SKILL.md",
+      "computedHash": "607b3641ad20cb31d425aea51763879c7b2d418ad5ad74dcd753bbedbf1e786a"
+    },
+    "email-sequences": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/email-sequences/SKILL.md",
+      "computedHash": "4fe13a57fe0f2ce453ca99c5df9bca969fb58b8eb43e2448116e5b2b31938d05"
+    },
+    "evidence-based-reviews": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/evidence-based-reviews/SKILL.md",
+      "computedHash": "9c2df0a5896ff9b65801848e60c2faa4904798af233c0dfde138648508b683dc"
+    },
+    "experiment-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-design/SKILL.md",
+      "computedHash": "2e5487b2f0ea791910f4d107ca68ec2a76c1c3d92f61b87bcbc20dce94c72dd9"
+    },
+    "experimentation-analytics": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/experimentation-analytics/SKILL.md",
+      "computedHash": "f5818fdda11cb5e805d63bbd46a894975d44e84c96b5ed55122809af2f379716"
+    },
+    "experimentation-platform-orchestrator": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/experimentation-platform-orchestrator/SKILL.md",
+      "computedHash": "1699f9a590819ff79c2915a4a4b1e9bc69c74bb1c51a6b6ea4abbf8c1487d2cd"
+    },
+    "feature-flagging": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/feature-flagging/SKILL.md",
+      "computedHash": "47236e5c0bf882e5be83d95e4bffefadd3c30ca68d8b7c4b03d799623e2cd5c1"
+    },
+    "feature-launch-playbook": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/feature-launch-playbook/SKILL.md",
+      "computedHash": "9fa7cf757cbfb507e320ac12112a5e8d10c64c42d862ea09c7f49fe2d201a46b"
+    },
     "findable-polish": {
       "source": "arm-pz/findable-polish",
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "83fa60c2b12e8226299ec99124cc86782efae66ff85e056fa0b4bc13b06e3f66"
+    },
+    "form-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/form-strategy/SKILL.md",
+      "computedHash": "eed419874d196e157299c057f3ff15a5e5c2bbe03c66b58d0e07166aef2c048f"
+    },
+    "frontend-component-build": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-component-build/SKILL.md",
+      "computedHash": "487f194007e1f885f6de59dee903bb177b294a47d150b98b4c8b67bf225fbe3b"
+    },
+    "funnel-flow-architecture": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/funnel-flow-architecture/SKILL.md",
+      "computedHash": "2094705ba3355eecc303aec471223f8b6127ff70cd424f507b66171f336ca49f"
+    },
+    "incident-response": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/incident-response/SKILL.md",
+      "computedHash": "4f3f02bdaac3936b6d22162dbde1c795efe57b3d16a0bf9134d824d09dbedbf1"
+    },
+    "information-architecture": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/information-architecture/SKILL.md",
+      "computedHash": "af96b823acd859160a50eda804c26c6b4595ed89ae17783cb7b00d1881063e70"
+    },
+    "integration-orchestrator": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/integration-orchestrator/SKILL.md",
+      "computedHash": "bfa1969d4907e994482f72059375706c4abaf885cd709442b2211f66efe5d940"
+    },
+    "interactive-product-tour": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/interactive-product-tour/SKILL.md",
+      "computedHash": "a6cf441f43cc207a5589551c0bfc1e08275b6eb0b2d48386ed2bc0fbb1c31b6d"
+    },
+    "internationalization": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/internationalization/SKILL.md",
+      "computedHash": "968d4d69b4f7f239b502b630482bf5b5cab073109dd99f6a611bad58bca0b311"
+    },
+    "journey-mapping": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/journey-mapping/SKILL.md",
+      "computedHash": "c083b91bd0bee9e3b4b686e6cf04873f19238183e9e34eac4f88d02d5298f6ab"
+    },
+    "jtbd-framing": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/jtbd-framing/SKILL.md",
+      "computedHash": "1dd76decdfa3868c28cd361a2eeccc57bf94fbf46498a11da5934a2f3f9e0c87"
+    },
+    "landing-page-copy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/landing-page-copy/SKILL.md",
+      "computedHash": "90d278331dbc544bf2950a0ffcfb1cd9f40dcb4344ad5fde83b4aeb3c5ee6d23"
+    },
+    "launch-runbook": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/launch-runbook/SKILL.md",
+      "computedHash": "db89d1b467c9b00227412ec4d31244f4732e4d9de5bf6ccd928a7341b6b76619"
+    },
+    "lead-magnet-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lead-magnet-design/SKILL.md",
+      "computedHash": "9abaced5c6aaa7472b94f96bdd382099cedf519750db6b38cfb0b8a3b59f6ae1"
+    },
+    "logo-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/logo-design/SKILL.md",
+      "computedHash": "268eb7ad5ae687a3b9a72986257dbce8a0f11a41b3eace3bc887e7eefcbdd8ce"
+    },
+    "long-form-content-frameworks": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/long-form-content-frameworks/SKILL.md",
+      "computedHash": "097ef955b6c7a46ba0d082033bcc627100b491722f2e8ada886bfc1eb659bafc"
+    },
+    "media-asset-management": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/media-asset-management/SKILL.md",
+      "computedHash": "7a1b48f27edaf146004a783957ddc7a4c7ed72a315de012e6b1d2c983ca9f58e"
+    },
+    "monitoring-and-alerting": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/monitoring-and-alerting/SKILL.md",
+      "computedHash": "ba4c9b373c19c1e71af4d6e457332530c7f0bf26c37c22fd789a1285663b4dba"
+    },
+    "multi-step-form-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/multi-step-form-design/SKILL.md",
+      "computedHash": "99d25b1c58fceae5c8fbe0ab91fad583a7edf7d07e290a9004233bb72abd597d"
+    },
+    "okr-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/okr-design/SKILL.md",
+      "computedHash": "1909ec15ff20c30a1394162608f9f17fc9ee3c4b65a0cfa20e4dfad33fc139c9"
+    },
+    "onboarding-wizard-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/onboarding-wizard-design/SKILL.md",
+      "computedHash": "b1c1a3dc4715fcfffcba52a1ac3497ab55f0ea2f548c7422987ee0753160f2d1"
+    },
+    "oss-contribution-research": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/oss-contribution-research/SKILL.md",
+      "computedHash": "4379f24f57147d7f796cbc3f6eed4ea8f200a491d09b3b4eeb861784150ee64e"
+    },
+    "paid-media-strategy": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/paid-media-strategy/SKILL.md",
+      "computedHash": "fc11614f2356236d2ea6384dd005338a0a332199585d8abd061ca69ecda4d02d"
+    },
+    "performance-optimization": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance-optimization/SKILL.md",
+      "computedHash": "8d39332e914fd8dd39626268fa262214282d898668d4bcf7c509c5c3bf62210c"
+    },
+    "pillar-content-architecture": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pillar-content-architecture/SKILL.md",
+      "computedHash": "d425418051e89caf876439875bdcf6699885094cb2a1963596835b9ec30815ad"
+    },
+    "pm-spec-writing": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pm-spec-writing/SKILL.md",
+      "computedHash": "8039e3baeeb26a033c2bb436812fe604447624832c1c76cb36dc3d2278006165"
+    },
+    "product-analytics-setup": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/product-analytics-setup/SKILL.md",
+      "computedHash": "d871689c969b01bc7b8388a848a2750c920d3851b18d58fcb23ca9f97c821c5b"
+    },
+    "product-configurator-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/product-configurator-design/SKILL.md",
+      "computedHash": "e8c78229a0366a9a5d3a13ec0d4a59c39502537185644381f9c769a58c2a602b"
+    },
+    "programmatic-seo": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/programmatic-seo/SKILL.md",
+      "computedHash": "a1b12161b99e75c16625b71223dd64783e8a462a8d31decb7b214180061f8c94"
+    },
+    "qa-testing": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/qa-testing/SKILL.md",
+      "computedHash": "32f8c6076b9e96ed724cea1d526033c0596965ec8290d59ca5ea50b3b829ec15"
+    },
+    "quiz-and-assessment-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/quiz-and-assessment-design/SKILL.md",
+      "computedHash": "d1f4aa8c1c1fe2e2b5a45486cfc46b6a7babfc9a98824150b6b2febf8973a790"
+    },
+    "roadmap-planning": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/roadmap-planning/SKILL.md",
+      "computedHash": "61ab184dd6c19caa176aaaf10e318bb7e6e8e1208103333a0857b2819b9d2fb5"
+    },
+    "scheduler-and-booking-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/scheduler-and-booking-design/SKILL.md",
+      "computedHash": "d06d89bf58aeda0309c64e0485983230d3ef8e3daa66177a92fb43bd38ad351c"
+    },
+    "security-baseline": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-baseline/SKILL.md",
+      "computedHash": "76ed47779530a97cd89aeadbc080e2c58a61c445cd6f17f9fb54e3fdbdfe9dd6"
+    },
+    "seo-aeo-geo": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-aeo-geo/SKILL.md",
+      "computedHash": "0f8e5a1f069cf48f294cbbd741bc8a43210cfcc5c8018110485ffa2922816ba8"
+    },
+    "seo-audit-orchestration": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit-orchestration/SKILL.md",
+      "computedHash": "2006c9ebdb48a5b523c418550111d70834fe697f6dad60a6adfc4ca918e564c3"
+    },
+    "seo-backlink-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-backlink-audit/SKILL.md",
+      "computedHash": "67194d9108f6c470ae4065a6954e7d00d0270e7e8be38f6ae5363453f9938b8b"
+    },
+    "seo-competitor": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-competitor/SKILL.md",
+      "computedHash": "a2c02db5fc51e2fa465a6567824bc253190eb71c3243d91bae1726c0cebca99a"
+    },
+    "seo-content-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-content-audit/SKILL.md",
+      "computedHash": "335f328cf2ec4820b2491d2696912b958fb6603a93589950c794c92081abd5b3"
+    },
+    "seo-content-gap-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-content-gap-audit/SKILL.md",
+      "computedHash": "76346b591d86910cb4297d28d58abbfc279245418a4cec18a2aa3ee9d730f20a"
+    },
+    "seo-keyword": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-keyword/SKILL.md",
+      "computedHash": "e8916c297617e1244521dcb6613d5a5aa3ffd791c65e6814dc79e1cf65a8e1e2"
+    },
+    "seo-keyword-gap-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-keyword-gap-audit/SKILL.md",
+      "computedHash": "6543645444bd47c74ed8e7a9b80f9a89a7a3230172274b2c1325b1a2aeec7bb2"
+    },
+    "seo-offpage": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-offpage/SKILL.md",
+      "computedHash": "d59d394ef7cdc805275fb3c6309884e08fe5c8fba0efdad32f49fadbb6d7a568"
+    },
+    "seo-onpage": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-onpage/SKILL.md",
+      "computedHash": "712af02c91cde205a827a2a4b5fbad0d24d2e7d18a30aa85919e02cab94bf328"
+    },
+    "seo-rank-tracking": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-rank-tracking/SKILL.md",
+      "computedHash": "ebc5f05dea255aac2edcc0a72dc44cab837d28d922cfe1475c078dc7fbcdd44f"
+    },
+    "seo-site-health-audit": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-site-health-audit/SKILL.md",
+      "computedHash": "283af7bcfca34d9abbf0315bae5fbd8b03b4c1e8e6c48b4d8d53b3373feeb2d9"
+    },
+    "seo-technical": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-technical/SKILL.md",
+      "computedHash": "24a27d0a5ba663a3f0e66422437391c3b4375029fdecc90fa4d8a721c1db63d3"
+    },
+    "seo-traffic-diagnosis": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-traffic-diagnosis/SKILL.md",
+      "computedHash": "41ea75df933f537702477cd7c8c4cfa39ed3e58131be8074d0c223329cc133bf"
+    },
+    "skill-creation-walkthrough": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/skill-creation-walkthrough/SKILL.md",
+      "computedHash": "9956a09696991a88cd50817d970e0e1f3e860c70ef0fcc3430ac29de3b371240"
+    },
+    "sprint-operations": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sprint-operations/SKILL.md",
+      "computedHash": "4aeea74d9a73a24d2efc7dca5981612890d4e64e21436a26112717c9e05ab0f0"
+    },
+    "stakeholder-communication": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/stakeholder-communication/SKILL.md",
+      "computedHash": "bb7b2fb04d6a1c7acea0e7d176cafaba1b2e89cc0931f3f7c5a6d5f6739e276e"
+    },
+    "team-onboarding-playbook": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/team-onboarding-playbook/SKILL.md",
+      "computedHash": "c8e7473c8d644bc677372f61e17ed8f2ae7b9c369f7641a588bdb1c64785f33b"
+    },
+    "ticket-authoring": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ticket-authoring/SKILL.md",
+      "computedHash": "f10615baa76ac2e0911b54bb4c0d3007462678208bde93238a9d2023d7cfde72"
+    },
+    "upgrade-flow-design": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/upgrade-flow-design/SKILL.md",
+      "computedHash": "72d44a27dead7902be6f1322075d6f7108b3edf487cd2eb1fdce1578081332a0"
+    },
+    "usability-testing": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/usability-testing/SKILL.md",
+      "computedHash": "aaa33a43c649a93de90cb8c50787b3a105ed43f89fdd17354b31407b2f4882fb"
+    },
+    "user-feedback-aggregation": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/user-feedback-aggregation/SKILL.md",
+      "computedHash": "1b650b1d5cccb60f7a5d42f75853faaf0ae8eecf1f74fd83b3766d7eaba8de87"
+    },
+    "ux-research": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ux-research/SKILL.md",
+      "computedHash": "feb0d8d763c05c0197034dca1c25b08cd307e2a1faa1b0eac7b2b6f1fc02b5f3"
+    },
+    "vendor-evaluation": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vendor-evaluation/SKILL.md",
+      "computedHash": "3e09b2f846a5b445a24ce7ef96e4e4f35a832118534de7297838aa11b9d2e42e"
+    },
+    "vertical-site-conventions": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vertical-site-conventions/SKILL.md",
+      "computedHash": "00863f157d58425ebb066092bd669427060f3f72722d98a75915398ac614fb0e"
     }
   }
 }
