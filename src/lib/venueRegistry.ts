@@ -84,7 +84,7 @@ export function resolveVenueSlug(search: string): { slug: string; requested: str
  * The tenant shown when the URL carries no `?v=` slug.
  * This is the demo venue, NOT the first customer (Jaleo).
  */
-export const DEFAULT_VENUE_SLUG = 'jaleo';
+export const DEFAULT_VENUE_SLUG = 'demo';
 
 export function defaultVenueSlug(): string {
   return ITEMS.some((v) => v.slug === DEFAULT_VENUE_SLUG) ? DEFAULT_VENUE_SLUG : (ITEMS[0]?.slug || 'demo');
