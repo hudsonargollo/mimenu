@@ -37,13 +37,19 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
   try {
     const ttsRes = await fetch(`${serviceUrl}/tts`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'mimenu-voice-agent/1.0',
+      },
       body: JSON.stringify({ text: truncatedText, lang }),
+      // Cloudflare edge needs explicit redirect handling
+      redirect: 'follow',
     });
 
     if (!ttsRes.ok) {
-      const errText = await ttsRes.text();
+      const errText = await ttsRes.text().catch(() => '');
       const errSlice = errText.length > 300 ? errText.slice(0, 300) : errText;
+      console.error(`TTS service error: ${ttsRes.status} ${ttsRes.statusText}`, { body: errSlice });
       return new Response(JSON.stringify({ success: false, error: `TTS service error (${ttsRes.status}): ${errSlice}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
     }
 
