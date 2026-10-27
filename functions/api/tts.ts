@@ -10,7 +10,7 @@ interface Env {
 }
 
 // Fallback URL — the nginx reverse proxy for the edge-tts container
-const TTS_SERVICE_URL = 'https://tts.clubemkt.digital';
+const TTS_SERVICE_URL = 'https://tts.clubemkt.online';
 
 export const onRequestPost = async (context: { request: Request; env: Env }) => {
   const { request, env } = context;
