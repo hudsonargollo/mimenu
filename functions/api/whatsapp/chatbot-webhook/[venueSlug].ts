@@ -24,7 +24,10 @@ interface Env {
     get(key: string): Promise<string | null>;
     put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
     delete(key: string): Promise<void>;
+    list(options?: { prefix?: string; limit?: number }): Promise<{ keys: { name: string; expiration?: number }[] }>;
   };
+  // Per-venue Evolution API overrides (also available from VITE_ env vars)
+  EVOLUTION_API_KEY?: string;
 }
 
 // --- Inline chatbot engine (shared types + logic) ---
@@ -577,7 +580,7 @@ function handleCors(request: Request): Response | null {
   return null;
 }
 
-export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
+export async function onRequest(context: { request: Request; env: Env; params: { venueSlug?: string } }): Promise<Response> {
   const { request, env } = context;
 
   // CORS
@@ -603,8 +606,8 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
       });
     }
 
-    // Extract venue slug (multi-tenant routing)
-    const venueSlug = getVenueSlug(request) || body.venue_slug || body.data?.venue_slug;
+    // Extract venue slug (multi-tenant routing via Pages Function dynamic route param)
+    const venueSlug = context.params?.venueSlug || getVenueSlug(request) || body.venue_slug || body.data?.venue_slug;
     if (!venueSlug) {
       return new Response(JSON.stringify({ error: 'Venue slug required' }), {
         status: 400,
