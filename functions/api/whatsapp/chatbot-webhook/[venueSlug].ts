@@ -391,7 +391,7 @@ function processMessage(
   if (/^(hola|hello|hi|hey|ol[aá]|hallo|guten tag|buenos dias|buenas tardes|buenas noches|oi|ola|bonjour)\b/i.test(n)) {
     return response(c.welcome(venue.name, name));
   }
-  if (/\b(reserv|booking|book a table|mesa|tisch|reservierung|reserve)\b/.test(n)) {
+  if (/\b(reserv[a-z]*|booking|book a table|mesa|tisch|reservierung|reserve|table|tables)\b/.test(n)) {
     return response(c.reserve(name), { step: 'party_size',
       idempotencyKey: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID()
         : `chatbot-${Date.now()}-${Math.random().toString(36).slice(2, 10)}` });

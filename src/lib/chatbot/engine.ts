@@ -395,7 +395,7 @@ export function processChatbotMessage(
     return response(c.welcome(venue.name, name));
   }
 
-  if (/\b(reserv|booking|book a table|mesa|tisch|reservierung|reserve)\b/.test(n)) {
+  if (/\b(reserv[a-z]*|booking|book a table|mesa|tisch|reservierung|reserve|table|tables)\b/.test(n)) {
     return response(c.reserve(name), { step: 'party_size', idempotencyKey: globalThis.crypto?.randomUUID?.() ?? `chatbot-${Date.now()}-${Math.random().toString(36).slice(2)}` });
   }
 
