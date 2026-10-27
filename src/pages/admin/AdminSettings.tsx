@@ -40,6 +40,15 @@ const AdminSettings = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [printerStatus, setPrinterStatus] = useState<any>(null);
 
+  // WhatsApp/Evolution API settings
+  const [whatsappEnabled, setWhatsappEnabled] = useState(true);
+  const [evolutionApiUrl, setEvolutionApiUrl] = useState('http://wppapi.clubemkt.digital');
+  const [evolutionApiKey, setEvolutionApiKey] = useState('');
+  const [evolutionInstanceName, setEvolutionInstanceName] = useState('cocooo');
+  const [whatsappSenderPhone, setWhatsappSenderPhone] = useState('');
+  const [isVerifyingWhatsapp, setIsVerifyingWhatsapp] = useState(false);
+  const [whatsappVerified, setWhatsappVerified] = useState(false);
+
   useEffect(() => {
     document.title = 'Configurações | MiMenu';
     const saved = printServerClient.getServerUrl();
@@ -155,6 +164,7 @@ const AdminSettings = () => {
             <TabsTrigger value="general" className="rounded-lg text-xs font-semibold">Geral & Tenant</TabsTrigger>
             <TabsTrigger value="printer" className="rounded-lg text-xs font-semibold">Impressão Térmica</TabsTrigger>
             <TabsTrigger value="notifications" className="rounded-lg text-xs font-semibold">WhatsApp & Copilot</TabsTrigger>
+            <TabsTrigger value="whatsapp" className="rounded-lg text-xs font-semibold">WhatsApp AI Concierge</TabsTrigger>
             <TabsTrigger value="database" className="rounded-lg text-xs font-semibold">KV Storage & Backup</TabsTrigger>
           </TabsList>
 
@@ -326,6 +336,149 @@ const AdminSettings = () => {
                     </div>
                     <Badge className="bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">Ativo</Badge>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* WhatsApp AI Concierge Settings */}
+          <TabsContent value="whatsapp" className="space-y-4 pt-2">
+            <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-emerald-500" />
+                  <span>WhatsApp AI Concierge (Evolution API)</span>
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Conecte o agente de IA do cardápio ao WhatsApp via Evolution API. O concierge responde por conta do restaurante de forma personalizada.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Enable/Disable toggle */}
+                <div className="flex items-center justify-between p-3 bg-muted/20 border border-border/60 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                      <Smartphone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">AI Concierge no WhatsApp</p>
+                      <p className="text-[10px] text-muted-foreground">Ativa a integração do chatbot com o WhatsApp via Evolution API</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    onClick={() => setWhatsappEnabled(!whatsappEnabled)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${whatsappEnabled ? 'bg-emerald-500' : 'bg-muted'}`}
+                  >
+                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${whatsappEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+
+                {/* Evolution API Configuration */}
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="evolutionApiUrl" className="text-xs font-semibold">Evolution API URL</Label>
+                    <Input
+                      id="evolutionApiUrl"
+                      type="url"
+                      value={evolutionApiUrl}
+                      onChange={(e) => setEvolutionApiUrl(e.target.value)}
+                      placeholder="https://evolution-api.seudominio.com"
+                      className="text-xs h-10 rounded-xl"
+                      disabled={!whatsappEnabled}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="evolutionApiKey" className="text-xs font-semibold">API Key</Label>
+                    <Input
+                      id="evolutionApiKey"
+                      type="password"
+                      value={evolutionApiKey}
+                      onChange={(e) => setEvolutionApiKey(e.target.value)}
+                      placeholder="Chave de API do Evolution"
+                      className="text-xs h-10 rounded-xl"
+                      disabled={!whatsappEnabled}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="evolutionInstanceName" className="text-xs font-semibold">Instance Name</Label>
+                    <Input
+                      id="evolutionInstanceName"
+                      type="text"
+                      value={evolutionInstanceName}
+                      onChange={(e) => setEvolutionInstanceName(e.target.value)}
+                      placeholder="Nome da instância WhatsApp"
+                      className="text-xs h-10 rounded-xl"
+                      disabled={!whatsappEnabled}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsappSenderPhone" className="text-xs font-semibold">Telefone do Restaurante (para respostas)</Label>
+                    <Input
+                      id="whatsappSenderPhone"
+                      type="tel"
+                      value={whatsappSenderPhone}
+                      onChange={(e) => setWhatsappSenderPhone(e.target.value)}
+                      placeholder="+591 XXX XXX XXX"
+                      className="text-xs h-10 rounded-xl"
+                      disabled={!whatsappEnabled}
+                    />
+                  </div>
+                </div>
+
+                {/* Webhook URL */}
+                <div className="p-3 bg-muted/30 border border-border/60 rounded-xl space-y-2">
+                  <p className="text-xs font-semibold text-foreground">Webhook URL (Evolution API)</p>
+                  <p className="text-[11px] font-mono text-muted-foreground break-all">
+                    {window.location.origin}/api/whatsapp/chatbot-webhook/{venue.slug || 'slug-do-venue'}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    Configure este URL no painel da Evolution API como webhook de mensagens.
+                  </p>
+                </div>
+
+                {/* Save & Verify */}
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={async () => {
+                      if (!whatsappEnabled) {
+                        toast.success('Configurações do WhatsApp salvas localmente');
+                        return;
+                      }
+                      setIsVerifyingWhatsapp(true);
+                      await new Promise(r => setTimeout(r, 500));
+                      try {
+                        const res = await fetch(`${window.location.origin}/api/whatsapp/send-message`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ number: whatsappSenderPhone, text: 'Teste de conexão MiMenu ✓' })
+                        });
+                        if (res.ok) {
+                          setWhatsappVerified(true);
+                          toast.success('WhatsApp conectado com sucesso!');
+                        } else {
+                          toast.error('Falha na conexão WhatsApp');
+                        }
+                      } catch {
+                        toast.error('Erro ao conectar WhatsApp');
+                      } finally {
+                        setIsVerifyingWhatsapp(false);
+                      }
+                    }}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold h-10 px-5 rounded-xl flex items-center gap-2"
+                  >
+                    {isVerifyingWhatsapp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    <span>Salvar e Verificar Conexão</span>
+                  </Button>
+                  {whatsappVerified && (
+                    <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold h-10 px-3 rounded-xl">
+                      Verificado
+                    </Badge>
+                  )}
                 </div>
               </CardContent>
             </Card>

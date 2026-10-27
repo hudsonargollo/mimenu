@@ -49,6 +49,23 @@ export interface Venue {
     fee: number;
     estimated_mins: string;
   }[];
+  /** WhatsApp / Evolution API integration per venue. */
+  whatsapp_integration?: {
+    /** Use WhatsApp for the AI concierge (true) or only for orders (false). */
+    ai_concierge_enabled: boolean;
+    /** Evolution API base URL (e.g. https://evolution-api.yourdomain.com). */
+    evolution_api_url: string;
+    /** Evolution API key for authentication. */
+    evolution_api_key: string;
+    /** WhatsApp instance / device name registered in Evolution API. */
+    instance_name: string;
+    /** Sender phone number in international format (e.g. +5917XXXXXXXXX). */
+    sender_phone: string;
+    /** Webhook URL configured in Evolution API (filled on verification). */
+    webhook_url?: string;
+    /** Whether the webhook has been verified for this venue. */
+    webhook_verified?: boolean;
+  };
 }
 
 export interface MenuItemReview {

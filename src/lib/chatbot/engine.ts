@@ -77,7 +77,9 @@ type Copy = {
   welcome: (venue: string, name?: string) => string; menu: (items: string) => string; noItems: string;
   hours: (value: string) => string; location: (value: string) => string;
   vegetarian: (items: string) => string; vegan: (items: string) => string; glutenFree: (items: string) => string;
+  bestSellers: (items: string) => string; featured: (items: string) => string;
   reserve: (name?: string) => string; askParty: string; askDate: string; askTime: string; askName: string; askPhone: string;
+  reservationTip: (partySize: number) => string;
   confirm: (d: Required<Pick<ReservationDraft,'name'|'partySize'|'date'|'time'>>, name?: string) => string;
   submitted: (d: Required<Pick<ReservationDraft,'name'|'partySize'|'date'|'time'>>, name?: string) => string;
   alreadySubmitted: string;
@@ -98,10 +100,13 @@ const COPY: Record<ChatbotLang, Copy> = {
     vegetarian: i => `Opciones vegetarianas:\n${i || 'Consulta con el restaurante sobre opciones disponibles.'}`,
     vegan: i => `Opciones veganas:\n${i || 'Consulta con el restaurante sobre opciones disponibles.'}`,
     glutenFree: i => `Opciones sin gluten:\n${i || 'Consulta con el restaurante sobre opciones disponibles.'}`,
+    bestSellers: i => i ? `Nuestros platos más pedidos:\n${i}` : 'Aún no hay platos destacados.',
+    featured: i => i ? `Platos recomendados:\n${i}` : 'Aún no hay recomendaciones.',
     reserve: n => n
       ? `Claro ${n}, ¿para cuántas personas es la reserva?`
       : '¿Para cuántas personas?',
     askParty: 'Indícame cuántas personas (de 1 a 50).',
+    reservationTip: (party) => party >= 2 ? `Perfecto para grupos. Tenemos mesas para ${party} personas.` : '',
     askDate: '¿Para qué fecha? Indícala, por favor.',
     askTime: '¿A qué hora?',
     askName: '¿A nombre de quién?',
@@ -128,10 +133,13 @@ const COPY: Record<ChatbotLang, Copy> = {
     vegetarian: i => `Vegetarian options:\n${i || 'Please ask the restaurant about available options.'}`,
     vegan: i => `Vegan options:\n${i || 'Please ask the restaurant about available options.'}`,
     glutenFree: i => `Gluten-free options:\n${i || 'Please ask the restaurant about available options.'}`,
+    bestSellers: i => i ? `Our most popular dishes:\n${i}` : 'No featured dishes available yet.',
+    featured: i => i ? `Staff recommendations:\n${i}` : 'No recommendations available yet.',
     reserve: n => n
       ? `Sure ${n}, how many guests for the reservation?`
       : 'How many guests?',
     askParty: 'Please give the number of guests (1–50).',
+    reservationTip: (party) => party >= 2 ? `Great for groups. We have tables for ${party} guests.` : '',
     askDate: 'What date would you like?',
     askTime: 'What time?',
     askName: 'What name should I use?',
@@ -158,10 +166,13 @@ const COPY: Record<ChatbotLang, Copy> = {
     vegetarian: i => `Opções vegetarianas:\n${i || 'Consulte o restaurante sobre as opções disponíveis.'}`,
     vegan: i => `Opções veganas:\n${i || 'Consulte o restaurante sobre as opções disponíveis.'}`,
     glutenFree: i => `Opções sem glúten:\n${i || 'Consulte o restaurante sobre as opções disponíveis.'}`,
+    bestSellers: i => i ? `Nossos pratos mais pedidos:\n${i}` : 'Ainda não há pratos destacados.',
+    featured: i => i ? `Recomendações da casa:\n${i}` : 'Ainda não há recomendações.',
     reserve: n => n
       ? `Claro ${n}, para quantas pessoas é a reserva?`
       : 'Para quantas pessoas?',
     askParty: 'Informe o número de pessoas (1 a 50).',
+    reservationTip: (party) => party >= 2 ? `Perfeito para grupos. Temos mesas para ${party} pessoas.` : '',
     askDate: 'Para qual data?',
     askTime: 'A que horas?',
     askName: 'Em nome de quem?',
@@ -188,10 +199,13 @@ const COPY: Record<ChatbotLang, Copy> = {
     vegetarian: i => `Vegetarische Gerichte:\n${i || 'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`,
     vegan: i => `Vegane Gerichte:\n${i || 'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`,
     glutenFree: i => `Glutenfreie Gerichte:\n${i || 'Bitte fragen Sie das Restaurant nach verfügbaren Optionen.'}`,
+    bestSellers: i => i ? `Unsere beliebtesten Gerichte:\n${i}` : 'Noch keine beliebten Gerichte verfügbar.',
+    featured: i => i ? `Empfohlene Gerichte:\n${i}` : 'Keine Empfehlungen verfügbar.',
     reserve: n => n
       ? `Klar ${n}, für wie viele Personen?`
       : 'Für wie viele Personen?',
     askParty: 'Bitte nennen Sie die Personenzahl (1 bis 50).',
+    reservationTip: (party) => party >= 2 ? `Perfekt für Gruppen. Wir haben Tische für ${party} Personen.` : '',
     askDate: 'Für welches Datum?',
     askTime: 'Um wie viel Uhr?',
     askName: 'Auf welchen Namen?',
@@ -333,7 +347,8 @@ export function processChatbotMessage(
     const m = n.match(/\d{1,2}/); const count = m ? Number(m[0]) : 0;
     if (count < 1 || count > 50) return response(c.askParty, draft);
     draft = { ...draft, partySize: count, step: 'date' };
-    return response(c.askDate, draft);
+    const tip = (c.reservationTip && c.reservationTip(count)) || '';
+    return response(tip ? `${c.askDate} ${tip}` : c.askDate, draft);
   }
   if (draft.step === 'date') {
     if (text.length > 80) return response(c.askDate, draft);
@@ -402,16 +417,32 @@ export function processChatbotMessage(
     return response(c.glutenFree(formatItems(menuItems.filter(i => i.isGlutenFree))));
   }
 
-  if (/\b(menu|carta|cardapio|speisekarte|platos|comida|recommend|recomend|empfehl|sugest|show|ver|the|por favor)\b/.test(n)) {
+  if (/\b(menu|carta|cardapio|speisekarte|platos|comida|recommend|recomend|empfehl|sugest|show|ver|the|por favor|best|seller|popular|destacad|recomendado)\b/.test(n)) {
     let results = menuItems;
-    const q = n.replace(/\b(menu|carta|cardapio|speisekarte|platos|comida|recommend|recomend|empfehl|sugest|show|ver|the|el|la|please|por favor)\b/g, '').trim();
+    let extra = '';
+    const q = n.replace(/\b(menu|carta|cardapio|speisekarte|platos|comida|recommend|recomend|empfehl|sugest|show|ver|the|el|la|please|por favor|best|seller|popular|destacad|recomendado)\b/g, '').trim();
     if (q && q.length > 1) {
       results = menuItems.filter(i => normalize(`${i.name} ${i.description || ''} ${i.category || ''}`).includes(q));
     } else if (menuItems.some(i => i.isFeatured)) {
       results = menuItems.filter(i => i.isFeatured);
     }
     const items = formatItems(results);
-    return response(items ? c.menu(items) : c.noItems);
+    // Add best-sellers suggestion alongside the menu
+    const sellers = menuItems.filter(i => i.isFeatured).slice(0, 5);
+    if (sellers.length > 0 && !q) {
+      extra = '\n\n' + c.bestSellers(formatItems(sellers));
+    }
+    return response(items ? c.menu(items) + extra : c.noItems);
+  }
+
+  // Proactive best-sellers / recommendations suggestion
+  if (/\b(best|seller|popular|destacad|trending|recommendation|mejores|recomiendas|recomendar|recomendado|recomendados|lo mas pedido|mas pedido)\b/.test(n)) {
+    const sellers = menuItems.filter(i => i.isFeatured).slice(0, 8);
+    if (sellers.length > 0) {
+      return response(c.bestSellers(formatItems(sellers)));
+    }
+    const recs = menuItems.slice(0, 8);
+    return response(c.featured(formatItems(recs)));
   }
 
   return response(c.fallback(name));
