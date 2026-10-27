@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,14 +23,15 @@ import {
   ArrowRight,
   Eye
 } from 'lucide-react';
-import { 
-  SAMPLE_MENU_PHOTOS, 
-  parseMenuTranscript, 
-  convertIngestionToMimenuCategories, 
+import {
+  SAMPLE_MENU_PHOTOS,
+  parseMenuTranscript,
+  convertIngestionToMimenuCategories,
   ExtractedRawItem,
   IngestionResult,
   findMatchingFoodImage
 } from '@/lib/menuVisionIngester';
+import { ocrImage, type OcrLanguage, disposeOcrWorker } from '@/lib/menuIntake';
 import { useMimenu } from '@/lib/mimenuContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -45,7 +46,12 @@ const AdminMenuIngester: React.FC = () => {
   const [parsedData, setParsedData] = useState<IngestionResult | null>(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
   const [mergeMode, setMergeMode] = useState<'replace' | 'merge'>('replace');
-  const [rawTextInput, setRawTextInput] = useState<string>('');
+const [rawTextInput, setRawTextInput] = useState<string>('');
+
+// Dispose OCR worker on unmount to free WASM memory
+useEffect(() => {
+  return () => disposeOcrWorker();
+}, []);
 
   // Handle file or camera upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,34 +79,30 @@ const AdminMenuIngester: React.FC = () => {
     setAnalysisStep('Escaneando imagen y aplicando OCR con detección de layout...');
 
     try {
-      await new Promise((r) => setTimeout(r, 600));
-      setAnalysisStep('Identificando secciones, platos y extrayendo precios en Bs....');
-
       let rawText = '';
       if (isPresetText) {
         rawText = inputData;
       } else {
-        await new Promise((r) => setTimeout(r, 700));
-        setAnalysisStep('Clasificando alérgenos y asociando fotografías de alta resolución...');
-        const matchingPreset = SAMPLE_MENU_PHOTOS.find(p => 
-          sourceName.toLowerCase().includes(p.id) || 
-          sourceName.toLowerCase().includes('pizza') || 
-          sourceName.toLowerCase().includes('cafe')
-        ) || SAMPLE_MENU_PHOTOS[0];
-        
-        rawText = matchingPreset.sampleText;
+        await new Promise((r) => setTimeout(r, 300));
+        setAnalysisStep('Extrayendo texto con OCR (Tesseract, español, PSM 6)...');
+
+        rawText = await ocrImage(inputData, 'spa', (p) => {
+          setAnalysisStep(`Extrayendo texto con OCR... ${Math.round(p * 100)}%`);
+        });
+        setRawTextInput(rawText);
       }
 
+      setAnalysisStep('Identificando secciones, platos y extrayendo precios en Bs....');
       await new Promise((r) => setTimeout(r, 500));
+
       const parsed = parseMenuTranscript(rawText, venue.currency || 'Bs.');
       setParsedData(parsed);
-      setRawTextInput(rawText);
       setIsAnalyzing(false);
       toast.success(`¡Menú ingerido! ${parsed.totalItems} platos en ${parsed.categories.length} categorías listos.`);
     } catch (err) {
       console.error(err);
       setIsAnalyzing(false);
-      toast.error('Error al procesar el menú.');
+      toast.error('Error al procesar el menú.', { description: err instanceof Error ? err.message : undefined });
     }
   };
 
