@@ -1,20 +1,5 @@
 [
  {
-  "id": "venue-demo",
-  "slug": "demo",
-  "name": "Moe's Taberna",
-  "tagline": "La Taberna Más Prendida de Santa Cruz",
-  "description": "Salchipapas legendarias con queso derretido, nachos monstruosos, fernet bien cruceño, chopp helado escarchado y el mejor ambiente nocturno de Santa Cruz de la Sierra.",
-  "city": "Santa Cruz de la Sierra",
-  "address": "Av. San Martín #450, Barrio Equipetrol, Santa Cruz, Bolivia",
-  "phone": "+591 78012345",
-  "whatsapp": "https://wa.me/59178012345",
-  "currency": "Bs.",
-  "primary_color": "#D97706",
-  "background_theme": "dark",
-  "is_active": true
- },
- {
   "id": "venue-jaleo",
   "slug": "jaleo",
   "name": "Jaleo",

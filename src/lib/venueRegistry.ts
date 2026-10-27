@@ -69,7 +69,7 @@ export function resolveVenueSlug(search: string): { slug: string; requested: str
     const found = !!findVenueBySlug(requested);
     return { slug: found ? requested : DEFAULT_VENUE_SLUG, requested, found };
   }
-  // Path-based slug: /jaleo, /demo, /whateverrestaurant
+  // Path-based slug: /jaleo, /whateverrestaurant
   if (typeof window !== 'undefined') {
     const seg = window.location.pathname.split('/').filter(Boolean)[0];
     if (seg && !isReservedSlug(seg)) {
@@ -82,12 +82,16 @@ export function resolveVenueSlug(search: string): { slug: string; requested: str
 
 /**
  * The tenant shown when the URL carries no `?v=` slug.
- * This is the demo venue, NOT the first customer (Jaleo).
+ * This is the first active venue in the registry.
  */
-export const DEFAULT_VENUE_SLUG = 'demo';
+export const DEFAULT_VENUE_SLUG = findDefaultSlug();
+
+function findDefaultSlug(): string {
+  return ITEMS.some((v) => v.slug === ITEMS[0]?.slug) ? (ITEMS[0]?.slug || '') : '';
+}
 
 export function defaultVenueSlug(): string {
-  return ITEMS.some((v) => v.slug === DEFAULT_VENUE_SLUG) ? DEFAULT_VENUE_SLUG : (ITEMS[0]?.slug || 'demo');
+  return DEFAULT_VENUE_SLUG;
 }
 
 /** Find the default venue entry, or null when the registry has none. */
