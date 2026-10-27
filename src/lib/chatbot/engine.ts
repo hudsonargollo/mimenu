@@ -221,7 +221,7 @@ export function detectLanguage(text: string, fallback: ChatbotLang = 'es'): Chat
 
   for (const token of tokens) {
     if (/\b(hola|buenos|buenas|tardes|carta|menu|platos|comida|reservar|gracias|horario|donde|ubicacion|perro|cerveza|churro|tapas|paella|jamon|serrano|queso|ajo|pollo|arroz|tacos|enchilada|guacamole|mole|pavo|chiles|ceviche|tiradito|carpaccio)\b/.test(token)) scores.es += 1;
-    if (/\b(hello|hi|hey|good|menu|booking|book|table|hours|thanks|how|what|where|address|location|opening|reservation|appetizer|entree|dessert|drink|beer|wine|beef|chicken|fish|salad|bread|cheese|tomato|onion)\b/.test(token)) scores.en += 1;
+    if (/\b(hello|hi|hey|good|great|menu|booking|book|table|tables|hours|thanks|thank|please|how|what|where|address|location|opening|reservation|appetizer|entree|dessert|drink|drinks|beer|wine|beef|chicken|fish|salad|bread|cheese|tomato|onion|already|said|yes|no|name|i|my|me|am|is|the|a|an|to|for|and|or|on|want|need|like|can|could|would|should|tell|show|give|please|thank|thanks)\b/.test(token)) scores.en += 1;
     if (/\b(ola|oi|com|para|obrigado|cardapio|prato|bebida|cerveja|carne|peixe|salada|arroz|feijao|frango|porco|vinho|caipirinha|brigadeiro|coxinha|pao|queijo|presunto|batata|mandioca|farofa|feijoada|cuscuz|tapioca|acai|doce|sobremesa|bebidas|suco|cafe)\b/.test(token)) scores.pt += 1;
     if (/\b(hallo|guten|tag|bitte|danke|speisekarte|gericht|essen|trinken|reservierung|tisch|personen|zeit|wo|adresse|offnungszeiten|kellner|bestellung|bezahlen|ruckzahlung)\b/.test(token)) scores.de += 1;
   }
@@ -245,7 +245,7 @@ const negative = /^(no|nao|nein|cancel|cancelar|abbrechen|stop|nie|nicht|never|p
 function extractName(text: string): string | null {
   const n = normalize(text);
   const patterns = [
-    /\b(me llamo|my name is|chamo|ich bin|je m'appelle|me chamo)\s+(.+)/i,
+    /\b(?:me llamo|my name is|chamo|ich bin|je m'appelle|me chamo|yo soy|i am)\s+(.+)/i,
     /^(?:hola|h|hi)\s+(.+)/i,
     /^soy\s+(.+)/i,
   ];
@@ -264,7 +264,7 @@ function extractName(text: string): string | null {
  */
 function isLikelyName(text: string): boolean {
   const n = normalize(text);
-  if (/\b(menu|carta|cardapio|horario|hours|ubicacion|address|location|reservar|reserve|booking|mesa|table|vegano|vegan|vegetariano|vegetarian|gluten|price|precio|quanto|costo|cost)\b/.test(n)) return false;
+  if (/\b(menu|carta|cardapio|horario|hours|ubicacion|address|location|reservar|reserve|booking|mesa|table|vegano|vegan|vegetariano|vegetarian|gluten|price|precio|quanto|costo|cost|hola|hello|hi|hey|ola|hallo|bonjour|buenos|buenas|tardes|noches|oi)\b/.test(n)) return false;
   const words = n.split(/\s+/).filter(w => w.length > 0);
   if (words.length >= 1 && words.length <= 4) {
     if (/^(que|como|cual|donde|por|para|cuantos|cuantas|cuando|porque|por que|me|puedes|puedo|quiero|sirve|tiene|hay|existe)\b/.test(n)) return false;
@@ -305,7 +305,7 @@ export function processChatbotMessage(
     }
     // If the user's message looks like a bare name, treat it as one
     if (isLikelyName(text)) {
-      const guessedName = text.split(/\s+/).filter(w => w.length > 1 && !/[0-9]/.test(w)).slice(0, 3).join(' ');
+      const guessedName = text.split(/\s+/).filter(w => w.length > 1 && !/[0-9]/.test(w) && !/^(yo|soy|my|name|is|ya|i|am|already|said|that|this|the|a|an|to|for|and|or|on)$/i.test(w)).slice(0, 3).join(' ');
       if (guessedName.length >= 2) {
         nextState = { ...state, language: lang, userName: guessedName };
         return response(c.welcome(venue.name, guessedName), draft, {});

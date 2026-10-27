@@ -132,11 +132,10 @@ export function MenuChatbot() {
   // Initialize SpeechRecognition once
   useEffect(() => {
     if (!SpeechRecognitionCtor) return;
-    const rec = new SpeechRecognitionCtor({
-      lang: LANG_TAGS[lang],
-      continuous: false,
-      interimResults: false
-    });
+    const rec = new SpeechRecognitionCtor();
+    rec.lang = LANG_TAGS[lang];
+    rec.continuous = false;
+    rec.interimResults = false;
     rec.addEventListener('result', (ev: unknown) => {
       const e = ev as { results: { transcript: string }[][] };
       const transcript = e.results?.[0]?.[0]?.transcript || '';
@@ -349,6 +348,17 @@ export function MenuChatbot() {
                 }`}
               >
                 {message.text}
+                {message.role === 'assistant' && message.inputMode === 'voice' && (
+                  <button
+                    type="button"
+                    onClick={replayLastVoice}
+                    aria-label="Repetir mensaje"
+                    className="mt-1 rounded-md p-1 hover:bg-muted-foreground/10 text-muted-foreground"
+                    title="Repetir voz"
+                  >
+                    <Volume2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             ))}
             {busy && <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" />…</div>}
@@ -387,13 +397,6 @@ export function MenuChatbot() {
               <Send className="h-4 w-4" />
             </button>
           </form>
-          {!SpeechRecognitionCtor && (
-            <div className="px-3 pb-2 text-[10px] text-muted-foreground flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" />
-              <span>Voice input not supported in this browser. Try Chrome or Edge.</span>
-            </div>
-          )}
-          <audio ref={audioRef} onPlay={() => {}} />
         </section>
       )}
       <button
