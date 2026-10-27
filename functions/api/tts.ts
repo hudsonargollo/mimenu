@@ -1,16 +1,16 @@
 // POST /api/tts
-// Text-to-Speech via OpenAI TTS API — produces natural neural voice audio.
+// Text-to-Speech via the local VPS edge-tts service (Microsoft Edge neural voices).
+// Produces natural-sounding speech with no API key and no GPU required.
 //
-// Body JSON: { text: string, lang: ChatbotLang }
-// Returns: audio/mpeg MP3 stream that the client can play directly via <audio>.
-//
-// Keeps the OpenAI API key server-side (never exposed to client).
+// Body JSON: { text: string, lang?: ChatbotLang }
+// Returns: audio/mpeg MP3 stream that the client plays via <audio>.
 
 interface Env {
-  OPENAI_API_KEY?: string;
+  TTS_SERVICE_URL?: string;
 }
 
-const OPENAI_TTS_URL = 'https://api.openai.com/v1/audio/speech';
+// Fallback URL — the nginx reverse proxy for the edge-tts container
+const TTS_SERVICE_URL = 'https://tts.clubemkt.digital';
 
 export const onRequestPost = async (context: { request: Request; env: Env }) => {
   const { request, env } = context;
@@ -29,32 +29,22 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
     return new Response(JSON.stringify({ success: false, error: 'text is required.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
-  if (!env.OPENAI_API_KEY) {
-    return new Response(JSON.stringify({ success: false, error: 'TTS service not configured.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-  }
+  const serviceUrl = env.TTS_SERVICE_URL || TTS_SERVICE_URL;
 
-  // Limit text length — OpenAI TTS max is 40k chars but we truncate for safety
-  const truncatedText = text.length > 5000 ? text.slice(0, 5000) + '...' : text;
+  // Limit text length — edge-tts handles long text but we cap for latency
+  const truncatedText = text.length > 500 ? text.slice(0, 500) + '...' : text;
 
   try {
-    const ttsRes = await fetch(OPENAI_TTS_URL, {
+    const ttsRes = await fetch(`${serviceUrl}/tts`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'tts-1',
-        input: truncatedText,
-        voice: 'nova', // Most natural-sounding across ES/EN/PT/DE
-        response_format: 'mp3',
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: truncatedText, lang }),
     });
 
     if (!ttsRes.ok) {
       const errText = await ttsRes.text();
       const errSlice = errText.length > 300 ? errText.slice(0, 300) : errText;
-      return new Response(JSON.stringify({ success: false, error: `OpenAI TTS error (${ttsRes.status}): ${errSlice}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ success: false, error: `TTS service error (${ttsRes.status}): ${errSlice}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
     }
 
     // Stream the MP3 directly to the client
