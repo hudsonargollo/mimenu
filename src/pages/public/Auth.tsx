@@ -62,11 +62,7 @@ const Auth = () => {
     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-[var(--auth-bg)] relative overflow-hidden">
       {/* Mesh gradient background */}
       <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(at 10% 10%, rgba(238,230,255,0.7) 0px, transparent 50%), radial-gradient(at 90% 15%, rgba(255,237,229,0.8) 0px, transparent 50%), radial-gradient(at 50% 85%, rgba(243,238,255,0.6) 0px, transparent 50%), radial-gradient(at 90% 90%, rgba(255,241,235,0.7) 0px, transparent 50%)",
-        }}
+        className="pointer-events-none absolute inset-0 gradient-mesh"
       />
 
       <main className="w-full max-w-[400px] flex flex-col items-center mx-auto py-6 relative z-10">

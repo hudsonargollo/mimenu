@@ -101,7 +101,7 @@ const Index = () => {
   }, [emblaApi]);
 
   return (
-    <div className="min-h-screen bg-gradient-ocean md:bg-gradient-acai">
+    <div className="min-h-screen gradient-mesh">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-16 text-center text-white">

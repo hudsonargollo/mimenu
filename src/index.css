@@ -83,6 +83,17 @@
     --auth-security-bg: 35 92% 96%;         /* #FFF3EC */
     --auth-security-border: 35 90% 87%;     /* #FFE2D1 */
     --auth-security-accent: 19 100% 56%;    /* #FF5E1E */
+
+    /* Shared brand/gradient tokens derived from auth mesh */
+    --brand-mesh-violet: 238 230 255;       /* rgba(238,230,255,...) */
+    --brand-mesh-orange: 255 237 229;       /* rgba(255,237,229,...) */
+    --brand-mesh-lavender: 243 238 255;     /* rgba(243,238,255,...) */
+    --brand-mesh-peach: 255 241 235;        /* rgba(255,241,235,...) */
+    --brand-gradient-mesh: radial-gradient(at 10% 10%, rgb(var(--brand-mesh-violet) / 0.7) 0px, transparent 50%), radial-gradient(at 90% 15%, rgb(var(--brand-mesh-orange) / 0.8) 0px, transparent 50%), radial-gradient(at 50% 85%, rgb(var(--brand-mesh-lavender) / 0.6) 0px, transparent 50%), radial-gradient(at 90% 90%, rgb(var(--brand-mesh-peach) / 0.7) 0px, transparent 50%);
+
+    /* Page surface tokens */
+    --surface-dark: 222 47% 11%;
+    --surface-dark-border: 222 47% 20%;
     
     /* === Shadows: subtle, earth-toned === */
     --shadow-xs: 0 1px 2px 0 hsla(135, 30%, 18%, 0.04);
@@ -136,6 +147,9 @@
     --border: 30 10% 22%;
     --input: 30 15% 22%;
     --ring: 22 92% 58%;
+
+    --surface-dark: 222 47% 9%;
+    --surface-dark-border: 222 47% 14%;
   }
 
   /* === Base typography === */
@@ -326,6 +340,9 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+  .gradient-mesh {
+    background: var(--brand-gradient-mesh);
   }
 
   /* Glass morphism (auth page defaults extended) */

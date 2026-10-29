@@ -131,7 +131,7 @@ const Menu: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-6 py-8 w-full flex-1">
         {/* Venue Welcome Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-slate-900 dark:bg-slate-950 text-white p-6 md:p-8 mb-8 border border-slate-800 shadow-sm">
+        <div className="relative overflow-hidden rounded-2xl bg-[hsl(var(--surface-dark))] text-white p-6 md:p-8 mb-8 border border-[hsl(var(--surface-dark-border))] shadow-sm">
           <div className="relative z-10 max-w-2xl space-y-2">
             <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-amber-400">
               <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
@@ -281,7 +281,7 @@ const Menu: React.FC = () => {
           <button
             onClick={() => setIsCartDrawerOpen(true)}
             aria-label="Ver pedido y confirmar"
-            className="w-full bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between border border-slate-800 hover:bg-slate-850 active:scale-98 transition-transform"
+            className="w-full bg-[hsl(var(--surface-dark))] text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between border border-[hsl(var(--surface-dark-border))] hover:bg-[hsl(var(--surface-dark))] active:scale-98 transition-transform"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs tabular-nums">
