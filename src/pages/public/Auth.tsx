@@ -25,6 +25,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [entered, setEntered] = useState(false);
 
+  // Animation sequence: loader first, then text appears
   useEffect(() => {
     const id = setTimeout(() => setEntered(true), 1400);
     return () => clearTimeout(id);
@@ -58,7 +59,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-[#F8FAFC] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-[var(--auth-bg)] relative overflow-hidden">
       {/* Mesh gradient background */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -76,31 +77,36 @@ const Auth = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* Logo container - icon centered, text animates in */}
           <motion.div
             className="relative flex items-center justify-center"
             initial={{ width: 96, height: 96 }}
             animate={entered ? { width: 56, height: 56 } : { width: 96, height: 96 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
           >
-            {/* Spinning ring loader (fades out once entered) */}
+            {/* Brand mark with gentle idle float */}
             <motion.div
-              className="absolute inset-0 rounded-full border-2 border-[#3F127A]/20"
-              style={{ borderTopColor: "#FF5E1E" }}
-              animate={entered ? { opacity: 0, rotate: 360 } : { opacity: 1, rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1.1, ease: "linear", opacity: { duration: 0.4 } }}
-            />
-            <motion.img
-              src="/mimenu.svg"
-              alt="MiMenu"
-              className="w-full h-full"
-              initial={{ scale: 0.6, opacity: 0.4, rotate: -8 }}
-              animate={
+              className="relative flex items-center justify-center"
+              animate={entered ? { y: [0, -4, 0] } : { y: 0 }}
+              transition={
                 entered
-                  ? { scale: 1, opacity: 1, rotate: 0 }
-                  : { scale: 0.85, opacity: 0.7, rotate: 0 }
+                  ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }
+                  : { duration: 0 }
               }
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-            />
+            >
+              <motion.img
+                src="/mimenu.svg"
+                alt="MiMenu"
+                className="w-full h-full"
+                initial={{ scale: 0.6, opacity: 0.4, rotate: -8 }}
+                animate={
+                  entered
+                    ? { scale: 1, opacity: 1, rotate: 0 }
+                    : { scale: 0.85, opacity: 0.7, rotate: 0 }
+                }
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              />
+            </motion.div>
           </motion.div>
           <motion.div
             className="flex items-center text-3xl font-extrabold tracking-tight select-none"
@@ -108,14 +114,14 @@ const Auth = () => {
             animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -8 }}
             transition={{ duration: 0.5, delay: 0.9 }}
           >
-            <span className="text-[#3F127A]">Mi</span>
-            <span className="text-[#FF5E1E]">Menu</span>
+            <span className="text-[hsl(var(--brand-violet))]">Mi</span>
+            <span className="text-[hsl(var(--brand-orange))]">Menu</span>
           </motion.div>
         </motion.header>
 
         {/* Card scene entrance */}
         <motion.section
-          className="w-full bg-white/95 backdrop-blur-sm rounded-[32px] p-6 sm:p-8 shadow-[0_20px_45px_-10px_rgba(79,70,229,0.08),0_10px_20px_-5px_rgba(0,0,0,0.04)] border border-slate-100/80 flex flex-col"
+          className="w-full bg-[hsl(var(--auth-card-bg)/95)] backdrop-blur-sm rounded-[32px] p-6 sm:p-8 shadow-[0_20px_45px_-10px_rgba(79,70,229,0.08),0_10px_20px_-5px_rgba(0,0,0,0.04)] border border-[hsl(var(--auth-card-border)/80)] flex flex-col"
           initial={{ opacity: 0, y: 40, scale: 0.96 }}
           animate={
             entered
@@ -131,7 +137,7 @@ const Auth = () => {
             animate={entered ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
             transition={{ duration: 0.5, delay: 0.85 }}
           >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF3EC] border border-[#FFE2D1] text-[#FF5E1E] mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[hsl(var(--auth-security-bg))] border border-[hsl(var(--auth-security-border))] text-[hsl(var(--auth-security-accent))] mb-3">
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="text-[11px] font-bold tracking-wider uppercase">Acceso Restringido</span>
             </div>
@@ -164,7 +170,7 @@ const Auth = () => {
                   required
                   maxLength={255}
                   autoComplete="username"
-                  className="w-full bg-[#F6F8FA] hover:bg-[#F1F4F8] focus:bg-white text-slate-800 text-[15px] pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200/90 focus:border-[#3F127A] focus:ring-4 focus:ring-purple-100 transition-all outline-none h-auto"
+                  className="w-full bg-[hsl(var(--auth-input-bg))] hover:bg-[hsl(var(--auth-input-border))] focus:bg-white text-slate-800 text-[15px] pl-11 pr-4 py-3.5 rounded-2xl border border-[hsl(var(--auth-input-border)/90)] focus:border-[hsl(var(--brand-violet))] focus:ring-4 focus:ring-purple-100 transition-all outline-none h-auto"
                 />
               </div>
             </motion.div>
@@ -191,7 +197,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  className="w-full bg-[#F6F8FA] hover:bg-[#F1F4F8] focus:bg-white text-slate-800 text-[15px] pl-11 pr-11 py-3.5 rounded-2xl border border-slate-200/90 focus:border-[#3F127A] focus:ring-4 focus:ring-purple-100 transition-all outline-none font-mono h-auto"
+                  className="w-full bg-[hsl(var(--auth-input-bg))] hover:bg-[hsl(var(--auth-input-border))] focus:bg-white text-slate-800 text-[15px] pl-11 pr-11 py-3.5 rounded-2xl border border-[hsl(var(--auth-input-border)/90)] focus:border-[hsl(var(--brand-violet))] focus:ring-4 focus:ring-purple-100 transition-all outline-none font-mono h-auto"
                 />
                 <button
                   type="button"
@@ -214,7 +220,7 @@ const Auth = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-slate-900 hover:bg-black active:bg-slate-800 text-white font-bold tracking-wider py-4 px-6 rounded-2xl shadow-sm hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.25)] transition-all duration-200 text-[14px] uppercase active:scale-[0.98] select-none flex items-center justify-center gap-2 h-auto"
+                className="w-full bg-[hsl(var(--brand-violet))] hover:bg-[hsl(var(--brand-violet)_/90)] text-white font-bold tracking-wider py-4 px-6 rounded-2xl shadow-sm hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.25)] transition-all duration-200 text-[14px] uppercase active:scale-[0.98] select-none flex items-center justify-center gap-2 h-auto"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -230,7 +236,7 @@ const Auth = () => {
 
           {/* Footer */}
           <motion.footer
-            className="mt-7 pt-5 border-t border-slate-100 flex flex-col items-center text-center"
+            className="mt-7 pt-5 border-t border-[hsl(var(--auth-card-border)/80)] flex flex-col items-center text-center"
             initial={{ opacity: 0 }}
             animate={entered ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5, delay: 1.36 }}

@@ -66,6 +66,24 @@
     --radius-full: 9999px;     /* pill */
     --radius-btn:  0.875rem;   /* 14px — restful --radius-btn */
 
+    /* === Brand palette: violet/orange on slate === */
+    --brand-violet: 263 74% 27%;           /* #3F127A - primary */
+    --brand-violet-foreground: 0 0% 100%;
+    --brand-orange: 19 100% 56%;          /* #FF5E1E - accent */
+    --brand-orange-foreground: 0 0% 100%;
+    --brand-slate: 210 40% 98%;            /* #F8FAFC - background */
+    --brand-slate-foreground: 222 47% 11%; /* #0F172A - foreground */
+    
+    /* Auth page specific tokens */
+    --auth-bg: 210 40% 98%;                 /* #F8FAFC */
+    --auth-card-bg: 0 0% 100%;
+    --auth-card-border: 140 20% 85%;
+    --auth-input-bg: 210 10% 96%;           /* #F6F8FA */
+    --auth-input-border: 210 15% 90%;       /* #F1F4F8 */
+    --auth-security-bg: 35 92% 96%;         /* #FFF3EC */
+    --auth-security-border: 35 90% 87%;     /* #FFE2D1 */
+    --auth-security-accent: 19 100% 56%;    /* #FF5E1E */
+    
     /* === Shadows: subtle, earth-toned === */
     --shadow-xs: 0 1px 2px 0 hsla(135, 30%, 18%, 0.04);
     --shadow-sm: 0 1px 3px 0 hsla(135, 30%, 18%, 0.06), 0 1px 2px -1px hsla(135, 30%, 18%, 0.06);
