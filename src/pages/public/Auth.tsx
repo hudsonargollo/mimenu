@@ -64,11 +64,8 @@ const Auth = () => {
       <main className="w-full max-w-[400px] flex flex-col items-center mx-auto py-6 relative z-10">
         {/* Brand header */}
         <header className="flex items-center gap-3 mb-8">
-          <div className="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center p-2.5 border border-white/60">
-            <svg aria-hidden="true" className="w-full h-full" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 34V18C12 15.2386 14.2386 13 17 13C19.7614 13 22 15.2386 22 18V28C22 30.7614 24.2386 33 27 33C29.7614 33 32 30.7614 32 28V14" stroke="#3F127A" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
-              <circle cx="37" cy="18" fill="#FF5E1E" r="4.5" />
-            </svg>
+          <div className="w-14 h-14 flex items-center justify-center">
+            <img src="/mimenu.svg" alt="MiMenu" className="w-full h-full" />
           </div>
           <div className="flex items-center text-3xl font-extrabold tracking-tight select-none">
             <span className="text-[#3F127A]">Mi</span>
