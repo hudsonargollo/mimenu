@@ -310,12 +310,17 @@
     color: transparent;
   }
 
-  /* Glass morphism */
+  /* Glass morphism (auth page defaults extended) */
   .glass {
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+  .glass:hover {
+    background: rgba(255, 255, 255, 0.78);
+    transform: translateY(-1px);
   }
   .glass-dark {
     background: rgba(0, 0, 0, 0.35);
