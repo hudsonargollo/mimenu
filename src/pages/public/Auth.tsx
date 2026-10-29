@@ -6,20 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { useLang } from "@/i18n/LanguageProvider";
-
-const authSchema = z.object({
-  email: z.string().trim().email({ message: "Email inválido" }).max(255),
-  name: z.string().trim().min(2, { message: "El nombre debe tener al menos 2 caracteres" }).max(100),
-  role: z.enum(["admin", "waiter", "kitchen", "cashier"]).default("admin"),
-});
 
 const Auth = () => {
   const navigate = useNavigate();
   const { login, redirectToRolePage } = useAuth();
-  const { lang, setLang, t } = useLang();
+  const { t } = useLang();
 
   useEffect(() => {
     document.title = t.nav.admin + " | MiMenu";
@@ -58,109 +51,131 @@ const Auth = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden text-foreground"
-      style={{ background: 'oklch(0.96 0.04 290)', fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif' }}
-    >
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[820px] rounded-full blur-[140px]" style={{ background: 'rgba(168,139,255,0.35)' }} />
-        <div className="absolute bottom-0 right-0 h-[360px] w-[640px] rounded-full blur-[160px]" style={{ background: 'rgba(255,182,217,0.3)' }} />
-      </div>
+    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-[#F8FAFC] relative overflow-hidden">
+      {/* Mesh gradient background */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(at 10% 10%, rgba(238,230,255,0.7) 0px, transparent 50%), radial-gradient(at 90% 15%, rgba(255,237,229,0.8) 0px, transparent 50%), radial-gradient(at 50% 85%, rgba(243,238,255,0.6) 0px, transparent 50%), radial-gradient(at 90% 90%, rgba(255,241,235,0.7) 0px, transparent 50%)",
+        }}
+      />
 
-      <div className="w-full max-w-md relative z-10 px-4">
-        {/* Brand */}
-        <div className="flex items-center justify-center mb-6">
-          <div className="flex items-center gap-3">
-            <div className="h-16 w-16 rounded-2xl bg-card flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden border border-border">
-              <img src="/mimenu.svg" alt="MiMenu" className="h-11 w-11" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-2xl tracking-tight text-foreground">Mi<span className="text-accent">Menu</span></span>
-            </div>
+      <main className="w-full max-w-[400px] flex flex-col items-center mx-auto py-6 relative z-10">
+        {/* Brand header */}
+        <header className="flex items-center gap-3 mb-8">
+          <div className="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center p-2.5 border border-white/60">
+            <svg aria-hidden="true" className="w-full h-full" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 34V18C12 15.2386 14.2386 13 17 13C19.7614 13 22 15.2386 22 18V28C22 30.7614 24.2386 33 27 33C29.7614 33 32 30.7614 32 28V14" stroke="#3F127A" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
+              <circle cx="37" cy="18" fill="#FF5E1E" r="4.5" />
+            </svg>
           </div>
-        </div>
+          <div className="flex items-center text-3xl font-extrabold tracking-tight select-none">
+            <span className="text-[#3F127A]">Mi</span>
+            <span className="text-[#FF5E1E]">Menu</span>
+          </div>
+        </header>
 
-        {/* Auth card */}
-        <div className="rounded-3xl border border-white/40 bg-white/55 p-6 sm:p-8 shadow-2xl shadow-black/20 backdrop-blur-xl" style={{ fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif' }}>
-            <div className="mb-6 space-y-1">
-              <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-                <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
-                Acceso restringido
+        {/* Card */}
+        <section className="w-full bg-white/95 backdrop-blur-sm rounded-[32px] p-6 sm:p-8 shadow-[0_20px_45px_-10px_rgba(79,70,229,0.08),0_10px_20px_-5px_rgba(0,0,0,0.04)] border border-slate-100/80 flex flex-col">
+          {/* Security notice header */}
+          <div className="mb-7">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF3EC] border border-[#FFE2D1] text-[#FF5E1E] mb-3">
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="text-[11px] font-bold tracking-wider uppercase">Acceso Restringido</span>
+            </div>
+            <h1 className="text-slate-500 font-medium text-[15px] leading-relaxed">
+              Ingresa con tu usuario y contraseña.
+            </h1>
+          </div>
+
+          <form onSubmit={handleAuth} className="space-y-5">
+            {/* Field 1: Usuario / Email */}
+            <div className="space-y-1.5">
+              <Label htmlFor="identifier" className="block text-sm font-bold text-slate-800 tracking-tight">
+                Usuario / Email
+              </Label>
+              <div className="relative rounded-2xl transition duration-150">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <Input
+                  id="identifier"
+                  type="text"
+                  placeholder="su email"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                  maxLength={255}
+                  autoComplete="username"
+                  className="w-full bg-[#F6F8FA] hover:bg-[#F1F4F8] focus:bg-white text-slate-800 text-[15px] pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200/90 focus:border-[#3F127A] focus:ring-4 focus:ring-purple-100 transition-all outline-none h-auto"
+                />
               </div>
-              <p className="text-sm text-muted-foreground">Ingresa con tu usuario y contraseña.</p>
             </div>
 
-            <form onSubmit={handleAuth} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="identifier" className="text-sm font-semibold text-foreground">
-                  Usuario / Email
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="identifier"
-                    type="text"
-                    placeholder="su email"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    required
-                    maxLength={255}
-                    className="h-11 text-sm pl-10 border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary/80 focus:ring-1 focus:ring-primary/60"
-                  />
+            {/* Field 2: Contraseña */}
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="block text-sm font-bold text-slate-800 tracking-tight">
+                Contraseña
+              </Label>
+              <div className="relative rounded-2xl transition duration-150">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Lock className="w-5 h-5" />
                 </div>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="w-full bg-[#F6F8FA] hover:bg-[#F1F4F8] focus:bg-white text-slate-800 text-[15px] pl-11 pr-11 py-3.5 rounded-2xl border border-slate-200/90 focus:border-[#3F127A] focus:ring-4 focus:ring-purple-100 transition-all outline-none font-mono h-auto"
+                />
+                <button
+                  type="button"
+                  aria-label="Alternar visibilidad de contraseña"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
-                  Contraseña
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="h-11 text-sm pl-10 pr-10 border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary/80 focus:ring-1 focus:ring-primary/60"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
+            {/* Submit Button CTA */}
+            <div className="pt-2">
               <Button
                 type="submit"
-                className="w-full h-11 text-sm font-bold glass text-foreground uppercase tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99]"
                 disabled={loading}
+                className="w-full bg-slate-900 hover:bg-black active:bg-slate-800 text-white font-bold tracking-wider py-4 px-6 rounded-2xl shadow-sm hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.25)] transition-all duration-200 text-[14px] uppercase active:scale-[0.98] select-none flex items-center justify-center gap-2 h-auto"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-foreground" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                     <span>Autenticando...</span>
                   </span>
                 ) : (
                   "Acceder al Panel"
                 )}
               </Button>
-            </form>
-
-            <div className="mt-6 pt-5 border-t border-border">
-              <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-                Acceso restringido, monitoreado y auditable.
-              </p>
             </div>
-        </div>
-      </div>
+          </form>
+
+          {/* Footer */}
+          <footer className="mt-7 pt-5 border-t border-slate-100 flex flex-col items-center text-center">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 font-normal leading-normal">
+              <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span>Acceso restringido, monitoreado y auditable.</span>
+            </div>
+          </footer>
+        </section>
+
+        {/* Safe area padding for mobile home indicator */}
+        <div aria-hidden="true" className="h-6 w-full" />
+      </main>
     </div>
-    );
+  );
 };
 
 export default Auth;
