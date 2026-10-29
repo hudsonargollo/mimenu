@@ -156,7 +156,14 @@
     color: hsl(var(--muted-foreground));
   }
 
-  /* Rounded buttons — restful.com style */
+  /* Rounded buttons — restful.com style + glassmorphism */
+  button, [role="button"] {
+    border-radius: var(--radius-btn);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
   button, input, textarea, select {
     border-radius: var(--radius);
   }

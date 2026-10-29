@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, Sparkles, Star, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Sparkles, Star, X, Flame } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
 import { MenuItemDetail } from '@/types/mimenu';
@@ -14,7 +14,7 @@ interface FlipDeckProps {
   onAddToCart: (item: MenuItemDetail) => void;
 }
 
-const CARD_STYLE = { width: 'min(300px, 100%)', height: 'min(460px, 68vh)' } as const;
+const CARD_STYLE = { width: 'min(420px, 92vw)', height: 'min(620px, 78vh)' } as const;
 
 const getRating = (id: string) => {
   let hash = 0;
@@ -154,19 +154,13 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
   const [deckIndex, setDeckIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-
-  const tabs = useMemo(() => ['all', ...categories.map((c: any) => c.id)], [categories]);
 
   const deckItems = useMemo(() => {
-    let base = items;
-    if (activeTab !== 'all') base = base.filter((i) => i.category_id === activeTab);
+    let base = [...items].sort((a, b) => (b.hotness_score ?? 0) - (a.hotness_score ?? 0));
     const q = searchQuery.trim().toLowerCase();
     if (q) base = base.filter((i) => (pickLocalText(i.name_i18n, currentLang) || i.name).toLowerCase().includes(q));
     return base;
-  }, [items, activeTab, searchQuery, currentLang]);
-
-  useEffect(() => { setDeckIndex(0); setDirection(0); }, [activeTab]);
+  }, [items, searchQuery, currentLang]);
 
   useEffect(() => {
     if (searchQuery || deckItems.length <= 1) return;
@@ -181,7 +175,7 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-6">
-      <div className="relative w-full max-w-[430px] flex items-center justify-center">
+      <div className="relative w-full max-w-[520px] flex items-center justify-center">
         {deckItems.length > 1 && (
           <button onClick={goPrev} className="absolute left-0 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-stone-900/70 border border-amber-500/30 text-amber-300 hover:bg-stone-800/90 transition" aria-label="Anterior">
             <ChevronLeft className="w-4 h-4" />
@@ -214,7 +208,7 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
       </div>
 
       {/* Search */}
-      <div className="relative w-full max-w-[430px] mt-4">
+      <div className="relative w-full max-w-[520px] mt-4">
         <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
         <input
           type="text"
@@ -230,21 +224,6 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
         )}
       </div>
 
-      {/* Category tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 pt-2 w-full max-w-[430px]">
-        {tabs.map((tabId) => {
-          const label = tabId === 'all' ? 'Todos' : (categoryNameById[tabId] ?? tabId);
-          return (
-            <button
-              key={tabId}
-              onClick={() => setActiveTab(tabId)}
-              className={`text-[11px] px-3 py-1.5 rounded-full whitespace-nowrap transition-all duration-300 shrink-0 min-h-[30px] ${activeTab === tabId ? 'bg-amber-700 text-amber-50 font-medium shadow-sm scale-105' : 'text-stone-300 hover:text-stone-100 bg-stone-900/60'}`}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
 
       {deckItems.length > 0 && (
         <div className="mt-3 flex flex-col items-center gap-1.5">

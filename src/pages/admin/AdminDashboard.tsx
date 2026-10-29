@@ -32,7 +32,10 @@ const AdminDashboard: React.FC = () => {
   }, [venue.name]);
 
   const allItems = categories.flatMap(c => c.items);
-  const hotItems = [...allItems].sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h).slice(0, 5);
+  const hasRealOrders = orders.length > 0;
+  const hotItems = hasRealOrders
+    ? [...allItems].filter((i) => (i.velocity_24h ?? 0) > 0).sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h).slice(0, 5)
+    : [];
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
   const activeOrdersCount = orders.filter(o => o.status === 'pending' || o.status === 'preparing').length;
@@ -54,11 +57,11 @@ const AdminDashboard: React.FC = () => {
               Command Center: {venue.name}
             </h1>
             <span className="text-xs bg-amber-500/15 text-amber-500 font-bold px-2 py-0.5 rounded border border-amber-500/30">
-              Santa Cruz de la Sierra
+              {venue.city}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Plataforma Multi-Tenant MIMENU • Gestión de pedidos, ofertas inteligentes y social proof.
+            Gestión de pedidos, ofertas inteligentes y social proof.
           </p>
         </div>
 
@@ -110,7 +113,7 @@ const AdminDashboard: React.FC = () => {
               {venue.currency} {totalRevenue.toFixed(0)}
             </div>
             <p className="text-[11px] text-emerald-500 font-semibold mt-1 flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +18.4% vs semana pasada
+              <TrendingUp className="w-3 h-3" /> Basado en datos reales
             </p>
           </CardContent>
         </Card>
@@ -161,7 +164,7 @@ const AdminDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-black text-red-500">
-              {venue.currency} {totalOfferRevenue}
+              {venue.currency} {totalOfferRevenue.toFixed(0)}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
               {totalOfferConversions} combos convertidos
@@ -192,7 +195,13 @@ const AdminDashboard: React.FC = () => {
             </CardHeader>
 
             <CardContent className="p-0 divide-y divide-border/60">
-              {hotItems.map((item, idx) => (
+              {hotItems.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground text-sm">
+                  <Flame className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                  No hay datos de ventas aún. Los platos aparecerán aquí una vez que comience el flujo de pedidos.
+                </div>
+              ) : (
+                hotItems.map((item, idx) => (
                 <div key={item.id} className="p-4 flex items-center justify-between gap-3 hover:bg-muted/20 transition-colors">
                   <div className="flex items-center gap-3">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black ${
@@ -220,7 +229,8 @@ const AdminDashboard: React.FC = () => {
                     </span>
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
@@ -244,7 +254,13 @@ const AdminDashboard: React.FC = () => {
             </CardHeader>
 
             <CardContent className="p-4 space-y-3">
-              {activeOffers.map((offer) => {
+              {activeOffers.length === 0 ? (
+                <div className="text-center text-muted-foreground text-sm py-6">
+                  <Sparkles className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                  No hay ofertas activas. Crea tu primera Oferta Inteligente desde aquí.
+                </div>
+              ) : (
+              activeOffers.map((offer) => {
                 const convRate = offer.analytics.impressions > 0 
                   ? ((offer.analytics.conversions / offer.analytics.impressions) * 100).toFixed(1)
                   : '0.0';
@@ -281,7 +297,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                 );
-              })}
+              }))}
             </CardContent>
           </Card>
 
@@ -302,7 +318,7 @@ const AdminDashboard: React.FC = () => {
               </Button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              {tables.length} mesas configuradas con hashes únicos en Equipetrol SCZ.
+              {tables.length} mesas configuradas con hashes únicos.
             </p>
           </Card>
         </div>

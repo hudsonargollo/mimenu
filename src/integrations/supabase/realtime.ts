@@ -230,7 +230,11 @@ export class RealtimeService {
       );
     }
 
-    channel.subscribe((status) => {
+    channel.subscribe((status: any) => {
+      if (status === 'error' || status === 'closed' || status === 'timedout' || status === 'unsubscribed') {
+        console.warn(`Cashier orders subscription issue (status: ${status}). Working in offline mode.`);
+        return;
+      }
       console.log(`Cashier orders subscription status: ${status}`);
     });
 

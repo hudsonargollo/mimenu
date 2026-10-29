@@ -100,6 +100,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   if (showBoth && orderStatus && paymentStatus) {
     const orderConfig = orderStatusConfig[orderStatus];
     const paymentConfig = paymentStatusConfig[paymentStatus];
+    if (!orderConfig || !paymentConfig) return null;
 
     return (
       <div className={cn("flex gap-1.5", compact ? "flex-col" : "flex-row flex-wrap")}>
@@ -118,6 +119,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   // If showing only payment status
   if (paymentStatus) {
     const config = paymentStatusConfig[paymentStatus];
+    if (!config) return null;
     return (
       <div className={cn(baseClasses, config.className)}>
         {compact ? config.label.substring(0, 10) : config.label}
@@ -128,6 +130,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   // If showing only order status
   if (orderStatus) {
     const config = orderStatusConfig[orderStatus];
+    if (!config) return null;
     return (
       <div className={cn(baseClasses, config.className)}>
         {compact ? config.label.substring(0, 10) : config.label}

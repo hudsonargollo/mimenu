@@ -98,7 +98,7 @@ export class MimenuAIEngine {
     // Reviews sentiment extraction
     const approvedReviews = this.reviews.filter(r => r.status === 'approved');
     const positiveKeywords: Record<string, number> = {};
-    const keywords = ['crocante', 'cheddar', 'salsa de ajo', 'helado', 'tarro', 'gigante', 'guacamole', 'fernet'];
+    const keywords = ['crocante', 'cheddar', 'salsa de ajo', 'helado', 'tarra', 'gigante', 'guacamole', 'fernet', 'tapas', 'parrilla', 'paella', 'arroz', 'pasta'];
     
     approvedReviews.forEach(r => {
       const text = r.comment.toLowerCase();
@@ -122,9 +122,9 @@ export class MimenuAIEngine {
       {
         id: 'ins-1',
         category: 'velocity',
-        title: `"${topItem?.name}" lidera las ventas en Santa Cruz`,
-        observation: `Tiene una velocidad de ${topItem?.velocity_24h} pedidos/día con un rating promedio de ${topItem?.average_rating} / 5.0. Los clientes valoran la porción abundante y el queso cheddar fundido.`,
-        actionRecommendation: `Combina "${topItem?.name}" en un combo de Smart Offer junto con bebidas de alto margen (Fernet o Chopp) para maximizar el ticket promedio.`,
+        title: `"${topItem?.name}" lidera las ventas`,
+        observation: `Tiene una velocidad de ${topItem?.velocity_24h} pedidos/día con un rating promedio de ${topItem?.average_rating} / 5.0.`,
+        actionRecommendation: `Combina "${topItem?.name}" en un combo de Smart Offer para maximizar el ticket promedio.`,
         confidenceScore: 96,
         generatedAt: new Date().toISOString(),
       },
@@ -143,18 +143,9 @@ export class MimenuAIEngine {
       },
       {
         id: 'ins-3',
-        category: 'timing',
-        title: 'Ventana de alta demanda nocturna: 21:00 a 00:30',
-        observation: `El 68% de las ventas de salchipapas y chopp artesanal se concentran en la franja de 21:00 a 00:30 en Equipetrol.`,
-        actionRecommendation: `Asegura stock reforzado de papas rústicas y barriles de chopp enfriados con 2 horas de anticipación.`,
-        confidenceScore: 89,
-        generatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'ins-4',
         category: 'reviews',
-        title: 'Palabras clave más elogiadas por clientes',
-        observation: `Los clientes destacan principalmente: ${topKeywords.slice(0, 3).join(', ') || 'salsa de ajo, queso cheddar, chopp helado'}.`,
+        title: `Palabras clave más elogiadas por clientes`,
+        observation: `Los clientes destacan principalmente: ${topKeywords.slice(0, 3).join(', ') || 'sabor, frescura, presentación'}.`,
         actionRecommendation: `Destaca estas características como badges o tags visibles en las fotos del menú digital.`,
         confidenceScore: 94,
         generatedAt: new Date().toISOString(),
@@ -165,16 +156,16 @@ export class MimenuAIEngine {
       totalInteractions: 48,
       lastLearnedAt: new Date().toISOString(),
       topPerformingCombos: [
-        'Salchipapa Monster + 2x Huari 620ml',
-        'Balde 5 Paceñas + Nachos Supremos',
-        '2x Fernet Branca Jarra 1L'
+        `${topItem?.name || 'platos destacados'} + Vino de la casa`,
+        `${topItem?.name || 'platos destacados'} + Ensalada Mediterránea`,
+        `${topItem?.name || 'platos destacados'} + Postre del día`
       ],
-      customerPraisedAttributes: topKeywords.length > 0 ? topKeywords : ['queso cheddar caliente', 'tarro escarchado', 'salsa de ajo'],
-      peakDemandWindow: '21:00 - 00:30',
+      customerPraisedAttributes: topKeywords.length > 0 ? topKeywords : ['sabor', 'frescura', 'presentación'],
+      peakDemandWindow: '19:00 - 23:00',
       learnedInsights: insights,
       customRules: [
-        'Priorizar cervezas bolivianas heladas (Huari y Paceña) en días calurosos.',
-        'Sugerir bajón de salchipapas después de las 23:30.'
+        `Promocionar "${topItem?.name || 'platos destacados'}" como plato principal en horas pico.`,
+        `Sugerir maridaje con vinos de la carta después de las 20:00.`
       ],
     };
 
@@ -193,27 +184,22 @@ export class MimenuAIEngine {
     const timestamp = new Date().toISOString();
 
     // 1. ADD MENU ITEM INTENT
-    if (lower.includes('agregar') || lower.includes('añadir') || lower.includes('crear plato') || lower.includes('nuevo item') || lower.includes('nueva cerveza')) {
-      let suggestedName = "Cerveza Artesanal IPA (500ml)";
-      let suggestedPrice = 28;
-      let suggestedCategory = "cat-cervezas";
-      let suggestedDesc = "Cerveza lupulada de cuerpo medio y aroma cítrico servida en tarro helado.";
+    if (lower.includes('agregar') || lower.includes('añadir') || lower.includes('crear plato') || lower.includes('nuevo item') || lower.includes('nuevo plato')) {
+      // Use the first item from the venue's menu as the default suggestion
+      const defaultItem = allItems.find(i => i.is_available) || allItems[0];
+      let suggestedName = defaultItem?.name || "Nuevo Plato";
+      let suggestedPrice = defaultItem?.price || 30;
+      let suggestedCategory = defaultItem?.category_id || "cat-tapas";
+      let suggestedDesc = "Preparado fresco con ingredientes seleccionados de la casa.";
 
-      if (lower.includes('salchipapa')) {
-        suggestedName = "Salchipapa BBQ Bacon Crispy";
-        suggestedPrice = 42;
-        suggestedCategory = "cat-salchipapas";
-        suggestedDesc = "Papas rústicas doradas, abundante salchicha alemana, salsa barbacoa y lluvia de tocino crocante.";
-      } else if (lower.includes('nachos')) {
-        suggestedName = "Nachos Triple Queso Fundido";
+      if (lower.includes('nuevo plato') || lower.includes('plato nuevo')) {
+        suggestedName = "Nuevo Plato del Día";
+        suggestedPrice = 45;
+        suggestedDesc = "Plato especial preparado con ingredientes de temporada.";
+      } else if (lower.includes('ensalada')) {
+        suggestedName = "Ensalada de Temporada";
         suggestedPrice = 38;
-        suggestedCategory = "cat-nachos";
-        suggestedDesc = "Totopos artesanales con mozzarella, cheddar y queso crema gratinado.";
-      } else if (lower.includes('trago') || lower.includes('cocktail') || lower.includes('fernet')) {
-        suggestedName = "Trago Especial Noche Cruceña";
-        suggestedPrice = 32;
-        suggestedCategory = "cat-tragos";
-        suggestedDesc = "Singani boliviano, ginger ale, zumo de maracuyá y hielo frappé.";
+        suggestedDesc = "Lechugas frescas con aderezo de la casa y toppings seleccionados.";
       }
 
       // Try extract price if user specified a number
@@ -225,7 +211,7 @@ export class MimenuAIEngine {
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `He preparado la propuesta para agregar **${suggestedName}** a la categoría correspondiente con precio de **${this.venue.currency} ${suggestedPrice}**. Puedes confirmar con un clic para publicarlo de inmediato en el menú digital de MiMenu Demo:`,
+        text: `He preparado la propuesta para agregar **${suggestedName}** a la categoría correspondiente con precio de **${this.venue.currency} ${suggestedPrice}**. Puedes confirmar con un clic para publicarlo de inmediato en el menú digital de ${this.venue.name}:`,
         timestamp,
         actions: [
           {
@@ -248,7 +234,7 @@ export class MimenuAIEngine {
 
     // 2. CHANGE/UPDATE PRICE INTENT
     if (lower.includes('precio') || lower.includes('subir') || lower.includes('bajar') || lower.includes('cambiar valor')) {
-      const matchedItem = allItems.find(i => lower.includes(i.name.toLowerCase()) || lower.includes('monster') || lower.includes('fernet') || lower.includes('chopp')) || allItems[0];
+      const matchedItem = allItems.find(i => lower.includes(i.name.toLowerCase())) || allItems[0];
       const priceMatch = prompt.match(/\b(\d+)\s*(?:bs|bolivianos)?\b/i);
       const newPrice = priceMatch ? parseInt(priceMatch[1], 10) : matchedItem.price + 3;
 
@@ -274,26 +260,30 @@ export class MimenuAIEngine {
 
     // 3. CREATE CYCLING OFFER INTENT
     if (lower.includes('oferta') || lower.includes('promo') || lower.includes('happy hour') || lower.includes('combo') || lower.includes('2x1')) {
+      // Use the venue's top item or a featured item for the offer suggestion
+      const featuredItem = allItems.find(i => i.is_featured || i.is_best_seller) || allItems[0];
+      const offerPrice = Math.round((featuredItem?.price || 50) * 0.85);
+
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `¡Excelente idea para activar el flujo de clientes! He configurado una nueva Oferta Inteligente programada para Happy Hour / Previa:`,
+        text: `¡Excelente idea! He configurado una nueva Oferta Inteligente basada en "${featuredItem?.name || 'tu plato destacado'}":`,
         timestamp,
         actions: [
           {
             id: `act-${Date.now()}`,
             type: 'CREATE_CYCLING_OFFER',
-            label: 'Publicar Promo "⚡ Jueves de Previa: 2x Chopp + Salchipapa"',
+            label: `Publicar Oferta "${featuredItem?.name || 'Plato'} (${this.venue.currency} ${offerPrice})`,
             payload: {
-              title: '⚡ JUEVES DE PREVIA: 2x Chopp Artesanal + Salchipapa Clásica',
-              subtitle: 'La combinación perfecta para arrancar el fin de semana',
-              description: '2 Chopp Artesanales 500ml helados en tarro + 1 Salchipapa Clásica Crujiente.',
-              badge: 'JUEVES 2x1',
-              original_price: 78,
-              discount_price: 58,
-              image_url: 'https://images.unsplash.com/photo-1608270191763-71827471249b?auto=format&fit=crop&w=800&q=80',
-              included_item_names: ['2x Chopp Artesanal 500ml', '1x Salchipapa Clásica'],
-              schedules: [{ day_of_week: 4, start_time: '18:30', end_time: '22:00' }],
+              title: `🔥 Oferta Especial: ${featuredItem?.name || 'Plato Destacado'}`,
+              subtitle: 'Precio reducido por tiempo limitado',
+              description: `${featuredItem?.description || 'Plato destacado de la carta'} Precio especial por tiempo limitado.`,
+              badge: '-15% HOY',
+              original_price: featuredItem?.price || 50,
+              discount_price: offerPrice,
+              image_url: featuredItem?.image_url || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+              included_item_names: [featuredItem?.name || 'Plato destacado'],
+              schedules: [{ day_of_week: -1, start_time: '12:00', end_time: '23:00' }],
             },
             status: 'pending',
           },
@@ -310,7 +300,7 @@ export class MimenuAIEngine {
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `📊 **Análisis de Satisfacción de Clientes en MiMenu Demo:**\n\n• **Calificación Promedio:** ⭐ ${avgRating} / 5.0 basada en ${this.reviews.length} opiniones.\n• **Platos más elogiados:** *Salchipapa Monster* (4.9 ⭐) y *Fernet Branca Jarra 1L* (4.9 ⭐).\n• **Palabras más repetidas:** "Cheddar caliente", "Tarro escarchado", "Porción gigante".\n• Hay **${pendingCount} reseñas pendientes** en la cola de moderación.`,
+        text: `📊 **Análisis de Satisfacción de Clientes en ${this.venue.name}:**\n\n• **Calificación Promedio:** ⭐ ${avgRating} / 5.0 basada en ${this.reviews.length} opiniones.\n• **Platos más elogiados:** *${topItem?.name || 'Nuestros platos'}* (${topItem?.average_rating || avgRating} ⭐).\n• **Palabras clave:** ${topKeywords.slice(0, 3).join(', ') || 'sabor, frescura, presentación'}.\n• Hay **${pendingCount} reseñas pendientes** en la cola de moderación.`,
         timestamp,
         dataInsights: {
           title: 'Resumen de Sentimiento de Clientes',
@@ -340,13 +330,13 @@ export class MimenuAIEngine {
       return {
         id: `msg-${Date.now()}`,
         sender: 'ai',
-        text: `📈 **Reporte de Business Intelligence en Tiempo Real:**\n\n1. **Ventas Totales Registradas:** ${this.venue.currency} ${totalRevenue.toFixed(2)}\n2. **Ítem con Mayor Demanda:** ${topSeller?.name} con ${topSeller?.velocity_24h} unidades pedidas en 24h.\n3. **Horario Pico:** 21:00 a 00:30 (concentra el 68% de las transacciones nocturnas).\n4. **Platos en Llamas (Score 5):** 4 productos activos alimentando el social proof en vivo.`,
+        text: `📈 **Reporte de Business Intelligence en Tiempo Real:**\n\n1. **Órdenes Registradas:** ${this.orders.length} pedidos.\n2. **Ingresos Totales:** ${this.venue.currency} ${totalRevenue.toFixed(2)}.\n3. **Ítem con Mayor Rotación:** ${topSeller?.name || 'N/A'} (${topSeller?.velocity_24h || 0} pedidos/24h).\n4. **Platos destacados (Score 5):** ${allItems.filter(i => i.hotness_score >= 4).length} productos activos.`,
         timestamp,
         dataInsights: {
           title: 'Métricas Clave del Turno',
           metrics: [
             { label: 'Ingresos Totales', value: `${this.venue.currency} ${totalRevenue}`, trend: '+18.4% vs semana previa' },
-            { label: 'Ticket Promedio', value: `${this.venue.currency} ${(totalRevenue / (this.orders.length || 1)).toFixed(0)}`, trend: 'Salchipapa + Chopp' },
+            { label: 'Ticket Promedio', value: `${this.venue.currency} ${(totalRevenue / (this.orders.length || 1)).toFixed(0)}`, trend: 'Basado en datos reales' },
             { label: 'Ítem #1', value: `${topSeller?.name.split(' ')[0]}`, trend: `${topSeller?.velocity_24h} vendidos hoy` },
           ],
         },
@@ -366,7 +356,7 @@ export class MimenuAIEngine {
     return {
       id: `msg-${Date.now()}`,
       sender: 'ai',
-      text: `Hola, soy el **Copiloto de Inteligencia de MIMENU** para **${this.venue.name}** en Santa Cruz de la Sierra.\n\nPuedo ayudarte a:\n• **Crear o modificar platos, salchipapas, nachos y tragos** directamente desde aquí.\n• **Ajustar precios en Bolivianos (Bs.)** y activar/pausar disponibilidad.\n• **Configurar Ofertas Inteligentes & Happy Hours** que rotan por horario.\n• **Analizar métricas de ventas, horarios pico y feedback de clientes**.\n\n*Prueba preguntando: "¿Cuáles son los platos más vendidos?" o "Agrega una nueva cerveza artesanal a 25 Bs" o "¿Qué dicen las reseñas sobre las salchipapas?".*`,
+      text: `Hola, soy el **Copiloto de Inteligencia de MIMENU** para **${this.venue.name}**.\n\nPuedo ayudarte a:\n• **Crear o modificar platos** directamente desde aquí, usando el menú actual de tu venue.\n• **Ajustar precios en Bolivianos (Bs.)** y activar/pausar disponibilidad.\n• **Configurar Ofertas Inteligentes & Happy Hours** que rotan por horario.\n• **Analizar métricas de ventas, horarios pico y feedback de clientes**.\n\n*Prueba preguntando: "¿Cuáles son los platos más vendidos?" o "Crea una oferta especial" o "Recalcular hotness".*`,
       timestamp,
     };
   }

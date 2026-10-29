@@ -20,22 +20,14 @@ export const AdminAnalytics: React.FC = () => {
   const { venue, categories, recalculateAllHotness } = useMimenu();
 
   const allItems = categories.flatMap(c => c.items);
-  const sortedByHotness = [...allItems].sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h);
+  const sortedByHotness = allItems.length > 0 && allItems.some(i => i.velocity_24h > 0)
+    ? [...allItems].sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h)
+    : [];
 
-  // Peak Hours Mock Data for Santa Cruz Nightlife
-  const peakHours = [
-    { hour: '18:00', orders: 12, label: 'Apertura / Previa' },
-    { hour: '19:00', orders: 28, label: 'Happy Hour' },
-    { hour: '20:00', orders: 45, label: 'Piqueo & Tragos' },
-    { hour: '21:00', orders: 62, label: 'Pico Cena' },
-    { hour: '22:00', orders: 74, label: 'Previa Fuerte' },
-    { hour: '23:00', orders: 88, label: 'Pico Noche' },
-    { hour: '00:00', orders: 80, label: 'Fiesta & Chopp' },
-    { hour: '01:00', orders: 65, label: 'Bajón Nocturno' },
-    { hour: '02:00', orders: 35, label: 'Cierre' },
-  ];
+  // Peak Hours chart — empty state since no real data yet
+  const peakHours: Array<{ hour: string; orders: number; label: string }> = [];
 
-  const maxOrders = Math.max(...peakHours.map(p => p.orders));
+  const maxOrders = peakHours.length > 0 ? Math.max(...peakHours.map(p => p.orders)) : 1;
 
   return (
     <AdminLayout>
@@ -85,10 +77,16 @@ export const AdminAnalytics: React.FC = () => {
           <CardHeader className="p-0 pb-4">
             <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-4 h-4 text-primary" />
-              <span>Curva de Demanda Nocturna en Santa Cruz (Equipetrol)</span>
+              <span>Curva de Demanda por Horario</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-2">
+            {peakHours.length === 0 ? (
+              <div className="text-center text-muted-foreground text-sm py-8">
+                <Clock className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                No hay datos de pedidos por horario aún. La curva de demanda se mostrará una vez que los pedidos empiecen a fluir.
+              </div>
+            ) : (
             <div className="flex items-end gap-2 h-44 pt-6 border-b border-border/60">
               {peakHours.map((p, idx) => {
                 const heightPct = (p.orders / maxOrders) * 100;
@@ -114,6 +112,7 @@ export const AdminAnalytics: React.FC = () => {
                 );
               })}
             </div>
+          )}
           </CardContent>
         </Card>
 
@@ -139,7 +138,14 @@ export const AdminAnalytics: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
-                  {sortedByHotness.map((item) => {
+                  {sortedByHotness.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-muted-foreground text-sm">
+                        No hay datos de ventas aún. Los pedidos comenzarán a alimentar este ranking en tiempo real.
+                      </td>
+                    </tr>
+                  ) : (
+                  sortedByHotness.map((item) => {
                     const ratio = (item.velocity_24h / (item.baseline_14d || 1)).toFixed(1);
 
                     return (
@@ -168,11 +174,12 @@ export const AdminAnalytics: React.FC = () => {
                           <HotnessIndicator score={item.hotness_score} compact />
                         </td>
                         <td className="p-3 text-right font-bold text-muted-foreground">
-                          ⭐ {item.average_rating || 5.0} ({item.reviews_count})
+                          ⭐ {item.average_rating > 0 ? item.average_rating : '-'} ({item.reviews_count})
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                  )}
                 </tbody>
               </table>
             </div>

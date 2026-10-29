@@ -9,7 +9,8 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-border/60 bg-muted/40">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
-        <div>
+        <div className="flex items-center gap-3">
+          <img src="/mimenu.svg" alt="MiMenu" className="h-8 w-8" />
           <p className="font-display text-lg">{t.footer.tagline}</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Equipetrol • Santa Cruz de la Sierra, Bolivia

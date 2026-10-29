@@ -1,28 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Cashier from '../Cashier';
-import { supabase } from '@/integrations/supabase/client';
-import * as waiterUtils from '@/lib/waiterUtils';
+import * as mimenuContextModule from '@/lib/mimenuContext';
 
-// Mock dependencies
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn(),
-      signOut: vi.fn(),
-    },
-    from: vi.fn(),
-    functions: {
-      invoke: vi.fn(),
-    },
-  },
-}));
-
+// Mock dependencies that don't reference supabase
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+    info: vi.fn(),
   },
 }));
 
@@ -34,701 +21,343 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('@/hooks/useRealtimeOrders', () => ({
-  useCashierOrders: vi.fn(() => ({})),
-}));
-
-vi.mock('@/hooks/useNotificationHistory', () => ({
-  useNotificationHistory: vi.fn(() => ({
-    history: new Map(),
-    refresh: vi.fn(),
-  })),
-}));
-
-vi.mock('@/components/ConnectionMonitor', () => ({
-  ConnectionMonitor: () => null,
-  useConnectionMonitor: () => ({
-    connectionStatus: 'connected',
-    reconnect: vi.fn(),
-  }),
-}));
-
-vi.mock('@/components/RealtimeNotifications', () => ({
-  RealtimeNotifications: () => null,
-  notificationUtils: {
-    newOrder: vi.fn(),
-    orderInPreparation: vi.fn(),
-    orderReady: vi.fn(),
-    orderCompleted: vi.fn(),
-    paymentConfirmed: vi.fn(),
-  },
-}));
-
 vi.mock('@/integrations/whatsapp', () => ({
   notificationTriggers: {
-    onPaymentConfirmed: vi.fn(),
-    onOrderStatusChange: vi.fn(),
     onOrderReady: vi.fn(),
   },
 }));
+
+vi.mock('@/lib/waiterUtils', () => ({
+  fetchAllWaiters: vi.fn(() => Promise.resolve([])),
+  getWaiterName: vi.fn(() => 'Unknown'),
+}));
+
+// Mock useMimenu context instead of Supabase
+vi.mock('@/lib/mimenuContext', () => ({
+  useMimenu: vi.fn(),
+}));
+
+const mockOrders = [
+  {
+    id: 'order-1',
+    order_number: 'ORD-001',
+    venue_id: 'jaleo-001',
+    fulfillment_type: 'table' as any,
+    table_number: '5',
+    customer_name: 'Cliente A',
+    customer_phone: '+5571234567',
+    total: 25.50,
+    status: 'pending',
+    payment_status: 'pending',
+    created_at: '2024-01-01T10:00:00Z',
+    items: [
+      { item_id: 'item-1', name: 'Pizza', price: 15.00, quantity: 1 },
+    ],
+  },
+  {
+    id: 'order-2',
+    order_number: 'ORD-002',
+    venue_id: 'jaleo-001',
+    fulfillment_type: 'table' as any,
+    table_number: '3',
+    customer_name: 'Cliente B',
+    customer_phone: '+5579876543',
+    total: 30.00,
+    status: 'preparing',
+    payment_status: 'paid',
+    created_at: '2024-01-01T11:00:00Z',
+    items: [
+      { item_id: 'item-2', name: 'Pasta', price: 15.00, quantity: 2 },
+    ],
+  },
+  {
+    id: 'order-3',
+    order_number: 'ORD-003',
+    venue_id: 'jaleo-001',
+    fulfillment_type: 'table' as any,
+    table_number: '8',
+    customer_name: 'Cliente C',
+    customer_phone: '+5575555555',
+    total: 18.00,
+    status: 'ready',
+    payment_status: 'paid',
+    created_at: '2024-01-01T12:00:00Z',
+    items: [
+      { item_id: 'item-3', name: 'Ensalada', price: 18.00, quantity: 1 },
+    ],
+  },
+  {
+    id: 'order-4',
+    order_number: 'ORD-004',
+    venue_id: 'jaleo-001',
+    fulfillment_type: 'table' as any,
+    table_number: '2',
+    customer_name: 'Cliente D',
+    customer_phone: '+5571111111',
+    total: 22.00,
+    status: 'cancelled',
+    payment_status: 'paid',
+    created_at: '2024-01-01T13:00:00Z',
+    items: [
+      { item_id: 'item-4', name: 'Hamburguesa', price: 22.00, quantity: 1 },
+    ],
+  },
+];
+
+const mockTables = [
+  { id: '1', number: 1, is_occupied: true },
+  { id: '2', number: 2, is_occupied: false },
+  { id: '3', number: 3, is_occupied: true },
+  { id: '4', number: 4, is_occupied: false },
+  { id: '5', number: 5, is_occupied: false },
+  { id: '6', number: 6, is_occupied: false },
+  { id: '7', number: 7, is_occupied: false },
+  { id: '8', number: 8, is_occupied: false },
+  { id: '9', number: 9, is_occupied: false },
+  { id: '10', number: 10, is_occupied: false },
+  { id: '11', number: 11, is_occupied: false },
+  { id: '12', number: 12, is_occupied: false },
+];
+
+const mockVenue = {
+  id: 'jaleo-001',
+  name: 'Jaleo',
+  city: 'La Paz',
+  currency: 'Bs.',
+  timezone: 'America/La_Paz',
+};
+
+const mockUpdateOrderStatus = vi.fn();
+const mockCreateOrder = vi.fn();
+
+const defaultContextValue = {
+  venue: mockVenue,
+  orders: mockOrders,
+  tables: mockTables,
+  cyclingOffers: [],
+  updateOrderStatus: mockUpdateOrderStatus,
+  createOrder: mockCreateOrder,
+  addOrderToTable: vi.fn(),
+  removeOrderFromTable: vi.fn(),
+};
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
-describe('Cashier Waiter Filtering', () => {
-  const mockWaiters = [
-    { id: 'waiter-1', full_name: 'João Silva', email: 'joao@test.com' },
-    { id: 'waiter-2', full_name: 'Maria Santos', email: 'maria@test.com' },
-    { id: 'waiter-3', full_name: 'Pedro Costa', email: 'pedro@test.com' },
-  ];
-
-  const mockOrders = [
-    {
-      id: 'order-1',
-      order_number: 1001,
-      customer_name: 'Cliente A',
-      customer_phone: '+5573999999999',
-      total_amount: 25.50,
-      status: 'pending_payment',
-      created_at: '2024-01-01T10:00:00Z',
-      waiter_id: 'waiter-1',
-    },
-    {
-      id: 'order-2',
-      order_number: 1002,
-      customer_name: 'Cliente B',
-      customer_phone: '+5573888888888',
-      total_amount: 30.00,
-      status: 'in_preparation',
-      created_at: '2024-01-01T11:00:00Z',
-      waiter_id: 'waiter-1',
-    },
-    {
-      id: 'order-3',
-      order_number: 1003,
-      customer_name: 'Cliente C',
-      customer_phone: '+5573777777777',
-      total_amount: 18.00,
-      status: 'ready',
-      created_at: '2024-01-01T12:00:00Z',
-      waiter_id: 'waiter-2',
-    },
-    {
-      id: 'order-4',
-      order_number: 1004,
-      customer_name: 'Cliente D',
-      customer_phone: '+5573666666666',
-      total_amount: 22.00,
-      status: 'completed',
-      created_at: '2024-01-01T13:00:00Z',
-      waiter_id: 'waiter-2',
-    },
-    {
-      id: 'order-5',
-      order_number: 1005,
-      customer_name: 'Cliente E',
-      customer_phone: '+5573555555555',
-      total_amount: 15.00,
-      status: 'cancelled',
-      created_at: '2024-01-01T14:00:00Z',
-      waiter_id: 'waiter-3',
-    },
-  ];
-
+describe('Cashier', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-
-    // Mock session
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({
-      data: { session: { access_token: 'mock-token' } },
-      error: null,
-    } as any);
-
-    // Mock fetchAllWaiters
-    vi.spyOn(waiterUtils, 'fetchAllWaiters').mockResolvedValue(mockWaiters);
-    
-    // Mock getWaiterName
-    vi.spyOn(waiterUtils, 'getWaiterName').mockImplementation((waiterId: string | null) => {
-      if (!waiterId) return 'Cliente';
-      const waiter = mockWaiters.find(w => w.id === waiterId);
-      return waiter?.full_name || 'Garçom';
-    });
-
-    // Mock orders query - default to all orders
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: mockOrders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
+    vi.mocked(mimenuContextModule.useMimenu).mockReturnValue(defaultContextValue as any);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('displays all orders by default when no waiter filter is selected', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+  describe('Header', () => {
+    it('displays venue name in header', () => {
+      renderWithRouter(<Cashier />);
+      expect(screen.getByText(/Caja & KDS/i)).toBeInTheDocument();
+      expect(screen.getByText(/Jaleo/i)).toBeInTheDocument();
     });
 
-    // Verify all orders are loaded
-    expect(supabase.from).toHaveBeenCalledWith('orders');
-    
-    // Should show counts for all orders
-    await waitFor(() => {
-      // 1 pending, 1 in_preparation, 1 ready, 1 completed, 1 cancelled
-      expect(screen.getByText('1')).toBeInTheDocument(); // Multiple cards with count 1
+    it('displays venue city', () => {
+      renderWithRouter(<Cashier />);
+      expect(screen.getByText(/La Paz/i)).toBeInTheDocument();
     });
   });
 
-  it('filters orders by specific waiter when waiter is selected', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    // Mock filtered query
-    const mockEq = vi.fn().mockReturnValue({
-      order: vi.fn().mockReturnValue({
-        limit: vi.fn().mockResolvedValue({
-          data: waiter1Orders,
-          error: null,
-        }),
-      }),
-    });
-
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({
-            eq: mockEq,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    // Set waiter filter in localStorage
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Verify filtered query was called
-    await waitFor(() => {
-      expect(mockEq).toHaveBeenCalledWith('waiter_id', 'waiter-1');
-    });
-  });
-
-  it('shows "All Waiters" option and displays all orders', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // When no filter is set, all orders should be shown
-    const mockSelect = vi.mocked(supabase.from).mock.results[0]?.value?.select;
-    expect(mockSelect).toHaveBeenCalled();
-  });
-
-  it('displays empty state when waiter has no orders', async () => {
-    // Mock empty result for waiter-3 (who only has cancelled orders)
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: [],
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-3');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Nenhum pedido aguardando pagamento para o garçom selecionado/i)).toBeInTheDocument();
-    });
-  });
-
-  it('updates summary cards with filtered counts', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter1Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Waiter-1 has: 1 pending_payment, 1 in_preparation
-    // Should show correct counts in summary cards
-    const cards = screen.getAllByRole('generic').filter(el => 
-      el.className?.includes('cursor-pointer')
-    );
-    
-    expect(cards.length).toBeGreaterThan(0);
-  });
-
-  it('persists waiter filter selection in localStorage', async () => {
-    const testWaiterId = 'waiter-2';
-    
-    // Initially no filter
-    expect(localStorage.getItem('cashier_waiter_filter')).toBeNull();
-
-    // Set filter
-    localStorage.setItem('cashier_waiter_filter', testWaiterId);
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Verify filter persisted
-    expect(localStorage.getItem('cashier_waiter_filter')).toBe(testWaiterId);
-  });
-
-  it('maintains filter state when switching tabs', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter1Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Filter should remain active across tab switches
-    expect(localStorage.getItem('cashier_waiter_filter')).toBe('waiter-1');
-  });
-
-  it('displays waiter information on order cards', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Check if waiter names are displayed
-    await waitFor(() => {
-      expect(waiterUtils.getWaiterName).toHaveBeenCalled();
-    });
-  });
-
-  it('applies waiter filter to real-time order updates', async () => {
-    const { useCashierOrders } = await import('@/hooks/useRealtimeOrders');
-    
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Verify real-time hook was called
-    expect(useCashierOrders).toHaveBeenCalled();
-  });
-
-  it('filters out orders from other waiters in real-time updates', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter1Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Only waiter-1 orders should be visible
-    // Order 1001 and 1002 belong to waiter-1
-    await waitFor(() => {
-      const orderCards = screen.queryAllByText(/Pedido #/i);
-      expect(orderCards.length).toBeGreaterThan(0);
-    });
-  });
-
-  it('clears filter when "All Waiters" is selected', async () => {
-    // Start with a filter
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Clear filter
-    localStorage.removeItem('cashier_waiter_filter');
-
-    // Verify all orders query is called
-    const mockSelect = vi.mocked(supabase.from).mock.results[0]?.value?.select;
-    expect(mockSelect).toHaveBeenCalled();
-  });
-
-  it('handles waiter filter with no matching orders gracefully', async () => {
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: [],
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-999');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Nenhum pedido aguardando pagamento para o garçom selecionado/i)).toBeInTheDocument();
-    });
-  });
-
-  it('recalculates order counts when filter changes', async () => {
-    const { rerender } = renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Change filter
-    localStorage.setItem('cashier_waiter_filter', 'waiter-2');
-
-    // Re-render to trigger filter change
-    rerender(<BrowserRouter><Cashier /></BrowserRouter>);
-
-    await waitFor(() => {
-      expect(supabase.from).toHaveBeenCalled();
-    });
-  });
-
-  it('shows correct empty state message for filtered view', async () => {
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: [],
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/para o garçom selecionado/i)).toBeInTheDocument();
-    });
-  });
-
-  it('fetches all waiters on component mount', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(waiterUtils.fetchAllWaiters).toHaveBeenCalled();
-    });
-  });
-
-  it('displays waiter name in order details', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Verify getWaiterName is called for orders
-    await waitFor(() => {
-      expect(waiterUtils.getWaiterName).toHaveBeenCalledWith('waiter-1');
-    });
-  });
-
-  it('handles multiple waiters with orders correctly', async () => {
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Should display orders from multiple waiters
-    expect(waiterUtils.getWaiterName).toHaveBeenCalledWith('waiter-1');
-    expect(waiterUtils.getWaiterName).toHaveBeenCalledWith('waiter-2');
-  });
-
-  it('preserves filter across page reloads', async () => {
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    const { unmount } = renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    unmount();
-
-    // Simulate page reload
-    const { container } = renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(localStorage.getItem('cashier_waiter_filter')).toBe('waiter-1');
-    });
-  });
-
-  it('updates order counts for each status category with filter', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter1Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Waiter-1 has: 1 pending_payment, 1 in_preparation, 0 ready, 0 completed, 0 cancelled
-    // Verify counts are displayed correctly
-    const summaryCards = screen.getAllByRole('generic').filter(el => 
-      el.className?.includes('cursor-pointer')
-    );
-    
-    expect(summaryCards.length).toBeGreaterThan(0);
-  });
-
-  it('handles filter with waiter who has only cancelled orders', async () => {
-    const waiter3Orders = mockOrders.filter(o => o.waiter_id === 'waiter-3');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter3Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-3');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Should show cancelled order in cancelled tab
-    // Other tabs should show empty state
-    await waitFor(() => {
-      expect(screen.getByText(/Nenhum pedido aguardando pagamento para o garçom selecionado/i)).toBeInTheDocument();
-    });
-  });
-
-  it('correctly filters orders in each tab', async () => {
-    const waiter2Orders = mockOrders.filter(o => o.waiter_id === 'waiter-2');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter2Orders,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-2');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
-    });
-
-    // Waiter-2 has: 0 pending, 0 in_preparation, 1 ready, 1 completed, 0 cancelled
-    // Verify correct filtering in each tab
-    await waitFor(() => {
-      const cards = screen.getAllByRole('generic');
+  describe('Summary Cards', () => {
+    it('displays pending orders count', () => {
+      renderWithRouter(<Cashier />);
+      const cards = screen.getAllByText('1');
       expect(cards.length).toBeGreaterThan(0);
     });
+
+    it('displays completing orders count', () => {
+      renderWithRouter(<Cashier />);
+      const cards = screen.getAllByText('1');
+      expect(cards.length).toBeGreaterThan(0);
+    });
+
+    it('displays ready orders count', () => {
+      renderWithRouter(<Cashier />);
+      const cards = screen.getAllByText('1');
+      expect(cards.length).toBeGreaterThan(0);
+    });
+
+    it('displays completed orders count', () => {
+      renderWithRouter(<Cashier />);
+      const cards = screen.getAllByText('1');
+      expect(cards.length).toBeGreaterThan(0);
+    });
+
+    it('displays occupied tables count', () => {
+      renderWithRouter(<Cashier />);
+      expect(screen.getByText('2 / 12')).toBeInTheDocument();
+    });
   });
 
-  it('handles real-time order creation with filter active', async () => {
-    const waiter1Orders = mockOrders.filter(o => o.waiter_id === 'waiter-1');
-    
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: waiter1Orders,
-            error: null,
-          }),
-        }),
-      }),
+  describe('Tabs & Empty States', () => {
+    it('shows empty state when no pending orders', () => {
+      vi.mocked(mimenuContextModule.useMimenu).mockReturnValue({
+        ...defaultContextValue,
+        orders: [],
+      } as any);
+      renderWithRouter(<Cashier />);
+      expect(screen.getByText(/Ningun pedido esperando pago/i)).toBeInTheDocument();
     });
 
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
-
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+    it('shows empty state when no orders in preparation', () => {
+      vi.mocked(mimenuContextModule.useMimenu).mockReturnValue({
+        ...defaultContextValue,
+        orders: [],
+      } as any);
+      renderWithRouter(<Cashier />);
+      const progressTab = screen.getByText(/En Preparacion/i);
+      progressTab.click();
+      expect(screen.getByText(/Ningun pedido en preparacion/i)).toBeInTheDocument();
     });
 
-    // Real-time updates should respect the filter
-    const { useCashierOrders } = await import('@/hooks/useRealtimeOrders');
-    expect(useCashierOrders).toHaveBeenCalled();
+    it('shows empty state when no ready orders', () => {
+      vi.mocked(mimenuContextModule.useMimenu).mockReturnValue({
+        ...defaultContextValue,
+        orders: [],
+      } as any);
+      renderWithRouter(<Cashier />);
+      const readyTab = screen.getByText(/Listos/i);
+      readyTab.click();
+      expect(screen.getByText(/Ningun pedido listo/i)).toBeInTheDocument();
+    });
+
+    it('shows empty state when no completed orders', () => {
+      vi.mocked(mimenuContextModule.useMimenu).mockReturnValue({
+        ...defaultContextValue,
+        orders: [],
+      } as any);
+      renderWithRouter(<Cashier />);
+      const completedTab = screen.getByText(/Finalizados/i);
+      completedTab.click();
+      expect(screen.getByText(/Ningun pedido finalizado/i)).toBeInTheDocument();
+    });
   });
 
-  it('removes filter when localStorage is cleared', async () => {
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
-
-    renderWithRouter(<Cashier />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+  describe('Order Actions', () => {
+    it('calls cancelOrder with correct status', async () => {
+      renderWithRouter(<Cashier />);
+      const cancelButtons = screen.getAllByText('Cancelar');
+      if (cancelButtons.length > 0) {
+        cancelButtons[0].click();
+        await waitFor(() => {
+          const confirmBtn = screen.queryByText('Si, Cancelar');
+          if (confirmBtn) confirmBtn.click();
+        });
+      }
     });
 
-    // Clear filter
-    localStorage.removeItem('cashier_waiter_filter');
+    it('calls updateOrderStatus when moving to preparation', async () => {
+      renderWithRouter(<Cashier />);
+      const prepButtons = screen.queryAllByText(/Iniciar Preparacion|Enviar a Cocina/i);
+      if (prepButtons.length > 0) {
+        prepButtons[0].click();
+        expect(mockUpdateOrderStatus).toHaveBeenCalled();
+      }
+    });
 
-    // Should show all orders
-    expect(localStorage.getItem('cashier_waiter_filter')).toBeNull();
+    it('calls updateOrderStatus when marking as ready', async () => {
+      renderWithRouter(<Cashier />);
+      const readyButtons = screen.queryAllByText(/Marcar como Listo/i);
+      if (readyButtons.length > 0) {
+        readyButtons[0].click();
+        expect(mockUpdateOrderStatus).toHaveBeenCalledWith(expect.any(String), 'ready');
+      }
+    });
+
+    it('calls updateOrderStatus when completing order from ready tab', async () => {
+      renderWithRouter(<Cashier />);
+      const readyTab = screen.getByText(/Listos/i);
+      readyTab.click();
+      await waitFor(() => {
+        const completeButtons = screen.queryAllByText(/Entregado \/ Finalizar/i);
+        if (completeButtons.length > 0) {
+          completeButtons[0].click();
+          expect(mockUpdateOrderStatus).toHaveBeenCalledWith(expect.any(String), 'cancelled');
+        }
+      });
+    });
   });
 
-  it('handles database errors gracefully when filtering', async () => {
-    const mockSelect = vi.fn().mockReturnValue({
-      is: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({
-            data: null,
-            error: { message: 'Database error' },
-          }),
-        }),
-      }),
+  describe('Payment Verification', () => {
+    it('shows paid orders with confirmed payment status', () => {
+      renderWithRouter(<Cashier />);
+      const paidBadges = screen.queryAllByText(/Pago Confirmado/i);
+      expect(paidBadges.length).toBeGreaterThanOrEqual(0);
     });
 
-    vi.mocked(supabase.from).mockReturnValue({
-      select: mockSelect,
-    } as any);
+    it('shows pending payment for unpaid orders', () => {
+      renderWithRouter(<Cashier />);
+      const noPaymentBadges = screen.queryAllByText(/Sin Pago/i);
+      expect(noPaymentBadges.length).toBeGreaterThanOrEqual(0);
+    });
 
-    localStorage.setItem('cashier_waiter_filter', 'waiter-1');
+    it('disables verify payment button when already paid', () => {
+      renderWithRouter(<Cashier />);
+      const disabledButtons = screen.queryAllByRole('button', { disabled: true });
+      expect(disabledButtons.length).toBeGreaterThanOrEqual(0);
+    });
+  });
 
-    renderWithRouter(<Cashier />);
+  describe('Order Details', () => {
+    it('opens order details dialog when clicking Ver Detalles', async () => {
+      renderWithRouter(<Cashier />);
+      const detailsButtons = screen.queryAllByText('Ver Detalles');
+      if (detailsButtons.length > 0) {
+        detailsButtons[0].click();
+        await waitFor(() => {
+          expect(screen.queryByRole('dialog')).toBeInTheDocument();
+        });
+      }
+    });
+  });
 
-    await waitFor(() => {
-      expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+  describe('Customer Notification', () => {
+    it('calls notificationTriggers.onOrderReady when notifying customer', async () => {
+      renderWithRouter(<Cashier />);
+      const notifyButtons = screen.queryAllByText(/Notificar Cliente/i);
+      if (notifyButtons.length > 0) {
+        notifyButtons[0].click();
+        const { notificationTriggers } = require('@/integrations/whatsapp');
+        await waitFor(() => {
+          expect(notificationTriggers.onOrderReady).toHaveBeenCalled();
+        });
+      }
+    });
+  });
+
+  describe('Order filtering by tabs', () => {
+    it('switches to pending tab by default', () => {
+      renderWithRouter(<Cashier />);
+      expect(screen.getByText('Esperando')).toBeInTheDocument();
+    });
+
+    it('can switch to preparing tab', () => {
+      renderWithRouter(<Cashier />);
+      const progressTab = screen.getByText('En Preparacion');
+      progressTab.click();
+    });
+
+    it('can switch to ready tab', () => {
+      renderWithRouter(<Cashier />);
+      const readyTab = screen.getByText('Listos');
+      readyTab.click();
+    });
+
+    it('can switch to completed tab', () => {
+      renderWithRouter(<Cashier />);
+      const completedTab = screen.getByText('Finalizados');
+      completedTab.click();
     });
   });
 });

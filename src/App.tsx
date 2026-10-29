@@ -51,6 +51,7 @@ const LandingPlataforma = lazy(() => import("./pages/public/LandingPlataforma"))
 const LandingTakeat = lazy(() => import("./pages/public/LandingTakeat"));
 const Docs = lazy(() => import("./pages/public/Docs"));
 const LandingARSelfHosted = lazy(() => import("./pages/public/LandingARSelfHosted"));
+const Landing4DSmartMenu = lazy(() => import("./pages/public/Landing4DSmartMenu"));
 const Landing = lazy(() => import("./pages/public/Landing"));
 const LandingGenio = lazy(() => import("./pages/public/LandingGenio"));
 const LandingTakeatOld = lazy(() => import("./pages/public/LandingTakeatOld"));
@@ -194,6 +195,11 @@ const App = () => {
                     <Route path="/mi-menu-ar" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <LandingARSelfHosted />
+                      </Suspense>
+                    } />
+                    <Route path="/new" element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Landing4DSmartMenu />
                       </Suspense>
                     } />
 
@@ -357,7 +363,7 @@ const App = () => {
                         <AdminWaiterReportsPage />
                       </Suspense>
                     } />
-                    <Route path="/customers" element={
+                    <Route path="/admin/customers" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <CustomerManagement />
                       </Suspense>

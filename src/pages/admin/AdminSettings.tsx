@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Settings,
   Bell,
   Lock,
@@ -23,7 +23,8 @@ import {
   Server,
   Layers,
   UploadCloud,
-  Check
+  Check,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { printServerClient } from '@/integrations/print-server/client';
@@ -31,6 +32,7 @@ import { useMimenu } from '@/lib/mimenuContext';
 
 const AdminSettings = () => {
   const { venue, categories, tables, orders, customers, cyclingOffers } = useMimenu();
+  const v = venue; // may be null until a tenant is selected
   const [activeTab, setActiveTab] = useState('general');
   
   // Printer settings state
@@ -122,7 +124,7 @@ const AdminSettings = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `mimenu_backup_${venue.slug || 'store'}_${Date.now()}.json`;
+    link.download = `mimenu_backup_${venue?.slug || 'store'}_${Date.now()}.json`;
     link.click();
     URL.revokeObjectURL(url);
     toast.success('Backup exportado em JSON com sucesso');
@@ -207,16 +209,16 @@ const AdminSettings = () => {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-foreground">Loja Atual Conectada:</span>
                     <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold">
-                      {venue.name}
+                      {venue?.name}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Slug Público:</span>
-                    <span className="font-mono text-xs text-foreground">mimenu.clubemkt.digital/loja/{venue.slug}</span>
+                    <span className="font-mono text-xs text-foreground">mimenu.clubemkt.digital/loja/{venue?.slug}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Moeda e Localidade:</span>
-                    <span className="font-medium text-foreground">{venue.currency} ({venue.city})</span>
+                    <span className="font-medium text-foreground">{venue?.currency} ({venue?.city})</span>
                   </div>
                 </div>
               </CardContent>

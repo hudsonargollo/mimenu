@@ -56,7 +56,7 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
         </div>
 
         {/* Main Navbar */}
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 group">
             {/* MiMenu mark (square variant) */}
@@ -131,7 +131,7 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
 
         {/* Search bar row if enabled */}
         {showSearch && onSearchChange && (
-          <div className="max-w-6xl mx-auto px-4 pb-3">
+          <div className="max-w-7xl mx-auto px-4 pb-3">
             <div className="relative">
               <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
               <input

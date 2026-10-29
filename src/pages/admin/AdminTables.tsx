@@ -31,7 +31,7 @@ export const AdminTables: React.FC = () => {
       return;
     }
 
-    const hash = `SCZ-DEMO-T${newTableNum.trim().toUpperCase()}`;
+    const hash = `${venue.slug.toUpperCase()}-T${newTableNum.trim().toUpperCase()}`;
 
     addTable({
       venue_id: venue.id,

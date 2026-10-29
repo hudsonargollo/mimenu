@@ -64,7 +64,7 @@ export const AdminBranding: React.FC = () => {
               </h1>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Personaliza el nombre del local, colores de marca, moneda local (Bs.), ubicación en Santa Cruz y textos del menú para la experiencia multi-tenant de MIMENU.
+              Personaliza el nombre del local, colores de marca, moneda local (Bs.), ubicación y textos del menú para la experiencia de MIMENU.
             </p>
           </div>
 

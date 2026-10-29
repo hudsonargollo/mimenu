@@ -96,56 +96,21 @@ const STORAGE_KEYS = {
   FULFILLMENT: 'mimenu_fulfillment_v2',
 };
 
-const INITIAL_CUSTOMERS: CustomerProfile[] = [
-  {
-    id: "cust-1",
-    name: "Andrés Banzer",
-    phone: "+591 78012345",
-    total_orders: 8,
-    total_spent: 640,
-    first_visit_at: "2026-08-10T20:00:00Z",
-    last_visit_at: "2026-09-24T22:30:00Z",
-    favorite_items: ["Salchipapa Monster", "Chopp Artesanal (500ml)"],
-    loyalty_tier: "VIP",
-    notes: "Comensal frecuente de terraza. Prefiere extra salsa de ajo."
-  },
-  {
-    id: "cust-2",
-    name: "Mariana Justiniano",
-    phone: "+591 77345678",
-    total_orders: 5,
-    total_spent: 420,
-    first_visit_at: "2026-08-22T21:15:00Z",
-    last_visit_at: "2026-09-23T23:10:00Z",
-    favorite_items: ["Nachos Supremos", "Fernet Branca con Coca (Jarra 1L)"],
-    loyalty_tier: "Oro",
-    notes: "Suele venir en grupos los viernes por la noche."
-  },
-  {
-    id: "cust-3",
-    name: "Carlos Villagómez",
-    phone: "+591 70098765",
-    total_orders: 2,
-    total_spent: 135,
-    first_visit_at: "2026-09-12T19:40:00Z",
-    last_visit_at: "2026-09-20T20:15:00Z",
-    favorite_items: ["Salchipapa Clásica Cruceña"],
-    loyalty_tier: "Plata"
-  }
-];
+const INITIAL_CUSTOMERS: CustomerProfile[] = [];
 
 export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Venue state — the active tenant, resolved from ?v=<slug> in the URL.
-  const [venue, setVenue] = useState<Venue>(() => {
+  const [venue, setVenue] = useState<Venue | null>(() => {
     if (typeof window !== 'undefined') {
       const { slug, requested, found } = resolveVenueSlug(window.location.search);
       const matched = findVenueBySlug(slug);
       if (matched) return toVenue(matched);
-      // A slug was requested but does not exist: fall back to the demo tenant.
+      // No venue resolved: no system-wide default tenant — leave venue unset
+      // until the user picks one (via TenantSwitcher or URL ?v=<slug>).
       if (requested && !found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
     }
     const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
-    return saved ? JSON.parse(saved) : DEFAULT_VENUE;
+    return saved ? JSON.parse(saved) : null;
   });
 
   // Categories & items state — the active tenant's menu.
@@ -199,48 +164,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Orders state
   const [orders, setOrders] = useState<MimenuOrder[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.ORDERS);
-    return saved ? JSON.parse(saved) : [
-      {
-        id: "ord-1001",
-        order_number: "1001",
-        venue_id: "venue-mimenu-demo",
-        fulfillment_type: "dine_in",
-        table_number: "4",
-        customer_name: "Andrés Banzer",
-        customer_phone: "+591 78012345",
-        items: [
-          { item_id: "item-salchipapa-monster", name: "Salchipapa Monster", price: 45, quantity: 1, notes: "Extra salsa de ajo" },
-          { item_id: "item-chopp-artesanal", name: "Chopp Artesanal (500ml)", price: 25, quantity: 2 }
-        ],
-        subtotal: 95,
-        discount: 0,
-        total: 95,
-        status: "preparing",
-        payment_method: "qr_simple",
-        payment_status: "paid",
-        created_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-      },
-      {
-        id: "ord-1002",
-        order_number: "1002",
-        venue_id: "venue-mimenu-demo",
-        fulfillment_type: "dine_in",
-        table_number: "VIP 1",
-        customer_name: "Mariana Justiniano",
-        customer_phone: "+591 77345678",
-        items: [
-          { item_id: "item-fernet-branca", name: "Fernet Branca con Coca (Jarra 1L)", price: 35, quantity: 2 },
-          { item_id: "item-nachos-supremos", name: "Nachos Supremos", price: 48, quantity: 1 }
-        ],
-        subtotal: 118,
-        discount: 0,
-        total: 118,
-        status: "delivered",
-        payment_method: "card",
-        payment_status: "paid",
-        created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-      }
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   // Customer CRM state
@@ -256,7 +180,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const tableParam = urlParams.get('table') || urlParams.get('mesa') || urlParams.get('t');
       if (tableParam) return tableParam;
     }
-    return localStorage.getItem(STORAGE_KEYS.SELECTED_TABLE) || "4";
+    return localStorage.getItem(STORAGE_KEYS.SELECTED_TABLE) || null;
   });
 
   const [fulfillmentType, setFulfillmentTypeState] = useState<FulfillmentType>(() => {

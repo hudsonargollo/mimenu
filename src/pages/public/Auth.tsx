@@ -58,29 +58,31 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground relative overflow-hidden">
+    <div
+      className="min-h-screen flex items-center justify-center relative overflow-hidden text-foreground"
+      style={{ background: 'oklch(0.96 0.04 290)', fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif' }}
+    >
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[820px] rounded-full bg-primary/10 blur-[140px]" />
-        <div className="absolute bottom-0 right-0 h-[360px] w-[640px] rounded-full bg-accent/5 blur-[160px]" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[820px] rounded-full blur-[140px]" style={{ background: 'rgba(168,139,255,0.35)' }} />
+        <div className="absolute bottom-0 right-0 h-[360px] w-[640px] rounded-full blur-[160px]" style={{ background: 'rgba(255,182,217,0.3)' }} />
       </div>
 
       <div className="w-full max-w-md relative z-10 px-4">
         {/* Brand */}
         <div className="flex items-center justify-center mb-6">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-card flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden border border-border">
-              <img src="/mimenu.svg" alt="MiMenu" className="h-7 w-7" />
+            <div className="h-16 w-16 rounded-2xl bg-card flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden border border-border">
+              <img src="/mimenu.svg" alt="MiMenu" className="h-11 w-11" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg tracking-tight text-foreground">Mi<span className="text-accent">Menu</span></span>
-              <span className="text-[10px] font-medium text-muted-foreground -mt-0.5">Área de acceso</span>
+              <span className="font-extrabold text-2xl tracking-tight text-foreground">Mi<span className="text-accent">Menu</span></span>
             </div>
           </div>
         </div>
 
         {/* Auth card */}
-        <div className="rounded-3xl border border-border bg-card/60 p-6 sm:p-8 shadow-2xl shadow-black/40 backdrop-blur-md">
+        <div className="rounded-3xl border border-white/40 bg-white/55 p-6 sm:p-8 shadow-2xl shadow-black/20 backdrop-blur-xl" style={{ fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif' }}>
             <div className="mb-6 space-y-1">
               <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
@@ -136,7 +138,7 @@ const Auth = () => {
 
               <Button
                 type="submit"
-                className="w-full h-11 text-sm font-bold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground uppercase tracking-wider rounded-xl border-0 shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full h-11 text-sm font-bold glass text-foreground uppercase tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99]"
                 disabled={loading}
               >
                 {loading ? (

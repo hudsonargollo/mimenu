@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import {
   Bot,
   LayoutDashboard,
   ChefHat,
-  ShoppingBag,
+  Camera,
   Sparkles,
   Flame,
   QrCode,
@@ -17,7 +16,6 @@ import {
   Menu,
   X,
   ExternalLink,
-  Camera,
   Users,
   Store,
   UtensilsCrossed
@@ -40,17 +38,17 @@ const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems: SidebarItem[] = [
-    { label: 'AI Copilot', icon: <Bot className="w-5 h-5 text-amber-400" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA' },
-    { label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5 text-blue-400" />, path: '/admin', description: 'Resumen & Kpis' },
-    { label: 'Ingestor Carta IA', icon: <Camera className="w-5 h-5 text-amber-400" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision' },
-    { label: 'Cocina & KDS', icon: <ChefHat className="w-5 h-5 text-emerald-400" />, path: '/cashier', description: 'Pedidos en vivo' },
-    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-5 h-5 text-yellow-400" />, path: '/admin/offers', description: 'Cycling promos' },
-    { label: 'Hotness & Métricas', icon: <Flame className="w-5 h-5 text-red-400" />, path: '/admin/analytics', description: 'Velocidad & Ventas' },
-    { label: 'Mesas & QR', icon: <QrCode className="w-5 h-5 text-purple-400" />, path: '/admin/tables', description: 'Table mapping' },
-    { label: 'CRM & Clientes', icon: <Users className="w-5 h-5 text-cyan-400" />, path: '/admin/customers', description: 'Fidelización & VIP' },
-    { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-5 h-5 text-pink-400" />, path: '/admin/reviews', description: 'Moderación' },
-    { label: 'White-Label & Marca', icon: <Palette className="w-5 h-5 text-indigo-400" />, path: '/admin/branding', description: 'Personalización' },
-    { label: 'Configuraciones', icon: <Settings className="w-5 h-5 text-gray-400" />, path: '/admin/settings', description: 'Sistema & Red' },
+    { label: 'AI Copilot', icon: <Bot className="w-5 h-5" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA' },
+    { label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/admin', description: 'Resumen & Kpis' },
+    { label: 'Ingestor Carta IA', icon: <Camera className="w-5 h-5" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision' },
+    { label: 'Cocina & KDS', icon: <ChefHat className="w-5 h-5" />, path: '/cashier', description: 'Pedidos en vivo' },
+    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-5 h-5" />, path: '/admin/offers', description: 'Cycling promos' },
+    { label: 'Hotness & Métricas', icon: <Flame className="w-5 h-5" />, path: '/admin/analytics', description: 'Velocidad & Ventas' },
+    { label: 'Mesas & QR', icon: <QrCode className="w-5 h-5" />, path: '/admin/tables', description: 'Table mapping' },
+    { label: 'CRM & Clientes', icon: <Users className="w-5 h-5" />, path: '/admin/customers', description: 'Fidelización & VIP' },
+    { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-5 h-5" />, path: '/admin/reviews', description: 'Moderación' },
+    { label: 'White-Label & Marca', icon: <Palette className="w-5 h-5" />, path: '/admin/branding', description: 'Personalización' },
+    { label: 'Configuraciones', icon: <Settings className="w-5 h-5" />, path: '/admin/settings', description: 'Sistema & Red' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -60,32 +58,42 @@ const AdminSidebar = () => {
       {/* Mobile Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-amber-600 text-white p-2 rounded-xl shadow-lg"
+        className="fixed top-4 left-4 z-50 md:hidden bg-white/60 backdrop-blur-md text-[#3a2f6b] p-2 rounded-xl shadow-lg border border-white/40"
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white border-r border-gray-800 transition-all duration-300 z-40 ${
+        className={`fixed left-0 top-0 h-screen transition-all duration-300 z-40 ${
           isOpen ? 'w-64' : 'w-20'
         } md:w-64 md:relative md:translate-x-0 ${!isOpen && 'md:w-20'} flex flex-col`}
+        style={{
+          background: 'rgba(255,255,255,0.35)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          borderRight: '1px solid rgba(255,255,255,0.5)',
+          fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif',
+        }}
       >
         {/* Logo Section */}
-        <div className="p-5 border-b border-gray-800 flex items-center justify-between">
+        <div className="p-5 border-b border-white/40 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-white shadow-md shrink-0">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md shrink-0"
+              style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+            >
               <UtensilsCrossed className="w-5 h-5" />
             </div>
             {isOpen && (
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-sm tracking-tight text-white">{venue.name}</span>
-                  <span className="text-[9px] font-black uppercase bg-amber-500/20 text-amber-400 px-1 py-0.5 rounded">
+                  <span className="font-black text-sm tracking-tight text-[#2a1f55]">{venue.name}</span>
+                  <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
                     KV SaaS
                   </span>
                 </div>
-                <p className="text-[10px] text-gray-400">MIMENU Santa Cruz</p>
+                <p className="text-[10px] text-[#5b4a9e]/70">MIMENU Santa Cruz</p>
               </div>
             )}
           </div>
@@ -96,7 +104,12 @@ const AdminSidebar = () => {
           <Link
             to="/menu"
             target="_blank"
-            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all group"
+            className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold transition-all group border"
+            style={{
+              background: 'rgba(255,255,255,0.45)',
+              borderColor: 'rgba(139,92,246,0.25)',
+              color: '#5b4a9e',
+            }}
           >
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -114,9 +127,14 @@ const AdminSidebar = () => {
               onClick={() => navigate(item.path)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive(item.path)
-                  ? 'bg-gradient-to-r from-amber-500/30 to-red-500/20 text-white border border-amber-500/50 shadow-md font-bold'
-                  : 'text-gray-400 hover:bg-gray-800/60 hover:text-white'
+                  ? 'text-white font-bold shadow-md'
+                  : 'text-[#3a2f6b] hover:bg-white/40 hover:text-[#2a1f55]'
               }`}
+              style={
+                isActive(item.path)
+                  ? { background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }
+                  : undefined
+              }
               title={!isOpen ? item.label : ''}
             >
               <div className="flex items-center gap-3">
@@ -124,13 +142,13 @@ const AdminSidebar = () => {
                 {isOpen && (
                   <div className="text-left">
                     <div className="text-xs font-bold">{item.label}</div>
-                    <div className="text-[10px] text-gray-400 group-hover:text-gray-300">{item.description}</div>
+                    <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>{item.description}</div>
                   </div>
                 )}
               </div>
 
               {isOpen && item.badge && (
-                <span className="text-[9px] font-black uppercase bg-gradient-to-r from-amber-500 to-red-500 text-white px-1.5 py-0.5 rounded-full shadow-xs">
+                <span className="text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded-full shadow-xs" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}>
                   {item.badge}
                 </span>
               )}
@@ -139,13 +157,13 @@ const AdminSidebar = () => {
         </nav>
 
         {/* Footer info */}
-        <div className="p-3 border-t border-gray-800 text-[11px] text-gray-400 flex items-center justify-between">
+        <div className="p-3 border-t border-white/40 text-[11px] text-[#5b4a9e] flex items-center justify-between">
           {isOpen && (
             <span className="text-[10px]">MIMENU KV • SCZ</span>
           )}
           <button
             onClick={() => navigate('/')}
-            className="text-[11px] text-amber-400 hover:underline font-bold flex items-center gap-1"
+            className="text-[11px] font-bold flex items-center gap-1 text-[#5b4a9e] hover:text-[#2a1f55]"
           >
             <Store className="w-3.5 h-3.5" />
             {isOpen && <span>Landing Page</span>}
@@ -156,7 +174,7 @@ const AdminSidebar = () => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/30 z-30 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

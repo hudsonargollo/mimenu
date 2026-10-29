@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Star, MessageSquare, CheckCircle, User } from 'lucide-react';
 import { MenuItemDetail } from '@/types/mimenu';
 import { useMimenu } from '@/lib/mimenuContext';
+import { useLang } from '@/i18n/LanguageProvider';
+import { pickLocalText } from '@/lib/venueContext';
 import { toast } from 'sonner';
 
 interface ItemReviewDialogProps {
@@ -26,6 +28,7 @@ export const ItemReviewDialog: React.FC<ItemReviewDialogProps> = ({
   onClose,
 }) => {
   const { getItemReviews, addReview, venue } = useMimenu();
+  const { lang } = useLang();
   const [customerName, setCustomerName] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
@@ -67,7 +70,7 @@ export const ItemReviewDialog: React.FC<ItemReviewDialogProps> = ({
           <div className="flex items-start justify-between gap-3">
             <div>
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Reseñas de Clientes</span>
-              <DialogTitle className="text-lg font-bold mt-0.5">{item.name}</DialogTitle>
+              <DialogTitle className="text-lg font-bold mt-0.5">{pickLocalText(item.name_i18n, lang) || item.name}</DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-0.5">
                 {venue.name} • Santa Cruz de la Sierra
               </DialogDescription>

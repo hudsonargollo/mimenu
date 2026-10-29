@@ -26,6 +26,7 @@ import { CartDrawerExpress } from '@/components/CartDrawerExpress';
 import { FlipDeck } from '@/components/FlipDeck';
 import { MenuChatbot } from '@/components/chatbot/MenuChatbot';
 import { pickLocalText } from '@/lib/venueContext';
+import { useLang } from '@/i18n/LanguageProvider';
 import type { Lang } from '@/i18n/translations';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,12 +44,13 @@ const Menu: React.FC = () => {
   const { addItem, removeItem, getItemQuantity, getTotalItems, getTotalPrice } = useCart();
 
   const [activeCategoryKey, setActiveCategoryKey] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const [activeDietaryFilter, setActiveDietaryFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [onlyHot, setOnlyHot] = useState<boolean>(false);
   const [selectedReviewItem, setSelectedReviewItem] = useState<MenuItemDetail | null>(null);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<Lang>('es');
+  const { lang: currentLang, setLang: setCurrentLang } = useLang();
   const [arPreviewItem, setARPreviewItem] = useState<MenuItemDetail | null>(null);
 
   const venueName = pickLocalText(venue.name_i18n, currentLang) || venue.name;
@@ -101,7 +103,7 @@ const Menu: React.FC = () => {
       }
       return true;
     });
-  }, [allItems, activeCategoryKey, onlyHot, activeDietaryFilter, searchTerm]);
+  }, [allItems, activeCategoryKey, onlyHot, activeDietaryFilter, searchTerm, currentLang]);
 
   const handleAddToCart = (item: MenuItemDetail) => {
     addItem({
@@ -127,7 +129,7 @@ const Menu: React.FC = () => {
         onSearchChange={setSearchTerm}
       />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 w-full flex-1">
+      <main className="max-w-7xl mx-auto px-6 py-8 w-full flex-1">
         {/* Venue Welcome Banner */}
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 dark:bg-slate-950 text-white p-6 md:p-8 mb-8 border border-slate-800 shadow-sm">
           <div className="relative z-10 max-w-2xl space-y-2">
@@ -149,6 +151,28 @@ const Menu: React.FC = () => {
                 <MapPin className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
                 {venue.address}
               </span>
+              <a
+                href="https://maps.app.goo.gl/Qzfu1ZmBQQAtsWNS8?g_st=iw"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-amber-400 hover:underline"
+              >
+                <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
+                Get Directions
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: venueName, url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+                className="flex items-center gap-1.5 hover:text-foreground"
+              >
+                Share
+              </button>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 {venue.opening_hours}
@@ -228,12 +252,27 @@ const Menu: React.FC = () => {
           ))}
         </div>
 
-        {/* Flip Deck (default template) */}
+        {/* Flip Deck (featured presentation) */}
         <FlipDeck
           items={filteredItems}
           currentLang={currentLang}
           onAddToCart={handleAddToCart}
         />
+
+        {/* Items view toggle + list/grid */}
+        <div className="flex items-center justify-end gap-2 mt-6 mb-3">
+          <button onClick={() => setViewMode('list')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${viewMode==='list'?'bg-amber-500 text-white':'bg-muted/40 text-muted-foreground'}`}>Lista</button>
+          <button onClick={() => setViewMode('grid')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${viewMode==='grid'?'bg-amber-500 text-white':'bg-muted/40 text-muted-foreground'}`}>Grid</button>
+        </div>
+        <div className={viewMode==='grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-3' : 'flex flex-col gap-2'}>
+          {filteredItems.map((item) => (
+            <div key={item.id} className="border border-border rounded-xl p-3 bg-card">
+              <p className="font-semibold text-sm">{itemName(item)}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2">{itemDesc(item)}</p>
+              <p className="text-sm font-bold mt-1">{venue.currency} {item.price}</p>
+            </div>
+          ))}
+        </div>
       </main>
 
       {/* Floating Bottom Cart Bar for Mobile (Opens Express Drawer) */}
