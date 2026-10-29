@@ -12,27 +12,27 @@
   :root {
     /* === restful.com palette mapped to MiMenu tokens === */
 
-    /* Backgrounds: soft sage-mint canvas */
-    --background:       140 40% 96%;    /* --f5faf6 / #f5faf6 — very light sage */
-    --foreground:       30 15% 10%;     /* --1c1917 — near-black earth */
+    /* Backgrounds: light slate canvas (auth page default) */
+    --background:       210 40% 98%;    /* #F8FAFC */
+    --foreground:       222 47% 11%;    /* #0F172A */
 
     /* Surface layers */
-    --card:             140 40% 98%;    /* paper */
-    --card-foreground:  30 15% 10%;
-    --popover:          140 40% 98%;
-    --popover-foreground: 30 15% 10%;
+    --card:             0 0% 100%;      /* white */
+    --card-foreground:  222 47% 11%;
+    --popover:          0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Primary: deep forest green — authority + nature */
-    --primary:          258 81% 34%;    /* logo purple #3c1a8c */
+    /* Primary: brand violet */
+    --primary:          263 74% 27%;    /* #3F127A */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: warm sage — growth, freshness */
-    --secondary:        258 60% 48%;    /* logo purple light */
-    --secondary-foreground: 40 10% 98%;
+    /* Secondary: light violet */
+    --secondary:        263 55% 45%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Accent: burnt terracotta — warmth, appetite */
-    --accent:           22 92% 54%;     /* logo orange #ff6a14 */
-    --accent-foreground: 40 10% 98%;
+    /* Accent: brand orange */
+    --accent:           19 100% 56%;    /* #FF5E1E */
+    --accent-foreground: 0 0% 100%;
 
     /* Success: soft mint green */
     --success:          140 50% 48%;
