@@ -62,10 +62,10 @@ export const SortingDialog = ({
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
-            Organizar Ordem - {category.name}
+            Organizar orden - {category.name}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Arraste os itens para reorganizar a ordem no cardápio
+            Arrastrá los ítems para reorganizar el orden en el menú
           </p>
         </DialogHeader>
 
@@ -93,7 +93,7 @@ export const SortingDialog = ({
                     <div className="flex-1">
                       <h3 className="font-semibold">{item.name}</h3>
                       <p className="text-sm text-primary font-bold">
-                        R$ {item.price.toFixed(2)}
+                        Bs. {item.price.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -115,7 +115,7 @@ export const SortingDialog = ({
             onClick={handleSave}
             disabled={isSaving}
           >
-            {isSaving ? 'Salvando...' : 'Salvar Ordem'}
+            {isSaving ? 'Guardando...' : 'Guardar orden'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -70,7 +70,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error('Nome da categoria é obrigatório');
+      toast.error('El nombre de la categoría es obligatorio');
       return;
     }
 
@@ -87,7 +87,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
           .eq('id', editingCategory.id);
 
         if (error) throw error;
-        toast.success('Categoria atualizada com sucesso!');
+        toast.success('¡Categoría actualizada con éxito!');
       } else {
         // Create new category with automatic reordering
         const newOrder = formData.display_order;
@@ -116,14 +116,14 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
           });
 
         if (error) throw error;
-        toast.success('Categoria criada com sucesso!');
+        toast.success('¡Categoría creada con éxito!');
       }
 
       handleCloseDialog();
       onCategoriesChange();
     } catch (error) {
       console.error('Error saving category:', error);
-      toast.error('Erro ao salvar categoria');
+      toast.error('Error al guardar la categoría');
     } finally {
       setSaving(false);
     }
@@ -143,7 +143,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
       if (checkError) throw checkError;
 
       if (products && products.length > 0) {
-        toast.error('Não é possível excluir categoria com produtos. Mova os produtos primeiro.');
+        toast.error('No se puede eliminar una categoría con productos. Mové los productos primero.');
         setDeletingCategory(null);
         return;
       }
@@ -156,12 +156,12 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
 
       if (error) throw error;
 
-      toast.success('Categoria excluída com sucesso!');
+      toast.success('¡Categoría eliminada con éxito!');
       setDeletingCategory(null);
       onCategoriesChange();
     } catch (error) {
       console.error('Error deleting category:', error);
-      toast.error('Erro ao excluir categoria');
+      toast.error('Error al eliminar la categoría');
     }
   };
 
@@ -172,7 +172,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
         className="w-full bg-gradient-to-r from-primary/50 to-blue-600 hover:from-primary hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12"
       >
         <Plus className="w-5 h-5 mr-2" />
-        Adicionar Categoria
+        Agregar categoría
       </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -183,7 +183,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
                 <GripVertical className="w-4 h-4 text-gray-400" />
                 <div>
                   <p className="font-medium">{category.name}</p>
-                  <p className="text-sm text-muted-foreground">Ordem: {category.display_order}</p>
+                  <p className="text-sm text-muted-foreground">Orden: {category.display_order}</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -212,23 +212,23 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingCategory ? 'Editar Categoria' : 'Nova Categoria'}
+              {editingCategory ? 'Editar categoría' : 'Nueva categoría'}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nome *</Label>
+              <Label htmlFor="name">Nombre *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Açaí, Bebidas, Lanches"
+                placeholder="Ej: Entradas, Bebidas, Postres"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="display_order">Ordem de Exibição</Label>
+              <Label htmlFor="display_order">Orden de visualización</Label>
               <Input
                 id="display_order"
                 type="number"
@@ -237,7 +237,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
                 placeholder="0"
               />
               <p className="text-xs text-muted-foreground">
-                Categorias com menor número aparecem primeiro
+                Las categorías con menor número aparecen primero
               </p>
             </div>
           </div>
@@ -247,7 +247,7 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
               Cancelar
             </Button>
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? 'Salvando...' : 'Salvar'}
+              {saving ? 'Guardando...' : 'Guardar'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -257,16 +257,16 @@ export function CategoryManagement({ categories, onCategoriesChange }: CategoryM
       <AlertDialog open={!!deletingCategory} onOpenChange={() => setDeletingCategory(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Categoria</AlertDialogTitle>
+            <AlertDialogTitle>Eliminar categoría</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir a categoria "{deletingCategory?.name}"?
-              Esta ação não pode ser desfeita.
+              ¿Seguro que querés eliminar la categoría "{deletingCategory?.name}"?
+              Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
-              Excluir
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

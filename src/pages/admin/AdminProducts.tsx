@@ -93,7 +93,7 @@ const AdminProducts = () => {
       
       if (!user) {
         console.error('❌ No user logged in!');
-        toast.error('Você precisa estar logado como admin');
+        toast.error('Necesitás iniciar sesión como administrador');
         setLoading(false);
         return;
       }
@@ -121,7 +121,7 @@ const AdminProducts = () => {
       console.log('✅ Data loaded successfully');
     } catch (error) {
       console.error('❌ Error loading data:', error);
-      toast.error('Erro ao carregar dados');
+      toast.error('Error al cargar los datos');
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ const AdminProducts = () => {
   const handleSortingSave = async () => {
     // Reload data to reflect the updated sort order
     await loadData();
-    toast.success('Ordem atualizada no cardápio!');
+    toast.success('¡Orden actualizado en el menú!');
   };
 
   const handleEdit = (item: MenuItem) => {
@@ -157,13 +157,13 @@ const AdminProducts = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('❌ Por favor, selecione uma imagem válida');
+      toast.error('❌ Por favor, seleccioná una imagen válida');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('❌ Imagem muito grande. Máximo 5MB');
+      toast.error('❌ La imagen es demasiado grande. Máximo 5 MB');
       return;
     }
 
@@ -216,17 +216,17 @@ const AdminProducts = () => {
       console.log('🔗 Public URL:', publicUrl);
 
       setFormData({ ...formData, image_url: publicUrl });
-      toast.success('✅ Imagem enviada com sucesso!');
+      toast.success('✅ ¡Imagen subida con éxito!');
       
     } catch (error: any) {
       console.error('❌ Error uploading image:', error);
       
       if (error.message?.includes('not found')) {
-        toast.error('❌ Bucket de imagens não encontrado. Contacte o administrador.');
+        toast.error('❌ No se encontró el almacenamiento de imágenes. Contactá al administrador.');
       } else if (error.message?.includes('permission')) {
-        toast.error('❌ Sem permissão para enviar imagens.');
+        toast.error('❌ Sin permiso para subir imágenes.');
       } else {
-        toast.error(`❌ Erro ao enviar imagem: ${error.message || 'Erro desconhecido'}`);
+        toast.error(`❌ Error al subir la imagen: ${error.message || 'Error desconocido'}`);
       }
     } finally {
       setUploading(false);
@@ -234,7 +234,7 @@ const AdminProducts = () => {
   };
 
   const handleDelete = async (itemId: string, itemName: string) => {
-    if (!window.confirm(`Tem certeza que deseja deletar "${itemName}"? Esta ação é irreversível.`)) {
+    if (!window.confirm(`¿Seguro que querés eliminar "${itemName}"? Esta acción es irreversible.`)) {
       return;
     }
 
@@ -253,14 +253,14 @@ const AdminProducts = () => {
       }
 
       console.log('✅ Product deleted successfully');
-      toast.success('✅ Produto deletado com sucesso!');
+      toast.success('✅ ¡Producto eliminado con éxito!');
       
       // Reload data to reflect changes
       await loadData();
       
     } catch (error: any) {
       console.error('❌ Error deleting product:', error);
-      toast.error(`❌ Erro ao deletar produto: ${error.message || 'Erro desconhecido'}`);
+      toast.error(`❌ Error al eliminar el producto: ${error.message || 'Error desconocido'}`);
     } finally {
       setSaving(false);
     }
@@ -268,14 +268,14 @@ const AdminProducts = () => {
 
   const handleSave = async () => {
     if (!formData.name || !formData.price || !formData.category_id) {
-      toast.error('Preencha todos os campos obrigatórios');
+      toast.error('Completá todos los campos obligatorios');
       return;
     }
 
     // Validate price
     const price = parseFloat(formData.price);
     if (isNaN(price) || price < 0) {
-      toast.error('Preço deve ser um número válido');
+      toast.error('El precio debe ser un número válido');
       return;
     }
 
@@ -307,7 +307,7 @@ const AdminProducts = () => {
         }
         
         console.log('✅ Product updated:', data);
-        toast.success('✅ Produto atualizado com sucesso!');
+        toast.success('✅ ¡Producto actualizado con éxito!');
       } else {
         // Create new item
         console.log('➕ Creating new product');
@@ -322,7 +322,7 @@ const AdminProducts = () => {
         }
         
         console.log('✅ Product created:', data);
-        toast.success('✅ Produto criado com sucesso!');
+        toast.success('✅ ¡Producto creado con éxito!');
       }
 
       setIsDialogOpen(false);
@@ -344,13 +344,13 @@ const AdminProducts = () => {
       
       // Provide specific error messages
       if (error.message?.includes('permission')) {
-        toast.error('❌ Erro de permissão. Verifique se você tem acesso para editar produtos.');
+        toast.error('❌ Error de permisos. Verificá que tengas acceso para editar productos.');
       } else if (error.message?.includes('network')) {
-        toast.error('❌ Erro de conexão. Verifique sua internet.');
+        toast.error('❌ Error de conexión. Verificá tu internet.');
       } else if (error.code === '23505') {
-        toast.error('❌ Já existe um produto com este nome.');
+        toast.error('❌ Ya existe un producto con este nombre.');
       } else {
-        toast.error(`❌ Erro ao salvar produto: ${error.message || 'Erro desconhecido'}`);
+        toast.error(`❌ Error al guardar el producto: ${error.message || 'Error desconocido'}`);
       }
     } finally {
       setSaving(false);
@@ -358,13 +358,13 @@ const AdminProducts = () => {
   };
 
   const getCategoryName = (categoryId: string) => {
-    return categories.find(c => c.id === categoryId)?.name || 'Sem categoria';
+    return categories.find(c => c.id === categoryId)?.name || 'Sin categoría';
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Carregando...</p>
+        <p className="text-muted-foreground">Cargando...</p>
       </div>
     );
   }
@@ -375,8 +375,8 @@ const AdminProducts = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-display font-bold text-gray-900">Produtos</h1>
-            <p className="text-gray-600 mt-1">Gerenciar cardápio e categorias</p>
+            <h1 className="text-3xl font-display font-bold text-gray-900">Productos</h1>
+            <p className="text-gray-600 mt-1">Gestioná tu menú y categorías</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -406,7 +406,7 @@ const AdminProducts = () => {
               size="lg"
             >
               <Plus className="mr-2 h-5 w-5" />
-              Novo Produto
+              Nuevo producto
             </Button>
           </div>
         </div>
@@ -419,22 +419,22 @@ const AdminProducts = () => {
               className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-6 py-2 text-sm font-display uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/50 data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-primary/5 gap-2"
             >
               <ShoppingBag className="w-4 h-4" />
-              Produtos
+              Productos
             </TabsTrigger>
             <TabsTrigger 
               value="categories" 
               className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-6 py-2 text-sm font-display uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/50 data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-primary/5 gap-2"
             >
               <FolderOpen className="w-4 h-4" />
-              Categorias
+              Categorías
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-display uppercase tracking-wider text-gray-900 mb-2">Produtos do Cardápio</h2>
+              <h2 className="text-2xl font-display uppercase tracking-wider text-gray-900 mb-2">Productos del menú</h2>
               <p className="text-gray-600 font-body">
-                {menuItems.length} produtos cadastrados • Clique em "Editar" para modificar
+                {menuItems.length} productos cargados • Hacé clic en "Editar" para modificar
               </p>
             </div>
 
@@ -456,7 +456,7 @@ const AdminProducts = () => {
                     className="bg-white/80 hover:bg-white text-primary border-2 border-primary rounded-lg transition-all duration-300 shadow-lg"
                   >
                     <ArrowUpDown className="w-4 h-4 mr-2" />
-                    Organizar Ordem no Menu
+                    Organizar Orden en el Menú
                   </Button>
                 )}
               </div>
@@ -477,7 +477,7 @@ const AdminProducts = () => {
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
                             <div className="text-center">
                               <Upload className="w-8 h-8 mx-auto mb-2" />
-                              <p className="text-xs">Sem foto</p>
+                              <p className="text-xs">Sin foto</p>
                             </div>
                           </div>
                         )}
@@ -489,7 +489,7 @@ const AdminProducts = () => {
                               ? 'bg-green-500/20 text-green-700 border border-green-500/30' 
                               : 'bg-red-500/20 text-red-700 border border-red-500/30'
                           }`}>
-                            {item.available ? '✓ Disponível' : '✗ Indisponível'}
+                            {item.available ? '✓ Disponible' : '✗ No disponible'}
                           </div>
                         </div>
                       </div>
@@ -507,7 +507,7 @@ const AdminProducts = () => {
                             {getCategoryName(item.category_id)}
                           </span>
                           <span className="text-xl font-bold text-primary">
-                            R$ {item.price.toFixed(2)}
+                            Bs. {item.price.toFixed(2)}
                           </span>
                         </div>
 
@@ -551,7 +551,7 @@ const AdminProducts = () => {
                           disabled={saving}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Deletar
+                          Eliminar
                         </Button>
                       </div>
                     </div>
@@ -567,8 +567,8 @@ const AdminProducts = () => {
             <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhum produto cadastrado</h3>
-            <p className="text-gray-600 mb-6">Comece criando seu primeiro produto do cardápio</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aún no hay productos</h3>
+            <p className="text-gray-600 mb-6">Creá tu primer producto del menú</p>
             <Button
               onClick={() => {
                 setEditingItem(null);
@@ -585,7 +585,7 @@ const AdminProducts = () => {
               className="bg-secondary hover:bg-secondary/90 text-foreground font-display uppercase tracking-wider rounded-lg shadow-lg"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Criar Primeiro Produto
+              Crear primer producto
             </Button>
           </div>
         )}
@@ -605,14 +605,14 @@ const AdminProducts = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? 'Editar Produto' : 'Novo Produto'}
+              {editingItem ? 'Editar producto' : 'Nuevo producto'}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* Image Upload */}
             <div className="space-y-2">
-              <Label>Foto do Produto</Label>
+              <Label>Foto del producto</Label>
               {formData.image_url && (
                 <div className="w-full h-48 rounded-lg overflow-hidden bg-gray-100 mb-2">
                   <img
@@ -630,33 +630,33 @@ const AdminProducts = () => {
                   disabled={uploading}
                   className="flex-1"
                 />
-                {uploading && <span className="text-sm text-muted-foreground">Enviando...</span>}
+                {uploading && <span className="text-sm text-muted-foreground">Subiendo...</span>}
               </div>
               <p className="text-xs text-muted-foreground">
-                Formatos aceitos: JPG, PNG, WebP. Máximo 5MB.
+                Formatos aceptados: JPG, PNG, WebP. Máximo 5 MB.
               </p>
             </div>
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">Nome *</Label>
+              <Label htmlFor="name">Nombre *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Açaí 500ml"
+                placeholder="Ej: Salteña de pollo"
               />
             </div>
 
             {/* Category */}
             <div className="space-y-2">
-              <Label htmlFor="category">Categoria *</Label>
+              <Label htmlFor="category">Categoría *</Label>
               <Select
                 value={formData.category_id}
                 onValueChange={(value) => setFormData({ ...formData, category_id: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma categoria" />
+                  <SelectValue placeholder="Seleccioná una categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -670,7 +670,7 @@ const AdminProducts = () => {
 
             {/* Price */}
             <div className="space-y-2">
-              <Label htmlFor="price">Preço (R$) *</Label>
+              <Label htmlFor="price">Precio (Bs.) *</Label>
               <Input
                 id="price"
                 type="number"
@@ -684,12 +684,12 @@ const AdminProducts = () => {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
+              <Label htmlFor="description">Descripción</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Descreva o produto..."
+                placeholder="Describí el producto..."
                 rows={4}
               />
             </div>
@@ -704,7 +704,7 @@ const AdminProducts = () => {
                 className="w-4 h-4"
               />
               <Label htmlFor="available" className="cursor-pointer">
-                Produto disponível para venda
+                Producto disponible para la venta
               </Label>
             </div>
           </div>
@@ -718,7 +718,7 @@ const AdminProducts = () => {
               Cancelar
             </Button>
             <Button onClick={handleSave} disabled={saving || uploading}>
-              {saving ? 'Salvando...' : 'Salvar'}
+              {saving ? 'Guardando...' : 'Guardar'}
             </Button>
           </DialogFooter>
         </DialogContent>

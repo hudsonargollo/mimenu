@@ -18,10 +18,10 @@ export const useMenuSorting = () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
-        toast.error('Sessão expirada. Por favor, faça login novamente.', {
+        toast.error('Sesión expirada. Iniciá sesión nuevamente.', {
           duration: 4000,
           action: {
-            label: 'Login',
+            label: 'Ingresar',
             onClick: () => window.location.href = '/auth'
           }
         });
@@ -35,17 +35,17 @@ export const useMenuSorting = () => {
       if (error) {
         // Handle specific error types
         if (error.message?.includes('Only admins can update sort order')) {
-          toast.error('Acesso negado. Apenas administradores podem reordenar produtos.', {
+          toast.error('Acceso denegado. Solo los administradores pueden reordenar productos.', {
             duration: 4000,
           });
           return false;
         }
         
         if (error.message?.includes('JWT')) {
-          toast.error('Sessão expirada. Por favor, faça login novamente.', {
+          toast.error('Sesión expirada. Iniciá sesión nuevamente.', {
             duration: 4000,
             action: {
-              label: 'Login',
+              label: 'Ingresar',
               onClick: () => window.location.href = '/auth'
             }
           });
@@ -55,7 +55,7 @@ export const useMenuSorting = () => {
         throw error;
       }
 
-      toast.success('Ordem salva! ✓', {
+      toast.success('¡Orden guardado! ✓', {
         duration: 2000,
         style: {
           background: 'linear-gradient(135deg, #10b981, #059669)',
@@ -77,7 +77,7 @@ export const useMenuSorting = () => {
       if (isNetworkError && retryCount < MAX_RETRIES) {
         // Retry with exponential backoff
         const delay = RETRY_DELAY * Math.pow(2, retryCount);
-        toast.loading(`Tentando novamente em ${delay / 1000}s... (${retryCount + 1}/${MAX_RETRIES})`, {
+        toast.loading(`Reintentando en ${delay / 1000}s... (${retryCount + 1}/${MAX_RETRIES})`, {
           duration: delay,
         });
         
@@ -86,15 +86,15 @@ export const useMenuSorting = () => {
       }
 
       if (isNetworkError) {
-        toast.error('Erro de conexão. Verifique sua internet e tente novamente.', {
+        toast.error('Error de conexión. Verificá tu internet e intentá de nuevo.', {
           duration: 4000,
           action: {
-            label: 'Tentar novamente',
+            label: 'Reintentar',
             onClick: () => updateSortOrder(updates, 0)
           }
         });
       } else {
-        toast.error('Erro ao salvar ordem. Tente novamente.', {
+        toast.error('Error al guardar el orden. Intentá de nuevo.', {
           duration: 3000,
         });
       }

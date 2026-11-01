@@ -56,7 +56,7 @@ export const SortableProductList = ({
     const position = items.findIndex(i => i.id === active.id) + 1;
     
     if (item) {
-      setAnnouncement(`Arrastando ${item.name}, posição ${position} de ${items.length}`);
+      setAnnouncement(`Arrastrando ${item.name}, posición ${position} de ${items.length}`);
     }
   };
 
@@ -68,7 +68,7 @@ export const SortableProductList = ({
       const overIndex = items.findIndex(i => i.id === over.id);
       
       if (activeIndex !== -1 && overIndex !== -1) {
-        setAnnouncement(`Movendo para posição ${overIndex + 1} de ${items.length}`);
+        setAnnouncement(`Moviendo a la posición ${overIndex + 1} de ${items.length}`);
       }
     }
   };
@@ -78,7 +78,7 @@ export const SortableProductList = ({
 
     if (!over || active.id === over.id) {
       setActiveId(null);
-      setAnnouncement('Arrasto cancelado');
+      setAnnouncement('Arrastre cancelado');
       return;
     }
 
@@ -87,7 +87,7 @@ export const SortableProductList = ({
 
     const item = items[oldIndex];
     if (item) {
-      setAnnouncement(`${item.name} movido para posição ${newIndex + 1}`);
+      setAnnouncement(`${item.name} movido a la posición ${newIndex + 1}`);
     }
 
     onReorder(oldIndex, newIndex);
@@ -96,7 +96,7 @@ export const SortableProductList = ({
 
   const handleDragCancel = (event: DragCancelEvent) => {
     setActiveId(null);
-    setAnnouncement('Arrasto cancelado');
+    setAnnouncement('Arrastre cancelado');
   };
 
   const activeItem = activeId ? items.find(item => item.id === activeId) : null;
@@ -123,7 +123,7 @@ export const SortableProductList = ({
         items={items.map(item => item.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div role="list" aria-label="Lista de produtos ordenável">
+        <div role="list" aria-label="Lista de productos ordenable">
           {children}
         </div>
       </SortableContext>

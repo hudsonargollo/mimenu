@@ -66,7 +66,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
           setStatus('generating');
         } else if (data.ar_status === 'failed') {
           setStatus('failed');
-          setError(data.error || 'A última geração falhou.');
+          setError(data.error || 'La última generación falló.');
         }
       } catch {
         /* non-fatal: modal stays in 'none' state */
@@ -95,12 +95,12 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
               setUsdzUrl(readyUsdz || '');
             } else {
               setStatus('failed');
-              setError('3D generation succeeded but asset hosting failed on the VPS worker.');
+              setError('La generación 3D funcionó, pero falló el alojamiento del asset en el worker VPS.');
             }
             if (interval) clearInterval(interval);
           } else if (data.status === 'FAILED') {
             setStatus('failed');
-            setError(data.error || '3D generation failed on server.');
+            setError(data.error || 'La generación 3D falló en el servidor.');
             if (interval) clearInterval(interval);
           }
         } catch (err) {
@@ -124,11 +124,11 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
         setGlbUrl('');
         setUsdzUrl('');
       } else {
-        setError(res.error || 'Failed to start generation.');
+        setError(res.error || 'No se pudo iniciar la generación.');
         setStatus('failed');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unexpected error');
+      setError(err instanceof Error ? err.message : 'Error inesperado');
       setStatus('failed');
     } finally {
       setLoading(false);
@@ -142,7 +142,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
     const g = String(fd.get('glb_url') || '').trim();
     const u = String(fd.get('usdz_url') || '').trim();
     if (!g) {
-      setError('A .glb URL is required (Android + sandbox render).');
+      setError('Se requiere una URL .glb (Android + render del sandbox).');
       return;
     }
     try {
@@ -157,25 +157,25 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
         }),
       });
       const data = (await res.json()) as { success?: boolean; error?: string };
-      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to register URLs.');
+      if (!res.ok || !data.success) throw new Error(data.error || 'No se pudieron registrar las URLs.');
       setStatus('ready');
       setGlbUrl(g);
       setUsdzUrl(u);
       setTaskId('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save URLs.');
+      setError(err instanceof Error ? err.message : 'No se pudieron guardar las URLs.');
     }
   };
 
   return (
     <div className="w-full">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">Gerenciador 3D AR: {menuItem.name}</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-4">Gestor 3D AR: {menuItem.name}</h3>
 
       <Tabs defaultValue="ai" className="w-full">
         <TabsList className="w-full mb-4">
           <TabsTrigger value="ai" className="gap-2">
             <Camera className="w-4 h-4" />
-            IA Foto-para-3D
+            IA Foto-a-3D
           </TabsTrigger>
           <TabsTrigger value="upload" className="gap-2">
             <FolderOpen className="w-4 h-4" />
@@ -186,18 +186,18 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
         <TabsContent value="ai">
           <form onSubmit={handleAIGenerate} className="space-y-4">
             <div>
-              <Label htmlFor="ar-image-url">URL da Foto do Prato</Label>
+              <Label htmlFor="ar-image-url">URL de la foto del plato</Label>
               <Input
                 id="ar-image-url"
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://exemplo.com/hamburguer.jpg"
+                placeholder="https://ejemplo.com/hamburguesa.jpg"
                 required
                 className="mt-1"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                JPG, PNG ou WebP público (máx. 20&nbsp;MB). Use a foto do produto cadastrada.
+                JPG, PNG o WebP público (máx. 20&nbsp;MB). Usá la foto del producto guardada.
               </p>
             </div>
 
@@ -207,17 +207,17 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium disabled:opacity-50"
             >
               {loading
-                ? 'Inicializando...'
+                ? 'Iniciando...'
                 : status === 'generating'
-                  ? `Construindo modelo 3D (${progress || 1}%)...`
-                  : 'Gerar 3D com IA (Meshy)'}
+                  ? `Construyendo modelo 3D (${progress || 1}%)...`
+                  : 'Generar 3D con IA (Meshy)'}
             </Button>
           </form>
         </TabsContent>
 
         <TabsContent value="upload">
           <p className="text-sm text-muted-foreground mb-3">
-            Registre assets compilados (.glb / .usdz) já hospedados (Supabase Storage, CDN, etc.).
+            Registrá assets compilados (.glb / .usdz) ya alojados (Supabase Storage, CDN, etc.).
           </p>
           <form onSubmit={handleManualSubmit} className="space-y-4">
             <div>
@@ -229,7 +229,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
               <Input id="ar-usdz-url" name="usdz_url" type="url" placeholder="https://.../modelo.usdz" className="mt-1" />
             </div>
             <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
-              Salvar URLs de AR
+              Guardar URLs de AR
             </Button>
           </form>
         </TabsContent>
@@ -246,10 +246,10 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
             {status === 'generating' ? (
               <div className="flex flex-col items-center space-y-2">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-                <p className="text-sm font-medium text-indigo-600">Gerando ativo 3D no worker VPS... {progress > 0 ? `${progress}%` : ''}</p>
+                <p className="text-sm font-medium text-indigo-600">Generando activo 3D en el worker VPS... {progress > 0 ? `${progress}%` : ''}</p>
               </div>
             ) : (
-              <p className="text-sm">Nenhum modelo 3D gerado ou enviado ainda.</p>
+              <p className="text-sm">Todavía no se generó ni subió ningún modelo 3D.</p>
             )}
           </div>
         )}
