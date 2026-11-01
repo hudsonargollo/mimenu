@@ -1,118 +1,92 @@
 /**
- * Send password reset link via WhatsApp
+ * Send password reset link by email (Resend)
  * POST /api/waiters/send-password-reset
  */
+
+import { renderEmailLayout, sendEmail } from '../../lib/email';
+
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 
 export async function onRequest(context) {
   const { request, env } = context;
 
-  // Only allow POST
   if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'Method not allowed' }, 405);
   }
 
   try {
-    // Get authorization header
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Unauthorized' }, 401);
     }
 
     const token = authHeader.substring(7);
 
-    // Parse request body
     const body = await request.json();
-    const { waiterId, waiterEmail, waiterName, phoneNumber } = body;
+    const { waiterId, waiterEmail, waiterName } = body;
 
-    if (!waiterId || !waiterEmail || !phoneNumber) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    if (!waiterId || !waiterEmail) {
+      return json({ error: 'Missing required fields' }, 400);
     }
 
-    // Import Supabase client
     const { createClient } = await import('@supabase/supabase-js');
-    
+
     const supabase = createClient(
       env.VITE_SUPABASE_URL,
       env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // Verify the token and get user
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
+
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Invalid token' }, 401);
     }
 
-    // Check if user is admin by checking auth metadata
     if (user.user_metadata?.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Forbidden - admin access required' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Forbidden - admin access required' }, 403);
     }
 
-    // Generate password reset link
     const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
       type: 'recovery',
-      email: waiterEmail
+      email: waiterEmail,
     });
 
     if (resetError) {
       console.error('Error generating reset link:', resetError);
-      return new Response(JSON.stringify({ 
-        error: 'Failed to generate password reset link'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Failed to generate password reset link' }, 500);
     }
 
-    // Format phone number for WhatsApp (remove non-digits, add country code if needed)
-    let formattedPhone = phoneNumber.replace(/\D/g, '');
-    if (!formattedPhone.startsWith('55')) {
-      formattedPhone = '55' + formattedPhone;
-    }
+    const resetUrl = resetData.properties.action_link;
+    const greeting = waiterName ? `Hola ${waiterName}` : 'Hola';
 
-    // Send WhatsApp message with reset link
-    const message = `Olá ${waiterName}! 👋\n\nClique no link abaixo para redefinir sua senha:\n\n${resetData.properties.action_link}\n\nEste link expira em 1 hora.\n\nPONTAL Carapitangui`;
-
-    // For now, just log the message (WhatsApp integration would go here)
-    console.log(`WhatsApp message to ${formattedPhone}:`, message);
-
-    // TODO: Integrate with WhatsApp API (Baileys or official API)
-    // For now, we'll just return success and the admin can send manually if needed
-
-    return new Response(JSON.stringify({ 
-      success: true,
-      message: 'Password reset link generated',
-      resetLink: resetData.properties.action_link,
-      phoneNumber: formattedPhone,
-      note: 'WhatsApp integration pending - link generated successfully'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
+    const html = renderEmailLayout({
+      heading: 'Restablecé tu contraseña',
+      intro: `${greeting}, recibimos una solicitud para restablecer la contraseña de tu cuenta en MiMenu.`,
+      cta: { label: 'Crear nueva contraseña', url: resetUrl },
+      note: 'El enlace vence en 1 hora. Si no solicitaste este cambio, podés ignorar este email.',
     });
 
+    const text = `${greeting}, recibimos una solicitud para restablecer la contraseña de tu cuenta en MiMenu.\n\nCreá una nueva contraseña acá: ${resetUrl}\n\nEl enlace vence en 1 hora. Si no solicitaste este cambio, podés ignorar este email.`;
+
+    try {
+      const result = await sendEmail(env, {
+        to: waiterEmail,
+        subject: 'Restablecé tu contraseña · MiMenu',
+        html,
+        text,
+      });
+
+      return json({ success: true, emailId: result.id });
+    } catch (emailError) {
+      console.error('Error sending password reset email:', emailError);
+      return json({ error: 'Failed to send password reset email' }, 502);
+    }
   } catch (error) {
     console.error('Error in send-password-reset:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      message: error.message 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'Internal server error', message: error.message }, 500);
   }
 }

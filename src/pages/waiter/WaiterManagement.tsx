@@ -233,12 +233,12 @@ const WaiterManagement = () => {
   };
 
   const handleResetPassword = async (waiter: Waiter) => {
-    if (!waiter.phone_number) {
-      toast.error("Este mesero no tiene un número de teléfono registrado.");
+    if (!waiter.email) {
+      toast.error("Este mesero no tiene un email registrado.");
       return;
     }
 
-    if (!window.confirm(`¿Enviar el enlace de restablecimiento de contraseña a ${waiter.full_name} por WhatsApp?`)) return;
+    if (!window.confirm(`¿Enviar el enlace de restablecimiento de contraseña a ${waiter.full_name} por email (${waiter.email})?`)) return;
 
     try {
       console.log('🔵 Sending password reset for:', waiter.id);
@@ -251,25 +251,28 @@ const WaiterManagement = () => {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('api/waiters/send-password-reset', {
-        body: { 
+      const response = await fetch('/api/waiters/send-password-reset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           waiterId: waiter.id,
           waiterEmail: waiter.email,
           waiterName: waiter.full_name,
-          phoneNumber: waiter.phone_number
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+        }),
       });
 
-      if (error) {
-        console.error('❌ Reset password error:', error);
-        throw new Error(error.message || "Error al enviar el enlace de restablecimiento.");
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        console.error('❌ Reset password error:', data);
+        throw new Error(data.error || "Error al enviar el enlace de restablecimiento.");
       }
 
-      console.log('✅ Password reset sent');
-      toast.success("✅ ¡Enlace de restablecimiento enviado por WhatsApp!");
+      console.log('✅ Password reset email sent');
+      toast.success("✅ ¡Enlace de restablecimiento enviado por email!");
 
     } catch (error: any) {
       console.error('❌ Reset password error:', error);

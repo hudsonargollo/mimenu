@@ -24,6 +24,7 @@ import {
 import { toast } from "sonner";
 import { useCart } from "@/lib/cartContext";
 import { useMimenu } from "@/lib/mimenuContext";
+import { isValidEmail, sendOrderConfirmationEmail } from "@/lib/email";
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const Checkout: React.FC = () => {
   
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [orderNotes, setOrderNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<'qr_simple' | 'cash' | 'card'>('qr_simple');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,6 +91,27 @@ const Checkout: React.FC = () => {
       setIsSuccess(true);
       clearCart();
       toast.success("¡Pedido enviado a la cocina con éxito!");
+
+      const email = customerEmail.trim();
+      if (isValidEmail(email)) {
+        sendOrderConfirmationEmail({
+          to: email,
+          customerName: customerName.trim(),
+          orderNumber: order.order_number,
+          venueName: venue.name,
+          fulfillmentType,
+          tableNumber: fulfillmentType === 'dine_in' ? (selectedTable || '1') : undefined,
+          items: cartState.items.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total: order.total,
+          currency: venue.currency || 'Bs.',
+        })
+          .then(() => toast.success("Te enviamos la confirmación por email."))
+          .catch((error) => console.error('Order confirmation email error:', error));
+      }
 
     } catch (err) {
       console.error('Error creating order:', err);
@@ -265,6 +288,17 @@ const Checkout: React.FC = () => {
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="+591 78000000"
+                  className="text-xs h-10"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">Email para recibir tu comprobante (opcional):</Label>
+                <Input
+                  type="email"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  placeholder="tu@email.com"
                   className="text-xs h-10"
                 />
               </div>

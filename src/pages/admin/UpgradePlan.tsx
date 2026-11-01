@@ -21,7 +21,10 @@ import {
   type Entitlement,
   type PlanId,
 } from '@/lib/plans';
-import { buildUpgradeMailtoUrl, buildUpgradeWhatsAppUrl } from '@/lib/salesContact';
+import { buildUpgradeWhatsAppUrl } from '@/lib/salesContact';
+import { useAuth } from '@/lib/authContext';
+import { sendUpgradeRequestEmail } from '@/lib/email';
+import { toast } from 'sonner';
 
 const isPlanId = (value: string | null): value is PlanId =>
   !!value && (PLAN_ORDER as readonly string[]).includes(value);
@@ -50,6 +53,8 @@ const UpgradePlan = () => {
   };
 
   const [targetId, setTargetId] = useState<PlanId>(preferredTarget);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     setTargetId(preferredTarget());
@@ -75,7 +80,21 @@ const UpgradePlan = () => {
   );
 
   const whatsappUrl = buildUpgradeWhatsAppUrl(contactInput);
-  const mailtoUrl = buildUpgradeMailtoUrl(contactInput);
+
+  const handleSendEmail = async () => {
+    setIsSendingEmail(true);
+    try {
+      await sendUpgradeRequestEmail({
+        ...contactInput,
+        replyTo: user?.email,
+      });
+      toast.success('Solicitud enviada a ventas.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudo enviar la solicitud.');
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -270,13 +289,15 @@ const UpgradePlan = () => {
                 <MessageCircle className="h-4 w-4" aria-hidden="true" />
                 {canRequestUpgrade ? 'Solicitar por WhatsApp' : 'Hablar con ventas'}
               </a>
-              <a
-                href={mailtoUrl}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#2a1f55]/15 bg-white/80 px-4 py-3 text-xs font-bold text-[#2a1f55] transition-colors hover:bg-white"
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={isSendingEmail}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#2a1f55]/15 bg-white/80 px-4 py-3 text-xs font-bold text-[#2a1f55] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Mail className="h-4 w-4" aria-hidden="true" />
-                Enviar email
-              </a>
+                {isSendingEmail ? 'Enviando…' : 'Enviar email'}
+              </button>
             </div>
           </div>
 

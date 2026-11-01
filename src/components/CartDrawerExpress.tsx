@@ -29,6 +29,7 @@ import { useMimenu } from '@/lib/mimenuContext';
 import { GoogleReviewHunterModal } from '@/components/GoogleReviewHunterModal';
 import { toast } from 'sonner';
 import { useLang } from '@/i18n/LanguageProvider';
+import { isValidEmail, sendOrderConfirmationEmail } from '@/lib/email';
 import { pickLocalText } from '@/lib/venueContext';
 
 interface CartDrawerExpressProps {
@@ -47,6 +48,7 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
 
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliveryReference, setDeliveryReference] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
@@ -123,6 +125,28 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
         setConfirmedOrder(order);
         clearCart();
         toast.success(`¡Pedido #${order.order_number} enviado a cocina!`);
+
+        const email = customerEmail.trim();
+        if (isValidEmail(email)) {
+          sendOrderConfirmationEmail({
+            to: email,
+            customerName: order.customer_name,
+            orderNumber: order.order_number,
+            venueName,
+            fulfillmentType,
+            tableNumber: fulfillmentType === 'dine_in' ? (selectedTable || '1') : undefined,
+            deliveryAddress: fulfillmentType === 'delivery' ? deliveryAddress : undefined,
+            items: order.items.map((item) => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+            total: order.total,
+            currency: venue.currency || 'Bs.',
+          })
+            .then(() => toast.success('Te enviamos la confirmación por email.'))
+            .catch((error) => console.error('Order confirmation email error:', error));
+        }
       } catch (err) {
         console.error(err);
         toast.error('Error al procesar el pedido');
@@ -416,6 +440,17 @@ export const CartDrawerExpress: React.FC<CartDrawerExpressProps> = ({
                       required
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-foreground mb-1 block">Email (opcional, para tu comprobante)</label>
+                  <Input
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="tu@email.com"
+                    className="text-xs h-9 rounded-lg"
+                  />
                 </div>
 
                 {fulfillmentType === 'dine_in' && (
