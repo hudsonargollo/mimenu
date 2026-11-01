@@ -10,26 +10,77 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useLang } from "@/i18n/LanguageProvider";
 
+const HEADLINES = [
+  "Menú digital que se actualiza solo y enamora clientes.",
+  "Aceptan pedidos por QR sin instalar nada.",
+  "Rotá ofertas por horario y aumentá el ticket promedio.",
+  "Medí platos estrella y ventas en tiempo real.",
+  "Control de meseros integrado sin apps extra.",
+  "Reduce errores, demoras y papeles en la operación.",
+  "Escaneá tu carta impresa y generá el menú digital en minutos.",
+  "Fidelizá con experiencias rápidas y bonitas.",
+  "Llevá tu local al siguiente nivel sin fricción.",
+  "De la carta física al pedido digital en pocos clics.",
+];
+
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, redirectToRolePage } = useAuth();
+  const { login, redirectToRolePage, user, isLoading } = useAuth();
   const { t } = useLang();
 
   useEffect(() => {
     document.title = t.nav.admin + " | MiMenu";
   }, [t.nav.admin]);
 
+  const [headlineIndex, setHeadlineIndex] = useState(() => Math.floor(Math.random() * HEADLINES.length));
   const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      redirectToRolePage(user.role);
+    }
+  }, [isLoading, user, redirectToRolePage]);
 
   // Animation sequence: loader first, then text appears
   useEffect(() => {
     const id = setTimeout(() => setEntered(true), 1400);
     return () => clearTimeout(id);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeadlineIndex(prev => (prev + 1) % HEADLINES.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('mimenu_remember_me');
+      const savedIdentifier = localStorage.getItem('mimenu_identifier');
+      if (saved === 'true' && savedIdentifier) {
+        setRememberMe(true);
+        setIdentifier(savedIdentifier);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (rememberMe) {
+        localStorage.setItem('mimenu_remember_me', 'true');
+        localStorage.setItem('mimenu_identifier', identifier);
+      } else {
+        localStorage.removeItem('mimenu_remember_me');
+        localStorage.removeItem('mimenu_identifier');
+      }
+    } catch {}
+  }, [rememberMe, identifier]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,13 +112,14 @@ const Auth = () => {
 
         console.log("✅ Login successful", cred.email, cred.tenantSlug);
         toast.success("¡Inicio de sesión exitoso!");
+        login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName, rememberMe);
         redirectToRolePage(cred.role);
         return;
       }
 
       try {
         const session = await requestSession(identifier, password);
-        await login(session.email, session.name, session.role, password, session.tenantSlug, session.venueName);
+        await login(session.email, session.name, session.role, password, session.tenantSlug, session.venueName, rememberMe);
         toast.success("¡Inicio de sesión exitoso!");
         redirectToRolePage(session.role);
       } catch (sessionError: any) {
@@ -96,50 +148,77 @@ const Auth = () => {
       <main className="w-full max-w-[400px] flex flex-col items-center mx-auto py-6 relative z-10">
         {/* Brand mark — loader morphs into static logo */}
         <motion.header
-          className="flex items-center gap-3 mb-8"
+          className="flex flex-col items-center gap-2 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Logo container - icon centered, text animates in */}
           <motion.div
-            className="relative flex items-center justify-center"
-            initial={{ width: 96, height: 96 }}
-            animate={entered ? { width: 56, height: 56 } : { width: 96, height: 96 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          >
-            {/* Brand mark with gentle idle float */}
-            <motion.div
-              className="relative flex items-center justify-center"
-              animate={entered ? { y: [0, -4, 0] } : { y: 0 }}
-              transition={
-                entered
-                  ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }
-                  : { duration: 0 }
-              }
-            >
-              <motion.img
-                src="/mimenu.svg"
-                alt="MiMenu"
-                className="w-full h-full"
-                initial={{ scale: 0.6, opacity: 0.4, rotate: -8 }}
-                animate={
-                  entered
-                    ? { scale: 1, opacity: 1, rotate: 0 }
-                    : { scale: 0.85, opacity: 0.7, rotate: 0 }
-                }
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              />
-            </motion.div>
-          </motion.div>
-          <motion.div
-            className="flex items-center text-3xl font-extrabold tracking-tight select-none"
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -8 }}
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: entered ? 1 : 0, y: entered ? 0 : 8 }}
             transition={{ duration: 0.5, delay: 0.9 }}
           >
-            <span className="text-[hsl(var(--brand-violet))]">Mi</span>
-            <span className="text-[hsl(var(--brand-orange))]">Menu</span>
+            {/* Logo container */}
+            <motion.div
+              className="relative flex items-center justify-center"
+              initial={{ width: 130, height: 130 }}
+              animate={entered ? { width: 88, height: 88 } : { width: 130, height: 130 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            >
+              <motion.div
+                className="relative flex items-center justify-center"
+                animate={entered ? { y: [0, -4, 0] } : { y: 0 }}
+                transition={
+                  entered
+                    ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }
+                    : { duration: 0 }
+                }
+              >
+                <motion.img
+                  src="/mimenu.svg"
+                  alt="MiMenu"
+                  className="w-full h-full"
+                  initial={{ scale: 0.6, opacity: 0.4, rotate: -8 }}
+                  animate={
+                    entered
+                      ? { scale: 1, opacity: 1, rotate: 0 }
+                      : { scale: 0.85, opacity: 0.7, rotate: 0 }
+                  }
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                />
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="flex items-center text-4xl sm:text-5xl font-extrabold tracking-tight select-none"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -8 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+            >
+              <span className="text-[hsl(var(--brand-violet))]">Mi</span>
+              <span className="text-[hsl(var(--brand-orange))]">Menu</span>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className="h-14 sm:h-16 overflow-hidden w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1 }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={headlineIndex}
+                initial={{ y: 18, opacity: 0, filter: "blur(4px)" }}
+                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: -18, opacity: 0, filter: "blur(4px)" }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="text-[15px] sm:text-[16px] leading-snug text-slate-600 font-semibold text-center px-1"
+              >
+                {HEADLINES[headlineIndex]}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         </motion.header>
 
@@ -232,6 +311,28 @@ const Auth = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+            </motion.div>
+
+            {/* Remember me */}
+            <motion.div
+              className="flex items-center justify-between"
+              initial={{ opacity: 0, y: 16 }}
+              animate={entered ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
+              <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+                <span className="relative inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <span className="h-5 w-9 rounded-full border border-white/40 bg-white/40 backdrop-blur-md transition-all peer-checked:bg-white/70 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-white/60" />
+                  <span className="absolute left-[2px] top-[2px] h-4 w-4 rounded-full border border-white/60 bg-white/80 shadow-sm transition-all peer-checked:translate-x-[18px]" />
+                </span>
+                <span className="font-semibold">Mantenerme conectado</span>
+              </label>
             </motion.div>
 
             {/* Submit Button CTA */}

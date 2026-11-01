@@ -20,11 +20,9 @@ import {
   Copy,
   ChefHat,
   Flame,
-  ArrowRight,
   Eye
 } from 'lucide-react';
 import {
-  SAMPLE_MENU_PHOTOS,
   parseMenuTranscript,
   convertIngestionToMimenuCategories,
   ExtractedRawItem,
@@ -68,7 +66,7 @@ useEffect(() => {
   };
 
   // Handle Preset Selection
-  const handleSelectSample = (sample: typeof SAMPLE_MENU_PHOTOS[0]) => {
+  const handleSelectSample = (sample: { url: string; sampleText: string; title: string }) => {
     setSelectedImage(sample.url);
     runVisionAnalysis(sample.sampleText, sample.title, true);
   };
@@ -273,49 +271,6 @@ useEffect(() => {
                   </label>
                 </CardContent>
               </Card>
-            </div>
-
-            {/* Examples Grid */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                O prueba con ejemplos preconfigurados de Santa Cruz:
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {SAMPLE_MENU_PHOTOS.map((sample) => (
-                  <Card 
-                    key={sample.id}
-                    onClick={() => handleSelectSample(sample)}
-                    className="group border border-border/80 hover:border-primary transition-all cursor-pointer bg-card hover:bg-card/80 overflow-hidden"
-                  >
-                    <div className="h-32 w-full overflow-hidden relative">
-                      <img 
-                        src={sample.url} 
-                        alt={sample.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                      />
-                      <Badge className="absolute top-2 right-2 bg-black/70 backdrop-blur-md text-[10px] text-white">
-                        {sample.category}
-                      </Badge>
-                    </div>
-                    <CardHeader className="p-4 pb-2">
-                      <CardTitle className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                        {sample.title}
-                      </CardTitle>
-                      <CardDescription className="text-xs line-clamp-2">
-                        {sample.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                      <Button size="sm" variant="secondary" className="w-full text-xs font-bold gap-1.5 h-8">
-                        <span>Escanear esta Carta</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
             </div>
 
             {/* Manual text transcript fallback */}

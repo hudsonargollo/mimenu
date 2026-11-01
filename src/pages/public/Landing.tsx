@@ -27,6 +27,7 @@ import {
 import { useMimenu } from "@/lib/mimenuContext";
 import { PLANS, planPriceLabel } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
@@ -387,7 +388,9 @@ export const Landing: React.FC = () => {
             </div>
 
             {/* Right: Live Interactive Gastronomic Device Preview */}
-            <div className="lg:col-span-5 relative">
+            <div className="lg:col-span-5 relative space-y-6">
+              <AnimatedLogo className="w-full" />
+
               <div className="relative mx-auto max-w-[380px] rounded-[36px] bg-gradient-to-b from-white/15 to-white/5 p-[1px] shadow-2xl shadow-black/80">
                 <div className="rounded-[35px] bg-[#0D0E15] p-5 space-y-4 overflow-hidden border border-white/[0.05]">
                   

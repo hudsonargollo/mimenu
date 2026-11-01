@@ -124,76 +124,76 @@ const AdminDashboard: React.FC = () => {
       {/* Primary KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Gross Revenue */}
-        <Card className="border border-border/80 shadow-xs bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase flex items-center justify-between">
-              <span>Ventas del Turno</span>
-              <DollarSign className="w-4 h-4 text-emerald-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-foreground">
+        <div className="group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15]">
+          <div className="p-5 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ventas del Turno</p>
+              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                <DollarSign className="w-4 h-4 text-emerald-300" />
+              </div>
+            </div>
+            <div className="text-3xl font-display font-bold text-white/90">
               {venue.currency} {totalRevenue.toFixed(0)}
             </div>
-            <p className="text-[11px] text-emerald-500 font-semibold mt-1 flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> Basado en datos reales
+            <p className="text-[11px] text-emerald-300/90 font-semibold flex items-center gap-1">
+              <TrendingUp className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" /> Basado en datos reales
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Live Orders in Kitchen */}
-        <Card className="border border-border/80 shadow-xs bg-card cursor-pointer hover:border-primary transition-all" onClick={() => navigate('/cashier')}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase flex items-center justify-between">
-              <span>Pedidos en Cocina / KDS</span>
-              <ChefHat className="w-4 h-4 text-amber-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-amber-500">
+        <div onClick={() => navigate('/cashier')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
+          <div className="p-5 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Pedidos en Cocina / KDS</p>
+              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                <ChefHat className="w-4 h-4 text-amber-300" />
+              </div>
+            </div>
+            <div className="text-3xl font-display font-bold text-amber-300">
               {activeOrdersCount} activos
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
+            <p className="text-[11px] text-white/65 font-semibold">
               {orders.length} pedidos totales hoy
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Table Occupancy */}
-        <Card className="border border-border/80 shadow-xs bg-card cursor-pointer hover:border-primary transition-all" onClick={() => navigate('/admin/tables')}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase flex items-center justify-between">
-              <span>Ocupación de Mesas</span>
-              <QrCode className="w-4 h-4 text-blue-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-foreground">
+        <div onClick={() => navigate('/admin/tables')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
+          <div className="p-5 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ocupación de Mesas</p>
+              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                <QrCode className="w-4 h-4 text-sky-300" />
+              </div>
+            </div>
+            <div className="text-3xl font-display font-bold text-white/90">
               {occupiedTablesCount} / {tables.length}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
+            <p className="text-[11px] text-white/65 font-semibold">
               {Math.round((occupiedTablesCount / tables.length) * 100)}% capacidad ocupada
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Cycling Offers Revenue */}
-        <Card className="border border-border/80 shadow-xs bg-card cursor-pointer hover:border-primary transition-all" onClick={() => navigate('/admin/offers')}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase flex items-center justify-between">
-              <span>Ventas Smart Offers</span>
-              <Sparkles className="w-4 h-4 text-red-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-red-500">
+        <div onClick={() => navigate('/admin/offers')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
+          <div className="p-5 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ventas Smart Offers</p>
+              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                <Sparkles className="w-4 h-4 text-rose-300" />
+              </div>
+            </div>
+            <div className="text-3xl font-display font-bold text-rose-300">
               {venue.currency} {totalOfferRevenue.toFixed(0)}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
+            <p className="text-[11px] text-white/65 font-semibold">
               {totalOfferConversions} combos convertidos
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Main Grid: Hotness Leaderboard & Active Smart Offers */}

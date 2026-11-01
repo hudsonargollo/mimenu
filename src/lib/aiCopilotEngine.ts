@@ -24,7 +24,9 @@ export interface AIChatAction {
     | 'TOGGLE_CYCLING_OFFER'
     | 'RECALCULATE_HOTNESS'
     | 'APPROVE_REVIEWS'
-    | 'UPDATE_VENUE_INFO';
+    | 'UPDATE_VENUE_INFO'
+    | 'REGENERATE_ITEMS'
+    | 'DELETE_MENU_ITEM';
   label: string;
   payload: any;
   status: 'pending' | 'executed' | 'cancelled';
@@ -353,6 +355,71 @@ export class MimenuAIEngine {
     }
 
     // DEFAULT COGNITIVE ADVISORY
+    const wantsDisable = lower.includes('desactivar') || lower.includes('ocultar') || lower.includes('no disponible') || lower.includes('agotado');
+    const wantsEnable = lower.includes('activar') || lower.includes('disponible') || lower.includes('habilitar');
+    if (wantsDisable || wantsEnable) {
+      const target = allItems.find(i => lower.includes(i.name.toLowerCase()));
+      const isAvailable = wantsEnable ?? !target?.is_available;
+      const matched = target || allItems[0];
+      return {
+        id: `msg-${Date.now()}`,
+        sender: 'ai',
+        text: wantsDisable
+          ? `Voy a marcar **${matched.name}** como no disponible.`
+          : `Voy a activar **${matched.name}** en el menú digital.`,
+        timestamp,
+        actions: [
+          {
+            id: `act-${Date.now()}`,
+            type: 'TOGGLE_ITEM_AVAILABILITY',
+            label: `${wantsEnable ? 'Activar' : 'Desactivar'} "${matched.name}"`,
+            payload: {
+              item_id: matched.id,
+              name: matched.name,
+              is_available: Boolean(isAvailable)
+            },
+            status: 'pending',
+          },
+        ],
+      };
+    }
+
+    if (lower.includes('eliminar') || lower.includes('borrar') || lower.includes('quitar')) {
+      const target = allItems.find(i => lower.includes(i.name.toLowerCase())) || allItems[0];
+      return {
+        id: `msg-${Date.now()}`,
+        sender: 'ai',
+        text: `¿Querés eliminar **${target.name}** del menú? Esta acción no se puede deshacer.`,
+        timestamp,
+        actions: [
+          {
+            id: `act-${Date.now()}`,
+            type: 'DELETE_MENU_ITEM',
+            label: `Eliminar "${target.name}"`,
+            payload: { item_id: target.id, name: target.name },
+            status: 'pending',
+          }
+        ]
+      };
+    }
+
+    if (lower.includes('imagen') || lower.includes('foto') || lower.includes('descripcion') || lower.includes('regenerar') || lower.includes('mejorar')) {
+      return {
+        id: `msg-${Date.now()}`,
+        sender: 'ai',
+        text: `Listo. Podés regenerar contenido visual y descripciones donde falten.`,
+        timestamp,
+        actions: [
+          {
+            id: `act-${Date.now()}`,
+            type: 'REGENERATE_ITEMS',
+            label: 'Regenerar contenido visual y descripciones',
+            payload: {},
+            status: 'pending',
+          }
+        ]
+      };
+    }
     return {
       id: `msg-${Date.now()}`,
       sender: 'ai',

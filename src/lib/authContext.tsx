@@ -18,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, name: string, role?: User['role'], password?: string, tenantSlug?: string | null, venueName?: string | null) => void;
+  login: (email: string, name: string, role?: User['role'], password?: string, tenantSlug?: string | null, venueName?: string | null, rememberMe?: boolean) => void;
   /** Tenant resolved from the login email, if the email belongs to one. */
   tenant: TenantAccount | null;
   logout: () => void;
@@ -29,6 +29,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'mimenu_auth_user';
+const REMEMBER_KEY = 'mimenu_auth_user_persist';
 
 // Default users (in production, this would be in KV or a database)
 const DEFAULT_USERS: Record<string, User> = {
@@ -63,7 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Load user from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem(STORAGE_KEY);
-    if (savedUser) {
+    const persist = localStorage.getItem(REMEMBER_KEY);
+    if (persist === 'true' && savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
         // Validate stored user
@@ -73,11 +75,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Error loading auth from localStorage:', error);
       }
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+      setUser(null);
     }
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((email: string, name: string, role: User['role'] = 'admin', password?: string, tenantSlugOverride?: string | null, venueNameOverride?: string | null) => {
+  const login = useCallback((email: string, name: string, role: User['role'] = 'admin', password?: string, tenantSlugOverride?: string | null, venueNameOverride?: string | null, rememberMe?: boolean) => {
     // A login that belongs to a registered tenant is bound to that venue;
     // anything else is the platform/demo account.
     const tenant = resolveTenantForLogin(email);
@@ -94,10 +99,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setUser(loggedUser);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
+    if (rememberMe) {
+      localStorage.setItem(REMEMBER_KEY, 'true');
+    } else {
+      localStorage.removeItem(REMEMBER_KEY);
+    }
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(REMEMBER_KEY);
     clearAppSession();
     setUser(null);
   }, []);

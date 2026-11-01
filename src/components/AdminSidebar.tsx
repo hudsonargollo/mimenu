@@ -41,36 +41,27 @@ const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems: SidebarItem[] = [
-    { label: 'AI Copilot', icon: <Bot className="w-5 h-5" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA', feature: 'whatsapp_concierge' },
-    { label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/admin', description: 'Resumen & Kpis' },
-    { label: 'Ingestor Carta IA', icon: <Camera className="w-5 h-5" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision', feature: 'photographed_menu' },
-    { label: 'Cocina & KDS', icon: <ChefHat className="w-5 h-5" />, path: '/cashier', description: 'Pedidos en vivo', feature: 'kds' },
-    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-5 h-5" />, path: '/admin/offers', description: 'Cycling promos', feature: 'smart_offers' },
-    { label: 'Hotness & Métricas', icon: <Flame className="w-5 h-5" />, path: '/admin/analytics', description: 'Velocidad & Ventas', feature: 'analytics' },
-    { label: 'Mesas & QR', icon: <QrCode className="w-5 h-5" />, path: '/admin/tables', description: 'Table mapping' },
-    { label: 'CRM & Clientes', icon: <Users className="w-5 h-5" />, path: '/admin/customers', description: 'Fidelización & VIP', feature: 'crm' },
-    { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-5 h-5" />, path: '/admin/reviews', description: 'Moderación' },
-    { label: 'White-Label & Marca', icon: <Palette className="w-5 h-5" />, path: '/admin/branding', description: 'Personalización', feature: 'custom_website' },
-    { label: 'Configuraciones', icon: <Settings className="w-5 h-5" />, path: '/admin/settings', description: 'Sistema & Red' },
+    { label: 'AI Copilot', icon: <Bot className="w-6 h-6" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA', feature: 'whatsapp_concierge' },
+    { label: 'Dashboard', icon: <LayoutDashboard className="w-6 h-6" />, path: '/admin', description: 'Resumen & Kpis' },
+    { label: 'Ingestor Carta IA', icon: <Camera className="w-6 h-6" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision', feature: 'photographed_menu' },
+    { label: 'Cocina & KDS', icon: <ChefHat className="w-6 h-6" />, path: '/cashier', description: 'Pedidos en vivo', feature: 'kds' },
+    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-6 h-6" />, path: '/admin/offers', description: 'Cycling promos', feature: 'smart_offers' },
+    { label: 'Hotness & Métricas', icon: <Flame className="w-6 h-6" />, path: '/admin/analytics', description: 'Velocidad & Ventas', feature: 'analytics' },
+    { label: 'Mesas & QR', icon: <QrCode className="w-6 h-6" />, path: '/admin/tables', description: 'Table mapping' },
+    { label: 'CRM & Clientes', icon: <Users className="w-6 h-6" />, path: '/admin/customers', description: 'Fidelización & VIP', feature: 'crm' },
+    { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-6 h-6" />, path: '/admin/reviews', description: 'Moderación' },
+    { label: 'Configuraciones', icon: <Settings className="w-6 h-6" />, path: '/admin/settings', description: 'Sistema, Marca & Usuarios' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-white/60 backdrop-blur-md text-[#3a2f6b] p-2 rounded-xl shadow-lg border border-white/40"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </button>
-
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen transition-all duration-300 z-40 ${
+        className={`relative h-screen transition-all duration-300 z-40 flex flex-col ${
           isOpen ? 'w-64' : 'w-20'
-        } md:w-64 md:relative md:translate-x-0 ${!isOpen && 'md:w-20'} flex flex-col`}
+        }`}
         style={{
           background: 'rgba(255,255,255,0.35)',
           backdropFilter: 'blur(18px)',
@@ -80,31 +71,38 @@ const AdminSidebar = () => {
         }}
       >
         {/* Logo Section */}
-        <div className="p-5 border-b border-white/40 flex items-center justify-between">
+        <div className="p-5 border-b border-white/40 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <img src="/mimenu.svg" alt="MiMenu" className="h-9 w-9 shrink-0" />
             {isOpen && (
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-black text-sm tracking-tight text-[#2a1f55]">{venue?.name ?? 'MiMenu'}</span>
-                  {venue?.plan !== 'custom' ? (
-                    <Link
-                      to="/admin/upgrade"
-                      title="Upgrade plan"
-                      className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded hover:bg-white hover:text-[#2a1f55] transition-colors"
-                    >
-                      {venue?.plan_name ?? 'Basic'}
-                    </Link>
-                  ) : (
-                    <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
-                      {venue?.plan_name ?? 'Basic'}
-                    </span>
-                  )}
-                </div>
+                {venue?.plan !== 'custom' ? (
+                  <Link
+                    to="/admin/upgrade"
+                    title="Upgrade plan"
+                    className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded hover:bg-white hover:text-[#2a1f55] transition-colors"
+                  >
+                    {venue?.plan_name ?? 'Basic'}
+                  </Link>
+                ) : (
+                  <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
+                    {venue?.plan_name ?? 'Basic'}
+                  </span>
+                )}
               </div>
             )}
           </div>
         </div>
+
+        {/* Edge toggle button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="absolute -right-3.5 top-6 z-50 hidden md:flex items-center justify-center w-7 h-7 rounded-full bg-white border border-white/60 text-[#3a2f6b] shadow-[0_2px_8px_rgba(0,0,0,0.15)] hover:bg-white hover:text-[#2a1f55] transition-colors"
+          title={isOpen ? 'Colapsar' : 'Expandir'}
+          style={{ transform: 'translateX(50%)' }}
+        >
+          {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
 
         {/* Live Menu Preview Link */}
         <div className="px-3 pt-3">
@@ -137,11 +135,11 @@ const AdminSidebar = () => {
               onClick={() =>
                 navigate(locked && item.feature ? `/admin/upgrade?feature=${item.feature}` : item.path)
               }
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive(item.path)
                   ? 'text-white font-bold shadow-md'
                   : 'text-[#3a2f6b] hover:bg-white/40 hover:text-[#2a1f55]'
-              }`}
+              } ${!isOpen ? 'md:justify-center md:px-0' : ''}`}
               style={
                 isActive(item.path)
                   ? { background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }
@@ -149,17 +147,15 @@ const AdminSidebar = () => {
               }
               title={!isOpen ? item.label : locked ? `Requiere plan ${requiredPlan?.name}` : ''}
             >
-              <div className="flex items-center gap-3">
-                <span className={`flex-shrink-0 ${locked && !isActive(item.path) ? 'opacity-40' : ''}`}>{item.icon}</span>
-                {isOpen && (
-                  <div className="text-left">
-                    <div className={`text-xs font-bold ${locked && !isActive(item.path) ? 'text-[#3a2f6b]/50' : ''}`}>{item.label}</div>
-                    <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>
-                      {locked ? `Plan ${requiredPlan?.name}` : item.description}
-                    </div>
+              <span className={`flex-shrink-0 ${locked && !isActive(item.path) ? 'opacity-40' : ''}`}>{item.icon}</span>
+              {isOpen && (
+                <div className="text-left">
+                  <div className={`text-xs font-bold ${locked && !isActive(item.path) ? 'text-[#3a2f6b]/50' : ''}`}>{item.label}</div>
+                  <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>
+                    {locked ? `Plan ${requiredPlan?.name}` : item.description}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {isOpen && locked && (
                 <Lock className="w-3.5 h-3.5 flex-shrink-0 text-[#8b5cf6]" aria-label={`Requiere plan ${requiredPlan?.name}`} />
@@ -200,9 +196,6 @@ const AdminSidebar = () => {
 
         {/* Footer info */}
         <div className="p-3 border-t border-white/40 text-[11px] text-[#5b4a9e] flex items-center justify-between">
-          {isOpen && (
-            <span className="text-[10px]">MIMENU KV • SCZ</span>
-          )}
           <button
             onClick={() => navigate('/')}
             className="text-[11px] font-bold flex items-center gap-1 text-[#5b4a9e] hover:text-[#2a1f55]"
