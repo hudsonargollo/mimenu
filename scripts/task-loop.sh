@@ -29,18 +29,20 @@ usage() {
 [ $# -ge 1 ] || usage
 MSG="$1"
 
-# 1) Stage tracked changes only (leave untracked files alone)
+# 1) Stage tracked changes only (leave untracked files alone).
+#    Exclude the loop script itself so it does not get committed on every run.
 cd "$REPO_ROOT"
-git add -A
+git add -A -- ':!scripts/task-loop.sh' 2>/dev/null || true
 UNTRACKED=$(git status --porcelain 2>/dev/null | grep -c '^??' || true)
 if [ "$UNTRACKED" -gt 0 ]; then
   log_warn "Untracked files present: $UNTRACKED — leaving them out of the commit."
 fi
 
-# 2) Commit (skip if nothing to commit)
-if git diff --staged --quiet 2>/dev/null && git diff --quiet 2>/dev/null; then
-  log_info "Nothing to commit — working tree clean."
-  log_info "Skipping commit; building and deploying already-committed code."
+# 2) Commit only if there are actual staged changes (the loop script itself
+#    is excluded from `git add` via :! filter, so its internal edits don't
+#    create a commit on every run).
+if git diff --staged --quiet 2>/dev/null; then
+  log_info "No changes to commit — building and deploying committed code."
 else
   git commit -m "$MSG"
   log_info "Committed: $(git log --oneline -1)"
