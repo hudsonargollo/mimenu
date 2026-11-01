@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingBag, UtensilsCrossed, Sparkles, MapPin, Search, X, ShieldAlert, Flame } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
+import { hasEntitlement } from '@/lib/plans';
 import { useCart } from '@/lib/cartContext';
 import { Button } from '@/components/ui/button';
 import { TableSelectorModal } from '@/components/TableSelectorModal';
@@ -46,9 +47,11 @@ export const MimenuHeader: React.FC<MimenuHeaderProps> = ({
           </div>
 
           <div className="hidden sm:flex items-center gap-4 text-slate-300">
-            <Link to="/admin/ai" className="hover:text-white flex items-center gap-1.5 transition-colors font-medium">
-              <Sparkles className="w-3 h-3 text-amber-400" aria-hidden="true" /> Copiloto IA
-            </Link>
+            {hasEntitlement(venue.slug, 'whatsapp_concierge') && (
+              <Link to="/admin/ai" className="hover:text-white flex items-center gap-1.5 transition-colors font-medium">
+                <Sparkles className="w-3 h-3 text-amber-400" aria-hidden="true" /> Copiloto IA
+              </Link>
+            )}
             <Link to="/admin" className="hover:text-white flex items-center gap-1.5 transition-colors">
               <ShieldAlert className="w-3 h-3 text-slate-400" aria-hidden="true" /> Panel Admin
             </Link>
