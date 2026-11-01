@@ -23,6 +23,7 @@ const OrderStatus = lazy(() => import("./pages/customer/OrderStatus"));
 
 // Lazy load admin pages
 const Admin = lazy(() => import("./pages/admin/Admin"));
+const UpgradePlan = lazy(() => import("./pages/admin/UpgradePlan"));
 const AdminAIChat = lazy(() => import("./pages/admin/AdminAIChat"));
 const AdminMenuIngester = lazy(() => import("./pages/admin/AdminMenuIngester"));
 const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
@@ -266,6 +267,11 @@ const App = () => {
                     <Route path="/admin" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <Admin />
+                      </Suspense>
+                    } />
+                    <Route path="/admin/upgrade" element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <UpgradePlan />
                       </Suspense>
                     } />
                     <Route path="/admin/ai" element={planPage('whatsapp_concierge', <AdminAIChat />)} />

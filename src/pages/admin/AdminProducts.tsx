@@ -530,10 +530,13 @@ const AdminProducts = () => {
                           Editar
                         </Button>
                         <Button
-                          onClick={() => setArItem(item)}
+                          onClick={() =>
+                            canUseAr
+                              ? setArItem(item)
+                              : navigate('/admin/upgrade?feature=ar_3d')
+                          }
                           variant="outline"
-                          disabled={!canUseAr}
-                          title={canUseAr ? undefined : `Requiere plan ${requiredPlanFor('ar_3d').name}`}
+                          title={canUseAr ? undefined : `Requiere plan ${requiredPlanFor('ar_3d').name} — clic para mejorar`}
                           className="w-full border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-display uppercase tracking-wider shadow-lg hover:shadow-xl rounded-lg transition-all disabled:opacity-50"
                           size="sm"
                         >

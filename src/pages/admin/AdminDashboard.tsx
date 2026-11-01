@@ -16,16 +16,20 @@ import {
   ExternalLink,
   MessageSquare,
   Camera,
+  Lock,
   UtensilsCrossed
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { HotnessIndicator } from '@/components/HotnessIndicator';
 import { MenuPhotoIngesterModal } from '@/components/MenuPhotoIngesterModal';
+import AdminUpgradeBanner from '@/components/UpgradeBanner';
+import { hasEntitlement, requiredPlanFor } from '@/lib/plans';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { venue, categories, cyclingOffers, activeOffers, tables, reviews, orders, recalculateAllHotness } = useMimenu();
   const [isPhotoIngesterOpen, setIsPhotoIngesterOpen] = React.useState(false);
+  const canUsePhotoIngester = hasEntitlement(venue?.slug, 'photographed_menu');
 
   useEffect(() => {
     document.title = `Command Center: ${venue.name} | MiMenu`;
@@ -68,13 +72,30 @@ const AdminDashboard: React.FC = () => {
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            onClick={() => setIsPhotoIngesterOpen(true)}
+            onClick={() =>
+              canUsePhotoIngester
+                ? setIsPhotoIngesterOpen(true)
+                : navigate('/admin/upgrade?feature=photographed_menu')
+            }
             variant="outline"
+            title={
+              canUsePhotoIngester
+                ? undefined
+                : `Requiere plan ${requiredPlanFor('photographed_menu').name} — clic para mejorar`
+            }
             className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 text-xs font-bold gap-1.5 shadow-sm"
           >
-            <Camera className="w-3.5 h-3.5" />
+            {canUsePhotoIngester ? (
+              <Camera className="w-3.5 h-3.5" />
+            ) : (
+              <Lock className="w-3.5 h-3.5" />
+            )}
             <Sparkles className="w-3 h-3 text-amber-500" />
-            <span>Escanear Carta con Foto</span>
+            <span>
+              {canUsePhotoIngester
+                ? 'Escanear Carta con Foto'
+                : `Escanear Carta · Plan ${requiredPlanFor('photographed_menu').name}`}
+            </span>
           </Button>
 
           <Button
@@ -97,6 +118,8 @@ const AdminDashboard: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      <AdminUpgradeBanner />
 
       {/* Primary KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

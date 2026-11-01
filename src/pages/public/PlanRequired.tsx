@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Lock, MessageCircle, Sparkles } from 'lucide-react';
 import { ENTITLEMENT_LABELS, type PlanAccess } from '@/lib/plans';
-
-const SALES_WHATSAPP = '59170000000';
+import { buildUpgradeWhatsAppUrl } from '@/lib/salesContact';
 
 interface PlanRequiredProps {
   access: PlanAccess;
@@ -13,10 +12,12 @@ const PlanRequired = ({ access }: PlanRequiredProps) => {
   const noTenant = access.reason === 'no_tenant';
   const lapsed = access.downgraded;
 
-  const upgradeMessage = noTenant
-    ? 'Hola, quiero activar MiMenu para mi restaurante.'
-    : `Hola, quiero subir el plan de ${access.venueSlug} a ${access.requiredPlan.name} para usar ${featureLabel}.`;
-  const whatsappUrl = `https://wa.me/${SALES_WHATSAPP}?text=${encodeURIComponent(upgradeMessage)}`;
+  const whatsappUrl = buildUpgradeWhatsAppUrl({
+    venueSlug: noTenant ? null : access.venueSlug,
+    currentPlanName: noTenant ? null : access.currentPlan.name,
+    targetPlanName: noTenant ? null : access.requiredPlan.name,
+    featureLabel: noTenant ? null : featureLabel,
+  });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
@@ -64,31 +65,56 @@ const PlanRequired = ({ access }: PlanRequiredProps) => {
         )}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[hsl(var(--brand-orange))] px-4 py-3 text-sm font-bold text-[hsl(var(--brand-orange-foreground))] transition-opacity hover:opacity-90"
-          >
-            <MessageCircle className="h-4 w-4" />
-            {noTenant ? 'Activar MiMenu' : 'Solicitar upgrade'}
-          </a>
-          <Link
-            to="/docs"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold text-foreground transition-colors hover:bg-muted"
-          >
-            <Sparkles className="h-4 w-4" />
-            Ver planes
-          </Link>
+          {noTenant ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[hsl(var(--brand-orange))] px-4 py-3 text-sm font-bold text-[hsl(var(--brand-orange-foreground))] transition-opacity hover:opacity-90"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Activar MiMenu
+            </a>
+          ) : (
+            <>
+              <Link
+                to={`/admin/upgrade?feature=${access.entitlement}`}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[hsl(var(--brand-violet))] px-4 py-3 text-sm font-bold text-[hsl(var(--brand-violet-foreground))] transition-opacity hover:opacity-90"
+              >
+                <Sparkles className="h-4 w-4" />
+                Ver opciones de upgrade
+              </Link>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold text-foreground transition-colors hover:bg-muted"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Escribir a ventas
+              </a>
+            </>
+          )}
         </div>
 
-        <Link
-          to="/admin"
-          className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver al panel
-        </Link>
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver al panel
+          </Link>
+          {noTenant && (
+            <Link
+              to="/docs"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
+            >
+              <Sparkles className="h-4 w-4" />
+              Ver planes
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

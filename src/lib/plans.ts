@@ -288,3 +288,25 @@ export function planFieldsForVenue(slug: string | null | undefined): VenuePlanFi
 export function applyPlanToVenue<T extends { slug?: string | null }>(venue: T): T & VenuePlanFields {
   return { ...venue, ...planFieldsForVenue(venue?.slug) };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Upgrade UX helpers                                                          */
+/* -------------------------------------------------------------------------- */
+
+/** The tier immediately above `id`, or null when it is already the top tier. */
+export function nextPlanAfter(id: PlanId): PlanDefinition | null {
+  const rank = PLAN_CATALOG[id].rank;
+  return (
+    PLAN_ORDER.map((planId) => PLAN_CATALOG[planId]).find((plan) => plan.rank === rank + 1) ?? null
+  );
+}
+
+/** What a plan unlocks over the tier below it (the whole plan for Basic). */
+export function addedEntitlements(id: PlanId): Entitlement[] {
+  const plan = PLAN_CATALOG[id];
+  const lower = PLAN_ORDER.map((planId) => PLAN_CATALOG[planId]).find(
+    (candidate) => candidate.rank === plan.rank - 1
+  );
+  if (!lower) return [...plan.entitlements];
+  return plan.entitlements.filter((entitlement) => !lower.entitlements.includes(entitlement));
+}

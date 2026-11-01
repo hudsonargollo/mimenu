@@ -93,9 +93,19 @@ const AdminSidebar = () => {
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-sm tracking-tight text-[#2a1f55]">{venue?.name ?? 'MiMenu'}</span>
-                  <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
-                    {venue?.plan_name ?? 'Basic'}
-                  </span>
+                  {venue?.plan !== 'custom' ? (
+                    <Link
+                      to="/admin/upgrade"
+                      title="Mejorar plan"
+                      className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded hover:bg-white hover:text-[#2a1f55] transition-colors"
+                    >
+                      {venue?.plan_name ?? 'Basic'}
+                    </Link>
+                  ) : (
+                    <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
+                      {venue?.plan_name ?? 'Basic'}
+                    </span>
+                  )}
                 </div>
                 <p className="text-[10px] text-[#5b4a9e]/70">MIMENU Santa Cruz</p>
               </div>
@@ -131,7 +141,9 @@ const AdminSidebar = () => {
             return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() =>
+                navigate(locked && item.feature ? `/admin/upgrade?feature=${item.feature}` : item.path)
+              }
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive(item.path)
                   ? 'text-white font-bold shadow-md'
@@ -168,6 +180,30 @@ const AdminSidebar = () => {
             );
           })}
         </nav>
+
+        {/* Upgrade CTA — every venue below Custom keeps a direct path up */}
+        {venue?.plan !== 'custom' && (
+          <div className="px-3 pb-2">
+            <Link
+              to="/admin/upgrade"
+              title={isOpen ? undefined : 'Mejorar plan'}
+              className={`flex items-center gap-2 rounded-xl text-white shadow-md transition-opacity hover:opacity-90 ${
+                isOpen ? 'justify-between px-3 py-2.5' : 'mx-auto h-10 w-12 justify-center'
+              }`}
+              style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+            >
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" aria-hidden="true" />
+                {isOpen && (
+                  <span className="text-[11px] font-black uppercase tracking-wide">Mejorar plan</span>
+                )}
+              </span>
+              {isOpen && (
+                <span className="text-[10px] font-bold text-white/80">{venue?.plan_name}</span>
+              )}
+            </Link>
+          </div>
+        )}
 
         {/* Footer info */}
         <div className="p-3 border-t border-white/40 text-[11px] text-[#5b4a9e] flex items-center justify-between">

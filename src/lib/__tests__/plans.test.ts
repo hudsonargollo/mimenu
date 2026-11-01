@@ -10,6 +10,7 @@ import {
   resolveVenueAccess,
   type VenuePlanAssignment,
 } from '../../../shared/plans';
+import { addedEntitlements, nextPlanAfter } from '../plans';
 
 describe('plan catalog', () => {
   it('assigns Jaleo to an active Premium plan', () => {
@@ -106,5 +107,23 @@ describe('resolveVenueAccess', () => {
 
   it('lets Basic venues keep the public QR menu', () => {
     expect(resolveVenueAccess('some-cafe', 'qr_menu').allowed).toBe(true);
+  });
+});
+
+describe('upgrade helpers', () => {
+  it('walks up one tier at a time', () => {
+    expect(nextPlanAfter('basic')?.id).toBe('pro');
+    expect(nextPlanAfter('pro')?.id).toBe('premium');
+    expect(nextPlanAfter('premium')?.id).toBe('custom');
+    expect(nextPlanAfter('custom')).toBeNull();
+  });
+
+  it('lists only the entitlements a tier adds', () => {
+    expect(addedEntitlements('basic')).toEqual(PLANS.basic.entitlements);
+    expect(addedEntitlements('pro')).toContain('kds');
+    expect(addedEntitlements('pro')).not.toContain('qr_menu');
+    expect(addedEntitlements('premium')).toContain('ar_3d');
+    expect(addedEntitlements('premium')).not.toContain('kds');
+    expect(addedEntitlements('custom')).toContain('multi_branch');
   });
 });

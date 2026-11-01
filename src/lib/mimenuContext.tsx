@@ -104,14 +104,25 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [venue, setVenue] = useState<Venue | null>(() => {
     if (typeof window !== 'undefined') {
       const { slug, requested, found } = resolveVenueSlug(window.location.search);
-      const matched = findVenueBySlug(slug);
-      if (matched) return toVenue(matched);
-      // No venue resolved: no system-wide default tenant — leave venue unset
-      // until the user picks one (via TenantSwitcher or URL ?v=<slug>).
-      if (requested && !found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
+      if (requested) {
+        const matched = findVenueBySlug(slug);
+        if (matched) return toVenue(matched);
+        // Unknown requested slug: keep the app usable on the default tenant.
+        if (!found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
+      }
+      // No explicit ?v= (admin panels, docs, …): restore the venue the user was
+      // last working on instead of snapping back to the default tenant.
+      const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed?.slug) return applyPlanToVenue(parsed);
+        } catch {
+          /* corrupt storage: fall through to the default tenant */
+        }
+      }
     }
-    const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
-    return saved ? applyPlanToVenue(JSON.parse(saved)) : null;
+    return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
   });
 
   // Categories & items state — the active tenant's menu.
@@ -212,7 +223,9 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const { slug, requested, found } = resolveVenueSlug(window.location.search);
-    // resolveVenueSlug now also checks pathname internally
+    // Only an explicit venue in the URL switches tenants. Admin navigation
+    // drops ?v=, which must not reset the active venue to the default tenant.
+    if (!requested) return;
     const matched = findVenueBySlug(slug);
     if (!matched) return;
     setVenue((current) => {
