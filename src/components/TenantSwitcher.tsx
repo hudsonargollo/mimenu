@@ -1,24 +1,29 @@
 import { useNavigate } from 'react-router-dom';
 import { useMimenu } from '@/lib/mimenuContext';
-import { useAuth } from '@/lib/authContext';
 import { listTenantAccounts } from '@/lib/tenantAuth';
 import { useLang } from '@/i18n/LanguageProvider';
 import type { Lang } from '@/i18n/translations';
 import { Store, ChevronDown } from 'lucide-react';
 
 /**
- * Tenant switcher for the staff panels. Only tenants with a registered staff
- * login are listed; picking one navigates to the same panel with ?v=<slug>.
+ * Tenant switcher for the staff panels. Tenants with a registered staff login
+ * are listed; picking one navigates to the same panel with ?v=<slug>. The
+ * venue resolved from the URL is authoritative (it is what the panels show),
+ * and stays in the list even when it has no staff account of its own.
  */
 export const TenantSwitcher = () => {
   const navigate = useNavigate();
   const { venue } = useMimenu();
-  const { user } = useAuth();
   const { lang } = useLang();
   const tenants = listTenantAccounts(lang as Lang);
-  const current = user?.tenantSlug || venue.slug;
+  const current = venue.slug;
 
   if (tenants.length === 0) return null;
+
+  const options = tenants.map(({ slug, venueName }) => ({ slug, venueName }));
+  if (current && !options.some((o) => o.slug === current)) {
+    options.push({ slug: current, venueName: venue.name });
+  }
 
   const go = (slug: string) => {
     const base = window.location.pathname.replace(/\/+$/, '');
@@ -36,7 +41,7 @@ export const TenantSwitcher = () => {
           className="bg-transparent outline-none font-semibold max-w-[12rem]"
           aria-label="Restaurante activo"
         >
-          {tenants.map((t) => (
+          {options.map((t) => (
             <option key={t.slug} value={t.slug}>
               {t.venueName}
             </option>
