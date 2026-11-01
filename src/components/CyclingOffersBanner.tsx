@@ -1,22 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
-import { Sparkles, Plus, Flame, ImageOff } from 'lucide-react';
+import { Sparkles, Plus, Flame, ImageOff, Pause, Play } from 'lucide-react';
 import { CyclingOffer } from '@/types/mimenu';
 import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+const AUTOPLAY_MS = 6000;
+
 const slideVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { duration: 0.4, staggerChildren: 0.07, delayChildren: 0.1 },
+    transition: { duration: 0.4, staggerChildren: 0.09, delayChildren: 0.12 },
   },
 };
 
+const mediaVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.5 } },
+};
+
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 22 },
   show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
 };
 
@@ -27,6 +34,13 @@ export const CyclingOffersBanner: React.FC = () => {
   const { activeOffers, recordOfferImpression, recordOfferClick, recordOfferConversion, venue } = useMimenu();
   const { addItem } = useCart();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocusWithin, setIsFocusWithin] = useState(false);
+  const prefersReducedMotion = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    [],
+  );
 
   useEffect(() => {
     activeOffers.forEach(offer => {
@@ -37,6 +51,14 @@ export const CyclingOffersBanner: React.FC = () => {
   useEffect(() => {
     setActiveIndex((index) => Math.min(index, Math.max(activeOffers.length - 1, 0)));
   }, [activeOffers.length]);
+
+  useEffect(() => {
+    if (activeOffers.length <= 1 || isPaused || isHovered || isFocusWithin || prefersReducedMotion) return;
+    const timer = setInterval(() => {
+      setActiveIndex((index) => (index + 1) % activeOffers.length);
+    }, AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [activeOffers.length, activeIndex, isPaused, isHovered, isFocusWithin, prefersReducedMotion]);
 
   if (activeOffers.length === 0) return null;
 
@@ -75,9 +97,22 @@ export const CyclingOffersBanner: React.FC = () => {
               <Sparkles className="h-3 w-3 fill-amber-500 text-amber-500" aria-hidden="true" />
               Ofertas del Momento
             </span>
-            <span className="shrink-0 text-xs font-semibold tabular-nums text-stone-500">
-              {String(activeIndex + 1).padStart(2, '0')} / {String(activeOffers.length).padStart(2, '0')}
-            </span>
+            <div className="flex shrink-0 items-center gap-0.5">
+              <span className="text-xs font-semibold tabular-nums text-stone-500">
+                {String(activeIndex + 1).padStart(2, '0')} / {String(activeOffers.length).padStart(2, '0')}
+              </span>
+              {activeOffers.length > 1 && !prefersReducedMotion && (
+                <button
+                  type="button"
+                  onClick={() => setIsPaused((paused) => !paused)}
+                  aria-label={isPaused ? 'Reanudar ofertas' : 'Pausar ofertas'}
+                  aria-pressed={isPaused}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-0 bg-transparent p-0 text-stone-400 transition hover:text-stone-700"
+                >
+                  {isPaused ? <Play className="h-3.5 w-3.5" aria-hidden="true" /> : <Pause className="h-3.5 w-3.5" aria-hidden="true" />}
+                </button>
+              )}
+            </div>
           </div>
           <h3
             id="live-offers-heading"
@@ -87,7 +122,15 @@ export const CyclingOffersBanner: React.FC = () => {
           </h3>
         </div>
 
-        <div className="relative sm:pr-10">
+        <div
+          className="relative sm:pr-10"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onFocusCapture={() => setIsFocusWithin(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsFocusWithin(false);
+          }}
+        >
           {/* All slides share one grid cell so height stays stable and transitions crossfade. */}
           <div className="grid">
             {activeOffers.map((offer, index) => {
@@ -99,7 +142,7 @@ export const CyclingOffersBanner: React.FC = () => {
                 <motion.div
                   key={offer.id}
                   className={`col-start-1 row-start-1 ${isActive ? '' : 'pointer-events-none'}`}
-                  initial={false}
+                  initial="hidden"
                   animate={isActive ? 'show' : 'hidden'}
                   variants={slideVariants}
                   drag={isActive && activeOffers.length > 1 ? 'x' : false}
@@ -117,12 +160,12 @@ export const CyclingOffersBanner: React.FC = () => {
                     variants={itemVariants}
                     className="group relative flex h-full flex-col items-center rounded-[28px] border border-amber-900/10 bg-white p-5 shadow-[0_24px_70px_-32px_rgba(120,53,15,0.45)] sm:flex-row sm:items-center sm:gap-7 sm:p-6 sm:pr-8"
                   >
-                    {/* Media — overhangs the card edge on desktop, like a magazine feature */}
+                    {/* Media — overhangs the card edge, like a magazine feature */}
                     <motion.div
-                      variants={itemVariants}
-                      className="relative w-full flex-none sm:-ml-10 sm:w-[236px]"
+                      variants={mediaVariants}
+                      className="relative w-full flex-none sm:-ml-10 sm:w-[248px] lg:-ml-14 lg:w-[264px]"
                     >
-                    <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 shadow-[0_18px_40px_-18px_rgba(190,18,60,0.55)] sm:h-[228px]">
+                    <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 shadow-[0_18px_40px_-18px_rgba(190,18,60,0.55)] sm:h-[236px] lg:h-[252px]">
                       {offer.image_url ? (
                         <img
                           src={offer.image_url}
