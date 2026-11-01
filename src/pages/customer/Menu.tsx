@@ -520,7 +520,7 @@ const Menu: React.FC = () => {
                     Los favoritos de {venueName}
                   </h2>
                   <p className="text-[11px] text-amber-100/50">
-                    Desliza o usa las flechas para descubrirlos
+                    Desliza, toca la tarjeta para ver la ficha o usa las flechas
                   </p>
                 </div>
 

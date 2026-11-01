@@ -33,7 +33,7 @@ const AdminPageHeader = ({ index, eyebrow, title, description, actions, meta }: 
       </div>
 
       {actions && (
-        <div className="flex w-full shrink-0 flex-wrap items-center gap-2 [&>*]:flex-1 [&>*]:justify-center md:w-auto md:[&>*]:flex-none">
+        <div className="flex w-full shrink-0 flex-wrap items-center gap-2 [&>*]:shrink-0 md:w-auto">
           {actions}
         </div>
       )}

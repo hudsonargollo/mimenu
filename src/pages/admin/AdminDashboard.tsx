@@ -35,7 +35,7 @@ const ActionLink: React.FC<{
     type="button"
     onClick={onClick}
     title={title}
-    className={`inline-flex items-center gap-2 rounded-[4px] border px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-colors ${
+    className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-colors [&>svg]:shrink-0 ${
       solid
         ? 'border-foreground bg-foreground text-background hover:bg-foreground/85'
         : 'border-border bg-card text-foreground hover:border-foreground/40'

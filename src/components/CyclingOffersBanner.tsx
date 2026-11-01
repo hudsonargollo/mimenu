@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { Sparkles, Plus, Flame, ImageOff, Pause, Play } from 'lucide-react';
 import { CyclingOffer } from '@/types/mimenu';
@@ -37,16 +37,23 @@ export const CyclingOffersBanner: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
+  const recordedImpressions = useRef<Set<string>>(new Set());
+  const offerIds = useMemo(() => activeOffers.map((offer) => offer.id).join('|'), [activeOffers]);
   const prefersReducedMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
   );
 
+  // Ref-guarded so the analytics write cannot retrigger this effect (the
+  // recorder identity changes on every provider render).
   useEffect(() => {
-    activeOffers.forEach(offer => {
+    activeOffers.forEach((offer) => {
+      if (recordedImpressions.current.has(offer.id)) return;
+      recordedImpressions.current.add(offer.id);
       recordOfferImpression(offer.id);
     });
-  }, [activeOffers, recordOfferImpression]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offerIds]);
 
   useEffect(() => {
     setActiveIndex((index) => Math.min(index, Math.max(activeOffers.length - 1, 0)));

@@ -43,7 +43,7 @@ export const AdminAIChat: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'memory' | 'kv'>('chat');
   const [kvDump, setKvDump] = useState<Record<string, any>>({});
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   const aiEngine = new MimenuAIEngine(venue, categories, cyclingOffers, reviews, orders);
 
@@ -54,7 +54,8 @@ export const AdminAIChat: React.FC = () => {
   }, [venue.name]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const node = chatScrollRef.current;
+    if (node) node.scrollTo({ top: node.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
 
   const loadLearnedInsights = async () => {
@@ -301,7 +302,7 @@ export const AdminAIChat: React.FC = () => {
               </span>
             </div>
 
-            <div className="min-h-[420px] max-h-[520px] flex-1 space-y-3 overflow-y-auto p-4">
+            <div ref={chatScrollRef} className="h-[40vh] min-h-[280px] max-h-[420px] flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -339,7 +340,6 @@ export const AdminAIChat: React.FC = () => {
               {isTyping && (
                 <div className="p-2 text-xs text-muted-foreground">MIMENU AI está razonando…</div>
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             <div className="border-t border-border p-3">
@@ -376,38 +376,38 @@ export const AdminAIChat: React.FC = () => {
           </div>
 
           {/* Insights column — the one ink block on the page */}
-          <div className="space-y-4 bg-[#14110F] p-4 text-[#F4EDE1]">
-            <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/15">
+          <div className="sb-surface space-y-4 p-4">
+            <div className="sb-rule flex items-center gap-2.5 border-b pb-3">
+              <span className="sb-rule-strong flex h-7 w-7 items-center justify-center rounded-[3px] border">
                 <BrainCircuit className="h-3.5 w-3.5" aria-hidden="true" />
               </span>
               <div>
                 <p className="text-[12px] font-bold">Memoria IA</p>
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#F4EDE1]/45">Insights aprendidos</p>
+                <p className="sb-45 text-[9px] font-bold uppercase tracking-[0.2em]">Insights aprendidos</p>
               </div>
             </div>
             <div className="space-y-2">
               {isLearning ? (
-                <p className="text-xs text-[#F4EDE1]/60">Aprendiendo…</p>
+                <p className="sb-60 text-xs">Aprendiendo…</p>
               ) : aiMemory ? (
                 <>
-                  <div className="space-y-2 border-b border-white/10 pb-3">
+                  <div className="sb-rule space-y-2 border-b pb-3">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-[#F4EDE1]/60">Interacciones</span>
+                      <span className="sb-60">Interacciones</span>
                       <span className="noir-num font-bold">{aiMemory.totalInteractions}</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-[#F4EDE1]/60">Último aprendizaje</span>
+                      <span className="sb-60">Último aprendizaje</span>
                       <span className="noir-num font-bold">{new Date(aiMemory.lastLearnedAt).toLocaleTimeString()}</span>
                     </div>
                   </div>
                   <div className="space-y-3">
                     {aiMemory.learnedInsights.map((ins) => (
-                      <div key={ins.id} className="border-b border-white/10 pb-3 last:border-0">
-                        <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9A27A]">{ins.category}</div>
+                      <div key={ins.id} className="sb-rule border-b pb-3 last:border-0">
+                        <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[hsl(var(--primary-soft))]">{ins.category}</div>
                         <div className="mb-1 text-xs font-bold">{ins.title}</div>
-                        <div className="mb-1.5 text-[11px] leading-relaxed text-[#F4EDE1]/65">{ins.observation}</div>
-                        <div className="text-[11px] text-[#F4EDE1]/85">
+                        <div className="sb-60 mb-1.5 text-[11px] leading-relaxed">{ins.observation}</div>
+                        <div className="sb-85 text-[11px]">
                           <span className="font-bold">Acción:</span> {ins.actionRecommendation}
                         </div>
                       </div>
@@ -415,7 +415,7 @@ export const AdminAIChat: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <p className="text-xs text-[#F4EDE1]/60">Sin insights aún.</p>
+                <p className="sb-60 text-xs">Sin insights aún.</p>
               )}
             </div>
           </div>

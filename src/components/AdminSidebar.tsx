@@ -87,7 +87,6 @@ const AdminSidebar = () => {
   }, [location.pathname]);
 
   const isActive = (path: string) => location.pathname === path;
-  let counter = 0;
 
   return (
     <>
@@ -102,20 +101,20 @@ const AdminSidebar = () => {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-[#14110F]/45 backdrop-blur-[1px] lg:hidden"
+          className="sb-backdrop fixed inset-0 z-40 backdrop-blur-[1px] lg:hidden"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col bg-[#14110F] text-[#F4EDE1] transition-[width,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:static lg:z-auto lg:translate-x-0 ${
+        className={`sb-surface fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col transition-[width,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:static lg:z-auto lg:translate-x-0 ${
           isOpen ? 'w-[268px] translate-x-0' : 'w-[268px] -translate-x-full lg:w-[76px]'
         }`}
         aria-label="Navegación del panel"
       >
         {/* Wordmark */}
-        <div className={`flex items-center gap-3 border-b border-white/[0.07] px-4 py-5 ${isOpen ? '' : 'lg:justify-center lg:px-0'}`}>
+        <div className={`sb-rule flex items-center gap-3 border-b px-4 py-5 ${isOpen ? '' : 'lg:justify-center lg:px-0'}`}>
           <Link
             to="/admin"
             className="flex min-w-0 items-center gap-3"
@@ -124,10 +123,10 @@ const AdminSidebar = () => {
             <img src="/mimenu.svg" alt="" className="h-7 w-7 shrink-0" />
             {isOpen && (
               <span className="min-w-0">
-                <span className="block font-display text-lg leading-none tracking-tight text-[#F8F2E7]">
+                <span className="block font-display text-lg leading-none tracking-tight">
                   MiMenu
                 </span>
-                <span className="mt-1 block truncate text-[10px] font-medium uppercase tracking-[0.18em] text-[#F4EDE1]/40">
+                <span className="sb-40 mt-1 block truncate text-[10px] font-medium uppercase tracking-[0.18em]">
                   {venue?.name ?? 'Panel'}
                 </span>
               </span>
@@ -138,7 +137,7 @@ const AdminSidebar = () => {
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Cerrar navegación"
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-[4px] border-0 bg-transparent text-[#F4EDE1]/50 hover:bg-white/[0.06] hover:text-[#F4EDE1] lg:hidden"
+            className="sb-50 sb-hover sb-hover-text ml-auto flex h-8 w-8 items-center justify-center rounded-[4px] border-0 bg-transparent lg:hidden"
           >
             <X className="h-4 w-4" />
           </button>
@@ -149,7 +148,7 @@ const AdminSidebar = () => {
           <Link
             to="/menu"
             target="_blank"
-            className={`group flex items-center gap-2 rounded-[4px] border border-white/[0.09] px-3 py-2 text-[11px] font-semibold text-[#F4EDE1]/70 transition-colors hover:border-white/20 hover:text-[#F8F2E7] ${
+            className={`sb-rule sb-70 sb-hover-text sb-border-hover group flex items-center gap-2 rounded-[4px] border px-3 py-2 text-[11px] font-semibold transition-colors ${
               isOpen ? 'justify-between' : 'justify-center'
             }`}
             title="Abrir el menú digital"
@@ -170,14 +169,12 @@ const AdminSidebar = () => {
           {GROUPS.map((group) => (
             <div key={group.title}>
               {isOpen && (
-                <p className="px-3 pb-1.5 pt-5 text-[9px] font-bold uppercase tracking-[0.26em] text-[#F4EDE1]/40">
+                <p className="sb-40 px-3 pb-1.5 pt-5 text-[9px] font-bold uppercase tracking-[0.26em]">
                   {group.title}
                 </p>
               )}
               <ul className={isOpen ? 'space-y-px' : 'mt-3 space-y-1'}>
                 {group.items.map((item) => {
-                  counter += 1;
-                  const index = String(counter).padStart(2, '0');
                   const active = isActive(item.path);
                   const locked = item.feature ? !hasEntitlement(venue?.slug, item.feature) : false;
                   const requiredPlan = item.feature && locked ? requiredPlanFor(item.feature) : null;
@@ -195,24 +192,16 @@ const AdminSidebar = () => {
                           isOpen ? 'pl-3 pr-2' : 'justify-center px-0'
                         } ${
                           active
-                            ? 'bg-[#F4EDE1] text-[#171310]'
-                            : 'bg-transparent text-[#F4EDE1]/72 hover:bg-white/[0.05] hover:text-[#F8F2E7]'
+                            ? 'sb-active'
+                            : 'bg-transparent sb-70 sb-hover sb-hover-text'
                         }`}
                       >
                         {active && (
-                          <span className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-[#C2571F]" aria-hidden="true" />
+                          <span className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-primary" aria-hidden="true" />
                         )}
                         <span
-                          className={`noir-num shrink-0 text-[9px] font-bold tracking-[0.08em] ${
-                            active ? 'text-[#171310]/40' : 'text-[#F4EDE1]/25'
-                          }`}
-                          aria-hidden="true"
-                        >
-                          {index}
-                        </span>
-                        <span
                           className={`shrink-0 [&>svg]:h-[15px] [&>svg]:w-[15px] ${
-                            active ? 'text-[#171310]' : locked ? 'text-[#F4EDE1]/35' : ''
+                            active ? 'sb-active-fg' : locked ? 'sb-35' : ''
                           }`}
                           aria-hidden="true"
                         >
@@ -224,7 +213,7 @@ const AdminSidebar = () => {
                             <span className="flex items-center gap-1.5">
                               <span
                                 className={`truncate text-[12.5px] font-medium leading-tight ${
-                                  active ? 'text-[#171310]' : locked ? 'text-[#F4EDE1]/40' : ''
+                                  active ? 'sb-active-fg' : locked ? 'sb-40' : ''
                                 }`}
                               >
                                 {item.label}
@@ -232,7 +221,7 @@ const AdminSidebar = () => {
                               {item.badge && !locked && (
                                 <span
                                   className={`rounded-[2px] px-1 py-px text-[8px] font-bold uppercase tracking-[0.12em] ${
-                                    active ? 'bg-[#171310]/10 text-[#171310]' : 'bg-[#C2571F]/20 text-[#E8935F]'
+                                    active ? 'sb-badge-active' : 'sb-badge'
                                   }`}
                                 >
                                   {item.badge}
@@ -242,7 +231,7 @@ const AdminSidebar = () => {
                             {locked && (
                               <span
                                 className={`mt-0.5 block truncate text-[9.5px] uppercase tracking-[0.1em] ${
-                                  active ? 'text-[#171310]/45' : 'text-[#F4EDE1]/40'
+                                  active ? 'sb-active-45' : 'sb-40'
                                 }`}
                               >
                                 Plan {requiredPlan?.name}
@@ -252,7 +241,7 @@ const AdminSidebar = () => {
                         )}
 
                         {isOpen && locked && (
-                          <Lock className="h-3 w-3 shrink-0 text-[#F4EDE1]/30" aria-hidden="true" />
+                          <Lock className="sb-30 h-3 w-3 shrink-0" aria-hidden="true" />
                         )}
                       </button>
                     </li>
@@ -264,23 +253,23 @@ const AdminSidebar = () => {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-white/[0.07] px-3 py-3">
+        <div className="sb-rule border-t px-3 py-3">
           {venue?.plan !== 'custom' && (
             <Link
               to="/admin/upgrade"
-              className={`mb-2 flex items-center gap-2 rounded-[4px] border border-[#C2571F]/40 bg-[#C2571F]/10 px-3 py-2 text-[#F4EDE1] transition-colors hover:border-[#C2571F]/70 hover:bg-[#C2571F]/18 ${
+              className={`mb-2 flex items-center gap-2 rounded-[4px] border border-primary/40 bg-primary/10 px-3 py-2 transition-colors hover:border-primary/70 hover:bg-primary/15 ${
                 isOpen ? 'justify-between' : 'mx-auto justify-center px-0'
               }`}
               title={`Upgrade plan — ${venue?.plan_name ?? 'Basic'}`}
             >
               <span className="flex items-center gap-2">
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#E8935F]" aria-hidden="true" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-[hsl(var(--primary-soft))]" aria-hidden="true" />
                 {isOpen && (
                   <span className="text-[10px] font-bold uppercase tracking-[0.16em]">Upgrade plan</span>
                 )}
               </span>
               {isOpen && (
-                <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#F4EDE1]/45">
+                <span className="sb-45 text-[9px] font-semibold uppercase tracking-[0.12em]">
                   {venue?.plan_name ?? 'Basic'}
                 </span>
               )}
@@ -291,7 +280,7 @@ const AdminSidebar = () => {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 rounded-[3px] border-0 bg-transparent px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F4EDE1]/45 hover:text-[#F8F2E7]"
+              className="sb-45 sb-hover-text flex items-center gap-2 rounded-[3px] border-0 bg-transparent px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
               title="Ir a la landing"
             >
               <Store className="h-3.5 w-3.5" aria-hidden="true" />
@@ -302,7 +291,7 @@ const AdminSidebar = () => {
               type="button"
               onClick={() => setIsOpen((open) => !open)}
               aria-label={isOpen ? 'Colapsar navegación' : 'Expandir navegación'}
-              className="hidden h-7 w-7 items-center justify-center rounded-[3px] border-0 bg-transparent text-[#F4EDE1]/45 hover:bg-white/[0.06] hover:text-[#F8F2E7] lg:flex"
+              className="sb-45 sb-hover sb-hover-text hidden h-7 w-7 items-center justify-center rounded-[3px] border-0 bg-transparent lg:flex"
             >
               {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>

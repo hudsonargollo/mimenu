@@ -412,32 +412,39 @@
    ============================================================ */
 @layer base {
   html.admin-noir {
-    --background: 36 30% 96%;          /* warm paper */
-    --foreground: 24 14% 9%;           /* ink */
-    --card: 40 46% 99%;
-    --card-foreground: 24 14% 9%;
-    --popover: 40 46% 99%;
-    --popover-foreground: 24 14% 9%;
+    --background: 216 33% 97%;         /* porcelain */
+    --foreground: 222 43% 10%;         /* ink */
+    --card: 0 0% 100%;
+    --card-foreground: 222 43% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 43% 10%;
 
-    --primary: 18 60% 38%;             /* terracotta */
-    --primary-foreground: 40 46% 98%;
-    --secondary: 32 26% 91%;           /* sand */
-    --secondary-foreground: 24 14% 12%;
-    --accent: 30 68% 50%;              /* amber */
-    --accent-foreground: 24 14% 9%;
+    --primary: 225 74% 53%;            /* studio cobalt */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 26% 92%;
+    --secondary-foreground: 222 43% 12%;
+    --accent: 28 78% 50%;
+    --accent-foreground: 222 43% 9%;
 
-    --success: 152 34% 32%;
-    --success-foreground: 40 46% 98%;
-    --warning: 38 86% 46%;
-    --warning-foreground: 24 14% 9%;
-    --muted: 34 22% 92%;
-    --muted-foreground: 26 9% 39%;
-    --destructive: 356 60% 41%;
-    --destructive-foreground: 40 46% 98%;
+    --success: 158 48% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 86% 44%;
+    --warning-foreground: 222 43% 9%;
+    --muted: 216 22% 93%;
+    --muted-foreground: 218 15% 34%;
+    --destructive: 356 62% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 83%;
-    --input: 30 15% 86%;
-    --ring: 18 60% 38%;
+    --border: 218 24% 76%;
+    --input: 218 24% 79%;
+    --ring: 225 74% 53%;
+
+    /* Sidebar sits on its own ink surface; palettes recolor these together. */
+    --sidebar: 222 50% 9%;
+    --sidebar-fg: 216 30% 97%;
+    --sidebar-active-bg: 216 30% 97%;
+    --sidebar-active-fg: 222 43% 10%;
+    --primary-soft: 222 90% 78%;
 
     --radius-xs: 2px;
     --radius-sm: 3px;
@@ -461,10 +468,10 @@
   }
 
   html.admin-noir ::-webkit-scrollbar-thumb {
-    background: hsl(30 14% 72%);
+    background: hsl(var(--border));
   }
   html.admin-noir ::-webkit-scrollbar-thumb:hover {
-    background: hsl(24 20% 52%);
+    background: hsl(var(--muted-foreground) / 0.6);
   }
 }
 
@@ -508,6 +515,31 @@
   .noir-link-underline:focus-visible::after {
     transform: scaleX(1);
   }
+
+  /* Sidebar ink surface: one set of tokens, four palettes. */
+  .sb-surface { background-color: hsl(var(--sidebar)); color: hsl(var(--sidebar-fg)); }
+  .sb-rule { border-color: hsl(var(--sidebar-fg) / 0.14); }
+  .sb-rule-strong { border-color: hsl(var(--sidebar-fg) / 0.26); }
+  .sb-backdrop { background-color: hsl(var(--sidebar) / 0.45); }
+  .sb-70 { color: hsl(var(--sidebar-fg) / 0.76); }
+  .sb-85 { color: hsl(var(--sidebar-fg) / 0.88); }
+  .sb-60 { color: hsl(var(--sidebar-fg) / 0.66); }
+  .sb-50 { color: hsl(var(--sidebar-fg) / 0.58); }
+  .sb-45 { color: hsl(var(--sidebar-fg) / 0.54); }
+  .sb-40 { color: hsl(var(--sidebar-fg) / 0.48); }
+  .sb-35 { color: hsl(var(--sidebar-fg) / 0.42); }
+  .sb-30 { color: hsl(var(--sidebar-fg) / 0.36); }
+  .sb-25 { color: hsl(var(--sidebar-fg) / 0.3); }
+  .sb-active { background-color: hsl(var(--sidebar-active-bg)); color: hsl(var(--sidebar-active-fg)); }
+  .sb-active-fg { color: hsl(var(--sidebar-active-fg)); }
+  .sb-active-45 { color: hsl(var(--sidebar-active-fg) / 0.5); }
+  .sb-active-40 { color: hsl(var(--sidebar-active-fg) / 0.45); }
+  .sb-badge { background-color: hsl(var(--primary) / 0.22); color: hsl(var(--primary-soft)); }
+  .sb-badge-active { background-color: hsl(var(--sidebar-active-fg) / 0.1); color: hsl(var(--sidebar-active-fg)); }
+  .sb-hover:hover { background-color: hsl(var(--sidebar-fg) / 0.08); }
+  .sb-hover-strong:hover { background-color: hsl(var(--sidebar-fg) / 0.14); }
+  .sb-hover-text:hover { color: hsl(var(--sidebar-fg)); }
+  .sb-border-hover:hover { border-color: hsl(var(--sidebar-fg) / 0.34); }
 }
 
 @layer utilities {

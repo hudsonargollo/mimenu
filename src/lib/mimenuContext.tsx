@@ -167,10 +167,22 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
   });
 
-  // Cycling offers state
+  // Cycling offers state. An empty or unreadable store (older builds persisted
+  // `[]`) would hide the public promotions banner forever, so fall back to the
+  // venue's seeded offers; missing `is_active` from legacy rows defaults to on.
   const [cyclingOffers, setCyclingOffers] = useState<CyclingOffer[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.OFFERS);
-    return saved ? JSON.parse(saved) : INITIAL_CYCLING_OFFERS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((offer: CyclingOffer) => ({ ...offer, is_active: offer.is_active ?? true }));
+        }
+      } catch {
+        // Corrupt payload — fall through to the seeded offers.
+      }
+    }
+    return INITIAL_CYCLING_OFFERS;
   });
 
   // Tables state — generated from the active tenant's table count.
