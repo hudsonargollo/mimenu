@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
-  Settings,
   Palette,
   Printer,
   RefreshCw,
@@ -23,6 +22,7 @@ import {
 import { toast } from 'sonner';
 import { printServerClient } from '@/integrations/print-server/client';
 import { useMimenu } from '@/lib/mimenuContext';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export type StaffRole = 'admin' | 'waiter' | 'kitchen' | 'cashier';
 
@@ -185,27 +185,34 @@ const AdminSettings = () => {
   return (
     <AdminLayout>
       <div className="space-y-6 pb-12">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-                <Settings className="w-4 h-4" />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                Configuración de la plataforma
-              </h1>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Gestioná marca, impresión y accesos del panel.
-            </p>
-          </div>
-        </div>
+        <AdminPageHeader
+          index="11"
+          eyebrow="Configuraciones"
+          title="Configuración de la plataforma"
+          description="Gestioná marca, impresión térmica y accesos del panel."
+          meta={<span className="noir-eyebrow">{venue?.name ?? 'Local'}</span>}
+        />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-muted/60 p-1 rounded-xl">
-            <TabsTrigger value="general" className="rounded-lg text-xs font-semibold">Marca & Experiencia</TabsTrigger>
-            <TabsTrigger value="printer" className="rounded-lg text-xs font-semibold">Impresión térmica</TabsTrigger>
-            <TabsTrigger value="users" className="rounded-lg text-xs font-semibold">Usuarios & Accesos</TabsTrigger>
+          <TabsList className="mb-7 inline-flex h-auto items-center gap-7 rounded-none border-b border-border bg-transparent p-0">
+            <TabsTrigger
+              value="general"
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Marca & Experiencia
+            </TabsTrigger>
+            <TabsTrigger
+              value="printer"
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Impresión térmica
+            </TabsTrigger>
+            <TabsTrigger
+              value="users"
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Usuarios & Accesos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-4 pt-2">

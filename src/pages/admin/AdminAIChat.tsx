@@ -1,24 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Bot,
-  Send,
-  Sparkles,
-  Flame,
-  TrendingUp,
-  CheckCircle2,
-  Database,
-  BrainCircuit,
-  Zap,
-  Plus,
-  Star,
-  Clock,
-  RefreshCw,
-} from 'lucide-react';
+import { Send, Sparkles, CheckCircle2, BrainCircuit, RefreshCw } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import {
   MimenuAIEngine,
   AIChatMessage,
@@ -48,7 +33,7 @@ export const AdminAIChat: React.FC = () => {
     {
       id: 'msg-welcome',
       sender: 'ai',
-      text: `👋 ¡Hola! Soy el **Copiloto de Inteligencia de MIMENU** para **${venue.name}**.\\n\\nEstoy conectado a tu motor de datos en **KV Storage**, analizando pedidos en vivo, popularidad "Hotness" y reseñas de tus clientes.\\n\\n¿En qué puedo ayudarte hoy?`,
+      text: `👋 Hola, soy el Copiloto de MIMENU para ${venue.name}.\n\nEstoy conectado a tu motor de datos: pedidos en vivo, popularidad Hotness y reseñas de tus clientes.\n\n¿En qué puedo ayudarte hoy?`,
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -273,78 +258,77 @@ export const AdminAIChat: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6 pb-12">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-                <Bot className="w-4 h-4" />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                AI Copilot
-              </h1>
-              <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-[10px] font-bold">
-                IA
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Copiloto de inteligencia para {venue.name}. Analiza, crea promociones y gestioná el menú con lenguaje natural.
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={loadLearnedInsights}
-            disabled={isLearning}
-            className="text-xs font-bold gap-1.5 border-border hover:border-amber-500"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLearning ? 'animate-spin' : ''}`} />
-            Re-aprender
-          </Button>
-        </div>
+        <AdminPageHeader
+          index="08"
+          eyebrow="AI Copilot"
+          title="AI Copilot"
+          description={`Copiloto de inteligencia para ${venue.name}. Analizá, creá promociones y gestioná el menú con lenguaje natural.`}
+          actions={
+            <button
+              onClick={loadLearnedInsights}
+              disabled={isLearning}
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-50"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isLearning ? 'animate-spin' : ''}`} aria-hidden="true" />
+              Re-aprender
+            </button>
+          }
+          meta={
+            <>
+              <span className="noir-eyebrow">WhatsApp concierge</span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+              <span className="noir-eyebrow">{messages.length} mensajes</span>
+            </>
+          }
+        />
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
           {/* Chat column */}
-          <div className="xl:col-span-2 rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] flex flex-col">
-            <div className="p-4 border-b border-white/20 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white/90">
-                  <Sparkles className="w-4 h-4" />
-                </div>
+          <div className="flex flex-col border border-border bg-card/70 xl:col-span-2">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-primary/30 text-primary">
+                  <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
                 <div>
-                  <p className="text-xs font-bold text-white/90">Asistente</p>
-                  <p className="text-[11px] text-white/65">Respuestas accionables</p>
+                  <p className="text-[12px] font-bold text-foreground">Asistente</p>
+                  <p className="noir-eyebrow">Respuestas accionables</p>
                 </div>
               </div>
-              <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 text-[10px] font-bold">
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                 Online
-              </Badge>
+              </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[520px]">
+            <div className="min-h-[420px] max-h-[520px] flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`p-3 rounded-2xl text-xs ${msg.sender === 'user' ? 'ml-auto bg-white/15 text-white/90' : 'bg-white/10 text-white/85'}`}
-                  style={{ backdropFilter: 'blur(8px)', maxWidth: '85%' }}
+                  className={`p-3 text-xs ${
+                    msg.sender === 'user'
+                      ? 'ml-auto bg-foreground text-background'
+                      : 'border border-border bg-muted/40 text-foreground'
+                  }`}
+                  style={{ maxWidth: '85%' }}
                 >
                   <div className="whitespace-pre-line leading-relaxed">{msg.text}</div>
                   {msg.actions && msg.actions.length > 0 && (
-                    <div className="pt-2 space-y-2">
+                    <div className="space-y-2 pt-2">
                       {msg.actions.map((action) => (
-                        <div key={action.id} className="p-2 rounded-xl bg-white/10 flex items-center justify-between gap-2">
-                          <span className="font-bold text-xs flex-1">{action.label}</span>
+                        <div key={action.id} className="flex items-center justify-between gap-2 border-t border-current/15 pt-2">
+                          <span className="flex-1 text-xs font-semibold">{action.label}</span>
                           {action.status === 'executed' ? (
-                            <span className="inline-flex items-center gap-1 text-emerald-300 font-bold text-xs">
-                              <CheckCircle2 className="w-4 h-4" /> Ejecutado
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-700">
+                              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Ejecutado
                             </span>
                           ) : (
-                            <Button
-                              size="sm"
+                            <button
                               onClick={() => handleExecuteAction(action, msg.id)}
-                              className="bg-white/15 hover:bg-white/25 text-white/90 font-bold text-xs h-7 px-3 rounded-lg"
+                              className="bg-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-background hover:opacity-85"
                             >
                               Ejecutar
-                            </Button>
+                            </button>
                           )}
                         </div>
                       ))}
@@ -353,35 +337,36 @@ export const AdminAIChat: React.FC = () => {
                 </div>
               ))}
               {isTyping && (
-                <div className="text-xs text-white/70 p-2">MIMENU AI está razonando...</div>
+                <div className="p-2 text-xs text-muted-foreground">MIMENU AI está razonando…</div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 border-t border-white/20">
+            <div className="border-t border-border p-3">
               <div className="flex gap-2">
                 <Input
                   value={inputPrompt}
                   onChange={(e) => setInputPrompt(e.target.value)}
-                  placeholder="Escribe una orden o pregunta..."
-                  className="text-xs h-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-0"
+                  placeholder="Escribí una orden o pregunta…"
+                  className="h-10 text-xs"
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
-                <Button
+                <button
                   type="button"
                   onClick={() => handleSendMessage()}
                   disabled={!inputPrompt.trim()}
-                  className="bg-white/15 hover:bg-white/25 text-white/90 font-bold text-xs h-10 px-4 rounded-xl"
+                  className="inline-flex h-10 items-center gap-2 border border-foreground bg-foreground px-4 text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+                  aria-label="Enviar mensaje"
                 >
-                  <Send className="w-4 h-4" />
-                </Button>
+                  <Send className="h-4 w-4" aria-hidden="true" />
+                </button>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {quickPrompts.map((p, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(p)}
-                    className="px-3 py-1.5 rounded-full text-[11px] font-semibold text-white/80 border border-white/20 bg-white/10 hover:bg-white/20 transition-all"
+                    className="border border-border px-2.5 py-1 text-[10px] font-semibold text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     {p}
                   </button>
@@ -390,39 +375,39 @@ export const AdminAIChat: React.FC = () => {
             </div>
           </div>
 
-          {/* Insights column */}
-          <div className="rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white/90">
-                <BrainCircuit className="w-4 h-4" />
-              </div>
+          {/* Insights column — the one ink block on the page */}
+          <div className="space-y-4 bg-[#14110F] p-4 text-[#F4EDE1]">
+            <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
+              <span className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/15">
+                <BrainCircuit className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
               <div>
-                <p className="text-xs font-bold text-white/90">Memoria IA</p>
-                <p className="text-[11px] text-white/65">Insights aprendidos</p>
+                <p className="text-[12px] font-bold">Memoria IA</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#F4EDE1]/45">Insights aprendidos</p>
               </div>
             </div>
             <div className="space-y-2">
               {isLearning ? (
-                <p className="text-xs text-white/70">Aprendiendo...</p>
+                <p className="text-xs text-[#F4EDE1]/60">Aprendiendo…</p>
               ) : aiMemory ? (
                 <>
-                  <div className="p-3 rounded-2xl bg-white/10 border border-white/20 space-y-2">
+                  <div className="space-y-2 border-b border-white/10 pb-3">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/75">Interacciones</span>
-                      <span className="text-white/90 font-bold">{aiMemory.totalInteractions}</span>
+                      <span className="text-[#F4EDE1]/60">Interacciones</span>
+                      <span className="noir-num font-bold">{aiMemory.totalInteractions}</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/75">Último aprendizaje</span>
-                      <span className="text-white/90 font-bold">{new Date(aiMemory.lastLearnedAt).toLocaleTimeString()}</span>
+                      <span className="text-[#F4EDE1]/60">Último aprendizaje</span>
+                      <span className="noir-num font-bold">{new Date(aiMemory.lastLearnedAt).toLocaleTimeString()}</span>
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {aiMemory.learnedInsights.map((ins) => (
-                      <div key={ins.id} className="p-3 rounded-2xl bg-white/10 border border-white/20">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">{ins.category}</div>
-                        <div className="text-xs font-bold text-white/90 mb-1">{ins.title}</div>
-                        <div className="text-[11px] text-white/70 mb-2">{ins.observation}</div>
-                        <div className="text-[11px] text-white/80">
+                      <div key={ins.id} className="border-b border-white/10 pb-3 last:border-0">
+                        <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9A27A]">{ins.category}</div>
+                        <div className="mb-1 text-xs font-bold">{ins.title}</div>
+                        <div className="mb-1.5 text-[11px] leading-relaxed text-[#F4EDE1]/65">{ins.observation}</div>
+                        <div className="text-[11px] text-[#F4EDE1]/85">
                           <span className="font-bold">Acción:</span> {ins.actionRecommendation}
                         </div>
                       </div>
@@ -430,7 +415,7 @@ export const AdminAIChat: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <p className="text-xs text-white/70">Sin insights aún.</p>
+                <p className="text-xs text-[#F4EDE1]/60">Sin insights aún.</p>
               )}
             </div>
           </div>

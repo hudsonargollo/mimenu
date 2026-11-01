@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DollarSign, ShoppingCart, TrendingUp, Calendar as CalendarIcon, Download, Printer, CheckCircle } from "lucide-react";
@@ -11,6 +9,7 @@ import { es } from "date-fns/locale";
 import { usePrintReport } from "@/hooks/usePrintReport";
 import { ReportPrintView } from "@/components/printable/ReportPrintView";
 import { useMimenu } from "@/lib/mimenuContext";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface OrderStats {
   totalOrders: number;
@@ -96,19 +95,20 @@ const Reports = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
-        <Card className="p-4 border-2 border-accent rounded-none shadow-soft">
-          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-            <div className="text-sm font-medium">
-              {format(dateRange.from, "dd/MM/yyyy")} - {format(dateRange.to, "dd/MM/yyyy")}
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
+      <div className="pb-12">
+        <AdminPageHeader
+          index="13"
+          eyebrow="Reportes"
+          title="Reportes de ventas"
+          description="Pedidos, ingresos y ticket promedio del período seleccionado."
+          actions={
+            <>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
-                    <CalendarIcon className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Período</span>
-                  </Button>
+                  <button className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-border px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:border-foreground">
+                    <CalendarIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                    {format(dateRange.from, "dd/MM/yy")} — {format(dateRange.to, "dd/MM/yy")}
+                  </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
                   <Calendar
@@ -123,98 +123,85 @@ const Reports = () => {
                   />
                 </PopoverContent>
               </Popover>
-              <Button onClick={handlePrintReport} variant="outline" size="sm" className="flex-1 sm:flex-none" disabled={isPrinting}>
-                <Printer className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Imprimir</span>
-              </Button>
-              <Button onClick={exportToCSV} variant="outline" size="sm" className="flex-1 sm:flex-none">
-                <Download className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Exportar</span>
-              </Button>
+              <button
+                onClick={handlePrintReport}
+                disabled={isPrinting}
+                className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-border px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:border-foreground disabled:opacity-50"
+              >
+                <Printer className="h-3.5 w-3.5" aria-hidden="true" />
+                Imprimir
+              </button>
+              <button
+                onClick={exportToCSV}
+                className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground bg-foreground px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-background transition-opacity hover:opacity-85"
+              >
+                <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                Exportar
+              </button>
+            </>
+          }
+        />
+
+        <section className="grid grid-cols-2 divide-x divide-y divide-border border-y border-border lg:grid-cols-4 lg:divide-y-0">
+          {[
+            { label: "Pedidos", value: String(stats.totalOrders), icon: <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />, note: "en el período" },
+            { label: "Ingresos", value: `Bs. ${stats.totalRevenue.toFixed(0)}`, icon: <DollarSign className="h-3.5 w-3.5" aria-hidden="true" />, note: "pagos confirmados" },
+            { label: "Ticket promedio", value: `Bs. ${stats.averageOrderValue.toFixed(0)}`, icon: <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />, note: "por pedido pagado" },
+            { label: "Completados", value: String(stats.completedOrders), icon: <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />, note: "pedidos entregados" },
+          ].map((cell) => (
+            <div key={cell.label} className="flex flex-col justify-between gap-7 p-5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="noir-eyebrow">{cell.label}</span>
+                <span className="text-muted-foreground">{cell.icon}</span>
+              </div>
+              <div>
+                <p className="noir-num font-display text-[2rem] leading-none tracking-[-0.02em] text-foreground">
+                  {cell.value}
+                </p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">{cell.note}</p>
+              </div>
             </div>
+          ))}
+        </section>
+
+        <section className="mt-8 border-y border-border">
+          <div className="border-b border-border py-3">
+            <p className="noir-eyebrow">Ventas diarias</p>
           </div>
-        </Card>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Card className="p-4 bg-white border-2 border-accent rounded-none shadow-soft">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-none flex items-center justify-center shadow-soft">
-                <ShoppingCart className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs font-body text-gray-600">Pedidos</p>
-                <p className="text-2xl font-bold">{stats.totalOrders}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-white border-2 border-accent rounded-none shadow-soft">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-none flex items-center justify-center shadow-soft">
-                <DollarSign className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs font-body text-gray-600">Ingresos</p>
-                <p className="text-xl font-bold text-green-600">Bs. {stats.totalRevenue.toFixed(0)}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-white border-2 border-accent rounded-none shadow-soft">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/90 rounded-none flex items-center justify-center shadow-soft">
-                <TrendingUp className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs font-body text-gray-600">Ticket promedio</p>
-                <p className="text-xl font-bold text-primary">Bs. {stats.averageOrderValue.toFixed(0)}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-white border-2 border-accent rounded-none shadow-soft">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-accent to-accent/90 rounded-none flex items-center justify-center shadow-soft">
-                <CheckCircle className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs font-body text-gray-600">Completados</p>
-                <p className="text-2xl font-bold">{stats.completedOrders}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        <Card className="p-4 border-2 border-accent rounded-none shadow-soft">
-          <h3 className="font-bold text-lg mb-3">Ventas diarias</h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 px-2">Fecha</th>
-                  <th className="text-right py-2 px-2">Pedidos</th>
-                  <th className="text-right py-2 px-2">Ingresos</th>
+            <table className="w-full text-xs">
+              <thead className="border-b border-border text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                <tr>
+                  <th className="py-2.5 pr-2 text-left font-semibold">Fecha</th>
+                  <th className="px-2 py-2.5 text-right font-semibold">Pedidos</th>
+                  <th className="py-2.5 pl-2 text-right font-semibold">Ingresos</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border/70">
                 {dailyStats.length === 0 ? (
-                  <tr><td colSpan={3} className="text-center py-8 text-gray-500">Sin datos</td></tr>
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-muted-foreground">Sin datos en el período.</td>
+                  </tr>
                 ) : (
                   dailyStats.map((day) => (
-                    <tr key={day.date} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-2">{format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: es })}</td>
-                      <td className="text-right py-2 px-2 font-semibold">{day.orders}</td>
-                      <td className="text-right py-2 px-2 font-bold text-green-600">Bs. {day.revenue.toFixed(2)}</td>
+                    <tr key={day.date} className="transition-colors hover:bg-card/70">
+                      <td className="py-2.5 pr-2 capitalize">
+                        {format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: es })}
+                      </td>
+                      <td className="noir-num px-2 py-2.5 text-right font-semibold">{day.orders}</td>
+                      <td className="noir-num py-2.5 pl-2 text-right font-display text-sm text-emerald-700">
+                        Bs. {day.revenue.toFixed(2)}
+                      </td>
                     </tr>
                   ))
                 )}
               </tbody>
               {dailyStats.length > 0 && (
-                <tfoot>
-                  <tr className="font-bold bg-gray-100">
-                    <td className="py-2 px-2">Total</td>
-                    <td className="text-right py-2 px-2">{dailyStats.reduce((sum, d) => sum + d.orders, 0)}</td>
-                    <td className="text-right py-2 px-2 text-green-600">
+                <tfoot className="border-t border-foreground/20">
+                  <tr className="text-[11px] font-bold">
+                    <td className="py-3 pr-2 uppercase tracking-[0.12em]">Total</td>
+                    <td className="noir-num px-2 py-3 text-right">{dailyStats.reduce((sum, d) => sum + d.orders, 0)}</td>
+                    <td className="noir-num py-3 pl-2 text-right text-emerald-700">
                       Bs. {dailyStats.reduce((sum, d) => sum + d.revenue, 0).toFixed(2)}
                     </td>
                   </tr>
@@ -222,7 +209,7 @@ const Reports = () => {
               )}
             </table>
           </div>
-        </Card>
+        </section>
       </div>
 
       <div style={{ display: 'none' }}>

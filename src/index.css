@@ -403,3 +403,117 @@
   * { box-shadow: none !important; background-image: none !important; text-shadow: none !important; }
   body { color: #000 !important; background: #fff !important; }
 }
+
+/* ============================================================
+   Admin — "Editorial Noir"
+   Ink-on-paper surfaces for tenant dashboards. Tokens are scoped
+   to html.admin-noir (toggled by AdminLayout) so portals — dialogs,
+   dropdowns, toasts — inherit the same paper, ink and hairline rules.
+   ============================================================ */
+@layer base {
+  html.admin-noir {
+    --background: 36 30% 96%;          /* warm paper */
+    --foreground: 24 14% 9%;           /* ink */
+    --card: 40 46% 99%;
+    --card-foreground: 24 14% 9%;
+    --popover: 40 46% 99%;
+    --popover-foreground: 24 14% 9%;
+
+    --primary: 18 60% 38%;             /* terracotta */
+    --primary-foreground: 40 46% 98%;
+    --secondary: 32 26% 91%;           /* sand */
+    --secondary-foreground: 24 14% 12%;
+    --accent: 30 68% 50%;              /* amber */
+    --accent-foreground: 24 14% 9%;
+
+    --success: 152 34% 32%;
+    --success-foreground: 40 46% 98%;
+    --warning: 38 86% 46%;
+    --warning-foreground: 24 14% 9%;
+    --muted: 34 22% 92%;
+    --muted-foreground: 26 9% 39%;
+    --destructive: 356 60% 41%;
+    --destructive-foreground: 40 46% 98%;
+
+    --border: 30 15% 83%;
+    --input: 30 15% 86%;
+    --ring: 18 60% 38%;
+
+    --radius-xs: 2px;
+    --radius-sm: 3px;
+    --radius: 4px;
+    --radius-lg: 5px;
+    --radius-xl: 6px;
+    --radius-2xl: 8px;
+    --radius-3xl: 10px;
+    --radius-full: 9999px;
+    --radius-btn: 4px;
+
+    --shadow-xs: 0 1px 0 rgba(26, 20, 14, 0.04);
+    --shadow-sm: 0 1px 2px rgba(26, 20, 14, 0.05);
+    --shadow: 0 1px 2px rgba(26, 20, 14, 0.05);
+    --shadow-md: 0 2px 6px rgba(26, 20, 14, 0.06);
+    --shadow-lg: 0 10px 25px -15px rgba(26, 20, 14, 0.25);
+    --shadow-xl: 0 18px 40px -24px rgba(26, 20, 14, 0.3);
+    --shadow-2xl: 0 30px 60px -30px rgba(26, 20, 14, 0.35);
+
+    background-color: hsl(var(--background));
+  }
+
+  html.admin-noir ::-webkit-scrollbar-thumb {
+    background: hsl(30 14% 72%);
+  }
+  html.admin-noir ::-webkit-scrollbar-thumb:hover {
+    background: hsl(24 20% 52%);
+  }
+}
+
+@layer components {
+  .noir-paper {
+    background-image:
+      radial-gradient(120% 80% at 50% -20%, rgba(255, 255, 255, 0.9), transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+
+  .noir-eyebrow {
+    font-family: 'Onest', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .noir-num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .noir-link-underline {
+    position: relative;
+  }
+  .noir-link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .noir-link-underline:hover::after,
+  .noir-link-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+@layer utilities {
+  /* Editorial admin: hairlines carry the structure, so drop card drop-shadows. */
+  html.admin-noir .shadow-xs,
+  html.admin-noir .shadow-sm {
+    box-shadow: none;
+  }
+}

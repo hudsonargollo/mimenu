@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  QrCode, 
-  Plus, 
-  Trash2, 
-  Printer, 
-  ExternalLink, 
-  CheckCircle2, 
-  XCircle,
-  Sparkles
-} from 'lucide-react';
+import { Plus, Trash2, Printer, ExternalLink } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { VenueTable } from '@/types/mimenu';
 import { toast } from 'sonner';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const AdminTables: React.FC = () => {
   const { venue, tables, addTable, updateTable, deleteTable } = useMimenu();
@@ -56,30 +46,31 @@ export const AdminTables: React.FC = () => {
     <AdminLayout>
       <div className="space-y-8 pb-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <QrCode className="w-6 h-6 text-blue-500" />
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-                Mapeo de Mesas & Códigos QR Físicos
-              </h1>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Cada mesa física cuenta con un Hash único. Cuando el cliente escanea el QR en su mesa, se vincula automáticamente la comanda para el Kitchen Display System (KDS).
-            </p>
-          </div>
-
-          <Button
-            onClick={() => window.print()}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow-md"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Imprimir Hojas de QR para Mesas</span>
-          </Button>
-        </div>
+        <AdminPageHeader
+          index="03"
+          eyebrow="Mesas y QR"
+          title="Mesas y códigos QR"
+          description="Cada mesa física tiene un hash único. Al escanear el QR, la comanda se vincula sola al Kitchen Display System."
+          actions={
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground bg-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/85"
+            >
+              <Printer className="h-3.5 w-3.5" aria-hidden="true" />
+              Imprimir hojas QR
+            </button>
+          }
+          meta={
+            <>
+              <span className="noir-eyebrow">{tables.length} mesas</span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+              <span className="noir-eyebrow">{tables.filter((t) => t.is_occupied).length} ocupadas</span>
+            </>
+          }
+        />
 
         {/* Add Table Card */}
-        <Card className="border border-border/80 bg-card p-5 shadow-xs">
+        <section className="border-y border-border bg-card/50 px-5 py-4">
           <form onSubmit={handleAddTable} className="flex flex-wrap items-end gap-4">
             <div className="flex-1 min-w-[200px]">
               <label className="text-xs font-bold text-foreground mb-1 block">
@@ -110,92 +101,86 @@ export const AdminTables: React.FC = () => {
               </select>
             </div>
 
-            <Button
+            <button
               type="submit"
-              className="bg-primary text-primary-foreground font-bold text-xs h-9 px-5 shadow-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-foreground bg-foreground px-5 text-[10px] font-bold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/85"
             >
-              <Plus className="w-4 h-4 mr-1" />
-              <span>Generar Mesa & QR</span>
-            </Button>
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+              Generar mesa y QR
+            </button>
           </form>
-        </Card>
+        </section>
 
         {/* Tables Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-t border-border">
           {tables.map((t) => {
             const qrUrl = getQRUrl(t);
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrUrl)}&color=000000&bgcolor=ffffff`;
 
             return (
-              <Card
+              <div
                 key={t.id}
-                className={`border-2 transition-all duration-200 bg-card overflow-hidden shadow-xs flex flex-col justify-between ${
-                  t.is_occupied ? 'border-amber-500/60 bg-amber-500/5' : 'border-border/80'
+                className={`flex flex-col justify-between border-b border-r border-border p-4 transition-colors ${
+                  t.is_occupied ? 'bg-accent/5' : 'hover:bg-card/60'
                 }`}
               >
-                <CardHeader className="p-3.5 bg-muted/20 border-b border-border/60 flex flex-row items-center justify-between pb-3">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase text-muted-foreground">
-                      {t.zone}
-                    </span>
-                    <CardTitle className="text-base font-black text-foreground">
-                      {t.label}
-                    </CardTitle>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="noir-eyebrow">{t.zone}</p>
+                    <p className="mt-0.5 truncate font-display text-lg leading-tight text-foreground">{t.label}</p>
                   </div>
 
                   <button
                     onClick={() => updateTable(t.id, { is_occupied: !t.is_occupied })}
-                    className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                    className={`shrink-0 border-0 border-b bg-transparent pb-0.5 text-[9px] font-bold uppercase tracking-[0.16em] transition-colors ${
                       t.is_occupied
-                        ? 'bg-amber-500/20 text-amber-500 border-amber-500/40'
-                        : 'bg-emerald-500/20 text-emerald-500 border-emerald-500/40'
+                        ? 'border-amber-600 text-amber-700'
+                        : 'border-emerald-600/50 text-emerald-700'
                     }`}
                   >
                     {t.is_occupied ? 'Ocupada' : 'Libre'}
                   </button>
-                </CardHeader>
+                </div>
 
-                <CardContent className="p-4 flex flex-col items-center space-y-3">
+                <div className="mt-4 flex flex-col items-center gap-3">
                   {/* QR Image */}
-                  <div className="p-2 bg-white rounded-xl shadow-xs border border-gray-200">
+                  <div className="rounded-[2px] border border-border bg-white p-2">
                     <img
                       src={qrApiUrl}
                       alt={`QR Mesa ${t.table_number}`}
-                      className="w-28 h-28 object-contain"
+                      className="h-28 w-28 object-contain"
                     />
                   </div>
 
-                  <div className="text-center space-y-0.5">
-                    <code className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                  <div className="w-full space-y-0.5 text-center">
+                    <code className="block truncate text-[10px] font-mono text-muted-foreground">
                       {t.qr_code_hash}
                     </code>
-                    <p className="text-[10px] text-muted-foreground line-clamp-1 max-w-[200px]">
+                    <p className="line-clamp-1 max-w-[200px] truncate text-[10px] text-muted-foreground/70">
                       {qrUrl}
                     </p>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 w-full pt-2 border-t border-border/60">
-                    <Button
-                      size="sm"
-                      variant="outline"
+                  <div className="flex w-full items-center gap-2 border-t border-border pt-2">
+                    <button
                       onClick={() => window.open(qrUrl, '_blank')}
-                      className="flex-1 text-[11px] h-8 font-bold gap-1"
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 border border-border bg-transparent py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-foreground transition-colors hover:border-foreground"
                     >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Probar</span>
-                    </Button>
+                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                      Probar
+                    </button>
 
                     <button
                       onClick={() => deleteTable(t.id)}
-                      className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                      className="p-1.5 text-muted-foreground transition-colors hover:text-destructive"
                       title="Eliminar mesa"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>

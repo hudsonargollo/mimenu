@@ -21,14 +21,10 @@ export const HotnessIndicator: React.FC<HotnessIndicatorProps> = ({
   if (compact) {
     if (score <= 1) return null;
     return (
-      <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold tracking-tight px-2 py-0.5 rounded-md border backdrop-blur-xs shadow-xs ${color}`}>
+      <span className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         <Flame
-          className={`w-3 h-3 ${
-            score === 5
-              ? 'text-rose-500 fill-rose-500'
-              : score === 4
-              ? 'text-amber-500 fill-amber-500'
-              : 'text-amber-500 fill-amber-500'
+          className={`h-3 w-3 ${
+            score === 5 ? 'fill-rose-500 text-rose-500' : 'fill-amber-500 text-amber-500'
           }`}
           aria-hidden="true"
         />

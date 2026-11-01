@@ -27,7 +27,7 @@ import {
   ShoppingCart,
   TrendingUp,
 } from "lucide-react";
-import { UniformHeader } from "@/components";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminLayout from "@/components/AdminLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { OrderStatus, PaymentStatus } from "@/components/StatusBadge";
@@ -188,85 +188,40 @@ const WaiterDashboard = () => {
 
   return (
     <AdminLayout>
-      <UniformHeader title="Panel de Mesero" onLogout={handleLogout} />
+      <AdminPageHeader
+        index="16"
+        eyebrow="Mesero"
+        title={user?.name || 'Panel de mesero'}
+        description={`${venue.name} · ${venue.city}`}
+        actions={
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+          >
+            Cerrar sesión
+          </button>
+        }
+      />
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          {user?.name || "Mesero"}
-        </h2>
-        <p className="text-sm text-gray-500">
-          {venue.name} · {venue.city}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-blue-100">
-                  Total de ventas
-                </p>
-                <p className="text-2xl font-bold mt-1">
-                  {formatCurrency(totalSales)}
-                </p>
-                <p className="text-xs text-blue-100 mt-1">
-                  {paidCount} pedidos pagados
-                </p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-white/80" />
+      <section className="mb-7 grid grid-cols-2 divide-x divide-y divide-border border-y border-border xl:grid-cols-4 xl:divide-y-0">
+        {[
+          { label: "Total de ventas", value: formatCurrency(totalSales), note: `${paidCount} pedidos pagados`, icon: <TrendingUp className="h-3.5 w-3.5" />, tone: "text-foreground" },
+          { label: "Pedidos activos", value: String(openOrders.length), note: "en el salón", icon: <ShoppingCart className="h-3.5 w-3.5" />, tone: "text-foreground" },
+          { label: "Por cobrar", value: String(pendingPaymentCount), note: "pendientes de pago", icon: <Clock className="h-3.5 w-3.5" />, tone: "text-amber-700" },
+          { label: "Listos para entregar", value: String(readyOrders.length), note: "en mostrador", icon: <Package className="h-3.5 w-3.5" />, tone: "text-emerald-700" },
+        ].map((cell) => (
+          <div key={cell.label} className="flex flex-col justify-between gap-6 p-5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="noir-eyebrow">{cell.label}</span>
+              <span className="text-muted-foreground">{cell.icon}</span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500">
-                  Pedidos activos
-                </p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {openOrders.length}
-                </p>
-              </div>
-              <ShoppingCart className="w-8 h-8 text-gray-300" />
+            <div>
+              <p className={`noir-num font-display text-[1.9rem] leading-none tracking-[-0.03em] ${cell.tone}`}>{cell.value}</p>
+              <p className="mt-1.5 text-[11px] text-muted-foreground">{cell.note}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500">
-                  Por cobrar
-                </p>
-                <p className="text-2xl font-bold text-amber-600 mt-1">
-                  {pendingPaymentCount}
-                </p>
-              </div>
-              <Clock className="w-8 h-8 text-amber-300" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500">
-                  Listos para entregar
-                </p>
-                <p className="text-2xl font-bold text-green-600 mt-1">
-                  {readyOrders.length}
-                </p>
-              </div>
-              <Package className="w-8 h-8 text-green-300" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        ))}
+      </section>
 
       <Card className="border-0 shadow-lg bg-white/95">
         <CardHeader>

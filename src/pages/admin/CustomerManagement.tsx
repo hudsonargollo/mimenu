@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +27,6 @@ import {
   MessageSquare, 
   Star, 
   Download, 
-  Sparkles, 
-  CheckCircle2, 
   Calendar,
   UtensilsCrossed
 } from "lucide-react";
@@ -127,163 +124,126 @@ const CustomerManagement = () => {
   };
 
   const getTierBadge = (tier: CustomerProfile['loyalty_tier']) => {
-    switch (tier) {
-      case 'VIP':
-        return (
-          <Badge className="bg-amber-500 text-slate-950 font-bold flex items-center gap-1">
-            <Star className="w-3 h-3 fill-current" />
-            <span>VIP</span>
-          </Badge>
-        );
-      case 'Oro':
-        return <Badge className="bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30 font-bold">Oro</Badge>;
-      case 'Plata':
-        return <Badge className="bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 font-bold">Plata</Badge>;
-      default:
-        return <Badge variant="outline" className="text-muted-foreground font-semibold">Bronce</Badge>;
-    }
+    const solid = tier === 'VIP';
+    const strong = tier === 'Oro';
+    return (
+      <span
+        className={`inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em] ${
+          solid
+            ? 'border-primary bg-primary text-primary-foreground'
+            : strong
+              ? 'border-foreground/60 text-foreground'
+              : 'border-border text-muted-foreground'
+        }`}
+      >
+        {solid && <Star className="h-3 w-3 fill-current" aria-hidden="true" />}
+        {tier === 'VIP' ? 'VIP' : tier === 'Oro' ? 'Oro' : tier === 'Plata' ? 'Plata' : 'Bronce'}
+      </span>
+    );
   };
+
+  const statsItems = [
+    { label: 'Total clientes', value: stats.totalCustomers, icon: Users },
+    { label: 'Pedidos acumulados', value: stats.totalOrders, icon: ShoppingBag },
+    { label: 'Consumo total', value: `${venue.currency} ${stats.totalRevenue}`, icon: TrendingUp },
+    { label: 'Clientes VIP & Oro', value: stats.vipCount, icon: Star },
+  ];
 
   return (
     <AdminLayout>
       <div className="space-y-6 pb-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-                <Users className="w-4 h-4" aria-hidden="true" />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                CRM Gastronómico & Fidelización
-              </h1>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Base de datos propia de tus comensales en {venue.name}. Identifica clientes VIP y reactívalos con 1 clic por WhatsApp.
-            </p>
-          </div>
+        <AdminPageHeader
+          index="06"
+          eyebrow="Clientes"
+          title="CRM y fidelización"
+          description={`Base propia de comensales de ${venue.name}. Identificá clientes VIP y reactivalos por WhatsApp.`}
+          actions={
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
+              Exportar CSV
+            </button>
+          }
+        />
 
-          <Button 
-            onClick={handleExportCSV} 
-            variant="outline"
-            className="text-xs font-semibold gap-1.5 h-9"
-          >
-            <Download className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Exportar Clientes (CSV)</span>
-          </Button>
+        {/* Metrics band */}
+        <div className="grid grid-cols-2 border-l border-t border-border md:grid-cols-4">
+          {statsItems.map(({ label, value, icon: Icon }) => (
+            <div key={label} className="border-b border-r border-border p-4 sm:p-5">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em]">{label}</p>
+              </div>
+              <p className="mt-3 font-display text-2xl leading-none text-foreground tabular-nums sm:text-3xl">
+                {value}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-card border border-border shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl flex items-center justify-center">
-                <Users className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-[11px] text-muted-foreground font-medium">Total Clientes</p>
-                <p className="text-xl font-bold text-foreground tabular-nums">{stats.totalCustomers}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-card border border-border shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-[11px] text-muted-foreground font-medium">Pedidos Acumulados</p>
-                <p className="text-xl font-bold text-foreground tabular-nums">{stats.totalOrders}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-card border border-border shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-[11px] text-muted-foreground font-medium">Consumo Total</p>
-                <p className="text-xl font-bold text-foreground tabular-nums">{venue.currency} {stats.totalRevenue}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 bg-card border border-border shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-xl flex items-center justify-center">
-                <Star className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-[11px] text-muted-foreground font-medium">Clientes VIP & Oro</p>
-                <p className="text-xl font-bold text-foreground tabular-nums">{stats.vipCount}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Main Customer List Card */}
-        <Card className="p-6 border border-border bg-card shadow-xs space-y-4">
-          {/* Search bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              placeholder="Buscar por nombre, teléfono o nivel (VIP, Oro, Plata)..."
+        {/* Customer list */}
+        <section className="border-b border-border">
+          <div className="relative border-b border-border">
+            <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-10 text-xs rounded-xl"
+              placeholder="Buscar por nombre, teléfono o nivel (VIP, Oro, Plata)..."
+              className="h-12 w-full border-0 bg-transparent pl-7 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 
-          {/* Table */}
           {filteredCustomers.length === 0 ? (
-            <div className="text-center py-12 bg-muted/20 rounded-xl border border-dashed border-border">
-              <Users className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-40" aria-hidden="true" />
-              <p className="text-sm font-semibold text-foreground">No encontramos clientes con ese filtro</p>
-              <p className="text-xs text-muted-foreground mt-1">Los comensales que realicen pedidos en el menú aparecerán aquí automáticamente.</p>
+            <div className="border-b border-r border-border p-8">
+              <p className="font-display text-lg text-foreground">No encontramos clientes con ese filtro</p>
+              <p className="mt-1 max-w-md text-[12px] leading-relaxed text-muted-foreground">
+                Los comensales que realicen pedidos en el menú aparecerán acá automáticamente.
+              </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-border">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/40 text-xs font-bold text-muted-foreground">
-                    <TableHead>Comensal</TableHead>
-                    <TableHead>Nivel</TableHead>
-                    <TableHead className="text-center">Visitas</TableHead>
-                    <TableHead className="text-right">Consumo</TableHead>
-                    <TableHead>Favoritos</TableHead>
-                    <TableHead>Última Visita</TableHead>
-                    <TableHead className="text-right">Acciones WhatsApp</TableHead>
+                  <TableRow className="border-b border-border hover:bg-transparent">
+                    {['Comensal', 'Nivel', 'Visitas', 'Consumo', 'Favoritos', 'Última visita', 'Acciones'].map((head) => (
+                      <TableHead
+                        key={head}
+                        className={`h-10 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground ${
+                          head === 'Consumo' || head === 'Acciones' ? 'text-right' : head === 'Visitas' ? 'text-center' : ''
+                        }`}
+                      >
+                        {head}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredCustomers.map((cust) => (
-                    <TableRow key={cust.id} className="hover:bg-muted/30 transition-colors text-xs">
+                    <TableRow key={cust.id} className="border-b border-border text-xs transition-colors hover:bg-card/60">
                       <TableCell>
-                        <div>
-                          <p className="font-bold text-foreground">{cust.name}</p>
-                          <p className="text-[11px] text-muted-foreground font-mono">{cust.phone}</p>
-                        </div>
+                        <p className="font-semibold text-foreground">{cust.name}</p>
+                        <p className="font-mono text-[10px] text-muted-foreground">{cust.phone}</p>
                       </TableCell>
                       <TableCell>{getTierBadge(cust.loyalty_tier)}</TableCell>
-                      <TableCell className="text-center font-bold tabular-nums">
+                      <TableCell className="text-center">
                         <button
                           onClick={() => handleOpenOrders(cust)}
-                          className="hover:underline text-amber-500 font-bold"
+                          className="border-0 border-b border-transparent bg-transparent p-0 text-[11px] font-semibold text-foreground tabular-nums transition-colors hover:border-current"
                           title="Ver historial de pedidos"
                         >
                           {cust.total_orders} pedidos
                         </button>
                       </TableCell>
-                      <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      <TableCell className="text-right font-semibold text-foreground tabular-nums">
                         {venue.currency} {cust.total_spent}
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap gap-1 max-w-xs">
+                        <div className="flex max-w-xs flex-wrap gap-1">
                           {cust.favorite_items.slice(0, 2).map((fav, i) => (
-                            <span key={i} className="text-[10px] bg-muted/60 text-muted-foreground px-1.5 py-0.5 rounded border border-border">
+                            <span key={i} className="border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
                               {fav}
                             </span>
                           ))}
@@ -293,25 +253,22 @@ const CustomerManagement = () => {
                         {new Date(cust.last_visit_at).toLocaleDateString("es-BO", { day: '2-digit', month: 'short' })}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button
-                            size="sm"
-                            variant="outline"
+                        <div className="flex items-center justify-end gap-4">
+                          <button
                             onClick={() => handleOpenNotes(cust)}
-                            className="h-8 text-[11px] px-2"
+                            className="border-0 border-b border-transparent bg-transparent p-0 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:border-current hover:text-foreground"
                             title="Ver o editar notas"
                           >
                             Notas
-                          </Button>
-                          <Button
-                            size="sm"
+                          </button>
+                          <button
                             onClick={() => handleWhatsAppReengage(cust)}
-                            className="h-8 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1 px-2.5 rounded-lg"
+                            className="inline-flex items-center gap-1.5 border-0 border-b border-transparent bg-transparent p-0 text-[10px] font-bold uppercase tracking-[0.14em] text-foreground transition-colors hover:border-current"
                             title="Reactivar comensal por WhatsApp"
                           >
-                            <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
-                            <span>WhatsApp Promo</span>
-                          </Button>
+                            <MessageSquare className="h-3 w-3" aria-hidden="true" />
+                            WhatsApp
+                          </button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -320,32 +277,34 @@ const CustomerManagement = () => {
               </Table>
             </div>
           )}
-        </Card>
+        </section>
       </div>
 
       {/* Notes Dialog */}
       <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
-        <DialogContent className="max-w-md bg-card border-border rounded-2xl">
+        <DialogContent className="max-w-md rounded-[4px] border-border bg-card">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-foreground">
-              Notas de Cliente: {selectedCustomer?.name}
+            <DialogTitle className="font-display text-lg text-foreground">
+              Notas de cliente: {selectedCustomer?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label className="text-xs font-semibold">Preferencias, alergias o solicitudes especiales:</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              Preferencias, alergias o solicitudes especiales
+            </Label>
             <Input
               value={customerNotes}
               onChange={(e) => setCustomerNotes(e.target.value)}
               placeholder="ej. Mesa preferida en terraza, extra picante, cumpleaños en octubre"
-              className="text-xs h-10"
+              className="h-10 text-xs"
             />
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" size="sm" onClick={() => setIsNotesDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button size="sm" onClick={handleSaveNotes} className="bg-amber-500 hover:bg-amber-600 text-white font-bold">
-              Guardar Notas
+            <Button size="sm" onClick={handleSaveNotes} className="bg-foreground font-bold text-background hover:bg-foreground/90">
+              Guardar notas
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -353,31 +312,31 @@ const CustomerManagement = () => {
 
       {/* Orders History Dialog */}
       <Dialog open={isOrdersDialogOpen} onOpenChange={setIsOrdersDialogOpen}>
-        <DialogContent className="max-w-2xl bg-card border-border rounded-2xl">
+        <DialogContent className="max-w-2xl rounded-[4px] border-border bg-card">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <UtensilsCrossed className="w-4 h-4 text-amber-500" aria-hidden="true" />
-              <span>Historial de Pedidos: {selectedCustomer?.name}</span>
+            <DialogTitle className="flex items-center gap-2 font-display text-lg text-foreground">
+              <UtensilsCrossed className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <span>Historial de {selectedCustomer?.name}</span>
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-2">
             {customerOrders.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-6 text-center">No hay pedidos registrados en la sesión actual.</p>
+              <p className="py-6 text-center text-xs text-muted-foreground">No hay pedidos registrados en la sesión actual.</p>
             ) : (
               <div className="space-y-3">
                 {customerOrders.map((ord) => (
-                  <div key={ord.id} className="p-3.5 rounded-xl bg-muted/30 border border-border space-y-2 text-xs">
+                  <div key={ord.id} className="space-y-2 border border-border p-3.5 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-foreground">Comanda #{ord.order_number} • {ord.fulfillment_type === 'dine_in' ? `Mesa ${ord.table_number}` : 'Retiro'}</span>
-                      <span className="font-bold text-amber-500 tabular-nums">{venue.currency} {ord.total}</span>
+                      <span className="font-semibold text-foreground">Comanda #{ord.order_number} · {ord.fulfillment_type === 'dine_in' ? `Mesa ${ord.table_number}` : 'Retiro'}</span>
+                      <span className="font-semibold text-foreground tabular-nums">{venue.currency} {ord.total}</span>
                     </div>
-                    <div className="text-muted-foreground space-y-0.5">
+                    <div className="space-y-0.5 text-muted-foreground">
                       {ord.items.map((it, idx) => (
-                        <p key={idx}>• {it.quantity}x {it.name} ({venue.currency} {it.price * it.quantity})</p>
+                        <p key={idx}>· {it.quantity}x {it.name} ({venue.currency} {it.price * it.quantity})</p>
                       ))}
                     </div>
-                    <p className="text-[10px] text-muted-foreground border-t border-border/40 pt-1 flex items-center gap-1">
-                      <Calendar className="w-3 h-3" aria-hidden="true" />
+                    <p className="flex items-center gap-1 border-t border-border/60 pt-1 text-[10px] text-muted-foreground">
+                      <Calendar className="h-3 w-3" aria-hidden="true" />
                       <span>{new Date(ord.created_at).toLocaleString("es-BO")}</span>
                     </p>
                   </div>

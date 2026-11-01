@@ -19,6 +19,7 @@ import {
 import { useMimenu } from '@/lib/mimenuContext';
 import { isSafeMediaUrl } from '@/lib/media';
 import { toast } from 'sonner';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 const MAX_FEATURED = 12;
 
@@ -134,27 +135,22 @@ export const AdminBranding: React.FC = () => {
     <AdminLayout>
       <div className="space-y-8 pb-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <Palette className="w-6 h-6 text-pink-500" />
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-                Motor White-Label & Personalización
-              </h1>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Personaliza el nombre del local, colores de marca, moneda local (Bs.), ubicación, portada con video y los platos destacados del menú.
-            </p>
-          </div>
-
-          <Button
-            onClick={handleSave}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow-md"
-          >
-            <Save className="w-4 h-4" />
-            <span>Guardar Cambios</span>
-          </Button>
-        </div>
+        <AdminPageHeader
+          index="10"
+          eyebrow="Marca"
+          title="Identidad y marca"
+          description="Nombre del local, colores de marca, moneda local, ubicación, portada con video y platos destacados."
+          actions={
+            <button
+              onClick={handleSave}
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground bg-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/85"
+            >
+              <Save className="h-3.5 w-3.5" aria-hidden="true" />
+              Guardar cambios
+            </button>
+          }
+          meta={<span className="noir-eyebrow">{venue.slug}</span>}
+        />
 
         {/* Form Grid */}
         <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -350,7 +346,7 @@ export const AdminBranding: React.FC = () => {
           <div className="lg:col-span-4 space-y-6">
             <Card className="border border-border/80 bg-card p-6 shadow-xs space-y-4">
               <h3 className="text-sm font-black uppercase tracking-wider text-foreground flex items-center gap-2">
-                <Palette className="w-4 h-4 text-pink-500" />
+                <Palette className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                 <span>Paleta de Colores de Marca</span>
               </h3>
 

@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useMimenu } from "@/lib/mimenuContext";
 import { useAuth } from "@/lib/authContext";
 import AdminLayout from "@/components/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -186,113 +187,93 @@ const Cashier = () => {
   return (
     <AdminLayout>
       {/* Order Details Dialog */}
-      {/* Uniform Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-            <ChefHat className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-foreground">
-              Caja & KDS: {venue.name}
-            </h1>
-            <div className="flex items-center gap-2">
-              <span className="text-xs bg-amber-500/15 text-amber-500 font-bold px-2 py-0.5 rounded border border-amber-500/30">
-                {venue.city}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Gestión de pedidos, ofertas inteligentes y social proof.
-              </span>
-            </div>
-          </div>
-        </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleLogout}
-          className="text-xs font-bold"
-        >
-          Cerrar Sesión
-        </Button>
-      </div>
+      <AdminPageHeader
+        index="02"
+        eyebrow="Cocina y KDS"
+        title="Caja y KDS"
+        description="Pedidos en vivo, ofertas inteligentes y prueba social del salón."
+        actions={
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+          >
+            Cerrar sesión
+          </button>
+        }
+        meta={
+          <>
+            <span className="noir-eyebrow">{venue.city}</span>
+            <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+            <span className="noir-eyebrow">{pendingOrders.length + inProgressOrders.length + readyOrders.length} pedidos activos</span>
+          </>
+        }
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-        <Card
-          className="border border-rose-500/30 bg-gradient-to-br from-rose-500/10 to-card cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => setActiveTab("pending")}
-        >
-          <div className="p-4 text-center">
-            <Timer className="w-6 h-6 mx-auto mb-1 text-rose-400" />
-            <p className="text-xs font-medium text-muted-foreground">Esperando Pago</p>
-            <p className="text-2xl font-black text-rose-400">{pendingOrders.length}</p>
-          </div>
-        </Card>
-        <Card
-          className="border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-card cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => setActiveTab("progress")}
-        >
-          <div className="p-4 text-center">
-            <ChefHat className="w-6 h-6 mx-auto mb-1 text-amber-400" />
-            <p className="text-xs font-medium text-muted-foreground">En Preparación</p>
-            <p className="text-2xl font-black text-amber-400">{inProgressOrders.length}</p>
-          </div>
-        </Card>
-        <Card
-          className="border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-card cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => setActiveTab("ready")}
-        >
-          <div className="p-4 text-center">
-            <Package className="w-6 h-6 mx-auto mb-1 text-emerald-400" />
-            <p className="text-xs font-medium text-muted-foreground">Listos</p>
-            <p className="text-2xl font-black text-emerald-400">{readyOrders.length}</p>
-          </div>
-        </Card>
-        <Card
-          className="border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-card cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => setActiveTab("completed")}
-        >
-          <div className="p-4 text-center">
-            <CheckCircle className="w-6 h-6 mx-auto mb-1 text-purple-400" />
-            <p className="text-xs font-medium text-muted-foreground">Finalizados</p>
-            <p className="text-2xl font-black text-purple-400">{completedOrders.length}</p>
-          </div>
-        </Card>
-        <Card
-          className="border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-card"
+      <section className="mb-7 grid grid-cols-2 divide-x divide-y divide-border border-y border-border lg:grid-cols-5 lg:divide-y-0">
+        {[
+          { key: "pending", label: "Esperando pago", value: pendingOrders.length, icon: <Timer className="h-3.5 w-3.5" />, tone: "text-rose-700", on: () => setActiveTab("pending") },
+          { key: "progress", label: "En preparación", value: inProgressOrders.length, icon: <ChefHat className="h-3.5 w-3.5" />, tone: "text-amber-700", on: () => setActiveTab("progress") },
+          { key: "ready", label: "Listos", value: readyOrders.length, icon: <Package className="h-3.5 w-3.5" />, tone: "text-emerald-700", on: () => setActiveTab("ready") },
+          { key: "completed", label: "Finalizados", value: completedOrders.length, icon: <CheckCircle className="h-3.5 w-3.5" />, tone: "text-foreground", on: () => setActiveTab("completed") },
+        ].map((cell) => (
+          <button
+            key={cell.key}
+            type="button"
+            onClick={cell.on}
+            className="flex flex-col justify-between gap-6 border-0 bg-transparent p-4 text-left transition-colors hover:bg-card sm:p-5"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="noir-eyebrow">{cell.label}</span>
+              <span className={cell.tone}>{cell.icon}</span>
+            </div>
+            <p className={`noir-num font-display text-[2.1rem] leading-none tracking-[-0.03em] ${cell.tone}`}>{cell.value}</p>
+          </button>
+        ))}
+        <button
+          type="button"
           onClick={() => (window.location.href = "/admin/tables")}
+          className="col-span-2 flex flex-col justify-between gap-6 border-0 bg-transparent p-4 text-left transition-colors hover:bg-card lg:col-span-1 sm:p-5"
         >
-          <div className="p-4 text-center">
-            <Users className="w-6 h-6 mx-auto mb-1 text-blue-400" />
-            <p className="text-xs font-medium text-muted-foreground">Mesas Ocupadas</p>
-            <p className="text-2xl font-black text-blue-400">
-              {tables.filter((t) => t.is_occupied).length} / {tables.length}
-            </p>
+          <div className="flex items-center justify-between gap-2">
+            <span className="noir-eyebrow">Mesas ocupadas</span>
+            <Users className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
           </div>
-        </Card>
-      </div>
+          <p className="noir-num font-display text-[2.1rem] leading-none tracking-[-0.03em] text-foreground">
+            {tables.filter((t) => t.is_occupied).length}<span className="text-muted-foreground/50"> / {tables.length}</span>
+          </p>
+        </button>
+      </section>
 
       {/* Orders Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="pending">Esperando ({pendingOrders.length})</TabsTrigger>
-          <TabsTrigger value="progress">En Preparación ({inProgressOrders.length})</TabsTrigger>
-          <TabsTrigger value="ready">Listos ({readyOrders.length})</TabsTrigger>
-          <TabsTrigger value="completed">Finalizados ({completedOrders.length})</TabsTrigger>
+        <TabsList className="mb-7 inline-flex h-auto items-center gap-7 rounded-none border-b border-border bg-transparent p-0">
+          {[
+            { value: "pending", label: `Esperando (${pendingOrders.length})` },
+            { value: "progress", label: `En preparación (${inProgressOrders.length})` },
+            { value: "ready", label: `Listos (${readyOrders.length})` },
+            { value: "completed", label: `Finalizados (${completedOrders.length})` },
+          ].map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         {/* Pending Tab */}
         <TabsContent value="pending" className="space-y-4">
           {pendingOrders.length === 0 ? (
-            <Card className="p-8 text-center">
-              <div className="flex flex-col items-center">
-                <Timer className="w-16 h-16 text-gray-300 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido esperando pago</p>
-                <p className="text-sm text-gray-500">
-                  Los pedidos aparecerán aquí cuando los clientes hagan nuevos pedidos.
-                </p>
-              </div>
-            </Card>
+            <div className="border-y border-border px-6 py-14 text-center">
+              <Timer className="mx-auto mb-3 h-8 w-8 text-muted-foreground/35" aria-hidden="true" />
+              <p className="font-display text-xl text-foreground">Ningún pedido esperando pago</p>
+              <p className="mx-auto mt-1 max-w-sm text-[12px] leading-relaxed text-muted-foreground">
+                Los pedidos aparecerán acá apenas los clientes empiecen a pedir.
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {pendingOrders.map((order) => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Bot,
@@ -9,211 +9,306 @@ import {
   Flame,
   QrCode,
   MessageSquare,
-  BarChart3,
   Palette,
   Settings,
-  LogOut,
-  Menu,
-  X,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Users,
   Store,
-  Lock
+  Lock,
+  X,
+  Menu,
+  ArrowUpRight,
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { hasEntitlement, requiredPlanFor, type Entitlement } from '@/lib/plans';
-import { toast } from 'sonner';
 
 interface SidebarItem {
   label: string;
   icon: React.ReactNode;
   path: string;
-  description: string;
   badge?: string;
-  /** Entitlement the destination requires; locked items still navigate to the upgrade screen. */
   feature?: Entitlement;
 }
+
+interface SidebarGroup {
+  title: string;
+  items: SidebarItem[];
+}
+
+const GROUPS: SidebarGroup[] = [
+  {
+    title: 'Operación',
+    items: [
+      { label: 'Panel', icon: <LayoutDashboard />, path: '/admin' },
+      { label: 'Cocina y KDS', icon: <ChefHat />, path: '/cashier', feature: 'kds' },
+      { label: 'Mesas y QR', icon: <QrCode />, path: '/admin/tables' },
+    ],
+  },
+  {
+    title: 'Crecimiento',
+    items: [
+      { label: 'Ofertas', icon: <Sparkles />, path: '/admin/offers', feature: 'smart_offers' },
+      { label: 'Hotness', icon: <Flame />, path: '/admin/analytics', feature: 'analytics' },
+      { label: 'Clientes', icon: <Users />, path: '/admin/customers', feature: 'crm' },
+      { label: 'Reseñas', icon: <MessageSquare />, path: '/admin/reviews' },
+    ],
+  },
+  {
+    title: 'Sistema',
+    items: [
+      { label: 'AI Copilot', icon: <Bot />, path: '/admin/ai', badge: 'IA', feature: 'whatsapp_concierge' },
+      { label: 'Ingestor de carta', icon: <Camera />, path: '/admin/ingest-menu', feature: 'photographed_menu' },
+      { label: 'Marca', icon: <Palette />, path: '/admin/branding', feature: 'custom_website' },
+      { label: 'Configuraciones', icon: <Settings />, path: '/admin/settings' },
+    ],
+  },
+];
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { venue } = useMimenu();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(() =>
+    typeof window === 'undefined' ? true : window.innerWidth >= 1024
+  );
 
-  const menuItems: SidebarItem[] = [
-    { label: 'AI Copilot', icon: <Bot className="w-6 h-6" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA', feature: 'whatsapp_concierge' },
-    { label: 'Dashboard', icon: <LayoutDashboard className="w-6 h-6" />, path: '/admin', description: 'Resumen & Kpis' },
-    { label: 'Ingestor Carta IA', icon: <Camera className="w-6 h-6" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision', feature: 'photographed_menu' },
-    { label: 'Cocina & KDS', icon: <ChefHat className="w-6 h-6" />, path: '/cashier', description: 'Pedidos en vivo', feature: 'kds' },
-    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-6 h-6" />, path: '/admin/offers', description: 'Cycling promos', feature: 'smart_offers' },
-    { label: 'Hotness & Métricas', icon: <Flame className="w-6 h-6" />, path: '/admin/analytics', description: 'Velocidad & Ventas', feature: 'analytics' },
-    { label: 'Mesas & QR', icon: <QrCode className="w-6 h-6" />, path: '/admin/tables', description: 'Table mapping' },
-    { label: 'CRM & Clientes', icon: <Users className="w-6 h-6" />, path: '/admin/customers', description: 'Fidelización & VIP', feature: 'crm' },
-    { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-6 h-6" />, path: '/admin/reviews', description: 'Moderación' },
-    { label: 'White-Label & Marca', icon: <Palette className="w-6 h-6" />, path: '/admin/branding', description: 'Portada, video & destacados', feature: 'custom_website' },
-    { label: 'Configuraciones', icon: <Settings className="w-6 h-6" />, path: '/admin/settings', description: 'Sistema, Marca & Usuarios' },
-  ];
+  useEffect(() => {
+    if (window.innerWidth >= 1024) return;
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (window.innerWidth < 1024) setIsOpen(false);
+  }, [location.pathname]);
 
   const isActive = (path: string) => location.pathname === path;
+  let counter = 0;
 
   return (
     <>
-      {/* Sidebar */}
-      <aside
-        className={`relative h-screen transition-all duration-300 z-40 flex flex-col ${
-          isOpen ? 'w-64' : 'w-20'
-        }`}
-        style={{
-          background: 'rgba(255,255,255,0.35)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          borderRight: '1px solid rgba(255,255,255,0.5)',
-          fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif',
-        }}
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Abrir navegación"
+        className="fixed left-4 top-3 z-40 flex h-9 w-9 items-center justify-center rounded-[4px] border border-border bg-card text-foreground shadow-sm lg:hidden"
       >
-        {/* Logo Section */}
-        <div className="p-5 border-b border-white/40 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <img src="/mimenu.svg" alt="MiMenu" className="h-9 w-9 shrink-0" />
+        <Menu className="h-4 w-4" />
+      </button>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-[#14110F]/45 backdrop-blur-[1px] lg:hidden"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col bg-[#14110F] text-[#F4EDE1] transition-[width,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:static lg:z-auto lg:translate-x-0 ${
+          isOpen ? 'w-[268px] translate-x-0' : 'w-[268px] -translate-x-full lg:w-[76px]'
+        }`}
+        aria-label="Navegación del panel"
+      >
+        {/* Wordmark */}
+        <div className={`flex items-center gap-3 border-b border-white/[0.07] px-4 py-5 ${isOpen ? '' : 'lg:justify-center lg:px-0'}`}>
+          <Link
+            to="/admin"
+            className="flex min-w-0 items-center gap-3"
+            aria-label="MiMenu — ir al panel"
+          >
+            <img src="/mimenu.svg" alt="" className="h-7 w-7 shrink-0" />
             {isOpen && (
-              <div>
-                {venue?.plan !== 'custom' ? (
-                  <Link
-                    to="/admin/upgrade"
-                    title="Upgrade plan"
-                    className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded hover:bg-white hover:text-[#2a1f55] transition-colors"
-                  >
-                    {venue?.plan_name ?? 'Basic'}
-                  </Link>
-                ) : (
-                  <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
-                    {venue?.plan_name ?? 'Basic'}
-                  </span>
-                )}
-              </div>
+              <span className="min-w-0">
+                <span className="block font-display text-lg leading-none tracking-tight text-[#F8F2E7]">
+                  MiMenu
+                </span>
+                <span className="mt-1 block truncate text-[10px] font-medium uppercase tracking-[0.18em] text-[#F4EDE1]/40">
+                  {venue?.name ?? 'Panel'}
+                </span>
+              </span>
             )}
-          </div>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            aria-label="Cerrar navegación"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-[4px] border-0 bg-transparent text-[#F4EDE1]/50 hover:bg-white/[0.06] hover:text-[#F4EDE1] lg:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
-        {/* Edge toggle button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="absolute -right-3.5 top-6 z-50 hidden md:flex items-center justify-center w-7 h-7 rounded-full bg-white border border-white/60 text-[#3a2f6b] shadow-[0_2px_8px_rgba(0,0,0,0.15)] hover:bg-white hover:text-[#2a1f55] transition-colors"
-          title={isOpen ? 'Colapsar' : 'Expandir'}
-          style={{ transform: 'translateX(50%)' }}
-        >
-          {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </button>
-
-        {/* Live Menu Preview Link */}
-        <div className="px-3 pt-3">
+        {/* Live menu */}
+        <div className={isOpen ? 'px-4 pt-4' : 'px-3 pt-4'}>
           <Link
             to="/menu"
             target="_blank"
-            className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold transition-all group border"
-            style={{
-              background: 'rgba(255,255,255,0.45)',
-              borderColor: 'rgba(139,92,246,0.25)',
-              color: '#5b4a9e',
-            }}
+            className={`group flex items-center gap-2 rounded-[4px] border border-white/[0.09] px-3 py-2 text-[11px] font-semibold text-[#F4EDE1]/70 transition-colors hover:border-white/20 hover:text-[#F8F2E7] ${
+              isOpen ? 'justify-between' : 'justify-center'
+            }`}
+            title="Abrir el menú digital"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              {isOpen && <span>Ver Menú Digital</span>}
-            </div>
-            <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+            <span className="flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              </span>
+              {isOpen && <span className="uppercase tracking-[0.14em]">Menú digital</span>}
+            </span>
+            {isOpen && <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100" />}
           </Link>
         </div>
 
-        {/* Menu Items */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {menuItems.map((item) => {
-            const locked = item.feature ? !hasEntitlement(venue?.slug, item.feature) : false;
-            const requiredPlan = item.feature && locked ? requiredPlanFor(item.feature) : null;
-            return (
-            <button
-              key={item.path}
-              onClick={() =>
-                navigate(locked && item.feature ? `/admin/upgrade?feature=${item.feature}` : item.path)
-              }
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive(item.path)
-                  ? 'text-white font-bold shadow-md'
-                  : 'text-[#3a2f6b] hover:bg-white/40 hover:text-[#2a1f55]'
-              } ${!isOpen ? 'md:justify-center md:px-0' : ''}`}
-              style={
-                isActive(item.path)
-                  ? { background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }
-                  : undefined
-              }
-              title={!isOpen ? item.label : locked ? `Requiere plan ${requiredPlan?.name}` : ''}
-            >
-              <span className={`flex-shrink-0 ${locked && !isActive(item.path) ? 'opacity-40' : ''}`}>{item.icon}</span>
+        {/* Index */}
+        <nav className="mt-2 flex-1 overflow-y-auto px-2 pb-4">
+          {GROUPS.map((group) => (
+            <div key={group.title}>
               {isOpen && (
-                <div className="text-left">
-                  <div className={`text-xs font-bold ${locked && !isActive(item.path) ? 'text-[#3a2f6b]/50' : ''}`}>{item.label}</div>
-                  <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>
-                    {locked ? `Plan ${requiredPlan?.name}` : item.description}
-                  </div>
-                </div>
+                <p className="px-3 pb-1.5 pt-5 text-[9px] font-bold uppercase tracking-[0.26em] text-[#F4EDE1]/40">
+                  {group.title}
+                </p>
               )}
+              <ul className={isOpen ? 'space-y-px' : 'mt-3 space-y-1'}>
+                {group.items.map((item) => {
+                  counter += 1;
+                  const index = String(counter).padStart(2, '0');
+                  const active = isActive(item.path);
+                  const locked = item.feature ? !hasEntitlement(venue?.slug, item.feature) : false;
+                  const requiredPlan = item.feature && locked ? requiredPlanFor(item.feature) : null;
 
-              {isOpen && locked && (
-                <Lock className="w-3.5 h-3.5 flex-shrink-0 text-[#8b5cf6]" aria-label={`Requiere plan ${requiredPlan?.name}`} />
-              )}
-              {isOpen && !locked && item.badge && (
-                <span className="text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded-full shadow-xs" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}>
-                  {item.badge}
-                </span>
-              )}
-            </button>
-            );
-          })}
+                  return (
+                    <li key={item.path}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigate(locked && item.feature ? `/admin/upgrade?feature=${item.feature}` : item.path)
+                        }
+                        aria-current={active ? 'page' : undefined}
+                        title={!isOpen || locked ? item.label : undefined}
+                        className={`group relative flex w-full items-center gap-3 rounded-[4px] border-0 py-2.5 text-left transition-colors ${
+                          isOpen ? 'pl-3 pr-2' : 'justify-center px-0'
+                        } ${
+                          active
+                            ? 'bg-[#F4EDE1] text-[#171310]'
+                            : 'bg-transparent text-[#F4EDE1]/72 hover:bg-white/[0.05] hover:text-[#F8F2E7]'
+                        }`}
+                      >
+                        {active && (
+                          <span className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-[#C2571F]" aria-hidden="true" />
+                        )}
+                        <span
+                          className={`noir-num shrink-0 text-[9px] font-bold tracking-[0.08em] ${
+                            active ? 'text-[#171310]/40' : 'text-[#F4EDE1]/25'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {index}
+                        </span>
+                        <span
+                          className={`shrink-0 [&>svg]:h-[15px] [&>svg]:w-[15px] ${
+                            active ? 'text-[#171310]' : locked ? 'text-[#F4EDE1]/35' : ''
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {item.icon}
+                        </span>
+
+                        {isOpen && (
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center gap-1.5">
+                              <span
+                                className={`truncate text-[12.5px] font-medium leading-tight ${
+                                  active ? 'text-[#171310]' : locked ? 'text-[#F4EDE1]/40' : ''
+                                }`}
+                              >
+                                {item.label}
+                              </span>
+                              {item.badge && !locked && (
+                                <span
+                                  className={`rounded-[2px] px-1 py-px text-[8px] font-bold uppercase tracking-[0.12em] ${
+                                    active ? 'bg-[#171310]/10 text-[#171310]' : 'bg-[#C2571F]/20 text-[#E8935F]'
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </span>
+                            {locked && (
+                              <span
+                                className={`mt-0.5 block truncate text-[9.5px] uppercase tracking-[0.1em] ${
+                                  active ? 'text-[#171310]/45' : 'text-[#F4EDE1]/40'
+                                }`}
+                              >
+                                Plan {requiredPlan?.name}
+                              </span>
+                            )}
+                          </span>
+                        )}
+
+                        {isOpen && locked && (
+                          <Lock className="h-3 w-3 shrink-0 text-[#F4EDE1]/30" aria-hidden="true" />
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </nav>
 
-        {/* Upgrade CTA — every venue below Custom keeps a direct path up */}
-        {venue?.plan !== 'custom' && (
-          <div className="px-3 pb-2">
+        {/* Footer */}
+        <div className="border-t border-white/[0.07] px-3 py-3">
+          {venue?.plan !== 'custom' && (
             <Link
               to="/admin/upgrade"
-              title={isOpen ? undefined : 'Upgrade plan'}
-              className={`flex items-center gap-2 rounded-xl text-white shadow-md transition-opacity hover:opacity-90 ${
-                isOpen ? 'justify-between px-3 py-2.5' : 'mx-auto h-10 w-12 justify-center'
+              className={`mb-2 flex items-center gap-2 rounded-[4px] border border-[#C2571F]/40 bg-[#C2571F]/10 px-3 py-2 text-[#F4EDE1] transition-colors hover:border-[#C2571F]/70 hover:bg-[#C2571F]/18 ${
+                isOpen ? 'justify-between' : 'mx-auto justify-center px-0'
               }`}
-              style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+              title={`Upgrade plan — ${venue?.plan_name ?? 'Basic'}`}
             >
               <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" aria-hidden="true" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#E8935F]" aria-hidden="true" />
                 {isOpen && (
-                  <span className="text-[11px] font-black uppercase tracking-wide">Upgrade plan</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.16em]">Upgrade plan</span>
                 )}
               </span>
               {isOpen && (
-                <span className="text-[10px] font-bold text-white/80">{venue?.plan_name}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#F4EDE1]/45">
+                  {venue?.plan_name ?? 'Basic'}
+                </span>
               )}
             </Link>
-          </div>
-        )}
+          )}
 
-        {/* Footer info */}
-        <div className="p-3 border-t border-white/40 text-[11px] text-[#5b4a9e] flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="text-[11px] font-bold flex items-center gap-1 text-[#5b4a9e] hover:text-[#2a1f55]"
-          >
-            <Store className="w-3.5 h-3.5" />
-            {isOpen && <span>Landing Page</span>}
-          </button>
+          <div className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'}`}>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 rounded-[3px] border-0 bg-transparent px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F4EDE1]/45 hover:text-[#F8F2E7]"
+              title="Ir a la landing"
+            >
+              <Store className="h-3.5 w-3.5" aria-hidden="true" />
+              {isOpen && <span>Landing</span>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen((open) => !open)}
+              aria-label={isOpen ? 'Colapsar navegación' : 'Expandir navegación'}
+              className="hidden h-7 w-7 items-center justify-center rounded-[3px] border-0 bg-transparent text-[#F4EDE1]/45 hover:bg-white/[0.06] hover:text-[#F8F2E7] lg:flex"
+            >
+              {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
       </aside>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </>
   );
 };

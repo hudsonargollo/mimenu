@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import TenantSwitcher from './TenantSwitcher';
 
@@ -6,26 +7,53 @@ interface AdminLayoutProps {
   children: ReactNode;
 }
 
+const SECTION_LABELS: Record<string, string> = {
+  '/admin': 'Panel',
+  '/admin/ai': 'AI Copilot',
+  '/admin/ingest-menu': 'Ingestor de carta',
+  '/admin/offers': 'Ofertas',
+  '/admin/analytics': 'Hotness',
+  '/admin/tables': 'Mesas y QR',
+  '/admin/customers': 'Clientes',
+  '/admin/reviews': 'Reseñas',
+  '/admin/branding': 'Marca',
+  '/admin/settings': 'Configuraciones',
+  '/admin/upgrade': 'Plan',
+  '/admin/products': 'Carta',
+  '/cashier': 'Cocina y KDS',
+};
+
 const AdminLayout = ({ children }: AdminLayoutProps) => {
+  const { pathname } = useLocation();
+  const section = SECTION_LABELS[pathname] ?? 'Panel';
+
+  useEffect(() => {
+    document.documentElement.classList.add('admin-noir');
+    return () => document.documentElement.classList.remove('admin-noir');
+  }, []);
+
   return (
-    <div
-      className="flex h-screen relative overflow-hidden"
-      style={{ background: 'oklch(0.96 0.04 290)', fontFamily: '"Bricolage Grotesque", "Figtree", system-ui, sans-serif' }}
-    >
-      {/* wash gradients */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(60% 50% at 50% 30%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 70%), radial-gradient(40% 40% at 20% 80%, rgba(168,139,255,0.35) 0%, transparent 70%), radial-gradient(40% 40% at 80% 70%, rgba(255,182,217,0.3) 0%, transparent 70%)'
-      }} />
-      {/* Sidebar */}
+    <div className="admin-noir flex h-screen overflow-hidden bg-background text-foreground">
       <AdminSidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto relative z-10">
-        <div className="flex items-center justify-end gap-3 px-6 md:px-8 pt-5 max-w-7xl mx-auto w-full">
-          <TenantSwitcher />
-        </div>
-        <div className="p-6 md:p-8 max-w-7xl mx-auto">
-          {children}
+      <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="noir-paper pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
+
+        <header className="relative z-20 shrink-0 border-b border-border/80 bg-background/85 backdrop-blur-[2px]">
+          <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-4 py-3 pl-20 pr-5 md:pl-20 md:pr-10 lg:px-10">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="hidden text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground sm:inline">
+                MiMenu
+              </span>
+              <span className="hidden h-3 w-px bg-border sm:inline" aria-hidden="true" />
+              <span className="truncate font-display text-sm text-foreground/90">{section}</span>
+            </div>
+            <TenantSwitcher />
+          </div>
+        </header>
+
+        <div className="relative z-10 flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1400px] px-5 py-8 md:px-10 md:py-10">{children}</div>
         </div>
       </main>
     </div>

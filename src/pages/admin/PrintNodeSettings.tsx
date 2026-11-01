@@ -1,34 +1,22 @@
-import { useState, useEffect } from 'react';
-import { printNodeClient } from '@/integrations/printnode/client';
 import AdminLayout from '@/components/AdminLayout';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { Printer, Check, X, RefreshCw } from 'lucide-react';
-
-interface Printer {
-  id: number;
-  name: string;
-  description: string;
-  state: string;
-}
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 const PrintNodeSettings = () => {
-  const [apiKey, setApiKey] = useState('');
-  const [printers, setPrinters] = useState<Printer[]>([]);
-  const [loading, setLoading] = useState(false);
-
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <Card>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">PrintNode Settings</h2>
-            <p className="text-gray-600">Configure PrintNode integration here.</p>
-          </div>
-        </Card>
+      <div className="pb-12">
+        <AdminPageHeader
+          index="15"
+          eyebrow="Impresión"
+          title="PrintNode"
+          description="Integración en la nube para impresoras térmicas."
+        />
+        <section className="border-y border-border px-5 py-6">
+          <p className="noir-eyebrow">Sin configurar</p>
+          <p className="mt-1.5 max-w-xl text-[12.5px] leading-relaxed text-muted-foreground">
+            La integración con PrintNode todavía no está configurada para este local.
+          </p>
+        </section>
       </div>
     </AdminLayout>
   );

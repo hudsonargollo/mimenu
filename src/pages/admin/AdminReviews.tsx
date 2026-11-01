@@ -1,17 +1,8 @@
 import React from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  MessageSquare, 
-  Star, 
-  CheckCircle, 
-  XCircle, 
-  Trash2, 
-  ShieldCheck,
-  User
-} from 'lucide-react';
+import { Star, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export const AdminReviews: React.FC = () => {
   const { venue, categories, reviews, approveReview, rejectReview } = useMimenu();
@@ -28,121 +19,113 @@ export const AdminReviews: React.FC = () => {
     <AdminLayout>
       <div className="space-y-8 pb-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-6 h-6 text-purple-500" />
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-                Cola de Moderación de Reseñas
-              </h1>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Controla y modera las opiniones de clientes de 1 a 5 estrellas sobre salchipapas, nachos, tragos y chopp antes o después de su publicación.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-            <span className="bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-full border border-amber-500/30">
-              {pendingReviews.length} pendientes
-            </span>
-            <span className="bg-emerald-500/10 text-emerald-500 px-2.5 py-1 rounded-full border border-emerald-500/30">
-              {approvedReviews.length} aprobadas
-            </span>
-          </div>
-        </div>
+        <AdminPageHeader
+          index="07"
+          eyebrow="Reseñas"
+          title="Moderación de reseñas"
+          description="Controla las opiniones de 1 a 5 estrellas antes o después de publicarlas en el menú."
+          meta={
+            <>
+              <span className="noir-eyebrow text-amber-700">{pendingReviews.length} pendientes</span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+              <span className="noir-eyebrow text-emerald-700">{approvedReviews.length} aprobadas</span>
+            </>
+          }
+        />
 
         {/* Reviews List */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-black uppercase tracking-wider text-foreground">
-            Todas las Opiniones Registradas
-          </h2>
+        <div>
+          <div className="flex items-center gap-2 border-b border-border pb-2">
+            <p className="noir-eyebrow">Todas las opiniones registradas</p>
+            <ShieldCheck className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 border-l border-border md:grid-cols-2">
+            {reviews.length === 0 && (
+              <div className="border-b border-r border-border p-8 md:col-span-2">
+                <p className="font-display text-lg text-foreground">Sin reseñas todavía</p>
+                <p className="mt-1 max-w-md text-[12px] leading-relaxed text-muted-foreground">
+                  Cuando tus clientes califiquen platos desde el menú, las opiniones aparecerán acá para
+                  aprobarlas o rechazarlas.
+                </p>
+              </div>
+            )}
             {reviews.map((rev) => {
               const itemName = getItemName(rev.item_id);
 
               return (
-                <Card
+                <article
                   key={rev.id}
-                  className={`border-2 transition-all bg-card overflow-hidden shadow-xs ${
+                  className={`flex flex-col border-b border-r border-border p-5 transition-colors ${
                     rev.status === 'pending'
-                      ? 'border-amber-500/50 bg-amber-500/5'
+                      ? 'bg-amber-500/[0.06]'
                       : rev.status === 'rejected'
-                      ? 'border-red-500/30 opacity-60'
-                      : 'border-border/80'
+                      ? 'opacity-55'
+                      : 'hover:bg-card/60'
                   }`}
                 >
-                  <CardHeader className="p-4 bg-muted/20 border-b border-border/60 pb-3 flex flex-row items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-extrabold uppercase text-primary">
-                        {itemName}
-                      </span>
-                      <CardTitle className="text-sm font-bold text-foreground flex items-center gap-1.5 mt-0.5">
-                        <User className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span>{rev.customer_name}</span>
-                      </CardTitle>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="noir-eyebrow truncate">{itemName}</p>
+                      <p className="mt-1 truncate font-display text-base text-foreground">{rev.customer_name}</p>
                     </div>
 
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex shrink-0 items-center gap-0.5 pt-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3.5 h-3.5 ${
-                            i < rev.rating ? 'text-amber-500 fill-amber-500' : 'text-muted-foreground/30'
+                          className={`h-3 w-3 ${
+                            i < rev.rating ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/25'
                           }`}
+                          aria-hidden="true"
                         />
                       ))}
                     </div>
-                  </CardHeader>
+                  </div>
 
-                  <CardContent className="p-4 space-y-3">
-                    <p className="text-xs text-foreground/90 italic leading-relaxed">
-                      "{rev.comment}"
-                    </p>
+                  <p className="mt-3 flex-1 border-l border-border pl-3 text-[12.5px] italic leading-relaxed text-foreground/85">
+                    “{rev.comment}”
+                  </p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-border/60 text-[11px]">
-                      <span className="text-muted-foreground">
-                        {new Date(rev.created_at).toLocaleString('es-BO')}
-                      </span>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5 text-[10px]">
+                    <span className="noir-num uppercase tracking-[0.1em] text-muted-foreground">
+                      {new Date(rev.created_at).toLocaleString('es-BO')}
+                    </span>
 
-                      <div className="flex items-center gap-2">
-                        {rev.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              onClick={() => approveReview(rev.id)}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-7 px-3"
-                            >
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              Aprobar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => rejectReview(rev.id)}
-                              className="text-red-500 hover:bg-red-500/10 font-bold text-xs h-7 px-3"
-                            >
-                              <XCircle className="w-3 h-3 mr-1" />
-                              Rechazar
-                            </Button>
-                          </>
-                        )}
+                    <div className="flex items-center gap-2">
+                      {rev.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => approveReview(rev.id)}
+                            className="inline-flex items-center gap-1 border-0 border-b border-emerald-600 bg-transparent pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700 transition-colors hover:text-emerald-800"
+                          >
+                            <CheckCircle className="h-3 w-3" aria-hidden="true" />
+                            Aprobar
+                          </button>
+                          <button
+                            onClick={() => rejectReview(rev.id)}
+                            className="inline-flex items-center gap-1 border-0 border-b border-transparent bg-transparent pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
+                          >
+                            <XCircle className="h-3 w-3" aria-hidden="true" />
+                            Rechazar
+                          </button>
+                        </>
+                      )}
 
-                        {rev.status === 'approved' && (
-                          <span className="text-emerald-500 font-bold flex items-center gap-1">
-                            <CheckCircle className="w-3.5 h-3.5" /> Aprobada en Menú
-                          </span>
-                        )}
+                      {rev.status === 'approved' && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">
+                          <CheckCircle className="h-3 w-3" aria-hidden="true" /> Aprobada
+                        </span>
+                      )}
 
-                        {rev.status === 'rejected' && (
-                          <span className="text-red-500 font-bold flex items-center gap-1">
-                            <XCircle className="w-3.5 h-3.5" /> Rechazada
-                          </span>
-                        )}
-                      </div>
+                      {rev.status === 'rejected' && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-destructive">
+                          <XCircle className="h-3 w-3" aria-hidden="true" /> Rechazada
+                        </span>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </article>
               );
             })}
           </div>

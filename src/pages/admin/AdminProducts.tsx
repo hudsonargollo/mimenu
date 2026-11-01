@@ -20,10 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Edit, Plus, ShoppingBag, FolderOpen, Trash2, Camera, Sparkles, Box, Lock, Upload } from "lucide-react";
+import { Edit, Plus, ShoppingBag, FolderOpen, Trash2, Camera, Box, Lock, Upload, Power } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { MenuPhotoIngesterModal } from "@/components/MenuPhotoIngesterModal";
 import Admin3DModal from "@/components/admin/Admin3DModal";
 import { hasEntitlement, requiredPlanFor } from "@/lib/plans";
@@ -235,202 +236,234 @@ const AdminProducts = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-display font-bold text-gray-900">Productos</h1>
-            <p className="text-gray-600 mt-1">Gestioná tu menú y categorías</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={() => setIsPhotoIngesterOpen(true)}
-              variant="outline"
-              className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 font-bold gap-1.5 shadow-sm"
-              size="lg"
-            >
-              <Camera className="h-5 w-5" />
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              Escanear Menú con Foto / IA
-            </Button>
-            <Button
-              onClick={openCreate}
-              className="bg-secondary hover:bg-secondary/90 text-foreground font-display uppercase tracking-wider rounded-lg shadow-lg"
-              size="lg"
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Nuevo producto
-            </Button>
-          </div>
-        </div>
+      <div className="space-y-8">
+        <AdminPageHeader
+          index="02"
+          eyebrow="Carta"
+          title="Productos"
+          description="Gestioná el menú, la disponibilidad y los assets 3D de cada plato."
+          meta={
+            <>
+              <span className="noir-num text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                {menuItems.length} productos
+              </span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+              <span className="noir-num text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                {categories.length} categorías
+              </span>
+            </>
+          }
+          actions={
+            <>
+              <button
+                type="button"
+                onClick={() => setIsPhotoIngesterOpen(true)}
+                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-card px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:border-foreground/40"
+              >
+                <Camera className="h-3.5 w-3.5" aria-hidden="true" />
+                Escanear carta
+              </button>
+              <button
+                type="button"
+                onClick={openCreate}
+                className="inline-flex items-center gap-2 rounded-[4px] border border-foreground bg-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/85"
+              >
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                Nuevo producto
+              </button>
+            </>
+          }
+        />
 
         <Tabs defaultValue="products" className="w-full">
-          <TabsList className="inline-flex h-11 items-center justify-center rounded-lg bg-white/80 backdrop-blur-sm p-1 text-muted-foreground shadow-lg border-2 border-gray-200 mb-6">
+          <TabsList className="mb-7 inline-flex h-auto items-center gap-7 rounded-none border-b border-border bg-transparent p-0">
             <TabsTrigger
               value="products"
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md px-6 py-2 text-sm font-display uppercase tracking-wider data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/50 data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg"
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              <ShoppingBag className="w-4 h-4" />
+              <ShoppingBag className="h-3.5 w-3.5" aria-hidden="true" />
               Productos
             </TabsTrigger>
             <TabsTrigger
               value="categories"
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md px-6 py-2 text-sm font-display uppercase tracking-wider data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/50 data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg"
+              className="-mb-px inline-flex items-center gap-2 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              <FolderOpen className="w-4 h-4" />
+              <FolderOpen className="h-3.5 w-3.5" aria-hidden="true" />
               Categorías
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="products" className="space-y-6">
-            <p className="text-gray-600 font-body">
-              {menuItems.length} productos cargados en {categories.length} categorías
-            </p>
-
+          <TabsContent value="products" className="space-y-9">
             {categories.map((category) => {
               const items = category.items;
               if (items.length === 0) return null;
 
               return (
-                <div key={category.id} className="mb-8">
-                  <h3 className="text-xl font-display uppercase tracking-wider text-gray-800 mb-4">
-                    {category.name}
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                <section key={category.id}>
+                  <div className="flex items-baseline justify-between border-b border-border pb-2">
+                    <h3 className="font-display text-[1.15rem] leading-none tracking-[-0.02em] text-foreground">
+                      {category.name}
+                    </h3>
+                    <span className="noir-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                      {items.length} {items.length === 1 ? 'plato' : 'platos'}
+                    </span>
+                  </div>
+
+                  <ul>
                     {items.map((item) => (
-                      <Card
+                      <li
                         key={item.id}
-                        className={`group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2 rounded-xl bg-white/95 backdrop-blur-sm overflow-hidden shadow-lg ${
-                          item.is_available ? "border-gray-200" : "border-red-200 opacity-70"
+                        className={`group flex items-center gap-4 border-b border-border py-3.5 transition-colors hover:bg-card/70 ${
+                          item.is_available ? '' : 'opacity-60'
                         }`}
                       >
-                        <div className="p-4 sm:p-6 space-y-3">
-                          <div className="w-full h-32 sm:h-40 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 relative">
-                            {item.image_url ? (
-                              <img
-                                src={item.image_url}
-                                alt={item.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                <ShoppingBag className="w-10 h-10" />
-                              </div>
-                            )}
-                            <Badge
-                              className={`absolute top-2 right-2 ${
-                                item.is_available
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {item.is_available ? "Disponible" : "Agotado"}
-                            </Badge>
-                          </div>
-
-                          <div>
-                            <h4 className="font-bold text-gray-900 line-clamp-1">{item.name}</h4>
-                            {item.description && (
-                              <p className="text-xs text-gray-500 line-clamp-2 mt-1">
-                                {item.description}
-                              </p>
-                            )}
-                            <p className="text-lg font-bold text-primary mt-2">
-                              Bs {item.price.toFixed(2)}
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2 pt-2 border-t">
-                            <Button size="sm" variant="outline" onClick={() => openEdit(item)}>
-                              <Edit className="w-3.5 h-3.5 mr-1" />
-                              Editar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => toggleAvailability(item)}
-                            >
-                              {item.is_available ? "Marcar agotado" : "Marcar disponible"}
-                            </Button>
-                            {canUseAr ? (
-                              <Button size="sm" variant="outline" onClick={() => setArItem(item)}>
-                                <Box className="w-3.5 h-3.5 mr-1" />
-                                3D
-                              </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => navigate(`/admin/upgrade?feature=ar_3d`)}
-                                title={`Disponible en el plan ${requiredPlanFor("ar_3d")}`}
-                              >
-                                <Lock className="w-3.5 h-3.5 mr-1" />
-                                3D
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="text-red-600 hover:text-red-700"
-                              onClick={() => handleDelete(item)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
+                        <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-[3px] border border-border bg-muted">
+                          {item.image_url ? (
+                            <img
+                              src={item.image_url}
+                              alt=""
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-muted-foreground/50">
+                              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+                            </div>
+                          )}
                         </div>
-                      </Card>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="truncate text-[13.5px] font-semibold leading-tight text-foreground">
+                              {item.name}
+                            </p>
+                            <span
+                              className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                                item.is_available ? 'bg-emerald-600' : 'bg-primary'
+                              }`}
+                              aria-hidden="true"
+                            />
+                            <span className="hidden shrink-0 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground sm:inline">
+                              {item.is_available ? 'Disponible' : 'Agotado'}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+                            {item.description || 'Sin descripción'}
+                          </p>
+                        </div>
+
+                        <p className="noir-num shrink-0 text-right font-display text-[14px] text-foreground">
+                          {venue?.currency} {item.price.toFixed(2)}
+                        </p>
+
+                        <div className="flex shrink-0 items-center gap-0.5 transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100">
+                          <button
+                            type="button"
+                            onClick={() => openEdit(item)}
+                            aria-label={`Editar ${item.name}`}
+                            title="Editar"
+                            className="flex h-8 w-8 items-center justify-center rounded-[3px] border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-card hover:text-foreground"
+                          >
+                            <Edit className="h-3.5 w-3.5" aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleAvailability(item)}
+                            aria-label={item.is_available ? 'Marcar agotado' : 'Marcar disponible'}
+                            title={item.is_available ? 'Marcar agotado' : 'Marcar disponible'}
+                            className="flex h-8 w-8 items-center justify-center rounded-[3px] border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-card hover:text-foreground"
+                          >
+                            <Power className="h-3.5 w-3.5" aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              canUseAr ? setArItem(item) : navigate('/admin/upgrade?feature=ar_3d')
+                            }
+                            aria-label={canUseAr ? `Abrir 3D de ${item.name}` : 'Requiere plan superior'}
+                            title={canUseAr ? '3D / AR' : `Disponible en el plan ${requiredPlanFor('ar_3d')}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-[3px] border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-card hover:text-foreground"
+                          >
+                            {canUseAr ? (
+                              <Box className="h-3.5 w-3.5" aria-hidden="true" />
+                            ) : (
+                              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(item)}
+                            aria-label={`Eliminar ${item.name}`}
+                            title="Eliminar"
+                            className="flex h-8 w-8 items-center justify-center rounded-[3px] border border-transparent text-destructive/80 transition-colors hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                          </button>
+                        </div>
+                      </li>
                     ))}
-                  </div>
-                </div>
+                  </ul>
+                </section>
               );
             })}
 
             {menuItems.length === 0 && (
-              <Card className="p-12 text-center text-gray-500">
-                No hay productos todavía. Creá el primero con “Nuevo producto”.
-              </Card>
+              <div className="border-y border-border py-12 text-center">
+                <p className="text-[13px] text-muted-foreground">
+                  No hay productos todavía. Creá el primero con “Nuevo producto”.
+                </p>
+              </div>
             )}
           </TabsContent>
 
-          <TabsContent value="categories" className="space-y-4">
-            <Card className="p-4">
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  value={categoryDraft}
-                  onChange={(event) => setCategoryDraft(event.target.value)}
-                  placeholder="Nombre de la nueva categoría"
-                  onKeyDown={(event) => event.key === "Enter" && addCategory()}
-                />
-                <Button onClick={addCategory}>
-                  <Plus className="w-4 h-4 mr-1" />
-                  Agregar
-                </Button>
-              </div>
-            </Card>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {categories.map((category) => (
-                <Card key={category.id} className="p-4 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-bold text-gray-900">{category.name}</p>
-                    <p className="text-xs text-gray-500">{category.items.length} productos</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="outline" onClick={() => renameCategory(category)}>
-                      <Edit className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-red-600 hover:text-red-700"
-                      onClick={() => deleteCategory(category)}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+          <TabsContent value="categories" className="space-y-6">
+            <div className="flex flex-col gap-2 border-b border-border pb-5 sm:flex-row">
+              <Input
+                value={categoryDraft}
+                onChange={(event) => setCategoryDraft(event.target.value)}
+                placeholder="Nombre de la nueva categoría"
+                onKeyDown={(event) => event.key === "Enter" && addCategory()}
+                className="h-10 rounded-[4px] border-border bg-card"
+              />
+              <Button onClick={addCategory} className="h-10 shrink-0 rounded-[4px]">
+                <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Agregar
+              </Button>
             </div>
+
+            <section>
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  className="flex items-center justify-between gap-3 border-b border-border py-3.5"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-[13px] font-semibold text-foreground">{category.name}</p>
+                    <p className="noir-num text-[11px] text-muted-foreground">
+                      {category.items.length} productos
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    <button
+                      type="button"
+                      onClick={() => renameCategory(category)}
+                      aria-label={`Renombrar ${category.name}`}
+                      className="flex h-8 w-8 items-center justify-center rounded-[3px] text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+                    >
+                      <Edit className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteCategory(category)}
+                      aria-label={`Eliminar ${category.name}`}
+                      className="flex h-8 w-8 items-center justify-center rounded-[3px] text-destructive/80 transition-colors hover:bg-destructive/5 hover:text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </section>
           </TabsContent>
         </Tabs>
       </div>

@@ -19,8 +19,7 @@ import {
   Download,
   Copy,
   ChefHat,
-  Flame,
-  Eye
+  Flame
 } from 'lucide-react';
 import {
   parseMenuTranscript,
@@ -33,6 +32,7 @@ import { ocrImage, type OcrLanguage, disposeOcrWorker } from '@/lib/menuIntake';
 import { useMimenu } from '@/lib/mimenuContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 const AdminMenuIngester: React.FC = () => {
   const navigate = useNavigate();
@@ -185,37 +185,28 @@ useEffect(() => {
     <AdminLayout>
       <div className="space-y-6 pb-16">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-                <Camera className="w-5 h-5" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-                Digitalizador de Menús por Foto & IA
-              </h1>
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 text-xs font-bold">
-                Vision OCR + Auto-Tag
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Convierte fotos de cartas físicas, pizarras y volantes en un menú digital interactivo para {venue.name}.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
+        <AdminPageHeader
+          index="09"
+          eyebrow="Ingestor de carta"
+          title="Digitalizador por foto"
+          description={`Convierte fotos de cartas físicas, pizarras y volantes en un menú digital interactivo para ${venue.name}.`}
+          actions={
+            <button
               onClick={() => window.open('/menu', '_blank')}
-              className="text-xs font-bold gap-1.5"
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] border border-foreground px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background"
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Ver Menú Digital</span>
-              <ExternalLink className="w-3 h-3" />
-            </Button>
-          </div>
-        </div>
+              Ver menú digital
+              <ExternalLink className="h-3 w-3" aria-hidden="true" />
+            </button>
+          }
+          meta={
+            <>
+              <span className="noir-eyebrow">Vision OCR</span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+              <span className="noir-eyebrow">Auto-tag</span>
+            </>
+          }
+        />
 
         {!parsedData && !isAnalyzing && (
           <div className="space-y-6">

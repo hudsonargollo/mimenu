@@ -1,358 +1,333 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  Flame, 
-  Sparkles, 
-  ChefHat, 
-  ShoppingBag, 
-  QrCode, 
-  TrendingUp, 
-  Star, 
-  DollarSign, 
-  Clock, 
+import {
+  Flame,
+  Sparkles,
+  ChefHat,
+  QrCode,
+  TrendingUp,
   ArrowUpRight,
   ExternalLink,
-  MessageSquare,
   Camera,
   Lock,
-  UtensilsCrossed
+  ShoppingBag,
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { HotnessIndicator } from '@/components/HotnessIndicator';
 import { MenuPhotoIngesterModal } from '@/components/MenuPhotoIngesterModal';
 import AdminUpgradeBanner from '@/components/UpgradeBanner';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import { hasEntitlement, requiredPlanFor } from '@/lib/plans';
+
+const cleanTitle = (title: string) =>
+  title.replace(/^[^\p{L}\p{N}]+/u, '').replace(/^destacado:\s*/i, '').trim() || title;
+
+const metricButton =
+  'group flex flex-col justify-between gap-7 border-0 bg-transparent p-5 text-left transition-colors hover:bg-card sm:p-6';
+
+const ActionLink: React.FC<{
+  onClick: () => void;
+  children: React.ReactNode;
+  solid?: boolean;
+  title?: string;
+}> = ({ onClick, children, solid, title }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    title={title}
+    className={`inline-flex items-center gap-2 rounded-[4px] border px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-colors ${
+      solid
+        ? 'border-foreground bg-foreground text-background hover:bg-foreground/85'
+        : 'border-border bg-card text-foreground hover:border-foreground/40'
+    }`}
+  >
+    {children}
+  </button>
+);
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { venue, categories, cyclingOffers, activeOffers, tables, reviews, orders, recalculateAllHotness } = useMimenu();
+  const { venue, categories, cyclingOffers, activeOffers, tables, orders, recalculateAllHotness } = useMimenu();
   const [isPhotoIngesterOpen, setIsPhotoIngesterOpen] = React.useState(false);
   const canUsePhotoIngester = hasEntitlement(venue?.slug, 'photographed_menu');
 
   useEffect(() => {
-    document.title = `Command Center: ${venue.name} | MiMenu`;
+    document.title = `Panel: ${venue.name} | MiMenu`;
   }, [venue.name]);
 
-  const allItems = categories.flatMap(c => c.items);
-  const hasRealOrders = orders.length > 0;
-  const hotItems = hasRealOrders
-    ? [...allItems].filter((i) => (i.velocity_24h ?? 0) > 0).sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h).slice(0, 5)
-    : [];
+  const allItems = useMemo(() => categories.flatMap((c) => c.items), [categories]);
+  const hotItems = useMemo(
+    () =>
+      [...allItems]
+        .filter((i) => (i.velocity_24h ?? 0) > 0)
+        .sort((a, b) => b.hotness_score - a.hotness_score || b.velocity_24h - a.velocity_24h)
+        .slice(0, 5),
+    [allItems]
+  );
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-  const activeOrdersCount = orders.filter(o => o.status === 'pending' || o.status === 'preparing').length;
-  const occupiedTablesCount = tables.filter(t => t.is_occupied).length;
-
+  const activeOrdersCount = orders.filter((o) => o.status === 'pending' || o.status === 'preparing').length;
+  const occupiedTablesCount = tables.filter((t) => t.is_occupied).length;
   const totalOfferRevenue = cyclingOffers.reduce((sum, o) => sum + o.analytics.revenue_generated, 0);
   const totalOfferConversions = cyclingOffers.reduce((sum, o) => sum + o.analytics.conversions, 0);
 
+  const today = new Date().toLocaleDateString('es-BO', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+  });
+
+  const kpis = [
+    {
+      label: 'Ventas del turno',
+      value: `${venue.currency} ${totalRevenue.toFixed(0)}`,
+      note: 'Basado en pedidos reales',
+      icon: TrendingUp,
+      onClick: () => navigate('/cashier'),
+      accent: 'text-foreground',
+    },
+    {
+      label: 'En cocina',
+      value: String(activeOrdersCount),
+      note: `${orders.length} pedidos hoy`,
+      icon: ChefHat,
+      onClick: () => navigate('/cashier'),
+      accent: activeOrdersCount > 0 ? 'text-primary' : 'text-foreground',
+    },
+    {
+      label: 'Mesas ocupadas',
+      value: `${occupiedTablesCount}/${tables.length}`,
+      note: `${tables.length ? Math.round((occupiedTablesCount / tables.length) * 100) : 0}% de capacidad`,
+      icon: QrCode,
+      onClick: () => navigate('/admin/tables'),
+      accent: 'text-foreground',
+    },
+    {
+      label: 'Smart offers',
+      value: `${venue.currency} ${totalOfferRevenue.toFixed(0)}`,
+      note: `${totalOfferConversions} combos convertidos`,
+      icon: Sparkles,
+      onClick: () => navigate('/admin/offers'),
+      accent: 'text-foreground',
+    },
+  ];
+
   return (
-    <div className="space-y-8 pb-12">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-              <UtensilsCrossed className="w-4 h-4" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-              Command Center: {venue.name}
-            </h1>
-            <span className="text-xs bg-amber-500/15 text-amber-500 font-bold px-2 py-0.5 rounded border border-amber-500/30">
-              {venue.city}
+    <div className="pb-16">
+      <AdminPageHeader
+        index="01"
+        eyebrow="Panel de control"
+        title={venue.name}
+        description="Pedidos, ofertas y prueba social en una sola vista editorial."
+        meta={
+          <>
+            <span className="noir-num text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+              {today}
             </span>
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Gestión de pedidos, ofertas inteligentes y social proof.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() =>
-              canUsePhotoIngester
-                ? setIsPhotoIngesterOpen(true)
-                : navigate('/admin/upgrade?feature=photographed_menu')
-            }
-            variant="outline"
-            title={
-              canUsePhotoIngester
-                ? undefined
-                : `Requiere plan ${requiredPlanFor('photographed_menu').name} — clic para mejorar`
-            }
-            className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 text-xs font-bold gap-1.5 shadow-sm"
-          >
-            {canUsePhotoIngester ? (
-              <Camera className="w-3.5 h-3.5" />
-            ) : (
-              <Lock className="w-3.5 h-3.5" />
-            )}
-            <Sparkles className="w-3 h-3 text-amber-500" />
-            <span>
-              {canUsePhotoIngester
-                ? 'Escanear Carta con Foto'
-                : `Escanear Carta · Plan ${requiredPlanFor('photographed_menu').name}`}
+            <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+            <span className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{venue.city}</span>
+            <span className="hidden h-3 w-px bg-border sm:inline-block" aria-hidden="true" />
+            <span className="text-[11px] uppercase tracking-[0.16em] text-primary">
+              Plan {venue.plan_name ?? 'Basic'}
             </span>
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={recalculateAllHotness}
-            className="text-xs font-bold gap-1.5"
-          >
-            <Flame className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-            <span>Recalcular Hotness</span>
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={() => window.open('/menu', '_blank')}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold gap-1.5 shadow-sm"
-          >
-            <span>Ver Menú en Vivo</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        actions={
+          <>
+            <ActionLink
+              onClick={() =>
+                canUsePhotoIngester
+                  ? setIsPhotoIngesterOpen(true)
+                  : navigate('/admin/upgrade?feature=photographed_menu')
+              }
+              title={
+                canUsePhotoIngester
+                  ? undefined
+                  : `Requiere plan ${requiredPlanFor('photographed_menu').name}`
+              }
+            >
+              {canUsePhotoIngester ? <Camera className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+              Escanear carta
+            </ActionLink>
+            <ActionLink onClick={recalculateAllHotness} title="Recalcular el ranking de popularidad">
+              <Flame className="h-3.5 w-3.5" />
+              Hotness
+            </ActionLink>
+            <ActionLink onClick={() => window.open('/menu', '_blank')} solid>
+              Ver menú
+              <ExternalLink className="h-3 w-3" />
+            </ActionLink>
+          </>
+        }
+      />
 
       <AdminUpgradeBanner />
 
-      {/* Primary KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Gross Revenue */}
-        <div className="group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15]">
-          <div className="p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ventas del Turno</p>
-              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <DollarSign className="w-4 h-4 text-emerald-300" />
-              </div>
-            </div>
-            <div className="text-3xl font-display font-bold text-white/90">
-              {venue.currency} {totalRevenue.toFixed(0)}
-            </div>
-            <p className="text-[11px] text-emerald-300/90 font-semibold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" /> Basado en datos reales
-            </p>
-          </div>
-        </div>
+      {/* Metric band — hairlines instead of cards */}
+      <section className="my-8 grid grid-cols-2 divide-x divide-y divide-border border-y border-border lg:grid-cols-4 lg:divide-y-0">
+        {kpis.map(({ label, value, note, icon: Icon, onClick, accent }) => (
+          <button key={label} type="button" onClick={onClick} className={metricButton}>
+            <span className="flex items-start justify-between gap-2">
+              <span className="noir-eyebrow">{label}</span>
+              <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden="true" />
+            </span>
+            <span className="min-w-0">
+              <span className={`noir-num block truncate font-display text-[2rem] leading-none tracking-[-0.03em] sm:text-[2.4rem] ${accent}`}>
+                {value}
+              </span>
+              <span className="mt-2 flex items-center gap-1 text-[10.5px] text-muted-foreground">
+                {note}
+                <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+              </span>
+            </span>
+          </button>
+        ))}
+      </section>
 
-        {/* Live Orders in Kitchen */}
-        <div onClick={() => navigate('/cashier')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
-          <div className="p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Pedidos en Cocina / KDS</p>
-              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <ChefHat className="w-4 h-4 text-amber-300" />
-              </div>
-            </div>
-            <div className="text-3xl font-display font-bold text-amber-300">
-              {activeOrdersCount} activos
-            </div>
-            <p className="text-[11px] text-white/65 font-semibold">
-              {orders.length} pedidos totales hoy
-            </p>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+        {/* Hotness leaderboard */}
+        <section className="lg:col-span-7">
+          <div className="mb-1 flex items-baseline justify-between border-b border-border pb-2">
+            <h2 className="flex items-center gap-2 font-display text-[1.35rem] leading-none text-foreground">
+              <Flame className="h-4 w-4 text-primary" aria-hidden="true" />
+              Ranking de popularidad
+            </h2>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/analytics')}
+              className="noir-link-underline flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground"
+            >
+              Ver algoritmo
+              <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+            </button>
           </div>
-        </div>
 
-        {/* Table Occupancy */}
-        <div onClick={() => navigate('/admin/tables')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
-          <div className="p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ocupación de Mesas</p>
-              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <QrCode className="w-4 h-4 text-sky-300" />
-              </div>
+          {hotItems.length === 0 ? (
+            <div className="flex flex-col items-start gap-3 border-b border-border py-10">
+              <ShoppingBag className="h-5 w-5 text-muted-foreground/50" aria-hidden="true" />
+              <p className="max-w-sm text-[13px] leading-relaxed text-muted-foreground">
+                Todavía no hay ventas registradas. Los platos aparecen acá en cuanto entra el primer pedido.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/admin/products')}
+                className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary noir-link-underline"
+              >
+                Revisar la carta
+              </button>
             </div>
-            <div className="text-3xl font-display font-bold text-white/90">
-              {occupiedTablesCount} / {tables.length}
-            </div>
-            <p className="text-[11px] text-white/65 font-semibold">
-              {Math.round((occupiedTablesCount / tables.length) * 100)}% capacidad ocupada
-            </p>
-          </div>
-        </div>
-
-        {/* Cycling Offers Revenue */}
-        <div onClick={() => navigate('/admin/offers')} className="cursor-pointer group rounded-3xl border border-white/25 bg-white/[0.08] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.15] hover:border-white/40">
-          <div className="p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/75">Ventas Smart Offers</p>
-              <div className="w-8 h-8 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <Sparkles className="w-4 h-4 text-rose-300" />
-              </div>
-            </div>
-            <div className="text-3xl font-display font-bold text-rose-300">
-              {venue.currency} {totalOfferRevenue.toFixed(0)}
-            </div>
-            <p className="text-[11px] text-white/65 font-semibold">
-              {totalOfferConversions} combos convertidos
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Grid: Hotness Leaderboard & Active Smart Offers */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column: The "Hotness" Social Proof Leaderboard */}
-        <div className="lg:col-span-7 space-y-4">
-          <Card className="border border-border/80 shadow-sm bg-card">
-            <CardHeader className="pb-3 border-b border-border/60">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-red-500 fill-red-500" />
-                  <span>Ranking de Popularidad & "Hotness"</span>
-                </CardTitle>
-                <button
-                  onClick={() => navigate('/admin/analytics')}
-                  className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+          ) : (
+            <ol>
+              {hotItems.map((item, idx) => (
+                <li
+                  key={item.id}
+                  className="group flex items-center gap-4 border-b border-border py-3.5 transition-colors hover:bg-card/60"
                 >
-                  Ver Algoritmo <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-0 divide-y divide-border/60">
-              {hotItems.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground text-sm">
-                  <Flame className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                  No hay datos de ventas aún. Los platos aparecerán aquí una vez que comience el flujo de pedidos.
-                </div>
-              ) : (
-                hotItems.map((item, idx) => (
-                <div key={item.id} className="p-4 flex items-center justify-between gap-3 hover:bg-muted/20 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black ${
-                      idx === 0 ? 'bg-amber-500 text-black' : idx === 1 ? 'bg-zinc-300 text-black' : idx === 2 ? 'bg-amber-700 text-white' : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-border"
-                    />
-                    <div>
-                      <h4 className="text-xs font-bold text-foreground line-clamp-1">{item.name}</h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        {venue.currency} {item.price} • {item.velocity_24h} vendidos (24h)
-                      </p>
-                    </div>
+                  <span className="noir-num w-6 shrink-0 font-display text-[13px] text-muted-foreground/60">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <img
+                    src={item.image_url}
+                    alt=""
+                    className="h-12 w-12 shrink-0 rounded-[3px] border border-border object-cover"
+                    loading="lazy"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-semibold leading-tight text-foreground">{item.name}</p>
+                    <p className="noir-num mt-1 text-[11px] text-muted-foreground">
+                      {venue.currency} {item.price} · {item.velocity_24h} vendidos (24 h)
+                    </p>
                   </div>
+                  <HotnessIndicator score={item.hotness_score} compact />
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
 
-                  <div className="flex flex-col items-end gap-1">
-                    <HotnessIndicator score={item.hotness_score} compact />
-                    <span className="text-[10px] text-muted-foreground">
-                      Base 14d: {item.baseline_14d}/día
-                    </span>
-                  </div>
-                </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Offers + tables */}
+        <section className="space-y-8 lg:col-span-5">
+          <div>
+            <div className="mb-1 flex items-baseline justify-between border-b border-border pb-2">
+              <h2 className="flex items-center gap-2 font-display text-[1.35rem] leading-none text-foreground">
+                <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+                Ofertas activas
+              </h2>
+              <button
+                type="button"
+                onClick={() => navigate('/admin/offers')}
+                className="noir-link-underline flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground"
+              >
+                Gestionar
+                <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+              </button>
+            </div>
 
-        {/* Right Column: Intelligent Cycling Offers Live Status */}
-        <div className="lg:col-span-5 space-y-4">
-          <Card className="border border-border/80 shadow-sm bg-card">
-            <CardHeader className="pb-3 border-b border-border/60">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span>Ofertas Inteligentes Activas</span>
-                </CardTitle>
-                <button
-                  onClick={() => navigate('/admin/offers')}
-                  className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
-                >
-                  Gestionar <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-4 space-y-3">
-              {activeOffers.length === 0 ? (
-                <div className="text-center text-muted-foreground text-sm py-6">
-                  <Sparkles className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                  No hay ofertas activas. Crea tu primera Oferta Inteligente desde aquí.
-                </div>
-              ) : (
+            {activeOffers.length === 0 ? (
+              <p className="border-b border-border py-8 text-[13px] leading-relaxed text-muted-foreground">
+                Sin ofertas activas. Creá un combo por tiempo limitado desde Ofertas.
+              </p>
+            ) : (
               activeOffers.map((offer) => {
-                const convRate = offer.analytics.impressions > 0 
-                  ? ((offer.analytics.conversions / offer.analytics.impressions) * 100).toFixed(1)
-                  : '0.0';
+                const convRate =
+                  offer.analytics.impressions > 0
+                    ? (offer.analytics.conversions / offer.analytics.impressions) * 100
+                    : 0;
 
                 return (
-                  <div
-                    key={offer.id}
-                    className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-2"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full">
+                  <div key={offer.id} className="border-b border-border py-3.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-primary">
                         {offer.badge}
                       </span>
-                      <span className="text-xs font-black text-amber-500">
+                      <span className="noir-num font-display text-[15px] text-foreground">
                         {venue.currency} {offer.discount_price}
                       </span>
                     </div>
-
-                    <h4 className="text-xs font-bold text-foreground">{offer.title}</h4>
-
-                    <div className="grid grid-cols-3 gap-2 pt-1 text-center border-t border-border/40 text-[10px]">
-                      <div>
-                        <p className="text-muted-foreground">Vistas</p>
-                        <p className="font-bold text-foreground">{offer.analytics.impressions}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Órdenes</p>
-                        <p className="font-bold text-foreground">{offer.analytics.conversions}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Conv. %</p>
-                        <p className="font-bold text-emerald-500">{convRate}%</p>
-                      </div>
+                    <p className="mt-1 truncate text-[13px] font-semibold text-foreground">{cleanTitle(offer.title)}</p>
+                    <div className="noir-num mt-1.5 flex items-center gap-3 text-[10.5px] text-muted-foreground">
+                      <span>{offer.analytics.impressions} vistas</span>
+                      <span className="h-2.5 w-px bg-border" aria-hidden="true" />
+                      <span>{offer.analytics.conversions} órdenes</span>
+                      <span className="h-2.5 w-px bg-border" aria-hidden="true" />
+                      <span className="text-foreground">{convRate.toFixed(1)}% conv.</span>
+                    </div>
+                    <div className="mt-2 h-[2px] w-full bg-muted" aria-hidden="true">
+                      <div
+                        className="h-full bg-primary"
+                        style={{ width: `${Math.min(100, Math.max(2, convRate))}%` }}
+                      />
                     </div>
                   </div>
                 );
-              }))}
-            </CardContent>
-          </Card>
+              })
+            )}
+          </div>
 
-          {/* Table QR Fast Card */}
-          <Card className="border border-border/80 shadow-sm bg-gradient-to-br from-blue-500/10 via-card to-card p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <QrCode className="w-5 h-5 text-blue-500" />
-                <h4 className="text-xs font-bold text-foreground">Table Mapping & QRs</h4>
+          <div className="border border-border bg-card/70 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="noir-eyebrow">Mesas y QR</p>
+                <p className="noir-num mt-2 font-display text-[1.8rem] leading-none text-foreground">
+                  {tables.length}
+                </p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  mesas con hash único · {occupiedTablesCount} ocupadas
+                </p>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
+              <button
+                type="button"
                 onClick={() => navigate('/admin/tables')}
-                className="text-xs h-7 px-2.5"
+                className="shrink-0 border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground/40"
               >
-                Imprimir Códigos
-              </Button>
+                Imprimir
+              </button>
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              {tables.length} mesas configuradas con hashes únicos.
-            </p>
-          </Card>
-        </div>
-
+          </div>
+        </section>
       </div>
 
-      {/* Menu Photo Ingester Modal */}
-      <MenuPhotoIngesterModal
-        open={isPhotoIngesterOpen}
-        onOpenChange={setIsPhotoIngesterOpen}
-      />
+      <MenuPhotoIngesterModal open={isPhotoIngesterOpen} onOpenChange={setIsPhotoIngesterOpen} />
     </div>
   );
 };

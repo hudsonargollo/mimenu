@@ -20,6 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 const PrintServerConfig = () => {
   const navigate = useNavigate();
@@ -336,7 +337,13 @@ Para más información, ingresá al repositorio del proyecto.`;
   return (
     <AdminLayout>
       <div className="space-y-6">
-          
+          <AdminPageHeader
+            index="14"
+            eyebrow="Impresión"
+            title="Servidor de impresión"
+            description="Conexión local ESC/POS para comandas y recibos."
+          />
+
           {/* Quick Download Card */}
           <Card className="border-2 border-accent bg-gradient-to-r from-primary/5 to-blue-50 rounded-xl shadow-soft">
             <CardHeader>
