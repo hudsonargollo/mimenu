@@ -30,6 +30,7 @@ interface RegistryItem {
 }
 
 import registry from '@/data/provisioned_venues.json';
+import { APP_CREDENTIALS } from '../../shared/app-credentials';
 
 function registryItems(): RegistryItem[] {
   return Array.isArray(registry) ? (registry as unknown as RegistryItem[]) : [];
@@ -103,20 +104,7 @@ export interface Credential {
   venueName: string | null;
 }
 
-const JALEO_PASS = 'Jaleo2024!';
-const SUPER_PASS = 'Qwertyytrewq4328@';
-
-const CREDENTIALS: Credential[] = [
-  // Platform super admin.
-  { identifier: 'admin@mimenu.com', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
-  { identifier: 'mimenuadmin', password: SUPER_PASS, email: 'admin@mimenu.com', name: 'Super Admin', role: 'admin', tenantSlug: null, venueName: null },
-  // Jaleo tenant staff.
-  { identifier: 'admin@jaleo.com', password: JALEO_PASS, email: 'admin@jaleo.com', name: 'Jaleo Admin', role: 'admin', tenantSlug: 'jaleo', venueName: 'Jaleo' },
-  { identifier: 'jaleo', password: JALEO_PASS, email: 'admin@jaleo.com', name: 'Jaleo Admin', role: 'admin', tenantSlug: 'jaleo', venueName: 'Jaleo' },
-  { identifier: 'cocina@jaleo.com', password: JALEO_PASS, email: 'cocina@jaleo.com', name: 'Jaleo Cocina', role: 'kitchen', tenantSlug: 'jaleo', venueName: 'Jaleo' },
-  { identifier: 'caja@jaleo.com', password: JALEO_PASS, email: 'caja@jaleo.com', name: 'Jaleo Caja', role: 'cashier', tenantSlug: 'jaleo', venueName: 'Jaleo' },
-  { identifier: 'mozo@jaleo.com', password: JALEO_PASS, email: 'mozo@jaleo.com', name: 'Jaleo Mozo', role: 'waiter', tenantSlug: 'jaleo', venueName: 'Jaleo' },
-];
+const CREDENTIALS: Credential[] = APP_CREDENTIALS;
 
 export function resolveCredential(identifier: string, password: string): Credential | null {
   const key = (identifier || '').trim().toLowerCase();

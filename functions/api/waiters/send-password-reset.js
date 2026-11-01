@@ -1,15 +1,32 @@
 /**
- * Send password reset link by email (Resend)
+ * Reset a waiter password and email the new temporary password (Resend)
  * POST /api/waiters/send-password-reset
  */
 
+import { requireAdmin } from '../../lib/app-session';
 import { renderEmailLayout, sendEmail } from '../../lib/email';
+import {
+  canManage,
+  generateTemporaryPassword,
+  getWaiter,
+  hashPassword,
+  saveWaiter,
+  tenantSlugForAdmin,
+} from '../../lib/waiter-store';
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -18,64 +35,60 @@ export async function onRequest(context) {
     return json({ error: 'Method not allowed' }, 405);
   }
 
+  const admin = await requireAdmin(request, env);
+  if (!admin) {
+    return json({ error: 'Forbidden - admin session required' }, 401);
+  }
+
   try {
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return json({ error: 'Unauthorized' }, 401);
-    }
-
-    const token = authHeader.substring(7);
-
     const body = await request.json();
-    const { waiterId, waiterEmail, waiterName } = body;
+    const waiterId = typeof body.waiterId === 'string' ? body.waiterId : '';
 
-    if (!waiterId || !waiterEmail) {
-      return json({ error: 'Missing required fields' }, 400);
+    if (!waiterId) {
+      return json({ error: 'Missing waiterId' }, 400);
     }
 
-    const { createClient } = await import('@supabase/supabase-js');
-
-    const supabase = createClient(
-      env.VITE_SUPABASE_URL,
-      env.SUPABASE_SERVICE_ROLE_KEY
-    );
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return json({ error: 'Invalid token' }, 401);
+    const record = await getWaiter(env, waiterId);
+    if (!record || !canManage(tenantSlugForAdmin(admin.email), record)) {
+      return json({ error: 'Mesero no encontrado.' }, 404);
     }
 
-    if (user.user_metadata?.role !== 'admin') {
-      return json({ error: 'Forbidden - admin access required' }, 403);
-    }
+    const temporaryPassword = generateTemporaryPassword();
+    const previousHash = record.password_hash;
 
-    const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
-      type: 'recovery',
-      email: waiterEmail,
+    await saveWaiter(env, {
+      ...record,
+      password_hash: await hashPassword(temporaryPassword),
     });
 
-    if (resetError) {
-      console.error('Error generating reset link:', resetError);
-      return json({ error: 'Failed to generate password reset link' }, 500);
-    }
-
-    const resetUrl = resetData.properties.action_link;
-    const greeting = waiterName ? `Hola ${waiterName}` : 'Hola';
+    const name = escapeHtml(record.full_name);
+    const email = escapeHtml(record.email);
 
     const html = renderEmailLayout({
-      heading: 'Restablecé tu contraseña',
-      intro: `${greeting}, recibimos una solicitud para restablecer la contraseña de tu cuenta en MiMenu.`,
-      cta: { label: 'Crear nueva contraseña', url: resetUrl },
-      note: 'El enlace vence en 1 hora. Si no solicitaste este cambio, podés ignorar este email.',
+      heading: 'Restablecimos tu contraseña',
+      intro: `Hola ${name}, un administrador restableció tu contraseña de acceso a MiMenu.`,
+      contentHtml: `<div style="background:#f4f1fb;border-radius:12px;padding:18px 20px;margin:0 0 20px;">
+        <p style="margin:0 0 6px;color:#64748b;font-size:13px;">Usuario</p>
+        <p style="margin:0 0 16px;color:#0f172a;font-size:15px;font-weight:600;">${email}</p>
+        <p style="margin:0 0 6px;color:#64748b;font-size:13px;">Contraseña temporal</p>
+        <p style="margin:0;color:#0f172a;font-size:18px;font-weight:700;letter-spacing:0.08em;">${temporaryPassword}</p>
+      </div>`,
+      note: 'Ingresá a MiMenu con esta contraseña temporal. Si no esperabas este cambio, avisá al administrador de tu restaurante.',
     });
 
-    const text = `${greeting}, recibimos una solicitud para restablecer la contraseña de tu cuenta en MiMenu.\n\nCreá una nueva contraseña acá: ${resetUrl}\n\nEl enlace vence en 1 hora. Si no solicitaste este cambio, podés ignorar este email.`;
+    const text = [
+      `Hola ${record.full_name}, un administrador restableció tu contraseña de acceso a MiMenu.`,
+      '',
+      `Usuario: ${record.email}`,
+      `Contraseña temporal: ${temporaryPassword}`,
+      '',
+      'Ingresá a MiMenu con esta contraseña temporal. Si no esperabas este cambio, avisá al administrador de tu restaurante.',
+    ].join('\n');
 
     try {
       const result = await sendEmail(env, {
-        to: waiterEmail,
-        subject: 'Restablecé tu contraseña · MiMenu',
+        to: record.email,
+        subject: 'Tu nueva contraseña de acceso · MiMenu',
         html,
         text,
       });
@@ -83,10 +96,11 @@ export async function onRequest(context) {
       return json({ success: true, emailId: result.id });
     } catch (emailError) {
       console.error('Error sending password reset email:', emailError);
-      return json({ error: 'Failed to send password reset email' }, 502);
+      await saveWaiter(env, { ...record, password_hash: previousHash });
+      return json({ error: 'No se pudo enviar el email de restablecimiento.' }, 502);
     }
   } catch (error) {
     console.error('Error in send-password-reset:', error);
-    return json({ error: 'Internal server error', message: error.message }, 500);
+    return json({ error: 'No se pudo restablecer la contraseña.' }, 500);
   }
 }

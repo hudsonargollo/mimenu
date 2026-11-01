@@ -3,104 +3,71 @@
  * POST /api/waiters/update-waiter-profile
  */
 
+import { requireAdmin } from '../../lib/app-session';
+import { EMAIL_PATTERN } from '../../lib/rate-limit';
+import {
+  canManage,
+  findWaiterByEmail,
+  getWaiter,
+  saveWaiter,
+  tenantSlugForAdmin,
+  toPublicWaiter,
+} from '../../lib/waiter-store';
+
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
 export async function onRequest(context) {
   const { request, env } = context;
 
-  // Only allow POST
   if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'Method not allowed' }, 405);
+  }
+
+  const admin = await requireAdmin(request, env);
+  if (!admin) {
+    return json({ error: 'Forbidden - admin session required' }, 401);
   }
 
   try {
-    // Get authorization header
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const token = authHeader.substring(7);
-
-    // Parse request body
     const body = await request.json();
-    const { waiterId, email, full_name, phone_number } = body;
+    const waiterId = typeof body.waiterId === 'string' ? body.waiterId : '';
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const fullName = typeof body.full_name === 'string' ? body.full_name.trim() : '';
+    const phoneNumber =
+      typeof body.phone_number === 'string' && body.phone_number.trim()
+        ? body.phone_number.trim()
+        : null;
 
-    if (!waiterId || !email || !full_name) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    if (!waiterId || !EMAIL_PATTERN.test(email) || !fullName) {
+      return json({ error: 'Completá el nombre y un email válido.' }, 400);
     }
 
-    // Import Supabase client
-    const { createClient } = await import('@supabase/supabase-js');
-    
-    const supabase = createClient(
-      env.VITE_SUPABASE_URL,
-      env.SUPABASE_SERVICE_ROLE_KEY
-    );
-
-    // Verify the token and get user
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    const record = await getWaiter(env, waiterId);
+    if (!record || !canManage(tenantSlugForAdmin(admin.email), record)) {
+      return json({ error: 'Mesero no encontrado.' }, 404);
     }
 
-    // Check if user is admin by checking auth metadata
-    if (user.user_metadata?.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Forbidden - admin access required' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    const duplicate = await findWaiterByEmail(env, email);
+    if (duplicate && duplicate.id !== record.id) {
+      return json({ error: 'Este correo ya está registrado.' }, 409);
     }
 
-    // Update user metadata instead of profile table
-    const { error: updateError } = await supabase.auth.admin.updateUserById(
-      waiterId,
-      {
-        user_metadata: {
-          role: 'waiter',
-          full_name: full_name,
-          phone_number: phone_number || null
-        }
-      }
-    );
+    const updated = {
+      ...record,
+      email,
+      full_name: fullName,
+      phone_number: phoneNumber,
+    };
 
-    if (updateError) {
-      console.error('Error updating user:', updateError);
-      return new Response(JSON.stringify({ 
-        error: 'Failed to update waiter profile'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    await saveWaiter(env, updated);
 
-    return new Response(JSON.stringify({ 
-      success: true,
-      message: 'Waiter profile updated successfully'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    return json({ success: true, waiter: toPublicWaiter(updated) });
   } catch (error) {
     console.error('Error in update-waiter-profile:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      message: error.message 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'No se pudo actualizar el mesero.' }, 500);
   }
 }

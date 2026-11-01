@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { adminFetch, AppSessionError } from "@/lib/appSession";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -62,39 +62,40 @@ const WaiterManagement = () => {
     fetchWaiters();
   }, []);
 
+  const callWaiterApi = async (path: string, body?: unknown) => {
+    const response = await adminFetch(path, {
+      method: 'POST',
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data?.error) {
+      throw new Error(data?.error || "La operación no se pudo completar.");
+    }
+
+    return data;
+  };
+
+  const handleSessionExpired = (error: unknown): boolean => {
+    if (error instanceof AppSessionError) {
+      toast.error(error.message);
+      if (error.status === 401) navigate('/auth');
+      return true;
+    }
+    return false;
+  };
+
   const fetchWaiters = async () => {
     setLoading(true);
     try {
-      console.log('🔵 Fetching waiters from Supabase Edge Function...');
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
-        navigate('/auth');
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('api/waiters/list-waiters', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-      
-      if (error) {
-        console.error("❌ API error:", error);
-        toast.error(error.message || "Error al cargar la lista de meseros");
-        setWaiters([]);
-        return;
-      }
-      
-      console.log('✅ Waiters loaded:', data);
+      const data = await callWaiterApi('/api/waiters/list-waiters');
       setWaiters(data.waiters || []);
-      
     } catch (error) {
       console.error("❌ Error fetching waiters:", error);
-      toast.error("Error de conexión al cargar la lista de meseros");
+      if (!handleSessionExpired(error)) {
+        toast.error(error instanceof Error ? error.message : "Error de conexión al cargar la lista de meseros");
+      }
       setWaiters([]);
     } finally {
       setLoading(false);
@@ -115,32 +116,12 @@ const WaiterManagement = () => {
 
       const { email, password, full_name, phone_number } = validation.data;
 
-      console.log('🔵 Creating waiter:', { email, full_name, phone_number });
-
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
-        navigate('/auth');
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('api/waiters/create-waiter', {
-        body: { email, password, full_name, phone_number: phone_number || null },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+      await callWaiterApi('/api/waiters/create-waiter', {
+        email,
+        password,
+        full_name,
+        phone_number: phone_number || null,
       });
-
-      if (error) {
-        console.error('❌ Create waiter error:', error);
-        
-        if (error.message?.includes('already exists') || error.message?.includes('duplicate')) {
-          throw new Error("Este correo ya está registrado.");
-        } else {
-          throw new Error(error.message || "Error al crear la cuenta de mesero.");
-        }
-      }
 
       toast.success("✅ ¡Mesero creado con éxito!");
       setIsDialogOpen(false);
@@ -149,7 +130,14 @@ const WaiterManagement = () => {
 
     } catch (error: any) {
       console.error('❌ Create waiter error:', error);
-      toast.error(error.message || "Error desconocido al crear el mesero.");
+      if (handleSessionExpired(error)) return;
+
+      const message: string = error?.message || '';
+      toast.error(
+        /already|exists|duplicate|registrado/i.test(message)
+          ? "Este correo ya está registrado."
+          : message || "Error desconocido al crear el mesero."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -172,53 +160,14 @@ const WaiterManagement = () => {
       // Clean phone number - remove spaces and special characters
       const cleanPhone = phone_number ? phone_number.replace(/\D/g, '') : null;
 
-      console.log('🔵 Updating waiter:', { 
-        id: currentWaiter.id, 
-        email, 
-        full_name, 
-        phone_number: phone_number,
-        cleanPhone: cleanPhone 
+      await callWaiterApi('/api/waiters/update-waiter-profile', {
+        waiterId: currentWaiter.id,
+        email,
+        full_name,
+        phone_number: cleanPhone || null,
       });
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
-        navigate('/auth');
-        return;
-      }
-
-      // Update profile via Edge Function (bypasses RLS recursion issues)
-      const { data, error } = await supabase.functions.invoke('api/waiters/update-waiter-profile', {
-        body: { 
-          waiterId: currentWaiter.id,
-          email,
-          full_name,
-          phone_number: cleanPhone || null
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-
-      if (error) {
-        console.error('❌ Update profile error:', error);
-        console.error('❌ Error details:', JSON.stringify(error, null, 2));
-        throw new Error(error.message || "Error al actualizar el mesero.");
-      }
-
-      // Check if there's an error in the response data
-      if (data && data.error) {
-        console.error('❌ Response error:', data.error);
-        throw new Error(data.error);
-      }
-
-      const hasPhone = phone_number && phone_number.trim().length > 0;
-      toast.success(
-        hasPhone 
-          ? "✅ ¡Mesero actualizado! Usá el botón 'Restablecer contraseña' para enviar el enlace por WhatsApp."
-          : "✅ ¡Mesero actualizado! Agregá un teléfono para habilitar el restablecimiento de contraseña por WhatsApp."
-      );
+      toast.success("✅ ¡Mesero actualizado! Podés restablecer su contraseña desde la lista.");
       setIsDialogOpen(false);
       setCurrentWaiter({});
       setIsEditMode(false);
@@ -226,6 +175,7 @@ const WaiterManagement = () => {
 
     } catch (error: any) {
       console.error('❌ Update waiter error:', error);
+      if (handleSessionExpired(error)) return;
       toast.error(error.message || "Error desconocido al actualizar el mesero.");
     } finally {
       setIsSubmitting(false);
@@ -238,44 +188,20 @@ const WaiterManagement = () => {
       return;
     }
 
-    if (!window.confirm(`¿Enviar el enlace de restablecimiento de contraseña a ${waiter.full_name} por email (${waiter.email})?`)) return;
+    if (!window.confirm(`¿Restablecer la contraseña de ${waiter.full_name} y enviar una contraseña temporal a ${waiter.email}?`)) return;
 
     try {
-      console.log('🔵 Sending password reset for:', waiter.id);
-
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
-        navigate('/auth');
-        return;
-      }
-
-      const response = await fetch('/api/waiters/send-password-reset', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          waiterId: waiter.id,
-          waiterEmail: waiter.email,
-          waiterName: waiter.full_name,
-        }),
+      await callWaiterApi('/api/waiters/send-password-reset', {
+        waiterId: waiter.id,
+        waiterEmail: waiter.email,
+        waiterName: waiter.full_name,
       });
 
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        console.error('❌ Reset password error:', data);
-        throw new Error(data.error || "Error al enviar el enlace de restablecimiento.");
-      }
-
-      console.log('✅ Password reset email sent');
-      toast.success("✅ ¡Enlace de restablecimiento enviado por email!");
+      toast.success("✅ ¡Contraseña temporal enviada por email!");
 
     } catch (error: any) {
       console.error('❌ Reset password error:', error);
+      if (handleSessionExpired(error)) return;
       toast.error(error.message || "Error al enviar el enlace de restablecimiento.");
     }
   };
@@ -284,43 +210,14 @@ const WaiterManagement = () => {
     if (!window.confirm(`¿Estás seguro de que querés eliminar al mesero "${waiterName}"? Esta acción es irreversible.`)) return;
 
     try {
-      console.log('🔵 Deleting waiter:', waiterId);
+      await callWaiterApi('/api/waiters/delete-waiter', { waiterId });
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
-        navigate('/auth');
-        return;
-      }
-
-      console.log('🔵 Calling delete-waiter function with token length:', session.access_token.length);
-
-      const { data, error } = await supabase.functions.invoke('api/waiters/delete-waiter', {
-        body: { waiterId },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-
-      console.log('🔵 Delete response:', { data, error });
-
-      if (error) {
-        console.error('❌ Function error:', error);
-        throw new Error(error.message || "Error al eliminar la cuenta de mesero.");
-      }
-
-      if (data?.error) {
-        console.error('❌ Data error:', data.error);
-        throw new Error(data.error);
-      }
-
-      console.log('✅ Waiter deleted successfully');
       toast.success("✅ ¡Mesero eliminado con éxito!");
       fetchWaiters();
 
     } catch (error: any) {
       console.error('❌ Delete waiter error:', error);
+      if (handleSessionExpired(error)) return;
       toast.error(error.message || "Error desconocido al eliminar el mesero.");
     }
   };
@@ -446,19 +343,17 @@ const WaiterManagement = () => {
                               </Badge>
                             </div>
                           </div>
-                          {waiter.phone_number && (
-                            <div className="pt-2 border-t border-gray-200">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleResetPassword(waiter)}
-                                className="w-full hover:bg-blue-50 border-blue-200"
-                              >
-                                <Key className="w-4 h-4 mr-2 text-blue-600" />
-                                Restablecer Contraseña por WhatsApp
-                              </Button>
-                            </div>
-                          )}
+                          <div className="pt-2 border-t border-gray-200">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleResetPassword(waiter)}
+                              className="w-full hover:bg-blue-50 border-blue-200"
+                            >
+                              <Key className="w-4 h-4 mr-2 text-blue-600" />
+                              Restablecer Contraseña por Email
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -497,13 +392,13 @@ const WaiterManagement = () => {
                                 >
                                   <Edit className="w-4 h-4 text-purple-600" />
                                 </Button>
-                                {waiter.phone_number && (
+                                {waiter.email && (
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
                                     onClick={() => handleResetPassword(waiter)}
                                     className="hover:bg-blue-50 border-blue-200"
-                                    title="Restablecer Contraseña por WhatsApp"
+                                    title="Restablecer contraseña por email"
                                   >
                                     <Key className="w-4 h-4 text-blue-600" />
                                   </Button>
@@ -566,7 +461,7 @@ const WaiterManagement = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone_number" className="text-sm font-display uppercase tracking-wider">
-                    Teléfono WhatsApp {isEditMode && '(opcional)'}
+                    Teléfono de contacto (opcional)
                   </Label>
                   <Input
                     id="phone_number"
@@ -577,10 +472,7 @@ const WaiterManagement = () => {
                     className="text-base border-2 border-accent rounded-none shadow-soft"
                   />
                   <p className="text-xs font-body text-gray-500">
-                    {isEditMode 
-                      ? 'Necesario para enviar el enlace de restablecimiento de contraseña por WhatsApp'
-                      : 'Formato: código de país + número (ej.: 59171234567)'
-                    }
+                    Formato: código de país + número (ej.: 59171234567). La contraseña temporal se envía al email del mesero.
                   </p>
                 </div>
 

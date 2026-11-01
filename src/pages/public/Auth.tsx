@@ -37,19 +37,47 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { resolveCredential } = await import("@/lib/tenantAuth");
+      const [{ resolveCredential }, { requestSession, AppSessionError }] = await Promise.all([
+        import("@/lib/tenantAuth"),
+        import("@/lib/appSession"),
+      ]);
+
       const cred = resolveCredential(identifier, password);
-      if (!cred) {
-        toast.error("Credenciales inválidas");
+
+      if (cred) {
+        await login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName);
+
+        if (cred.role === "admin") {
+          try {
+            await requestSession(cred.identifier, cred.password);
+          } catch (sessionError: any) {
+            console.error("🔴 Admin session error:", sessionError);
+            toast.warning(
+              sessionError?.message ||
+                "No se pudo habilitar la gestión de meseros en este inicio de sesión."
+            );
+          }
+        }
+
+        console.log("✅ Login successful", cred.email, cred.tenantSlug);
+        toast.success("¡Inicio de sesión exitoso!");
+        redirectToRolePage(cred.role);
         return;
       }
 
-      await login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName);
-
-      console.log("✅ Login successful", cred.email, cred.tenantSlug);
-      toast.success("¡Inicio de sesión exitoso!");
-
-      redirectToRolePage(cred.role);
+      try {
+        const session = await requestSession(identifier, password);
+        await login(session.email, session.name, session.role, password, session.tenantSlug, session.venueName);
+        toast.success("¡Inicio de sesión exitoso!");
+        redirectToRolePage(session.role);
+      } catch (sessionError: any) {
+        const invalid =
+          sessionError instanceof AppSessionError &&
+          (sessionError.status === 401 || sessionError.status === 403);
+        toast.error(
+          invalid ? "Credenciales inválidas" : sessionError?.message || "No se pudo iniciar sesión"
+        );
+      }
     } catch (error: any) {
       console.error("🔴 Auth exception:", error);
       toast.error("Error al procesar la autenticación");

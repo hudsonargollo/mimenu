@@ -3,109 +3,66 @@
  * POST /api/waiters/create-waiter
  */
 
+import { requireAdmin } from '../../lib/app-session';
+import { EMAIL_PATTERN } from '../../lib/rate-limit';
+import {
+  createWaiter,
+  DuplicateEmailError,
+  tenantSlugForAdmin,
+  toPublicWaiter,
+} from '../../lib/waiter-store';
+
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
 export async function onRequest(context) {
   const { request, env } = context;
 
-  // Only allow POST
   if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'Method not allowed' }, 405);
+  }
+
+  const admin = await requireAdmin(request, env);
+  if (!admin) {
+    return json({ error: 'Forbidden - admin session required' }, 401);
   }
 
   try {
-    // Get authorization header
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const token = authHeader.substring(7);
-
-    // Parse request body
     const body = await request.json();
-    const { email, password, full_name, phone_number } = body;
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const fullName = typeof body.full_name === 'string' ? body.full_name.trim() : '';
+    const phoneNumber =
+      typeof body.phone_number === 'string' && body.phone_number.trim()
+        ? body.phone_number.trim()
+        : null;
 
-    if (!email || !password || !full_name) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    if (!EMAIL_PATTERN.test(email) || !fullName) {
+      return json({ error: 'Completá el nombre y un email válido.' }, 400);
     }
 
-    // Import Supabase client
-    const { createClient } = await import('@supabase/supabase-js');
-    
-    const supabase = createClient(
-      env.VITE_SUPABASE_URL,
-      env.SUPABASE_SERVICE_ROLE_KEY
-    );
-
-    // Verify the token and get user
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    if (password.length < 6) {
+      return json({ error: 'La contraseña debe tener al menos 6 caracteres.' }, 400);
     }
 
-    // Check if user is admin by checking auth metadata
-    if (user.user_metadata?.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Forbidden - admin access required' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Create auth user with waiter role
-    const { data: authUser, error: createError } = await supabase.auth.admin.createUser({
+    const waiter = await createWaiter(env, {
       email,
       password,
-      email_confirm: true,
-      user_metadata: {
-        role: 'waiter',
-        full_name,
-        phone_number: phone_number || null
-      }
+      full_name: fullName,
+      phone_number: phoneNumber,
+      tenant_slug: tenantSlugForAdmin(admin.email),
     });
 
-    if (createError) {
-      console.error('Error creating auth user:', createError);
-      return new Response(JSON.stringify({ 
-        error: createError.message || 'Failed to create user'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    return json({ success: true, waiter: toPublicWaiter(waiter) });
+  } catch (error) {
+    if (error instanceof DuplicateEmailError) {
+      return json({ error: error.message }, 409);
     }
 
-    return new Response(JSON.stringify({ 
-      success: true,
-      waiter: {
-        id: authUser.user.id,
-        email,
-        full_name,
-        phone_number: phone_number || null
-      }
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-  } catch (error) {
     console.error('Error in create-waiter:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      message: error.message 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'No se pudo crear la cuenta del mesero.' }, 500);
   }
 }

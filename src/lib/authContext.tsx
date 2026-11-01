@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { resolveTenantForLogin, type StaffRole, type TenantAccount } from '@/lib/tenantAuth';
+import { clearAppSession } from '@/lib/appSession';
 
 export interface User {
   id: string;
@@ -97,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    clearAppSession();
     setUser(null);
   }, []);
 
