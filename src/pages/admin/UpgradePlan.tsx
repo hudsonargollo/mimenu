@@ -89,29 +89,21 @@ const UpgradePlan = () => {
         </Link>
 
         <header className="rounded-3xl border border-white/60 bg-white/60 p-6 shadow-sm backdrop-blur-md">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8b5cf6]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#5b4a9e]">
-                <Sparkles className="h-3 w-3" />
-                Planes
-              </span>
-              <h1 className="mt-3 text-2xl font-black text-[#2a1f55] sm:text-3xl">
-                Mejorar plan de {venue.name}
-              </h1>
-              <p className="mt-1 text-xs text-[#5b4a9e]/80">
-                Plan actual <strong>{current.name}</strong>
-                {current.priceMonthlyBob !== null
-                  ? ` · Bs. ${current.priceMonthlyBob}/mes`
-                  : ' · A cotizar'}
-                {lapsed ? ' · vencido' : ' · activo'}
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white/70 px-4 py-3 text-right shadow-xs">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#5b4a9e]/60">
-                Restaurante
-              </p>
-              <p className="text-sm font-black text-[#2a1f55]">{venue.slug}</p>
-            </div>
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8b5cf6]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#5b4a9e]">
+              <Sparkles className="h-3 w-3" />
+              Planes
+            </span>
+            <h1 className="mt-3 text-2xl font-black text-[#2a1f55] sm:text-3xl">
+              Upgrade plan
+            </h1>
+            <p className="mt-1 text-xs text-[#5b4a9e]/80">
+              Plan actual <strong>{current.name}</strong>
+              {current.priceMonthlyBob !== null
+                ? ` · Bs. ${current.priceMonthlyBob}/mes`
+                : ' · A cotizar'}
+              {lapsed ? ' · vencido' : ' · activo'}
+            </p>
           </div>
 
           {lapsed && (

@@ -18,7 +18,6 @@ import {
   ExternalLink,
   Users,
   Store,
-  UtensilsCrossed,
   Lock
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
@@ -83,12 +82,7 @@ const AdminSidebar = () => {
         {/* Logo Section */}
         <div className="p-5 border-b border-white/40 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md shrink-0"
-              style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
-            >
-              <UtensilsCrossed className="w-5 h-5" />
-            </div>
+            <img src="/mimenu.svg" alt="MiMenu" className="h-9 w-9 shrink-0" />
             {isOpen && (
               <div>
                 <div className="flex items-center gap-1.5">
@@ -96,7 +90,7 @@ const AdminSidebar = () => {
                   {venue?.plan !== 'custom' ? (
                     <Link
                       to="/admin/upgrade"
-                      title="Mejorar plan"
+                      title="Upgrade plan"
                       className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded hover:bg-white hover:text-[#2a1f55] transition-colors"
                     >
                       {venue?.plan_name ?? 'Basic'}
@@ -107,7 +101,6 @@ const AdminSidebar = () => {
                     </span>
                   )}
                 </div>
-                <p className="text-[10px] text-[#5b4a9e]/70">MIMENU Santa Cruz</p>
               </div>
             )}
           </div>
@@ -186,7 +179,7 @@ const AdminSidebar = () => {
           <div className="px-3 pb-2">
             <Link
               to="/admin/upgrade"
-              title={isOpen ? undefined : 'Mejorar plan'}
+              title={isOpen ? undefined : 'Upgrade plan'}
               className={`flex items-center gap-2 rounded-xl text-white shadow-md transition-opacity hover:opacity-90 ${
                 isOpen ? 'justify-between px-3 py-2.5' : 'mx-auto h-10 w-12 justify-center'
               }`}
@@ -195,7 +188,7 @@ const AdminSidebar = () => {
               <span className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 {isOpen && (
-                  <span className="text-[11px] font-black uppercase tracking-wide">Mejorar plan</span>
+                  <span className="text-[11px] font-black uppercase tracking-wide">Upgrade plan</span>
                 )}
               </span>
               {isOpen && (
