@@ -1,15 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, Plus, Flame } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { motion, type Variants } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Sparkles, Plus, Flame, ImageOff } from 'lucide-react';
 import { CyclingOffer } from '@/types/mimenu';
 import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+const slideVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: 0.4, staggerChildren: 0.07, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
+};
+
 export const CyclingOffersBanner: React.FC = () => {
   const { activeOffers, recordOfferImpression, recordOfferClick, recordOfferConversion, venue } = useMimenu();
   const { addItem } = useCart();
-  const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -22,27 +35,19 @@ export const CyclingOffersBanner: React.FC = () => {
     setActiveIndex((index) => Math.min(index, Math.max(activeOffers.length - 1, 0)));
   }, [activeOffers.length]);
 
-  const scrollToIndex = (index: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const clamped = Math.max(0, Math.min(index, activeOffers.length - 1));
-    track.scrollTo({ left: clamped * track.clientWidth, behavior: 'smooth' });
-    setActiveIndex(clamped);
-  };
-
-  const handleScroll = () => {
-    const track = trackRef.current;
-    if (!track || !track.clientWidth) return;
-    const index = Math.round(track.scrollLeft / track.clientWidth);
-    if (index !== activeIndex) setActiveIndex(index);
-  };
-
   if (activeOffers.length === 0) return null;
+
+  const goTo = (index: number) => {
+    const total = activeOffers.length;
+    setActiveIndex(((index % total) + total) % total);
+  };
+  const goNext = () => goTo(activeIndex + 1);
+  const goPrev = () => goTo(activeIndex - 1);
 
   const handleAddOfferToCart = (offer: CyclingOffer) => {
     recordOfferClick(offer.id);
     recordOfferConversion(offer.id, offer.discount_price);
-    
+
     // Add to cart as special promotional bundle
     addItem({
       id: offer.id,
@@ -59,137 +64,200 @@ export const CyclingOffersBanner: React.FC = () => {
   };
 
   return (
-    <section className="mb-8" aria-labelledby="live-offers-heading">
-      <div className="flex items-center justify-between mb-3 px-1">
-        <div className="flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
-          <h3 id="live-offers-heading" className="text-sm font-bold tracking-tight text-foreground uppercase flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" aria-hidden="true" />
+    <section className="mb-10" aria-labelledby="live-offers-heading">
+      <div className="mb-4 flex items-end justify-between gap-3 px-1">
+        <div>
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-amber-700">
+            <Sparkles className="h-3 w-3 fill-amber-500 text-amber-500" aria-hidden="true" />
             Ofertas del Momento
+          </span>
+          <h3
+            id="live-offers-heading"
+            className="mt-1 font-display text-2xl leading-tight text-stone-900 sm:text-3xl"
+          >
+            Combos por tiempo limitado
           </h3>
         </div>
-        <span className="text-xs text-muted-foreground font-medium hidden sm:inline">
-          Disponibles por tiempo limitado
+        <span className="shrink-0 text-xs font-semibold tabular-nums text-stone-500">
+          {String(activeIndex + 1).padStart(2, '0')} / {String(activeOffers.length).padStart(2, '0')}
         </span>
       </div>
 
-      <div className="relative">
-        <div
-          ref={trackRef}
-          onScroll={handleScroll}
-          className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          aria-roledescription="carrusel"
-          aria-label="Ofertas del momento"
-        >
+      <div className="relative sm:pr-10">
+        {/* All slides share one grid cell so height stays stable and transitions crossfade. */}
+        <div className="grid">
           {activeOffers.map((offer, index) => {
+            const isActive = index === activeIndex;
             const discountPct = Math.round(
               ((offer.original_price - offer.discount_price) / offer.original_price) * 100
             );
 
             return (
-              <div
+              <motion.div
                 key={offer.id}
-                className="w-full flex-none snap-center"
+                className={`col-start-1 row-start-1 ${isActive ? '' : 'pointer-events-none'}`}
+                initial={false}
+                animate={isActive ? 'show' : 'hidden'}
+                variants={slideVariants}
+                drag={isActive && activeOffers.length > 1 ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.12}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -60) goNext();
+                  else if (info.offset.x > 60) goPrev();
+                }}
+                aria-hidden={!isActive}
                 aria-roledescription="oferta"
                 aria-label={`${index + 1} de ${activeOffers.length}`}
               >
-                <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group h-full">
-                  {/* Badge & Discount */}
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[11px] px-2.5 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-wider">
-                      <Flame className="w-3 h-3 fill-current" aria-hidden="true" />
-                      <span>{offer.badge || 'PROMO'}</span>
-                    </div>
-                    <div className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums">
-                      -{discountPct}% OFF
-                    </div>
-                  </div>
+                <motion.article
+                  variants={itemVariants}
+                  className="group relative flex h-full flex-col items-center overflow-hidden rounded-[28px] border border-amber-900/10 bg-white p-5 shadow-[0_24px_70px_-32px_rgba(120,53,15,0.45)] sm:flex-row sm:items-center sm:gap-7 sm:p-6 sm:pr-8"
+                >
+                  {/* Media */}
+                  <motion.div
+                    variants={itemVariants}
+                    className="relative w-full flex-none sm:w-[236px]"
+                  >
+                    <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 shadow-[0_18px_40px_-18px_rgba(190,18,60,0.55)] sm:h-[228px]">
+                      {offer.image_url ? (
+                        <img
+                          src={offer.image_url}
+                          alt={offer.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-white/80">
+                          <ImageOff className="h-8 w-8" aria-hidden="true" />
+                        </div>
+                      )}
+                      <div
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-rose-600/35 via-transparent to-amber-400/25 mix-blend-multiply"
+                        aria-hidden="true"
+                      />
 
-                  {/* Offer Info */}
-                  <div className="space-y-1.5 flex-1">
-                    <h4 className="text-sm font-bold text-foreground leading-snug group-hover:text-amber-500 transition-colors">
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                        <Flame className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />
+                        {offer.badge || 'PROMO'}
+                      </span>
+
+                      {discountPct > 0 && (
+                        <span className="absolute bottom-3 right-3 rounded-full bg-white px-2.5 py-1 text-[11px] font-black tabular-nums text-rose-600 shadow-md">
+                          -{discountPct}% OFF
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Content */}
+                  <div className="flex min-w-0 flex-1 flex-col items-center pt-5 text-center sm:items-start sm:pt-0 sm:text-left">
+                    <motion.span
+                      variants={itemVariants}
+                      className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400"
+                    >
+                      {offer.subtitle || 'Solo por hoy'}
+                    </motion.span>
+
+                    <motion.h4
+                      variants={itemVariants}
+                      className="mt-2 font-display text-[22px] leading-snug text-stone-900 transition-colors group-hover:text-amber-700 sm:text-[26px]"
+                    >
                       {offer.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    </motion.h4>
+
+                    <motion.p
+                      variants={itemVariants}
+                      className="mt-2 line-clamp-2 max-w-md text-[13px] leading-relaxed text-stone-500"
+                    >
                       {offer.description}
-                    </p>
+                    </motion.p>
 
                     {offer.included_item_names && offer.included_item_names.length > 0 && (
-                      <div className="pt-2 flex flex-wrap gap-1.5">
+                      <motion.div variants={itemVariants} className="mt-3 flex flex-wrap justify-center gap-1.5 sm:justify-start">
                         {offer.included_item_names.map((item, idx) => (
                           <span
                             key={idx}
-                            className="text-[10px] font-medium bg-muted/60 text-muted-foreground px-2 py-0.5 rounded-md border border-border"
+                            className="rounded-md border border-amber-900/10 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800"
                           >
                             ✓ {item}
                           </span>
                         ))}
-                      </div>
+                      </motion.div>
                     )}
-                  </div>
 
-                  {/* Price & Action */}
-                  <div className="flex items-center justify-between gap-3 pt-4 mt-3 border-t border-border">
-                    <div>
-                      <div className="text-[11px] text-muted-foreground line-through tabular-nums">
-                        {venue.currency} {offer.original_price}
-                      </div>
-                      <div className="text-lg font-black text-amber-500 tabular-nums">
-                        {venue.currency} {offer.discount_price}
-                      </div>
-                    </div>
-
-                    <Button
-                      size="sm"
-                      onClick={() => handleAddOfferToCart(offer)}
-                      className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
+                    <motion.div
+                      variants={itemVariants}
+                      className="mt-5 flex w-full flex-col items-center gap-3 border-t border-stone-100 pt-4 sm:flex-row sm:justify-between"
                     >
-                      <Plus className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>Pedir Combo</span>
-                    </Button>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-sm font-semibold tabular-nums text-stone-400 line-through">
+                          {venue.currency} {offer.original_price}
+                        </span>
+                        <span className="font-display text-2xl font-bold tabular-nums text-amber-600">
+                          {venue.currency} {offer.discount_price}
+                        </span>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        onClick={() => handleAddOfferToCart(offer)}
+                        tabIndex={isActive ? 0 : -1}
+                        className="w-full gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 px-5 font-bold text-white shadow-lg shadow-rose-500/20 transition hover:from-amber-600 hover:to-rose-600 sm:w-auto"
+                      >
+                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>Pedir Combo</span>
+                      </Button>
+                    </motion.div>
                   </div>
-                </div>
-              </div>
+                </motion.article>
+              </motion.div>
             );
           })}
         </div>
 
+        {/* Pagination — vertical rail on desktop, dots under the card on mobile */}
         {activeOffers.length > 1 && (
-          <>
+          <div className="mt-5 flex items-center justify-center gap-2 sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2 sm:flex-col sm:gap-0">
+            {activeOffers.map((offer, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <button
+                  key={offer.id}
+                  type="button"
+                  onClick={() => goTo(index)}
+                  aria-label={`Ir a la oferta ${index + 1}`}
+                  aria-current={isActive}
+                  className={`h-2.5 rounded-full transition-all duration-300 sm:my-1.5 ${
+                    isActive
+                      ? 'w-7 bg-gradient-to-r from-amber-500 to-rose-500 sm:h-7 sm:w-2.5 sm:bg-gradient-to-b'
+                      : 'w-2.5 bg-stone-300 hover:bg-stone-400'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {activeOffers.length > 1 && (
+          <div className="mt-4 flex items-center justify-center gap-2 sm:hidden">
             <button
               type="button"
-              onClick={() => scrollToIndex(activeIndex - 1)}
-              disabled={activeIndex === 0}
+              onClick={goPrev}
               aria-label="Oferta anterior"
-              className="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/70 text-white shadow-md backdrop-blur-sm transition hover:bg-stone-900/90 disabled:pointer-events-none disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm transition hover:bg-stone-50"
             >
               <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </button>
             <button
               type="button"
-              onClick={() => scrollToIndex(activeIndex + 1)}
-              disabled={activeIndex === activeOffers.length - 1}
+              onClick={goNext}
               aria-label="Siguiente oferta"
-              className="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/70 text-white shadow-md backdrop-blur-sm transition hover:bg-stone-900/90 disabled:pointer-events-none disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm transition hover:bg-stone-50"
             >
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </button>
-
-            <div className="mt-3 flex items-center justify-center gap-1.5">
-              {activeOffers.map((offer, index) => (
-                <button
-                  key={offer.id}
-                  type="button"
-                  onClick={() => scrollToIndex(index)}
-                  aria-label={`Ir a la oferta ${index + 1}`}
-                  aria-current={index === activeIndex}
-                  className={`h-1.5 rounded-full transition-all ${
-                    index === activeIndex ? 'w-6 bg-amber-500' : 'w-1.5 bg-border hover:bg-amber-500/50'
-                  }`}
-                />
-              ))}
-            </div>
-          </>
+          </div>
         )}
       </div>
     </section>
