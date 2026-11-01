@@ -616,6 +616,27 @@ function parseTime(text: string): string | null {
   return null;
 }
 
+/** Reads a time that accompanies a date in the same message ("el viernes a las 21"). */
+function parseEmbeddedTime(text: string): string | null {
+  const cleaned = normalize(text).replace(/\b\d{1,2}[/.-]\d{1,2}(?:[/.-]\d{2,4})?\b/g, ' ');
+  if (!/:|\b(a las|at|um|am|pm|hs?|horas|uhr)\b/.test(cleaned)) return null;
+  return parseTime(cleaned);
+}
+
+/** Moves a draft to the next unanswered field once the party size is known. */
+function withInlineDate(text: string, draft: ReservationDraft): ReservationDraft {
+  const date = parseDate(text);
+  if (!date) return { ...draft, step: 'date' };
+  const time = parseEmbeddedTime(text);
+  return time ? { ...draft, date, time, step: 'phone' } : { ...draft, date, step: 'time' };
+}
+
+function stepPromptFor(step: ReservationStep, c: Copy): string {
+  if (step === 'phone') return c.askPhone;
+  if (step === 'time') return c.askTime;
+  return c.askDate;
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -854,8 +875,8 @@ export function processChatbotMessage(
     if (draft.step === 'party_size') {
       const party = extractPartySize(text);
       if (party) {
-        draft = { ...draft, partySize: party, step: 'date' };
-        return respond(`${c.partyAck(party)} ${c.askDate}`, { draft });
+        draft = withInlineDate(text, { ...draft, partySize: party });
+        return respond(`${c.partyAck(party)} ${stepPromptFor(draft.step, c)}`, { draft });
       }
       const side = composeAnswers(text, n, { ...ctx, draft });
       if (side) return respond(`${side}\n\n${c.askParty}`, { draft });
@@ -953,10 +974,18 @@ export function processChatbotMessage(
 
   if (intent === 'reservation') {
     const party = extractPartySize(text);
-    const startedDraft: ReservationDraft = party
-      ? { step: 'date', name, partySize: party, idempotencyKey: newIdempotencyKey() }
-      : { step: 'party_size', name, idempotencyKey: newIdempotencyKey() };
-    return respond(party ? `${c.partyAck(party)} ${c.askDate}` : c.reserve(name), { draft: startedDraft });
+    if (!party) {
+      return respond(c.reserve(name), {
+        draft: { step: 'party_size', name, idempotencyKey: newIdempotencyKey() }
+      });
+    }
+    const started = withInlineDate(text, {
+      step: 'date',
+      name,
+      partySize: party,
+      idempotencyKey: newIdempotencyKey()
+    });
+    return respond(`${c.partyAck(party)} ${stepPromptFor(started.step, c)}`, { draft: started });
   }
 
   const answer = composeAnswers(text, n, ctx);

@@ -85,6 +85,17 @@ describe('concierge reservation flow', () => {
     expect(first.reply).toContain('fecha');
   });
 
+  it('captures party size, date and time from a single message', () => {
+    const result = turn('para 3 el viernes a las 21', {
+      language: 'es',
+      userName: 'Hudson',
+      reservationDraft: { step: 'party_size', name: 'Hudson' },
+    });
+    expect(result.state.reservationDraft).toMatchObject({ step: 'phone', partySize: 3, time: '21:00' });
+    expect(result.state.reservationDraft?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(result.reply).toContain('teléfono');
+  });
+
   it('runs the full flow, treats a declined phone as optional, and asks for no repeat', () => {
     let state: ChatbotSessionState = {
       language: 'es',
