@@ -146,18 +146,19 @@ const Auth = () => {
       />
 
       <main className="w-full max-w-[400px] flex flex-col items-center mx-auto py-6 relative z-10">
-        {/* Brand mark — loader morphs into static logo */}
+        {/* Brand mark — logo first, then text below */}
         <motion.header
           className="flex flex-col items-center gap-2 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* Logo — appears first */}
           <motion.div
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: entered ? 1 : 0, y: entered ? 0 : 8 }}
-            transition={{ duration: 0.5, delay: 0.9 }}
+            className="flex flex-col items-center"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             {/* Logo container */}
             <motion.div
@@ -169,36 +170,29 @@ const Auth = () => {
               <motion.div
                 className="relative flex items-center justify-center"
                 animate={entered ? { y: [0, -4, 0] } : { y: 0 }}
-                transition={
-                  entered
-                    ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }
-                    : { duration: 0 }
-                }
+                transition={entered ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 1.8 } : { duration: 0 }}
               >
                 <motion.img
                   src="/mimenu.svg"
                   alt="MiMenu"
                   className="w-full h-full"
                   initial={{ scale: 0.6, opacity: 0.4, rotate: -8 }}
-                  animate={
-                    entered
-                      ? { scale: 1, opacity: 1, rotate: 0 }
-                      : { scale: 0.85, opacity: 0.7, rotate: 0 }
-                  }
+                  animate={entered ? { scale: 1, opacity: 1, rotate: 0 } : { scale: 0.85, opacity: 0.7, rotate: 0 }}
                   transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
                 />
               </motion.div>
             </motion.div>
+          </motion.div>
 
-            <motion.div
-              className="flex items-center text-4xl sm:text-5xl font-extrabold tracking-tight select-none"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -8 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-            >
-              <span className="text-[hsl(var(--brand-violet))]">Mi</span>
-              <span className="text-[hsl(var(--brand-orange))]">Menu</span>
-            </motion.div>
+          {/* Brand name — below logo */}
+          <motion.div
+            className="flex items-center text-4xl sm:text-5xl font-extrabold tracking-tight select-none"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: entered ? 1 : 0, x: entered ? 0 : -8 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            <span className="text-[hsl(var(--brand-violet))]">Mi</span>
+            <span className="text-[hsl(var(--brand-orange))]">Menu</span>
           </motion.div>
 
           <motion.div
