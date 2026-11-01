@@ -63,7 +63,7 @@ export class MessageTemplateManager {
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       tableNumber: data.tableNumber,
-      totalAmount: `R$ ${data.totalAmount.toFixed(2)}`,
+      totalAmount: `Bs. ${data.totalAmount.toFixed(2)}`,
       status: this.formatStatus(data.status),
       itemCount: data.items.length.toString(),
       itemsList: this.formatItemsList(data.items),
@@ -172,48 +172,48 @@ export class MessageTemplateManager {
    */
   private getDefaultTemplate(type: NotificationType): MessageTemplate {
     const templates: Record<NotificationType, string> = {
-      payment_confirmed: `🌴 *Pontal Carapitangui Açaiteria* 🌴
+      payment_confirmed: `🌴 *MiMenu - Santa Cruz* 🌴
 
-✅ *Pedido Confirmado!*
+✅ *¡Pedido confirmado!*
 
 📋 *Pedido #{{orderNumber}}*
 👤 *Cliente:* {{customerName}}
-📱 *Telefone:* {{customerPhone}}
+📱 *Teléfono:* {{customerPhone}}
 
-📝 *Itens do Pedido:*
+📝 *Ítems del pedido:*
 {{itemsList}}
 
 💰 *Total:* {{totalAmount}}
 
-⏰ *Tempo estimado:* {{estimatedTime}}
+⏰ *Tiempo estimado:* {{estimatedTime}}
 
-Você receberá uma nova mensagem quando seu pedido estiver pronto para retirada!
+Te avisaremos con otro mensaje cuando tu pedido esté listo para retirar.
 
-Obrigado por escolher o Pontal Carapitangui! 🥥🌊`,
+¡Gracias por elegirnos! 🥥🌊`,
 
-      preparing: `🌴 *Pontal Carapitangui Açaiteria* 🌴
+      preparing: `🌴 *MiMenu - Santa Cruz* 🌴
 
-👨‍🍳 *Pedido em Preparo!*
-
-📋 *Pedido #{{orderNumber}}*
-👤 *Cliente:* {{customerName}}
-
-Seu pedido está sendo preparado com carinho!
-
-⏰ *Tempo estimado:* {{estimatedTime}}
-
-Em breve você receberá uma notificação quando estiver pronto! 🥥🌊`,
-
-      ready: `🌴 *Pontal Carapitangui Açaiteria* 🌴
-
-🎉 *Seu Pedido está pronto para retirada no balcão!*
+👨‍🍳 *¡Pedido en preparación!*
 
 📋 *Pedido #{{orderNumber}}*
 👤 *Cliente:* {{customerName}}
 
-✨ Por favor, apresente o número do seu pedido: *#{{orderNumber}}*`,
+¡Estamos preparando tu pedido con cariño!
 
-      custom: `🌴 *Pontal Carapitangui Açaiteria* 🌴
+⏰ *Tiempo estimado:* {{estimatedTime}}
+
+En breve recibirás una notificación cuando esté listo. 🥥🌊`,
+
+      ready: `🌴 *MiMenu - Santa Cruz* 🌴
+
+🎉 *¡Tu pedido está listo para retirar en el mostrador!*
+
+📋 *Pedido #{{orderNumber}}*
+👤 *Cliente:* {{customerName}}
+
+✨ Por favor, presentá el número de tu pedido: *#{{orderNumber}}*`,
+
+      custom: `🌴 *MiMenu - Santa Cruz* 🌴
 
 📋 *Pedido #{{orderNumber}}*
 👤 *Cliente:* {{customerName}}
@@ -256,10 +256,10 @@ Em breve você receberá uma notificação quando estiver pronto! 🥥🌊`,
    */
   private formatStatus(status: string): string {
     const statusMap: Record<string, string> = {
-      pending: 'Pendente',
-      paid: 'Pago',
-      preparing: 'Em Preparo',
-      ready: 'Pronto',
+      pending: 'Pendiente',
+      paid: 'Pagado',
+      preparing: 'En preparación',
+      ready: 'Listo',
       completed: 'Finalizado',
       cancelled: 'Cancelado',
     };
@@ -272,7 +272,7 @@ Em breve você receberá uma notificação quando estiver pronto! 🥥🌊`,
    */
   private formatItemsList(items: OrderData['items']): string {
     return items
-      .map(item => `• ${item.quantity}x ${item.itemName} - R$ ${item.unitPrice.toFixed(2)}`)
+      .map(item => `• ${item.quantity}x ${item.itemName} - Bs. ${item.unitPrice.toFixed(2)}`)
       .join('\n');
   }
 
@@ -281,7 +281,7 @@ Em breve você receberá uma notificação quando estiver pronto! 🥥🌊`,
    */
   private formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleString('pt-BR', {
+    return date.toLocaleString('es-BO', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

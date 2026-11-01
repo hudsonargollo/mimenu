@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DollarSign, ShoppingCart, TrendingUp, Calendar as CalendarIcon, Download, Users, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { es } from "date-fns/locale";
 import { fetchAllWaiters, type WaiterInfo } from "@/lib/waiterUtils";
 import { usePrintReport } from "@/hooks/usePrintReport";
 import { ReportPrintView } from "@/components/printable/ReportPrintView";
@@ -112,7 +112,7 @@ const Reports = () => {
       setDailyStats(daily);
     } catch (error) {
       console.error("Error loading stats:", error);
-      toast.error("Erro ao carregar relatórios");
+      toast.error("Error al cargar los reportes");
     } finally {
       setLoading(false);
     }
@@ -127,7 +127,7 @@ const Reports = () => {
     const rows = dailyStats.map((d) => [
       format(new Date(d.date), "dd/MM/yyyy"),
       d.orders,
-      `R$ ${d.revenue.toFixed(2)}`,
+      `Bs. ${d.revenue.toFixed(2)}`,
     ]);
 
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
@@ -138,7 +138,7 @@ const Reports = () => {
     a.download = `relatorio-${waiterName}-${format(dateRange.from, "dd-MM-yyyy")}-${format(dateRange.to, "dd-MM-yyyy")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exportado!");
+    toast.success("¡CSV exportado!");
   };
 
   const handlePrintReport = () => {
@@ -171,7 +171,7 @@ const Reports = () => {
               value="individual" 
               className="text-base font-display uppercase tracking-wider data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white rounded-none shadow-soft"
             >
-              Por Garçom
+              Por Mesero
             </TabsTrigger>
           </TabsList>
 
@@ -199,7 +199,7 @@ const Reports = () => {
                             setDateRange({ from: range.from, to: range.to });
                           }
                         }}
-                        locale={ptBR}
+                        locale={es}
                       />
                     </PopoverContent>
                   </Popover>
@@ -241,8 +241,8 @@ const Reports = () => {
                     <DollarSign className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs font-body text-gray-600">Receita</p>
-                    <p className="text-xl font-bold text-green-600">R$ {stats.totalRevenue.toFixed(0)}</p>
+                    <p className="text-xs font-body text-gray-600">Ingresos</p>
+                    <p className="text-xl font-bold text-green-600">Bs. {stats.totalRevenue.toFixed(0)}</p>
                   </div>
                 </div>
               </Card>
@@ -253,8 +253,8 @@ const Reports = () => {
                     <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs font-body text-gray-600">Ticket Médio</p>
-                    <p className="text-xl font-bold text-primary">R$ {stats.averageOrderValue.toFixed(0)}</p>
+                    <p className="text-xs font-body text-gray-600">Ticket promedio</p>
+                    <p className="text-xl font-bold text-primary">Bs. {stats.averageOrderValue.toFixed(0)}</p>
                   </div>
                 </div>
               </Card>
@@ -265,7 +265,7 @@ const Reports = () => {
                     <span className="text-white font-bold text-lg">✓</span>
                   </div>
                   <div>
-                    <p className="text-xs font-body text-gray-600">Concluídos</p>
+                    <p className="text-xs font-body text-gray-600">Completados</p>
                     <p className="text-2xl font-bold">{stats.completedOrders}</p>
                   </div>
                 </div>
@@ -274,27 +274,27 @@ const Reports = () => {
 
             {/* Daily Table */}
             <Card className="p-4 border-2 border-accent rounded-none shadow-soft">
-              <h3 className="font-bold text-lg mb-3">Vendas Diárias</h3>
+              <h3 className="font-bold text-lg mb-3">Ventas diarias</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2 px-2">Data</th>
                       <th className="text-right py-2 px-2">Pedidos</th>
-                      <th className="text-right py-2 px-2">Receita</th>
+                      <th className="text-right py-2 px-2">Ingresos</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
-                      <tr><td colSpan={3} className="text-center py-8">Carregando...</td></tr>
+                      <tr><td colSpan={3} className="text-center py-8">Cargando...</td></tr>
                     ) : dailyStats.length === 0 ? (
-                      <tr><td colSpan={3} className="text-center py-8 text-gray-500">Sem dados</td></tr>
+                      <tr><td colSpan={3} className="text-center py-8 text-gray-500">Sin datos</td></tr>
                     ) : (
                       dailyStats.map((day) => (
                         <tr key={day.date} className="border-b hover:bg-gray-50">
-                          <td className="py-2 px-2">{format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: ptBR })}</td>
+                          <td className="py-2 px-2">{format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: es })}</td>
                           <td className="text-right py-2 px-2 font-semibold">{day.orders}</td>
-                          <td className="text-right py-2 px-2 font-bold text-green-600">R$ {day.revenue.toFixed(2)}</td>
+                          <td className="text-right py-2 px-2 font-bold text-green-600">Bs. {day.revenue.toFixed(2)}</td>
                         </tr>
                       ))
                     )}
@@ -305,7 +305,7 @@ const Reports = () => {
                         <td className="py-2 px-2">Total</td>
                         <td className="text-right py-2 px-2">{dailyStats.reduce((sum, d) => sum + d.orders, 0)}</td>
                         <td className="text-right py-2 px-2 text-green-600">
-                          R$ {dailyStats.reduce((sum, d) => sum + d.revenue, 0).toFixed(2)}
+                          Bs. {dailyStats.reduce((sum, d) => sum + d.revenue, 0).toFixed(2)}
                         </td>
                       </tr>
                     </tfoot>
@@ -322,7 +322,7 @@ const Reports = () => {
                 <div className="flex-1 w-full">
                   <Select value={selectedWaiterId} onValueChange={setSelectedWaiterId}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione um garçom..." />
+                      <SelectValue placeholder="Seleccioná un mesero..." />
                     </SelectTrigger>
                     <SelectContent>
                       {waiters.map((waiter) => (
@@ -350,7 +350,7 @@ const Reports = () => {
                             setDateRange({ from: range.from, to: range.to });
                           }
                         }}
-                        locale={ptBR}
+                        locale={es}
                       />
                     </PopoverContent>
                   </Popover>
@@ -394,8 +394,8 @@ const Reports = () => {
                         <DollarSign className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs font-body text-gray-600">Receita</p>
-                        <p className="text-xl font-bold text-green-600">R$ {stats.totalRevenue.toFixed(0)}</p>
+                        <p className="text-xs font-body text-gray-600">Ingresos</p>
+                        <p className="text-xl font-bold text-green-600">Bs. {stats.totalRevenue.toFixed(0)}</p>
                       </div>
                     </div>
                   </Card>
@@ -406,8 +406,8 @@ const Reports = () => {
                         <TrendingUp className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs font-body text-gray-600">Ticket Médio</p>
-                        <p className="text-xl font-bold text-primary">R$ {stats.averageOrderValue.toFixed(0)}</p>
+                        <p className="text-xs font-body text-gray-600">Ticket promedio</p>
+                        <p className="text-xl font-bold text-primary">Bs. {stats.averageOrderValue.toFixed(0)}</p>
                       </div>
                     </div>
                   </Card>
@@ -418,7 +418,7 @@ const Reports = () => {
                         <span className="text-white font-bold text-lg">✓</span>
                       </div>
                       <div>
-                        <p className="text-xs font-body text-gray-600">Concluídos</p>
+                        <p className="text-xs font-body text-gray-600">Completados</p>
                         <p className="text-2xl font-bold">{stats.completedOrders}</p>
                       </div>
                     </div>
@@ -427,27 +427,27 @@ const Reports = () => {
 
                 {/* Daily Table */}
                 <Card className="p-4 border-2 border-accent rounded-none shadow-soft">
-                  <h3 className="font-bold text-lg mb-3">Vendas Diárias</h3>
+                  <h3 className="font-bold text-lg mb-3">Ventas diarias</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b">
                           <th className="text-left py-2 px-2">Data</th>
                           <th className="text-right py-2 px-2">Pedidos</th>
-                          <th className="text-right py-2 px-2">Receita</th>
+                          <th className="text-right py-2 px-2">Ingresos</th>
                         </tr>
                       </thead>
                       <tbody>
                         {loading ? (
-                          <tr><td colSpan={3} className="text-center py-8">Carregando...</td></tr>
+                          <tr><td colSpan={3} className="text-center py-8">Cargando...</td></tr>
                         ) : dailyStats.length === 0 ? (
-                          <tr><td colSpan={3} className="text-center py-8 text-gray-500">Sem dados</td></tr>
+                          <tr><td colSpan={3} className="text-center py-8 text-gray-500">Sin datos</td></tr>
                         ) : (
                           dailyStats.map((day) => (
                             <tr key={day.date} className="border-b hover:bg-gray-50">
-                              <td className="py-2 px-2">{format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: ptBR })}</td>
+                              <td className="py-2 px-2">{format(new Date(day.date), "dd/MM/yyyy (EEE)", { locale: es })}</td>
                               <td className="text-right py-2 px-2 font-semibold">{day.orders}</td>
-                              <td className="text-right py-2 px-2 font-bold text-green-600">R$ {day.revenue.toFixed(2)}</td>
+                              <td className="text-right py-2 px-2 font-bold text-green-600">Bs. {day.revenue.toFixed(2)}</td>
                             </tr>
                           ))
                         )}
@@ -458,7 +458,7 @@ const Reports = () => {
                             <td className="py-2 px-2">Total</td>
                             <td className="text-right py-2 px-2">{dailyStats.reduce((sum, d) => sum + d.orders, 0)}</td>
                             <td className="text-right py-2 px-2 text-green-600">
-                              R$ {dailyStats.reduce((sum, d) => sum + d.revenue, 0).toFixed(2)}
+                              Bs. {dailyStats.reduce((sum, d) => sum + d.revenue, 0).toFixed(2)}
                             </td>
                           </tr>
                         </tfoot>
@@ -470,7 +470,7 @@ const Reports = () => {
             ) : (
               <Card className="p-12 text-center border-2 border-accent rounded-none shadow-soft">
                 <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600 font-medium">Selecione um garçom para ver o relatório</p>
+                <p className="text-gray-600 font-medium">Seleccioná un mesero para ver el reporte</p>
               </Card>
             )}
           </TabsContent>

@@ -211,15 +211,15 @@ const Cashier = () => {
   const verifyPayment = (orderId: string) => {
     const order = orders.find((o) => o.id === orderId);
     if (order?.payment_status === "paid") {
-      toast.success("Pago confirmado!");
+      toast.success("¡Pago confirmado!");
       return;
     }
-    toast.info("Confirmacion de pago manual requerida. El pago aun no se verifica automaticamente.");
+    toast.info("Se requiere confirmación manual del pago. El pago aún no se verifica automáticamente.");
   };
 
   const confirmPaymentManually = (orderId: string) => {
     updateOrderStatus(orderId, "preparing");
-    toast.success("Pago confirmado!");
+    toast.success("¡Pago confirmado!");
   };
 
   const notifyCustomer = (orderId: string) => {
@@ -251,7 +251,7 @@ const Cashier = () => {
                 {venue.city}
               </span>
               <span className="text-xs text-muted-foreground">
-                Gestion de pedidos, ofertas inteligentes y social proof.
+                Gestión de pedidos, ofertas inteligentes y social proof.
               </span>
             </div>
           </div>
@@ -262,7 +262,7 @@ const Cashier = () => {
           onClick={handleLogout}
           className="text-xs font-bold"
         >
-          Cerrar Sesion
+          Cerrar Sesión
         </Button>
       </div>
 
@@ -284,7 +284,7 @@ const Cashier = () => {
         >
           <div className="p-4 text-center">
             <ChefHat className="w-6 h-6 mx-auto mb-1 text-amber-400" />
-            <p className="text-xs font-medium text-muted-foreground">En Preparacion</p>
+            <p className="text-xs font-medium text-muted-foreground">En Preparación</p>
             <p className="text-2xl font-black text-amber-400">{inProgressOrders.length}</p>
           </div>
         </Card>
@@ -326,7 +326,7 @@ const Cashier = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="pending">Esperando ({pendingOrders.length})</TabsTrigger>
-          <TabsTrigger value="progress">En Preparacion ({inProgressOrders.length})</TabsTrigger>
+          <TabsTrigger value="progress">En Preparación ({inProgressOrders.length})</TabsTrigger>
           <TabsTrigger value="ready">Listos ({readyOrders.length})</TabsTrigger>
           <TabsTrigger value="completed">Finalizados ({completedOrders.length})</TabsTrigger>
         </TabsList>
@@ -337,9 +337,9 @@ const Cashier = () => {
             <Card className="p-8 text-center">
               <div className="flex flex-col items-center">
                 <Timer className="w-16 h-16 text-gray-300 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Ningun pedido esperando pago</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido esperando pago</p>
                 <p className="text-sm text-gray-500">
-                  Los pedidos apareceran aqui cuando los clientes hagan nuevos pedidos.
+                  Los pedidos aparecerán aquí cuando los clientes hagan nuevos pedidos.
                 </p>
               </div>
             </Card>
@@ -387,7 +387,7 @@ const Cashier = () => {
 
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Items:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between text-xs">
@@ -425,7 +425,7 @@ const Cashier = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Cancelar Pedido</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Estas seguro de cancelar el pedido #{order.order_number}?
+                                ¿Estás seguro de cancelar el pedido #{order.order_number}?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -434,7 +434,7 @@ const Cashier = () => {
                                 onClick={() => cancelOrder(order.id)}
                                 className="bg-destructive"
                               >
-                                Si, Cancelar
+                                Sí, Cancelar
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -509,9 +509,9 @@ const Cashier = () => {
             <Card className="p-8 text-center">
               <div className="flex flex-col items-center">
                 <ChefHat className="w-16 h-16 text-gray-300 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Ningun pedido en preparacion</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido en preparación</p>
                 <p className="text-sm text-gray-500">
-                  Los pedidos apareceran aqui cuando sean enviados a la cocina.
+                  Los pedidos aparecerán aquí cuando sean enviados a la cocina.
                 </p>
               </div>
             </Card>
@@ -557,14 +557,14 @@ const Cashier = () => {
                           {formatCurrency(Number(order.total))}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {elapsed}m en preparacion
+                          {elapsed}m en preparación
                         </p>
                       </div>
                     </div>
 
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Items:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between text-xs">
@@ -602,13 +602,13 @@ const Cashier = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Cancelar Pedido</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Estas seguro de cancelar el pedido #{order.order_number}?
+                                ¿Estás seguro de cancelar el pedido #{order.order_number}?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>No</AlertDialogCancel>
                               <AlertDialogAction onClick={() => cancelOrder(order.id)} className="bg-destructive">
-                                Si, Cancelar
+                                Sí, Cancelar
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -621,7 +621,7 @@ const Cashier = () => {
                           onClick={() => updateOrderStatus(order.id, "preparing")}
                         >
                           <ChefHat className="mr-2 h-4 w-4" />
-                          Iniciar Preparacion
+                          Iniciar Preparación
                         </Button>
                       )}
                       {order.status === "preparing" && (
@@ -681,9 +681,9 @@ const Cashier = () => {
             <Card className="p-8 text-center">
               <div className="flex flex-col items-center">
                 <Package className="w-16 h-16 text-gray-300 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Ningun pedido listo</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido listo</p>
                 <p className="text-sm text-gray-500">
-                  Los pedidos apareceran aqui cuando la cocina marque como listos.
+                  Los pedidos aparecerán aquí cuando la cocina los marque como listos.
                 </p>
               </div>
             </Card>
@@ -700,7 +700,7 @@ const Cashier = () => {
                       </div>
                       <div className="flex gap-1.5 items-center flex-wrap justify-end">
                         <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 text-xs">
-                          Listo!
+                          ¡Listo!
                         </Badge>
                       </div>
                     </div>
@@ -725,7 +725,7 @@ const Cashier = () => {
 
                     {order.items && order.items.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Items:</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-2">Ítems:</p>
                         <div className="space-y-1">
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between text-xs">
@@ -809,9 +809,9 @@ const Cashier = () => {
             <Card className="p-8 text-center">
               <div className="flex flex-col items-center">
                 <CheckCircle className="w-16 h-16 text-gray-300 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Ningun pedido finalizado</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">Ningún pedido finalizado</p>
                 <p className="text-sm text-gray-500">
-                  Los pedidos apareceran aqui cuando sean finalizados.
+                  Los pedidos aparecerán aquí cuando sean finalizados.
                 </p>
               </div>
             </Card>
@@ -862,8 +862,8 @@ const Cashier = () => {
                 <p className="font-medium">{selectedOrder.customer_name || "Cliente"}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Telefono</p>
-                <p className="font-medium">{selectedOrder.customer_phone || "Sin telefono"}</p>
+                <p className="text-sm text-muted-foreground">Teléfono</p>
+                <p className="font-medium">{selectedOrder.customer_phone || "Sin teléfono"}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Estado</p>

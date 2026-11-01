@@ -1514,7 +1514,7 @@ export const LandingTakeat: React.FC = () => {
                         <input
                           type="text"
                           required
-                          placeholder="Ex: Carlos Eduardo"
+                          placeholder="Ej: Carlos Eduardo"
                           value={leadName}
                           onChange={(e) => setLeadName(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1528,7 +1528,7 @@ export const LandingTakeat: React.FC = () => {
                         <input
                           type="text"
                           required
-                          placeholder="Ex: Brasa Burger & Bar"
+                          placeholder="Ej: Brasa Burger & Bar"
                           value={leadVenueName}
                           onChange={(e) => setLeadVenueName(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1537,12 +1537,12 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          WhatsApp (con código de área)
+                          WhatsApp (con código de país y área)
                         </label>
                         <input
                           type="tel"
                           required
-                          placeholder="Ex: (11) 98765-4321"
+                          placeholder="Ej: +591 700 00000"
                           value={leadPhone}
                           onChange={(e) => setLeadPhone(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1558,11 +1558,11 @@ export const LandingTakeat: React.FC = () => {
                           onChange={(e) => setLeadSegment(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-primary border border-white/10 text-white text-sm focus:outline-none focus:border-accent transition-colors"
                         >
-                          <option value="Salão & Mesas">{t.landing.opt1}</option>
-                          <option value="Delivery Próprio">{t.landing.opt2}</option>
-                          <option value="Cozinha KDS">{t.landing.opt3}</option>
-                          <option value="PDV Balcão">{t.landing.opt4}</option>
-                          <option value="Operação Completa">{t.landing.opt5}</option>
+                          <option value="Salón & Mesas">{t.landing.opt1}</option>
+                          <option value="Delivery Propio">{t.landing.opt2}</option>
+                          <option value="Cocina KDS">{t.landing.opt3}</option>
+                          <option value="PDV Mostrador">{t.landing.opt4}</option>
+                          <option value="Operación Completa">{t.landing.opt5}</option>
                         </select>
                       </div>
 
@@ -1604,7 +1604,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.footerTagline}
               </p>
               <div className="text-xs text-white/50">
-                Contato: <a href="mailto:contato@mimenu.clubemkt.digital" className="text-white hover:underline">contato@mimenu.clubemkt.digital</a>
+                Contacto: <a href="mailto:contacto@mimenu.clubemkt.digital" className="text-white hover:underline">contacto@mimenu.clubemkt.digital</a>
               </div>
             </div>
 

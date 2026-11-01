@@ -68,7 +68,7 @@ export function OrderEditModal({
         setItems(data || []);
       } catch (error) {
         console.error('Error loading order items:', error);
-        toast.error('Erro ao carregar itens do pedido');
+        toast.error('Error al cargar los ítems del pedido');
       } finally {
         setIsLoading(false);
       }
@@ -93,22 +93,22 @@ export function OrderEditModal({
     const lowerStatus = status.toLowerCase();
     
     if (lowerStatus === 'cancelled') {
-      return 'Este pedido foi cancelado e não pode ser editado.';
+      return 'Este pedido fue cancelado y no se puede editar.';
     }
     
     if (lowerStatus === 'paid' || lowerStatus === 'completed') {
-      return 'Este pedido já foi pago e não pode ser editado.';
+      return 'Este pedido ya fue pagado y no se puede editar.';
     }
     
     if (lowerStatus === 'pending_payment') {
-      return 'Este pedido está aguardando pagamento e não pode ser editado.';
+      return 'Este pedido está esperando el pago y no se puede editar.';
     }
     
     if (lowerStatus === 'ready') {
-      return 'Este pedido já está pronto e não pode ser editado.';
+      return 'Este pedido ya está listo y no se puede editar.';
     }
     
-    return 'Este pedido não pode ser editado no momento.';
+    return 'Este pedido no se puede editar en este momento.';
   };
 
   // Calculate order total and commission in real-time
@@ -137,7 +137,7 @@ export function OrderEditModal({
   // Handle item removal
   const handleRemoveItem = (itemId: string) => {
     if (items.length <= 1) {
-      toast.error('O pedido deve ter pelo menos um item');
+      toast.error('El pedido debe tener al menos un ítem');
       return;
     }
     setItems(prevItems => prevItems.filter(item => item.id !== itemId));
@@ -147,12 +147,12 @@ export function OrderEditModal({
   // Handle save
   const handleSave = async () => {
     if (!order) {
-      toast.error('Pedido não encontrado');
+      toast.error('Pedido no encontrado');
       return;
     }
 
     if (items.length === 0) {
-      toast.error('O pedido deve ter pelo menos um item');
+      toast.error('El pedido debe tener al menos un ítem');
       return;
     }
 
@@ -202,7 +202,7 @@ export function OrderEditModal({
         throw updateError;
       }
 
-      toast.success('Pedido atualizado com sucesso!');
+      toast.success('¡Pedido actualizado con éxito!');
       
       if (onSave) {
         // The commission_amount will be automatically calculated by the database trigger
@@ -214,14 +214,14 @@ export function OrderEditModal({
       console.error('Error saving order:', error);
       
       // Provide more specific error messages
-      let errorMessage = 'Erro ao atualizar pedido. Tente novamente.';
+      let errorMessage = 'Error al actualizar el pedido. Intentá nuevamente.';
       
       if (error?.message?.includes('permission') || error?.code === '42501') {
-        errorMessage = 'Você não tem permissão para editar este pedido.';
+        errorMessage = 'No tenés permiso para editar este pedido.';
       } else if (error?.message?.includes('foreign key') || error?.code === '23503') {
-        errorMessage = 'Erro: Item do menu não encontrado.';
+        errorMessage = 'Error: ítem del menú no encontrado.';
       } else if (error?.message?.includes('not null') || error?.code === '23502') {
-        errorMessage = 'Erro: Dados obrigatórios estão faltando.';
+        errorMessage = 'Error: faltan datos obligatorios.';
       } else if (error?.message) {
         errorMessage = error.message;
       }
@@ -260,17 +260,17 @@ export function OrderEditModal({
   const getStatusLabel = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "Pendente";
+        return "Pendiente";
       case "pending_payment":
-        return "Aguardando Pagamento";
+        return "Esperando Pago";
       case "paid":
-        return "Pago";
+        return "Pagado";
       case "in_preparation":
-        return "Em Preparo";
+        return "En Preparación";
       case "ready":
-        return "Pronto";
+        return "Listo";
       case "completed":
-        return "Concluído";
+        return "Completado";
       case "cancelled":
         return "Cancelado";
       default:
@@ -281,7 +281,7 @@ export function OrderEditModal({
   // Capitalize first letter of customer name
   const capitalizedCustomerName = order.customer_name 
     ? order.customer_name.charAt(0).toUpperCase() + order.customer_name.slice(1).toLowerCase()
-    : 'Não informado';
+    : 'No informado';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -296,7 +296,7 @@ export function OrderEditModal({
               size="icon"
               onClick={onClose}
               className="h-9 w-9 flex-shrink-0 touch-manipulation hover:bg-gray-100 rounded-full"
-              aria-label="Fechar"
+              aria-label="Cerrar"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -338,12 +338,12 @@ export function OrderEditModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {order.customer_phone && (
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1.5">Telefone</label>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1.5">Teléfono</label>
                 <p className="text-sm font-medium text-gray-900">{formatPhoneNumber(order.customer_phone)}</p>
               </div>
             )}
             <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1.5">Data do Pedido</label>
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1.5">Fecha del Pedido</label>
               <p className="text-sm font-medium text-gray-900">
                 {new Date(order.created_at).toLocaleString("es-BO", {
                   day: "2-digit",
@@ -359,18 +359,18 @@ export function OrderEditModal({
           {/* Order Items Section */}
           <div className="border-t pt-3 sm:pt-5 -mx-4 sm:mx-0 px-4 sm:px-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900">Itens do Pedido</h3>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900">Ítems del Pedido</h3>
               {/* Add items button removed - use AddItemsModal from WaiterDashboard instead */}
             </div>
 
             {isLoading ? (
               <div className="text-center py-8 text-gray-500">
                 <div className="animate-spin rounded-full h-10 w-10 sm:h-8 sm:w-8 border-b-2 border-primary mx-auto mb-3"></div>
-                <p className="text-sm font-medium">Carregando itens...</p>
+                <p className="text-sm font-medium">Cargando ítems...</p>
               </div>
             ) : items.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <p className="text-sm">Nenhum item encontrado</p>
+                <p className="text-sm">No se encontraron ítems</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -394,7 +394,7 @@ export function OrderEditModal({
             {/* Total Amount */}
             <div className="flex justify-between items-start gap-3">
               <div>
-                <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Total do Pedido</span>
+                <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Total del Pedido</span>
                 {hasValueChanged && (
                   <span className="text-xs text-gray-500 line-through">
                     {originalTotal.toLocaleString("es-BO", { 
@@ -417,7 +417,7 @@ export function OrderEditModal({
             {/* Commission Amount */}
             <div className="flex justify-between items-start gap-3 pb-3 border-b border-gray-200">
               <div>
-                <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Comissão (10%)</span>
+                <span className="text-xs sm:text-sm font-semibold text-gray-600 block mb-1">Comisión (10%)</span>
                 {hasValueChanged && (
                   <span className="text-xs text-gray-500 line-through">
                     {originalCommission.toLocaleString("es-BO", { 
@@ -441,7 +441,7 @@ export function OrderEditModal({
             {hasValueChanged && (
               <div className="bg-white rounded-lg p-3 border border-primary/20">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-bold text-primary/90">Diferença:</span>
+                  <span className="text-sm font-bold text-primary/90">Diferencia:</span>
                   <div className="text-right">
                     <div className={`text-lg font-bold ${
                       orderTotal > originalTotal ? 'text-green-600' : 'text-red-600'
@@ -453,7 +453,7 @@ export function OrderEditModal({
                       })}
                     </div>
                     <div className="text-xs text-gray-600 mt-0.5">
-                      Comissão: {orderTotal > originalTotal ? '+' : ''}
+                      Comisión: {orderTotal > originalTotal ? '+' : ''}
                       {(commission - originalCommission).toLocaleString("es-BO", { 
                         style: "currency", 
                         currency: "BOB" 
@@ -469,7 +469,7 @@ export function OrderEditModal({
               <Alert className="bg-primary/10 border-primary/30">
                 <AlertCircle className="h-4 w-4 text-primary" />
                 <AlertDescription className="text-purple-800 text-xs sm:text-sm font-medium">
-                  💡 Valores atualizados. Clique em "Salvar Alterações" para confirmar.
+                  💡 Valores actualizados. Hacé clic en "Guardar cambios" para confirmar.
                 </AlertDescription>
               </Alert>
             )}
@@ -484,18 +484,18 @@ export function OrderEditModal({
             onClick={onClose}
             disabled={isSaving}
             className="w-full sm:w-auto min-h-[52px] sm:min-h-[44px] touch-manipulation text-base font-semibold hover:bg-gray-50 border-2 border-gray-300 rounded-xl"
-            aria-label={isEditable ? 'Cancelar edição' : 'Fechar detalhes'}
+            aria-label={isEditable ? 'Cancelar edición' : 'Cerrar detalles'}
           >
-            {isEditable ? 'Cancelar' : 'Fechar'}
+            {isEditable ? 'Cancelar' : 'Cerrar'}
           </Button>
           {isEditable && (
             <Button
               onClick={handleSave}
               disabled={isSaving || !isModified || items.length === 0}
               className="w-full sm:w-auto min-h-[52px] sm:min-h-[44px] touch-manipulation text-base font-bold bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-accent/90 disabled:from-gray-300 disabled:to-gray-300 shadow-md rounded-xl"
-              aria-label="Salvar alterações do pedido"
+              aria-label="Guardar cambios del pedido"
             >
-              {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+              {isSaving ? 'Guardando...' : 'Guardar cambios'}
             </Button>
           )}
         </DialogFooter>

@@ -28,12 +28,12 @@ export const SortingToggle = ({
       {isSortingMode ? (
         <>
           <Check className="w-4 h-4 mr-2" />
-          Modo Organização
+          Modo organización
         </>
       ) : (
         <>
           <ArrowUpDown className="w-4 h-4 mr-2" />
-          Organizar Itens
+          Organizar ítems
         </>
       )}
     </Button>

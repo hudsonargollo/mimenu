@@ -27,7 +27,7 @@ export function usePaymentPolling({
   const navigate = useNavigate();
 
   const handleSuccess = useCallback(() => {
-    toast.success('Pagamento aprovado! Redirecionando...');
+    toast.success('¡Pago aprobado! Redirigiendo...');
     onSuccess?.();
     
     // Default behavior: redirect to order status
@@ -52,12 +52,12 @@ export function usePaymentPolling({
 
   const handleError = useCallback((error: Error) => {
     console.error('Payment error:', error);
-    toast.error('Erro no pagamento. Tente novamente.');
+    toast.error('Error en el pago. Intenta nuevamente.');
     onError?.(error);
   }, [onError]);
 
   const handleTimeout = useCallback(() => {
-    toast.error('Pagamento expirado. Gere um novo pagamento.');
+    toast.error('Pago expirado. Genera un nuevo pago.');
     onTimeout?.();
   }, [onTimeout]);
 

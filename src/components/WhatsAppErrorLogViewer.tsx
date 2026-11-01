@@ -25,20 +25,20 @@ import { formatPhoneNumber } from '@/lib/phoneUtils';
 const severityConfig = {
   critical: { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', label: 'Crítico' },
   high: { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', label: 'Alto' },
-  medium: { icon: AlertCircle, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', label: 'Médio' },
-  low: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', label: 'Baixo' },
+  medium: { icon: AlertCircle, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', label: 'Medio' },
+  low: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', label: 'Bajo' },
 };
 
 const categoryLabels: Record<string, string> = {
-  connection: 'Conexão',
-  authentication: 'Autenticação',
-  message_delivery: 'Entrega de Mensagem',
-  phone_validation: 'Validação de Telefone',
-  rate_limit: 'Limite de Taxa',
-  network: 'Rede',
-  database: 'Banco de Dados',
-  configuration: 'Configuração',
-  unknown: 'Desconhecido',
+  connection: 'Conexión',
+  authentication: 'Autenticación',
+  message_delivery: 'Entrega de mensaje',
+  phone_validation: 'Validación de teléfono',
+  rate_limit: 'Límite de tasa',
+  network: 'Red',
+  database: 'Base de datos',
+  configuration: 'Configuración',
+  unknown: 'Desconocido',
 };
 
 export function WhatsAppErrorLogViewer() {
@@ -117,9 +117,9 @@ export function WhatsAppErrorLogViewer() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Log de Erros WhatsApp</CardTitle>
+              <CardTitle className="text-lg">Registro de errores de WhatsApp</CardTitle>
               <CardDescription className="text-sm">
-                {orderIdFilter ? 'Erros filtrados por pedido' : 'Histórico de erros e falhas'}
+                {orderIdFilter ? 'Errores filtrados por pedido' : 'Historial de errores y fallas'}
               </CardDescription>
             </div>
             <Button
@@ -129,7 +129,7 @@ export function WhatsAppErrorLogViewer() {
               disabled={loading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Atualizar
+              Actualizar
             </Button>
           </div>
         </CardHeader>
@@ -145,24 +145,24 @@ export function WhatsAppErrorLogViewer() {
                 <SelectContent>
                   <SelectItem value="1h">Última hora</SelectItem>
                   <SelectItem value="24h">Últimas 24h</SelectItem>
-                  <SelectItem value="7d">Últimos 7 dias</SelectItem>
-                  <SelectItem value="30d">Últimos 30 dias</SelectItem>
+                  <SelectItem value="7d">Últimos 7 días</SelectItem>
+                  <SelectItem value="30d">Últimos 30 días</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-muted-foreground px-1">Severidade</label>
+              <label className="text-xs font-medium text-muted-foreground px-1">Severidad</label>
               <Select value={selectedSeverity} onValueChange={setSelectedSeverity}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Severidade" />
+                  <SelectValue placeholder="Severidad" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="critical">Crítico</SelectItem>
                   <SelectItem value="high">Alto</SelectItem>
-                  <SelectItem value="medium">Médio</SelectItem>
-                  <SelectItem value="low">Baixo</SelectItem>
+                  <SelectItem value="medium">Medio</SelectItem>
+                  <SelectItem value="low">Bajo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -184,14 +184,14 @@ export function WhatsAppErrorLogViewer() {
 
             {orderIdFilter && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground px-1">Filtro Ativo</label>
+                <label className="text-xs font-medium text-muted-foreground px-1">Filtro activo</label>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchParams({})}
                   className="w-full justify-start"
                 >
-                  Limpar Filtro de Pedido
+                  Limpiar filtro de pedido
                 </Button>
               </div>
             )}
@@ -213,7 +213,7 @@ export function WhatsAppErrorLogViewer() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{stats.retryable}</div>
-              <div className="text-xs text-muted-foreground">Retentáveis</div>
+              <div className="text-xs text-muted-foreground">Reintentables</div>
             </div>
           </div>
         </CardContent>
@@ -223,16 +223,16 @@ export function WhatsAppErrorLogViewer() {
       {loading ? (
         <Card className="p-8 text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Carregando erros...</p>
+          <p className="text-sm text-muted-foreground">Cargando errores...</p>
         </Card>
       ) : filteredErrors.length === 0 ? (
         <Card className="p-8 text-center">
           <Info className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-          <p className="text-lg font-medium text-gray-700">Nenhum erro encontrado</p>
+          <p className="text-lg font-medium text-gray-700">Ningún error encontrado</p>
           <p className="text-sm text-muted-foreground mt-1">
             {orderIdFilter 
-              ? 'Não há erros registrados para este pedido'
-              : 'Não há erros no período selecionado'}
+              ? 'No hay errores registrados para este pedido'
+              : 'No hay errores en el período seleccionado'}
           </p>
         </Card>
       ) : (
@@ -262,7 +262,7 @@ export function WhatsAppErrorLogViewer() {
                             </Badge>
                             {error.is_retryable && (
                               <Badge variant="outline" className="text-blue-600">
-                                Retentável
+                                Reintentable
                               </Badge>
                             )}
                           </div>
@@ -303,9 +303,9 @@ export function WhatsAppErrorLogViewer() {
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes do Erro</DialogTitle>
+            <DialogTitle>Detalles del error</DialogTitle>
             <DialogDescription>
-              Informações completas sobre o erro
+              Información completa sobre el error
             </DialogDescription>
           </DialogHeader>
           
@@ -321,14 +321,14 @@ export function WhatsAppErrorLogViewer() {
                 </Badge>
                 {selectedError.is_retryable && (
                   <Badge variant="outline" className="text-blue-600">
-                    Retentável
+                    Reintentable
                   </Badge>
                 )}
               </div>
 
               {/* Error Message */}
               <div>
-                <h4 className="text-sm font-semibold mb-1">Mensagem de Erro</h4>
+                <h4 className="text-sm font-semibold mb-1">Mensaje de error</h4>
                 <p className="text-sm bg-gray-50 p-3 rounded border">
                   {selectedError.error_message}
                 </p>
@@ -337,12 +337,12 @@ export function WhatsAppErrorLogViewer() {
               {/* Metadata */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <h4 className="font-semibold mb-1">Data/Hora</h4>
+                  <h4 className="font-semibold mb-1">Fecha/Hora</h4>
                   <p className="text-muted-foreground">{formatTimestamp(selectedError.created_at)}</p>
                 </div>
                 {selectedError.order_id && (
                   <div>
-                    <h4 className="font-semibold mb-1">ID do Pedido</h4>
+                    <h4 className="font-semibold mb-1">ID del pedido</h4>
                     <p className="text-muted-foreground font-mono text-xs">{selectedError.order_id}</p>
                   </div>
                 )}
@@ -354,7 +354,7 @@ export function WhatsAppErrorLogViewer() {
                 )}
                 {selectedError.notification_id && (
                   <div>
-                    <h4 className="font-semibold mb-1">ID da Notificação</h4>
+                    <h4 className="font-semibold mb-1">ID de la notificación</h4>
                     <p className="text-muted-foreground font-mono text-xs">{selectedError.notification_id}</p>
                   </div>
                 )}

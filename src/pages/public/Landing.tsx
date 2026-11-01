@@ -1078,7 +1078,7 @@ export const Landing: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-6 text-slate-400 font-medium">
-            <Link to="/proposta" className="hover:text-amber-400 transition-colors">Proposta Comercial</Link>
+            <Link to="/proposta" className="hover:text-amber-400 transition-colors">Propuesta Comercial</Link>
             <Link to="/contract-management" className="hover:text-amber-400 transition-colors">Contrato</Link>
             <Link to="/onboarding" className="hover:text-amber-400 transition-colors">Registro</Link>
             <Link to="/auth" className="hover:text-amber-400 transition-colors">Acceso Clientes</Link>

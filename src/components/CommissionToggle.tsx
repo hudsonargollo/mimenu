@@ -28,7 +28,7 @@ import {
 } from "@/lib/commissionUtils";
 import type { Order } from "@/types/commission";
 import { format, startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
-import { pt } from "date-fns/locale";
+import { es } from "date-fns/locale";
 
 interface CommissionToggleProps {
   /** Array of orders to calculate commissions from */
@@ -63,14 +63,14 @@ function getDateRangeLabel(filter: DateFilter, customRange?: DateRange): string 
   
   switch (filter) {
     case 'today':
-      return format(today, "d 'de' MMMM 'de' yyyy", { locale: pt });
+      return format(today, "d 'de' MMMM 'de' yyyy", { locale: es });
     case 'last7days':
-      return `${format(subDays(today, 6), "d 'de' MMM", { locale: pt })} - ${format(today, "d 'de' MMM 'de' yyyy", { locale: pt })}`;
+      return `${format(subDays(today, 6), "d 'de' MMM", { locale: es })} - ${format(today, "d 'de' MMM 'de' yyyy", { locale: es })}`;
     case 'thisMonth':
-      return format(today, "MMMM 'de' yyyy", { locale: pt });
+      return format(today, "MMMM 'de' yyyy", { locale: es });
     case 'custom':
       if (customRange) {
-        return `${format(customRange.from, "d 'de' MMM", { locale: pt })} - ${format(customRange.to, "d 'de' MMM 'de' yyyy", { locale: pt })}`;
+        return `${format(customRange.from, "d 'de' MMM", { locale: es })} - ${format(customRange.to, "d 'de' MMM 'de' yyyy", { locale: es })}`;
       }
       return 'Período personalizado';
     default:
@@ -153,8 +153,8 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
   const displayAmount = activeView === 'received' ? confirmedCommission : estimatedCommission;
   const displayCount = activeView === 'received' ? paidOrdersCount : pendingOrdersCount;
   const displayLabel = activeView === 'received' 
-    ? (paidOrdersCount === 1 ? 'pedido pago' : 'pedidos pagos')
-    : (pendingOrdersCount === 1 ? 'pedido pendente' : 'pedidos pendentes');
+    ? (paidOrdersCount === 1 ? 'pedido pagado' : 'pedidos pagados')
+    : (pendingOrdersCount === 1 ? 'pedido pendiente' : 'pedidos pendientes');
 
   const dateRangeLabel = getDateRangeLabel(dateFilter, customDateRange);
 
@@ -166,7 +166,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
             <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
-            <span>Suas Comissões do Período</span>
+            <span>Tus comisiones del período</span>
           </CardTitle>
           
           {/* Date Filter Dropdown */}
@@ -182,15 +182,15 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => handleDateFilterChange('today')}>
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                Hoje
+                Hoy
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleDateFilterChange('last7days')}>
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                Últimos 7 dias
+                Últimos 7 días
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleDateFilterChange('thisMonth')}>
                 <CalendarIcon className="w-4 h-4 mr-2" />
-                Este mês
+                Este mes
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -216,12 +216,12 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
                           }
                         }
                       }}
-                      locale={pt}
+                      locale={es}
                       initialFocus
                       numberOfMonths={1}
                     />
                     <div className="p-3 text-xs text-gray-600 border-t bg-gray-50">
-                      {!customDateRange.to ? 'Selecione o período desejado' : 'Período selecionado'}
+                      {!customDateRange.to ? 'Seleccioná el período deseado' : 'Período seleccionado'}
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -246,7 +246,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
           >
             <div className="flex items-center justify-center gap-2">
               <CheckCircle className="w-4 h-4" />
-              <span>Recebidas</span>
+              <span>Recibidas</span>
             </div>
           </button>
           
@@ -264,7 +264,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
           >
             <div className="flex items-center justify-center gap-2">
               <Clock className="w-4 h-4" />
-              <span>A Receber</span>
+              <span>Por cobrar</span>
             </div>
           </button>
         </div>
@@ -297,7 +297,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
                 </PopoverTrigger>
                 <PopoverContent className="w-64">
                   <p className="text-sm text-gray-600">
-                    Comissões de pedidos com pagamento confirmado. Estes valores já foram recebidos e estão disponíveis.
+                    Comisiones de pedidos con pago confirmado. Estos valores ya fueron recibidos y están disponibles.
                   </p>
                 </PopoverContent>
               </Popover>
@@ -310,11 +310,11 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
               })}
             </div>
             <p className="text-sm text-gray-600">
-              De {paidOrdersCount} {paidOrdersCount === 1 ? 'pedido pago' : 'pedidos pagos'}
+              De {paidOrdersCount} {paidOrdersCount === 1 ? 'pedido pagado' : 'pedidos pagados'}
             </p>
             {paidOrdersCount > 0 && (
               <p className="text-xs text-gray-500 bg-green-50 px-3 py-2 rounded-lg border border-green-200 mt-2">
-                ✅ Disponíveis
+                ✅ Disponibles
               </p>
             )}
           </div>
@@ -330,7 +330,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-yellow-600" />
                 <span className="text-sm font-semibold text-gray-700">
-                  A Receber
+                  Por cobrar
                 </span>
               </div>
               <Popover>
@@ -343,7 +343,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
                 </PopoverTrigger>
                 <PopoverContent className="w-64">
                   <p className="text-sm text-gray-600">
-                    Comissões estimadas de pedidos aguardando confirmação de pagamento. Estes valores serão confirmados quando o pagamento for recebido.
+                    Comisiones estimadas de pedidos que esperan confirmación de pago. Estos valores se confirmarán cuando se reciba el pago.
                   </p>
                 </PopoverContent>
               </Popover>
@@ -356,11 +356,11 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
               })}
             </div>
             <p className="text-sm text-gray-600">
-              De {pendingOrdersCount} {pendingOrdersCount === 1 ? 'pedido pendente' : 'pedidos pendentes'}
+              De {pendingOrdersCount} {pendingOrdersCount === 1 ? 'pedido pendiente' : 'pedidos pendientes'}
             </p>
             {pendingOrdersCount > 0 && (
               <p className="text-xs text-gray-500 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200 mt-2">
-                💡 Aguardando pagamento
+                💡 Esperando pago
               </p>
             )}
           </div>
@@ -370,7 +370,7 @@ export function CommissionToggle({ orders, onViewChange }: CommissionToggleProps
         <div className="bg-gradient-to-r from-primary to-indigo-600 rounded-xl p-5 shadow-lg">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold text-purple-100">
-              Total Geral do Período
+              Total general del período
             </span>
             <TrendingUp className="w-5 h-5 text-purple-200" />
           </div>

@@ -202,7 +202,7 @@ const CheckoutLegacy = () => {
           <div className="bg-gradient-to-r from-primary to-indigo-600 p-4 sm:p-6">
             <h2 className="font-bold text-lg sm:text-xl text-white flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              Seu Pedido
+              Tu Pedido
             </h2>
           </div>
           <div className="p-4 sm:p-6 space-y-3">

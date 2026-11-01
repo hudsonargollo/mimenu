@@ -98,7 +98,7 @@ export const notificationUtils = {
     if (notification) {
       notification.playNotificationSound();
       notification.showOrderNotification(
-        'Novo Pedido',
+        'Nuevo pedido',
         `Pedido #${orderNumber} - ${customerName}`,
         'info',
         <Bell className="h-4 w-4" />
@@ -111,7 +111,7 @@ export const notificationUtils = {
     if (notification) {
       notification.playNotificationSound('payment');
       notification.showOrderNotification(
-        'Pagamento Confirmado',
+        'Pago confirmado',
         `Pedido #${orderNumber} - ${customerName}`,
         'success',
         <CheckCircle className="h-4 w-4" />
@@ -123,7 +123,7 @@ export const notificationUtils = {
     const notification = (window as any).realtimeNotifications;
     if (notification) {
       notification.showOrderNotification(
-        'Pedido em Preparo',
+        'Pedido en preparación',
         `Pedido #${orderNumber} - ${customerName}`,
         'info',
         <Clock className="h-4 w-4" />
@@ -135,7 +135,7 @@ export const notificationUtils = {
     const notification = (window as any).realtimeNotifications;
     if (notification) {
       notification.showOrderNotification(
-        'Pedido Pronto',
+        'Pedido listo',
         `Pedido #${orderNumber} - ${customerName}`,
         'success',
         <Package className="h-4 w-4" />
@@ -147,7 +147,7 @@ export const notificationUtils = {
     const notification = (window as any).realtimeNotifications;
     if (notification) {
       notification.showOrderNotification(
-        'Pedido Concluído',
+        'Pedido completado',
         `Pedido #${orderNumber} - ${customerName}`,
         'success',
         <CheckCircle className="h-4 w-4" />
@@ -159,8 +159,8 @@ export const notificationUtils = {
     const notification = (window as any).realtimeNotifications;
     if (notification) {
       notification.showOrderNotification(
-        'Conexão Perdida',
-        'Tentando reconectar...',
+        'Conexión perdida',
+        'Intentando reconectar...',
         'warning',
         <AlertCircle className="h-4 w-4" />
       );
@@ -171,8 +171,8 @@ export const notificationUtils = {
     const notification = (window as any).realtimeNotifications;
     if (notification) {
       notification.showOrderNotification(
-        'Conexão Restaurada',
-        'Sistema online novamente',
+        'Conexión restaurada',
+        'Sistema en línea nuevamente',
         'success',
         <CheckCircle className="h-4 w-4" />
       );

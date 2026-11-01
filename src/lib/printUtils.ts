@@ -20,7 +20,7 @@ export const thermalPrintConfig = {
       }
     }
   `,
-  documentTitle: 'Comanda de Pedido',
+  documentTitle: 'Comanda del Pedido',
 };
 
 /**

@@ -31,18 +31,18 @@ const WaiterDiagnostic = () => {
       
       if (user) {
         diagnostics.push({
-          name: "Authentication",
+          name: "Autenticación",
           status: "success",
-          message: "User is authenticated",
-          details: `Email: ${user.email}, ID: ${user.id}`
+          message: "Usuario autenticado",
+          details: `Correo: ${user.email}, ID: ${user.id}`
         });
 
         // Check user role
         const role = user.user_metadata?.role || user.app_metadata?.role;
         diagnostics.push({
-          name: "User Role",
+          name: "Rol del Usuario",
           status: role ? "success" : "warning",
-          message: role ? `Role: ${role}` : "No role found in metadata",
+          message: role ? `Rol: ${role}` : "No se encontró un rol en los metadatos",
           details: JSON.stringify({ user_metadata: user.user_metadata, app_metadata: user.app_metadata })
         });
 
@@ -55,46 +55,46 @@ const WaiterDiagnostic = () => {
           if (roleError) {
             // RPC function may not exist yet - this is not critical
             diagnostics.push({
-              name: "Profile Database (RPC)",
+              name: "Base de Datos del Perfil (RPC)",
               status: "warning",
-              message: "RPC function not available (this is normal)",
-              details: "The get_user_role function may not be created yet"
+              message: "Función RPC no disponible (esto es normal)",
+              details: "La función get_user_role puede no estar creada todavía"
             });
           } else if (userRole) {
             diagnostics.push({
-              name: "Profile Database (RPC)",
+              name: "Base de Datos del Perfil (RPC)",
               status: "success",
-              message: `User role from RPC: ${userRole}`,
-              details: `Role: ${userRole}`
+              message: `Rol del usuario desde RPC: ${userRole}`,
+              details: `Rol: ${userRole}`
             });
           } else {
             diagnostics.push({
-              name: "Profile Database (RPC)",
+              name: "Base de Datos del Perfil (RPC)",
               status: "warning",
-              message: "No role returned from RPC"
+              message: "La RPC no devolvió un rol"
             });
           }
         } catch (rpcError: any) {
           // RPC function may not exist - this is not critical
           diagnostics.push({
-            name: "Profile Database (RPC)",
+            name: "Base de Datos del Perfil (RPC)",
             status: "warning",
-            message: "RPC call not available (this is normal)",
-            details: "The get_user_role function may not be created yet"
+            message: "Llamada RPC no disponible (esto es normal)",
+            details: "La función get_user_role puede no estar creada todavía"
           });
         }
       } else {
         diagnostics.push({
-          name: "Authentication",
+          name: "Autenticación",
           status: "error",
-          message: "No user authenticated"
+          message: "Ningún usuario autenticado"
         });
       }
     } catch (error: any) {
       diagnostics.push({
-        name: "Authentication",
+        name: "Autenticación",
         status: "error",
-        message: "Authentication check failed",
+        message: "Falló la verificación de autenticación",
         details: error.message
       });
     }
@@ -109,16 +109,16 @@ const WaiterDiagnostic = () => {
       if (catError) throw catError;
 
       diagnostics.push({
-        name: "Menu Categories Access",
+        name: "Acceso a Categorías del Menú",
         status: "success",
-        message: "Can access menu categories",
-        details: `Found ${categories?.length || 0} categories`
+        message: "Se puede acceder a las categorías del menú",
+        details: `Se encontraron ${categories?.length || 0} categorías`
       });
     } catch (error: any) {
       diagnostics.push({
-        name: "Menu Categories Access",
+        name: "Acceso a Categorías del Menú",
         status: "error",
-        message: "Cannot access menu categories",
+        message: "No se puede acceder a las categorías del menú",
         details: error.message
       });
     }
@@ -133,16 +133,16 @@ const WaiterDiagnostic = () => {
       if (itemsError) throw itemsError;
 
       diagnostics.push({
-        name: "Menu Items Access",
+        name: "Acceso a Ítems del Menú",
         status: "success",
-        message: "Can access menu items",
-        details: `Found ${items?.length || 0} items`
+        message: "Se puede acceder a los ítems del menú",
+        details: `Se encontraron ${items?.length || 0} ítems`
       });
     } catch (error: any) {
       diagnostics.push({
-        name: "Menu Items Access",
+        name: "Acceso a Ítems del Menú",
         status: "error",
-        message: "Cannot access menu items",
+        message: "No se puede acceder a los ítems del menú",
         details: error.message
       });
     }
@@ -157,42 +157,42 @@ const WaiterDiagnostic = () => {
       if (ordersError) throw ordersError;
 
       diagnostics.push({
-        name: "Orders Table Access",
+        name: "Acceso a la Tabla de Pedidos",
         status: "success",
-        message: "Can access orders table",
-        details: `Found ${orders?.length || 0} orders`
+        message: "Se puede acceder a la tabla de pedidos",
+        details: `Se encontraron ${orders?.length || 0} pedidos`
       });
     } catch (error: any) {
       diagnostics.push({
-        name: "Orders Table Access",
+        name: "Acceso a la Tabla de Pedidos",
         status: "error",
-        message: "Cannot access orders table",
+        message: "No se puede acceder a la tabla de pedidos",
         details: error.message
       });
     }
 
     // 5. Check navigation routes
     diagnostics.push({
-      name: "Current Route",
+      name: "Ruta Actual",
       status: "success",
       message: window.location.pathname,
-      details: `Full URL: ${window.location.href}`
+      details: `URL completa: ${window.location.href}`
     });
 
     // 6. Check localStorage
     try {
       const cartData = localStorage.getItem('cart');
       diagnostics.push({
-        name: "LocalStorage Cart",
+        name: "Carrito en LocalStorage",
         status: cartData ? "success" : "warning",
-        message: cartData ? "Cart data exists" : "No cart data",
-        details: cartData || "Empty"
+        message: cartData ? "Existen datos del carrito" : "No hay datos del carrito",
+        details: cartData || "Vacío"
       });
     } catch (error: any) {
       diagnostics.push({
-        name: "LocalStorage Cart",
+        name: "Carrito en LocalStorage",
         status: "error",
-        message: "Cannot access localStorage",
+        message: "No se puede acceder a localStorage",
         details: error.message
       });
     }
@@ -233,7 +233,7 @@ const WaiterDiagnostic = () => {
         <Card className="mb-4 border-2 border-accent rounded-none shadow-soft">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-display uppercase tracking-wider">Waiter System Diagnostics</CardTitle>
+              <CardTitle className="text-2xl font-display uppercase tracking-wider">Diagnóstico del Sistema de Meseros</CardTitle>
               <Button
                 variant="outline"
                 size="sm"
@@ -241,7 +241,7 @@ const WaiterDiagnostic = () => {
                 className="border-2 border-accent rounded-none shadow-soft"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                Volver al Panel
               </Button>
             </div>
           </CardHeader>
@@ -251,7 +251,7 @@ const WaiterDiagnostic = () => {
           <Card className="border-2 border-accent rounded-none shadow-soft">
             <CardContent className="p-8 text-center">
               <div className="animate-spin rounded-none h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-gray-600 font-body">Running diagnostics...</p>
+              <p className="text-gray-600 font-body">Ejecutando diagnósticos...</p>
             </CardContent>
           </Card>
         ) : (
@@ -267,7 +267,7 @@ const WaiterDiagnostic = () => {
                       {result.details && (
                         <details className="mt-2">
                           <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
-                            Show details
+                            Mostrar detalles
                           </summary>
                           <pre className="mt-2 text-xs bg-white p-2 rounded border overflow-x-auto">
                             {result.details}
@@ -284,19 +284,19 @@ const WaiterDiagnostic = () => {
 
         <Card className="mt-4 border-2 border-accent rounded-none shadow-soft">
           <CardContent className="p-4">
-            <h3 className="font-semibold mb-2">Quick Actions</h3>
+            <h3 className="font-semibold mb-2">Acciones Rápidas</h3>
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => navigate("/menu")} variant="outline">
-                Test Menu Navigation
+                Probar Navegación al Menú
               </Button>
               <Button onClick={() => navigate("/waiter-dashboard")} variant="outline">
-                Go to Dashboard
+                Ir al Panel
               </Button>
               <Button onClick={() => navigate("/auth")} variant="outline">
-                Go to Auth
+                Ir a Autenticación
               </Button>
               <Button onClick={runDiagnostics} variant="outline">
-                Re-run Diagnostics
+                Volver a Ejecutar Diagnósticos
               </Button>
             </div>
           </CardContent>

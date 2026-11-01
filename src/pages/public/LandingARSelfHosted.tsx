@@ -228,7 +228,7 @@ export const LandingARSelfHosted: React.FC = () => {
                   <div className="text-center">
                     <ARModelVisualization />
                     <h4 className="font-bold text-lg text-primary mt-4">Listo para Producción</h4>
-                    <p className="text-sm text-muted-foreground mt-2">Todas las piezas funcionan sin conexión desde el primer carregamiento</p>
+                    <p className="text-sm text-muted-foreground mt-2">Todas las piezas funcionan sin conexión desde la primera carga</p>
                   </div>
                 </Card>
               </div>
@@ -498,7 +498,7 @@ export const LandingARSelfHosted: React.FC = () => {
                     <span className="block">con sistema 100% tuyo y 0% de comisión</span>
                   </h2>
                   <p className="text-base text-white/70 leading-relaxed max-w-lg">
-                    Menú 3D, reservationes y pedidos por WhatsApp con asistente de IA. Implementación en menos de 24h. Soporte 7 días por semana.
+                    Menú 3D, reservas y pedidos por WhatsApp con asistente de IA. Implementación en menos de 24h. Soporte 7 días por semana.
                   </p>
 
                   <ul className="space-y-3 pt-2">
@@ -536,7 +536,7 @@ export const LandingARSelfHosted: React.FC = () => {
                         <MessageCircle className="w-8 h-8" />
                       </div>
                       <h3 className="text-2xl font-display font-bold text-white">
-                        Programa tu Demo
+                        Agenda tu Demo
                       </h3>
                       <p className="text-sm text-white/70">
                         En 30 segundos recibirás una demostración personalizada del Menú AR, sistema autoalojado y concierge WhatsApp

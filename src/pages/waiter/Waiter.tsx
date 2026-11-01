@@ -12,7 +12,7 @@ const Waiter = () => {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    document.title = "Acesso Garçom | MiMenu";
+    document.title = "Acceso Mesero | MiMenu";
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -32,7 +32,7 @@ const Waiter = () => {
           className="mb-4 hover:bg-gray-100 transition-all duration-300 border-2 border-accent rounded-lg shadow-soft"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar ao Início
+          Volver al Inicio
         </Button>
 
         {/* Logo */}
@@ -44,21 +44,21 @@ const Waiter = () => {
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
             <UserCheck className="h-7 w-7 text-green-600" />
-            <h1 className="text-3xl font-display uppercase tracking-wider text-purple-900">Garçom</h1>
+            <h1 className="text-3xl font-display uppercase tracking-wider text-purple-900">Mesero</h1>
           </div>
           <p className="text-muted-foreground font-body">
-            Faça login para acessar o painel
+            Iniciá sesión para acceder al panel
           </p>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="username" className="font-display uppercase tracking-wider">Email</Label>
+            <Label htmlFor="username" className="font-display uppercase tracking-wider">Correo electrónico</Label>
             <Input
               id="username"
               type="email"
-              placeholder="Digite seu email"
+              placeholder="Ingresá tu correo electrónico"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -67,11 +67,11 @@ const Waiter = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="font-display uppercase tracking-wider">Senha</Label>
+            <Label htmlFor="password" className="font-display uppercase tracking-wider">Contraseña</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Digite sua senha"
+              placeholder="Ingresá tu contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -83,7 +83,7 @@ const Waiter = () => {
             type="submit"
             className="w-full h-12 bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary text-foreground font-display uppercase tracking-wider text-lg rounded-lg shadow-soft"
           >
-            Entrar no Painel
+            Ingresar al Panel
           </Button>
         </form>
 

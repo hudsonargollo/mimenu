@@ -28,10 +28,10 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
   // Validate name
   const validateName = (name: string): string | undefined => {
     if (!name.trim()) {
-      return "Nome é obrigatório";
+      return "El nombre es obligatorio";
     }
     if (name.trim().length < 2) {
-      return "Nome deve ter pelo menos 2 caracteres";
+      return "El nombre debe tener al menos 2 caracteres";
     }
     return undefined;
   };
@@ -41,18 +41,18 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
     const phoneDigits = phone.replace(/\D/g, '');
     
     if (!phoneDigits) {
-      return "WhatsApp é obrigatório";
+      return "El WhatsApp es obligatorio";
     }
     
     if (phoneDigits.length !== 11) {
-      return "WhatsApp deve ter 11 dígitos (DDD + número)";
+      return "El WhatsApp debe tener 11 dígitos (código de área + número)";
     }
     
     // Basic DDD validation (11-99)
     const ddd = phoneDigits.substring(0, 2);
     const dddNumber = parseInt(ddd);
     if (dddNumber < 11 || dddNumber > 99) {
-      return "DDD inválido";
+      return "Código de área inválido";
     }
     
     return undefined;
@@ -114,7 +114,7 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
 
   return (
     <Card className={`p-6 shadow-lg border-2 border-cyan-100 rounded-2xl ${className || ''}`}>
-      <h2 className="font-bold text-xl mb-6 text-primary/70">Seus dados</h2>
+      <h2 className="font-bold text-xl mb-6 text-primary/70">Tus datos</h2>
       
       <div className="space-y-4">
         <div className="relative">
@@ -124,11 +124,11 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
           <Input
             id="customer-name"
             type="text"
-            placeholder="Digite seu nome"
+            placeholder="Escribe tu nombre"
             value={customerInfo.name}
             onChange={(e) => updateCustomerInfo('name', e.target.value)}
             className="pl-14 h-12 text-base"
-            aria-label="Nome"
+            aria-label="Nombre"
           />
         </div>
 
@@ -139,7 +139,7 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
           <Input
             id="customer-phone"
             type="tel"
-            placeholder="DDD + Telefone"
+            placeholder="Código de área + Teléfono"
             value={customerInfo.phone}
             onChange={handlePhoneChange}
             maxLength={11}
@@ -151,7 +151,7 @@ const CustomerInfoForm = ({ onCustomerInfoChange, initialData, className }: Cust
         <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
           <span className="text-lg flex-shrink-0">💬</span>
           <p className="text-sm text-gray-700">
-            Enviaremos atualizações do seu pedido via WhatsApp
+            Enviaremos actualizaciones de tu pedido por WhatsApp
           </p>
         </div>
 

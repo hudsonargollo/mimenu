@@ -32,7 +32,7 @@ export async function fetchWaiterInfo(waiterId: string): Promise<WaiterInfo | nu
     if (user && user.user_metadata?.role === 'waiter') {
       const waiter: WaiterInfo = {
         id: user.id,
-        full_name: user.user_metadata?.full_name || user.email || 'Garçom',
+        full_name: user.user_metadata?.full_name || user.email || 'Mesero',
         email: user.email || '',
         display_name: user.user_metadata?.display_name
       };
@@ -87,6 +87,6 @@ export function getWaiterName(waiterId: string | null): string {
   }
 
   const waiter = waiterCache.get(waiterId);
-  // Fallback chain: display_name → full_name → 'Garçom'
-  return waiter?.display_name || waiter?.full_name || 'Garçom';
+  // Fallback chain: display_name → full_name → 'Mesero'
+  return waiter?.display_name || waiter?.full_name || 'Mesero';
 }

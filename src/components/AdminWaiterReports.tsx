@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { CalendarIcon, Download, DollarSign, ShoppingCart, TrendingUp, User, CheckCircle, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { es } from "date-fns/locale";
 import { 
   calculateConfirmedCommissions, 
   calculateEstimatedCommissions, 
@@ -175,7 +175,7 @@ const AdminWaiterReports = () => {
       
       if (error) {
         console.error("Edge Function error:", error);
-        toast.error("Erro ao carregar lista de garçons");
+        toast.error("Error al cargar la lista de meseros");
         return;
       }
       
@@ -183,7 +183,7 @@ const AdminWaiterReports = () => {
       
     } catch (error) {
       console.error("Error fetching waiters:", error);
-      toast.error("Erro ao carregar lista de garçons");
+      toast.error("Error al cargar la lista de meseros");
     }
   };
 
@@ -242,7 +242,7 @@ const AdminWaiterReports = () => {
 
     } catch (error) {
       console.error("Error loading waiter data:", error);
-      toast.error("Erro ao carregar dados do garçom");
+      toast.error("Error al cargar los datos del mesero");
     } finally {
       setLoading(false);
     }
@@ -275,8 +275,8 @@ const AdminWaiterReports = () => {
         // Show notification for commission status changes
         if (oldStatus !== updatedOrder.status) {
           if (ORDER_STATUS_CATEGORIES.PAID.includes(updatedOrder.status.toLowerCase())) {
-            toast.success('💰 Comissão confirmada', {
-              description: `Pedido #${updatedOrder.order_number} foi pago`
+            toast.success('💰 Comisión confirmada', {
+              description: `El pedido #${updatedOrder.order_number} fue pagado`
             });
           }
         }
@@ -319,22 +319,22 @@ const AdminWaiterReports = () => {
 
   const exportToCSV = () => {
     if (!selectedWaiterId || waiterOrders.length === 0) {
-      toast.error("Selecione um garçom com pedidos para exportar");
+      toast.error("Seleccioná un mesero con pedidos para exportar");
       return;
     }
 
     const selectedWaiter = waiters.find(w => w.id === selectedWaiterId);
     const headers = [
-      "Número do Pedido",
+      "Número de pedido",
       "Cliente",
       "Telefone",
-      "Valor Total",
-      "Status da Comissão",
-      "Comissão Confirmada",
-      "Comissão Estimada",
+      "Valor total",
+      "Estado de la comisión",
+      "Comisión confirmada",
+      "Comisión estimada",
       "Status",
       "Data",
-      "Observações"
+      "Observaciones"
     ];
     
     const rows = waiterOrders.map(order => {
@@ -346,11 +346,11 @@ const AdminWaiterReports = () => {
         order.order_number,
         order.customer_name,
         formatPhoneNumber(order.customer_phone),
-        `R$ ${Number(order.total_amount).toFixed(2)}`,
+        `Bs. ${Number(order.total_amount).toFixed(2)}`,
         commissionStatus.status === 'confirmed' ? 'Confirmada' : 
         commissionStatus.status === 'pending' ? 'Estimada' : 'Cancelada',
-        isConfirmed ? `R$ ${commissionStatus.amount.toFixed(2)}` : 'R$ 0,00',
-        isPending ? `R$ ${commissionStatus.amount.toFixed(2)}` : 'R$ 0,00',
+        isConfirmed ? `Bs. ${commissionStatus.amount.toFixed(2)}` : 'Bs. 0,00',
+        isPending ? `Bs. ${commissionStatus.amount.toFixed(2)}` : 'Bs. 0,00',
         order.status,
         format(new Date(order.created_at), "dd/MM/yyyy HH:mm"),
         order.order_notes || ""
@@ -362,17 +362,17 @@ const AdminWaiterReports = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `relatorio-garcom-${selectedWaiter?.full_name}-${format(dateRange.from, "dd-MM-yyyy")}-${format(dateRange.to, "dd-MM-yyyy")}.csv`;
+    a.download = `reporte-mesero-${selectedWaiter?.full_name}-${format(dateRange.from, "dd-MM-yyyy")}-${format(dateRange.to, "dd-MM-yyyy")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      pending: { label: "Pendente", variant: "secondary" as const },
+      pending: { label: "Pendiente", variant: "secondary" as const },
       preparing: { label: "Preparando", variant: "default" as const },
       ready: { label: "Pronto", variant: "outline" as const },
-      completed: { label: "Concluído", variant: "default" as const },
+      completed: { label: "Completado", variant: "default" as const },
       cancelled: { label: "Cancelado", variant: "destructive" as const },
     };
 
@@ -389,7 +389,7 @@ const AdminWaiterReports = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
               <User className="h-5 w-5 text-white" />
             </div>
-            Relatórios por Garçom
+            Reportes por Mesero
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
@@ -398,7 +398,7 @@ const AdminWaiterReports = () => {
             <div className="flex-1 w-full lg:min-w-[250px]">
               <Select value={selectedWaiterId} onValueChange={setSelectedWaiterId}>
                 <SelectTrigger className="h-11 border-gray-300 hover:border-purple-400 focus:border-purple-500 focus:ring-primary transition-colors">
-                  <SelectValue placeholder="Escolha um garçom..." />
+                  <SelectValue placeholder="Elegí un mesero..." />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
                   {waiters.map((waiter) => (
@@ -429,14 +429,14 @@ const AdminWaiterReports = () => {
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                     <span className="text-sm">
-                      {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} - {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
+                      {format(dateRange.from, "dd/MM/yyyy", { locale: es })} - {format(dateRange.to, "dd/MM/yyyy", { locale: es })}
                     </span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 shadow-xl border-gray-200" align="end">
                   <div className="bg-gradient-to-br from-primary/5 to-indigo-50 p-4 border-b">
-                    <h4 className="font-semibold text-gray-900">Selecione o período</h4>
-                    <p className="text-sm text-gray-600 mt-1">Escolha as datas de início e fim</p>
+                    <h4 className="font-semibold text-gray-900">Seleccioná el período</h4>
+                    <p className="text-sm text-gray-600 mt-1">Elegí las fechas de inicio y fin</p>
                   </div>
                   <Calendar
                     mode="range"
@@ -446,7 +446,7 @@ const AdminWaiterReports = () => {
                         setDateRange({ from: range.from, to: range.to });
                       }
                     }}
-                    locale={ptBR}
+                    locale={es}
                     className="rounded-b-lg"
                   />
                 </PopoverContent>
@@ -457,26 +457,26 @@ const AdminWaiterReports = () => {
             <div className="w-full lg:w-auto">
               <Select value={paymentStatusFilter} onValueChange={setPaymentStatusFilter}>
                 <SelectTrigger className="h-11 border-gray-300 hover:border-purple-400 focus:border-purple-500 focus:ring-primary transition-colors">
-                  <SelectValue placeholder="Filtrar por pagamento..." />
+                  <SelectValue placeholder="Filtrar por pago..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os Pedidos</SelectItem>
+                  <SelectItem value="all">Todos los pedidos</SelectItem>
                   <SelectItem value="confirmed">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span>Pagamento Confirmado</span>
+                      <span>Pago confirmado</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="pending">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
-                      <span>Aguardando Pagamento</span>
+                      <span>Esperando pago</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="failed">
                     <div className="flex items-center gap-2">
                       <XCircle className="h-4 w-4 text-red-600" />
-                      <span>Pagamento Falhou</span>
+                      <span>Pago fallido</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -505,7 +505,7 @@ const AdminWaiterReports = () => {
               <div className="flex items-center space-x-3">
                 <ShoppingCart className="h-8 w-8 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Total de Pedidos</p>
+                  <p className="text-sm text-muted-foreground">Total de pedidos</p>
                   <p className="text-3xl font-bold">{waiterStats.totalOrders}</p>
                 </div>
               </div>
@@ -517,9 +517,9 @@ const AdminWaiterReports = () => {
               <div className="flex items-center space-x-3">
                 <DollarSign className="h-8 w-8 text-success" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Vendas Brutas</p>
+                  <p className="text-sm text-muted-foreground">Ventas brutas</p>
                   <p className="text-3xl font-bold text-success">
-                    R$ {waiterStats.grossSales.toFixed(2)}
+                    Bs. {waiterStats.grossSales.toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -531,9 +531,9 @@ const AdminWaiterReports = () => {
               <div className="flex items-center space-x-3">
                 <TrendingUp className="h-8 w-8 text-blue-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Ticket Médio</p>
+                  <p className="text-sm text-muted-foreground">Ticket promedio</p>
                   <p className="text-3xl font-bold text-blue-500">
-                    R$ {waiterStats.averageOrderValue.toFixed(2)}
+                    Bs. {waiterStats.averageOrderValue.toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -545,12 +545,12 @@ const AdminWaiterReports = () => {
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-8 w-8 text-green-600" />
                 <div>
-                  <p className="text-sm text-green-700 font-medium">Comissões Confirmadas</p>
+                  <p className="text-sm text-green-700 font-medium">Comisiones confirmadas</p>
                   <p className="text-3xl font-bold text-green-600">
-                    R$ {waiterStats.confirmedCommission.toFixed(2)}
+                    Bs. {waiterStats.confirmedCommission.toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
-                    De {waiterStats.paidOrdersCount} pedidos pagos
+                    De {waiterStats.paidOrdersCount} pedidos pagados
                   </p>
                 </div>
               </div>
@@ -562,12 +562,12 @@ const AdminWaiterReports = () => {
               <div className="flex items-center space-x-3">
                 <Clock className="h-8 w-8 text-yellow-600" />
                 <div>
-                  <p className="text-sm text-yellow-700 font-medium">Comissões Estimadas</p>
+                  <p className="text-sm text-yellow-700 font-medium">Comisiones estimadas</p>
                   <p className="text-3xl font-bold text-yellow-600">
-                    R$ {waiterStats.estimatedCommission.toFixed(2)}
+                    Bs. {waiterStats.estimatedCommission.toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
-                    De {waiterStats.pendingOrdersCount} pedidos pendentes
+                    De {waiterStats.pendingOrdersCount} pedidos pendientes
                   </p>
                 </div>
               </div>
@@ -581,7 +581,7 @@ const AdminWaiterReports = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              Pedidos do Garçom
+              Pedidos del mesero
               {waiters.find(w => w.id === selectedWaiterId) && (
                 <span className="ml-2 text-base font-normal text-muted-foreground">
                   - {waiters.find(w => w.id === selectedWaiterId)?.full_name}
@@ -592,12 +592,12 @@ const AdminWaiterReports = () => {
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">Carregando pedidos...</p>
+                <p className="text-muted-foreground">Cargando pedidos...</p>
               </div>
             ) : waiterOrders.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  Nenhum pedido encontrado para o período selecionado
+                  No se encontraron pedidos para el período seleccionado
                 </p>
               </div>
             ) : (() => {
@@ -621,7 +621,7 @@ const AdminWaiterReports = () => {
               return filteredOrders.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">
-                    Nenhum pedido encontrado com o filtro selecionado
+                    No se encontraron pedidos con el filtro seleccionado
                   </p>
                 </div>
               ) : (
@@ -631,12 +631,12 @@ const AdminWaiterReports = () => {
                       <TableRow>
                         <TableHead>Pedido</TableHead>
                         <TableHead>Cliente</TableHead>
-                        <TableHead>Telefone</TableHead>
+                        <TableHead>Teléfono</TableHead>
                         <TableHead className="text-right">Valor</TableHead>
-                        <TableHead className="text-right">Comissão</TableHead>
+                        <TableHead className="text-right">Comisión</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Data</TableHead>
-                        <TableHead>Observações</TableHead>
+                        <TableHead>Observaciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -651,7 +651,7 @@ const AdminWaiterReports = () => {
                           <TableCell>{order.customer_name}</TableCell>
                           <TableCell>{formatPhoneNumber(order.customer_phone)}</TableCell>
                           <TableCell className="text-right font-semibold">
-                            R$ {Number(order.total_amount).toFixed(2)}
+                            Bs. {Number(order.total_amount).toFixed(2)}
                           </TableCell>
                           <TableCell className="text-right">
                             <TooltipProvider>

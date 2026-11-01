@@ -106,7 +106,7 @@ export function OrderDetailsDialog({
       setOrderItems(data || []);
     } catch (error) {
       console.error('Error loading order items:', error);
-      toast.error('Erro ao carregar itens do pedido');
+      toast.error('Error al cargar los ítems del pedido');
     } finally {
       setLoading(false);
     }
@@ -116,7 +116,7 @@ export function OrderDetailsDialog({
     if (!order) return;
 
     if (!formData.customer_name || !formData.customer_phone || !formData.table_number) {
-      toast.error('Preencha todos os campos');
+      toast.error('Completa todos los campos');
       return;
     }
 
@@ -133,12 +133,12 @@ export function OrderDetailsDialog({
 
       if (error) throw error;
 
-      toast.success('Pedido atualizado!');
+      toast.success('¡Pedido actualizado!');
       setEditing(false);
       onOrderUpdated?.();
     } catch (error) {
       console.error('Error updating order:', error);
-      toast.error('Erro ao atualizar pedido');
+      toast.error('Error al actualizar el pedido');
     } finally {
       setSaving(false);
     }
@@ -158,13 +158,13 @@ export function OrderDetailsDialog({
 
       if (error) throw error;
 
-      toast.success('Pedido cancelado!');
+      toast.success('¡Pedido cancelado!');
       setShowCancelDialog(false);
       onOpenChange(false);
       onOrderUpdated?.();
     } catch (error) {
       console.error('Error cancelling order:', error);
-      toast.error('Erro ao cancelar pedido');
+      toast.error('Error al cancelar el pedido');
     } finally {
       setCancelling(false);
     }
@@ -185,9 +185,9 @@ export function OrderDetailsDialog({
     const labels: { [key: string]: string } = {
       pending_payment: 'Aguardando Pagamento',
       paid: 'Pago',
-      in_preparation: 'Em Preparo',
-      ready: 'Pronto',
-      completed: 'Concluído',
+      in_preparation: 'Preparando',
+      ready: 'Listo',
+      completed: 'Completado',
       cancelled: 'Cancelado',
     };
     return labels[status] || status;
@@ -201,7 +201,7 @@ export function OrderDetailsDialog({
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <span>Detalhes do Pedido #{order.order_number}</span>
+              <span>Detalles del Pedido #{order.order_number}</span>
               {!editing && order.status !== 'completed' && order.status !== 'cancelled' && (
                 <Button
                   variant="ghost"
@@ -218,7 +218,7 @@ export function OrderDetailsDialog({
           <div className="space-y-4 py-4">
             {/* Customer Information */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg">Informações do Cliente</h3>
+              <h3 className="font-semibold text-lg">Información del Cliente</h3>
               
               {editing ? (
                 <>
@@ -231,7 +231,7 @@ export function OrderDetailsDialog({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="customer_phone">Telefone</Label>
+                    <Label htmlFor="customer_phone">Teléfono</Label>
                     <Input
                       id="customer_phone"
                       value={formData.customer_phone}
@@ -246,12 +246,12 @@ export function OrderDetailsDialog({
                     <span className="font-semibold">{order.customer_name}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b">
-                    <span className="text-muted-foreground">Telefone:</span>
+                    <span className="text-muted-foreground">Teléfono:</span>
                     <span className="font-semibold">{order.customer_phone}</span>
                   </div>
                   {waiterInfo && (
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-muted-foreground">Garçom:</span>
+                      <span className="text-muted-foreground">Mesero:</span>
                       <span className="font-semibold">{waiterInfo.full_name}</span>
                     </div>
                   )}
@@ -265,11 +265,11 @@ export function OrderDetailsDialog({
 
             {/* Order Items */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg">Itens do Pedido</h3>
+              <h3 className="font-semibold text-lg">Ítems del Pedido</h3>
               {loading ? (
-                <p className="text-sm text-muted-foreground">Carregando itens...</p>
+                <p className="text-sm text-muted-foreground">Cargando ítems...</p>
               ) : orderItems.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhum item encontrado</p>
+                <p className="text-sm text-muted-foreground">Ningún ítem encontrado</p>
               ) : (
                 <div className="space-y-2">
                   {orderItems.map((item) => (
@@ -277,17 +277,17 @@ export function OrderDetailsDialog({
                       <div className="flex-1">
                         <p className="font-medium">{item.item_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Quantidade: {item.quantity} × R$ {item.unit_price.toFixed(2)}
+                          Cantidad: {item.quantity} × Bs. {item.unit_price.toFixed(2)}
                         </p>
                       </div>
                       <p className="font-bold text-primary">
-                        R$ {(item.quantity * item.unit_price).toFixed(2)}
+                        Bs. {(item.quantity * item.unit_price).toFixed(2)}
                       </p>
                     </div>
                   ))}
                   <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg font-bold">
                     <span>Total</span>
-                    <span className="text-primary text-xl">R$ {order.total_amount.toFixed(2)}</span>
+                    <span className="text-primary text-xl">Bs. {order.total_amount.toFixed(2)}</span>
                   </div>
                 </div>
               )}
@@ -298,12 +298,12 @@ export function OrderDetailsDialog({
               <h3 className="font-semibold text-lg">Histórico</h3>
               <div className="space-y-2">
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-muted-foreground">Criado:</span>
+                  <span className="text-muted-foreground">Creado:</span>
                   <span className="font-medium text-sm">{formatTimestamp(order.created_at)}</span>
                 </div>
                 {order.payment_confirmed_at && (
                   <div className="flex justify-between items-center py-2 border-b">
-                    <span className="text-muted-foreground">Pagamento:</span>
+                    <span className="text-muted-foreground">Pago:</span>
                     <span className="font-medium text-sm text-green-600">{formatTimestamp(order.payment_confirmed_at)}</span>
                   </div>
                 )}
@@ -335,7 +335,7 @@ export function OrderDetailsDialog({
                   Cancelar
                 </Button>
                 <Button onClick={handleSave} disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar Alterações'}
+                  {saving ? 'Guardando...' : 'Guardar Cambios'}
                 </Button>
               </>
             ) : (
@@ -350,7 +350,7 @@ export function OrderDetailsDialog({
                   </Button>
                 )}
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Fechar
+                  Cerrar
                 </Button>
               </>
             )}
@@ -367,18 +367,18 @@ export function OrderDetailsDialog({
               Cancelar Pedido?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja cancelar o pedido #{order.order_number}?
-              Esta ação não pode ser desfeita.
+              ¿Seguro que deseas cancelar el pedido #{order.order_number}?
+              Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={cancelling}>Não, Voltar</AlertDialogCancel>
+            <AlertDialogCancel disabled={cancelling}>No, Volver</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancel}
               disabled={cancelling}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {cancelling ? 'Cancelando...' : 'Sim, Cancelar Pedido'}
+              {cancelling ? 'Cancelando...' : 'Sí, Cancelar Pedido'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

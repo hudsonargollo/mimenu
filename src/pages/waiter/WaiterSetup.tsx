@@ -22,17 +22,17 @@ export default function WaiterSetup() {
     // Client-side validation
     const trimmedName = displayName.trim();
     if (!trimmedName) {
-      setError("Por favor, insira um nome de exibição");
+      setError("Por favor, ingresá un nombre para mostrar");
       return;
     }
 
     if (trimmedName.length < 2) {
-      setError("O nome deve ter pelo menos 2 caracteres");
+      setError("El nombre debe tener al menos 2 caracteres");
       return;
     }
 
     if (trimmedName.length > 50) {
-      setError("O nome deve ter no máximo 50 caracteres");
+      setError("El nombre debe tener como máximo 50 caracteres");
       return;
     }
 
@@ -49,20 +49,20 @@ export default function WaiterSetup() {
         
         // Handle specific error cases
         if (rpcError.message.includes('already in use')) {
-          setError("Esse nome já está em uso. Por favor, escolha outro.");
+          setError("Ese nombre ya está en uso. Por favor, elegí otro.");
         } else if (rpcError.message.includes('Not authenticated')) {
-          setError("Sessão expirada. Por favor, faça login novamente.");
+          setError("Sesión expirada. Por favor, iniciá sesión nuevamente.");
           setTimeout(() => navigate('/login'), 2000);
         } else if (rpcError.message.includes('Only waiters')) {
-          setError("Apenas garçons podem configurar nomes de exibição.");
+          setError("Solo los meseros pueden configurar nombres para mostrar.");
         } else {
-          setError("Erro ao salvar. Tente novamente.");
+          setError("Error al guardar. Intentá nuevamente.");
         }
         return;
       }
 
       // Success!
-      toast.success("Nome de exibição configurado com sucesso!");
+      toast.success("¡Nombre para mostrar configurado con éxito!");
       
       // Redirect to dashboard
       setTimeout(() => {
@@ -71,7 +71,7 @@ export default function WaiterSetup() {
 
     } catch (err) {
       console.error('Unexpected error:', err);
-      setError("Erro inesperado. Tente novamente.");
+      setError("Error inesperado. Intentá nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -85,10 +85,10 @@ export default function WaiterSetup() {
             <User className="w-8 h-8 text-white" />
           </div>
           <CardTitle className="text-2xl font-display uppercase tracking-wider text-gray-900">
-            Configure Seu Nome de Exibição
+            Configurá tu Nombre para Mostrar
           </CardTitle>
           <CardDescription className="text-base font-body">
-            Escolha um nome único que será usado para identificar você nos pedidos e relatórios
+            Elegí un nombre único que se usará para identificarte en los pedidos y reportes
           </CardDescription>
         </CardHeader>
 
@@ -96,12 +96,12 @@ export default function WaiterSetup() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="displayName" className="text-sm font-display uppercase tracking-wider">
-                Nome de Exibição
+                Nombre para Mostrar
               </Label>
               <Input
                 id="displayName"
                 type="text"
-                placeholder="Ex: João, Maria, Pedro..."
+                placeholder="Ej.: Juan, María, Pedro..."
                 value={displayName}
                 onChange={(e) => {
                   setDisplayName(e.target.value);
@@ -126,13 +126,13 @@ export default function WaiterSetup() {
             <div className="bg-blue-50 border-2 border-accent rounded-none p-4 space-y-2 shadow-soft">
               <p className="text-sm font-display uppercase tracking-wider text-blue-900 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
-                Dicas:
+                Consejos:
               </p>
               <ul className="text-sm font-body text-blue-800 space-y-1 ml-6 list-disc">
-                <li>Use seu apelido ou primeiro nome</li>
-                <li>Deve ser único (não pode repetir)</li>
-                <li>Será visível para toda a equipe</li>
-                <li>Pode conter letras, números e espaços</li>
+                <li>Usá tu apodo o tu primer nombre</li>
+                <li>Debe ser único (no se puede repetir)</li>
+                <li>Será visible para todo el equipo</li>
+                <li>Puede contener letras, números y espacios</li>
               </ul>
             </div>
 
@@ -145,7 +145,7 @@ export default function WaiterSetup() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Salvando...
+                  Guardando...
                 </>
               ) : (
                 "Continuar"

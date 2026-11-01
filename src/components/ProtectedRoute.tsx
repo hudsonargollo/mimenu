@@ -91,7 +91,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Carregando...</p>
+        <p>Cargando...</p>
       </div>
     );
   }
@@ -104,9 +104,9 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Acesso Negado</h1>
+          <h1 className="text-2xl font-bold mb-2">Acceso Denegado</h1>
           <p className="text-muted-foreground">
-            Você não tem permissão para acessar esta página.
+            No tenés permiso para acceder a esta página.
           </p>
         </div>
       </div>

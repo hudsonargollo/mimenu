@@ -24,7 +24,7 @@ const QRLanding = () => {
             onClick={handleViewMenu}
             className="w-full bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary text-foreground font-display uppercase tracking-wider text-lg md:text-xl py-6 md:py-7 rounded-2xl shadow-soft transition-all hover:scale-105"
           >
-            Ver Cardápio Completo
+            Ver Menú Completo
           </Button>
         </div>
       </div>

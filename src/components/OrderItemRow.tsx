@@ -63,7 +63,7 @@ export function OrderItemRow({
               className="h-11 w-11 sm:h-9 sm:w-9 hover:bg-gray-200 touch-manipulation active:scale-95 transition-transform"
               onClick={() => onQuantityChange(-1)}
               disabled={item.quantity <= 1}
-              aria-label="Diminuir quantidade"
+              aria-label="Disminuir cantidad"
             >
               <Minus className="h-5 w-5 sm:h-4 sm:w-4" />
             </Button>
@@ -76,7 +76,7 @@ export function OrderItemRow({
               className="h-11 w-11 sm:h-9 sm:w-9 hover:bg-gray-200 touch-manipulation active:scale-95 transition-transform"
               onClick={() => onQuantityChange(1)}
               disabled={item.quantity >= 99}
-              aria-label="Aumentar quantidade"
+              aria-label="Aumentar cantidad"
             >
               <Plus className="h-5 w-5 sm:h-4 sm:w-4" />
             </Button>
@@ -96,7 +96,7 @@ export function OrderItemRow({
             size="icon"
             className="h-11 w-11 sm:h-9 sm:w-9 text-red-600 hover:bg-red-50 hover:text-red-700 touch-manipulation active:scale-95 transition-transform"
             onClick={onRemove}
-            aria-label="Remover item"
+            aria-label="Quitar ítem"
           >
             <Trash2 className="h-5 w-5 sm:h-4 sm:w-4" />
           </Button>

@@ -84,7 +84,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Failed to load analytics:', error);
-      toast.error('Erro ao carregar dados do sistema');
+      toast.error('Error al cargar los datos del sistema');
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <Activity className="h-6 w-6 animate-spin text-primary" />
-            <span className="ml-2 text-primary">Carregando dados...</span>
+            <span className="ml-2 text-primary">Cargando datos...</span>
           </div>
         </CardContent>
       </Card>
@@ -135,7 +135,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
               <div className="text-3xl sm:text-4xl font-bold text-green-400 mb-1">
                 {formatCurrency(businessData?.revenue_today || 0)}
               </div>
-              <div className="text-sm text-purple-100 font-medium">Receita Hoje</div>
+              <div className="text-sm text-purple-100 font-medium">Ingresos de hoy</div>
             </div>
 
             {/* Success Rate */}
@@ -143,7 +143,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
               <div className="text-3xl sm:text-4xl font-bold text-blue-400 mb-1">
                 {getSuccessRate().toFixed(1)}%
               </div>
-              <div className="text-sm text-purple-100 font-medium">Taxa Sucesso</div>
+              <div className="text-sm text-purple-100 font-medium">Tasa de éxito</div>
             </div>
 
             {/* Orders Today */}
@@ -151,7 +151,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
               <div className="text-3xl sm:text-4xl font-bold text-primary/40 mb-1">
                 {businessData?.orders_today || 0}
               </div>
-              <div className="text-sm text-purple-100 font-medium">Pedidos Hoje</div>
+              <div className="text-sm text-purple-100 font-medium">Pedidos de hoy</div>
             </div>
 
             {/* Unique Customers */}
@@ -159,13 +159,13 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
               <div className="text-3xl sm:text-4xl font-bold text-orange-400 mb-1">
                 {customerData?.total_customers || 0}
               </div>
-              <div className="text-sm text-purple-100 font-medium">Clientes Únicos</div>
+              <div className="text-sm text-purple-100 font-medium">Clientes únicos</div>
             </div>
           </div>
 
           {/* Last updated */}
           <div className="mt-4 pt-4 border-t border-white/20 flex items-center justify-between text-xs text-purple-200">
-            <span>Atualizado: {lastUpdated.toLocaleTimeString('es-BO')}</span>
+            <span>Actualizado: {lastUpdated.toLocaleTimeString('es-BO')}</span>
             <Button
               variant="ghost"
               size="sm"
@@ -193,16 +193,16 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
               <Badge variant="secondary" className="bg-green-100 text-green-700">
-                30 dias
+                30 días
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-bold text-green-700">
                 {formatCurrency(businessData?.total_revenue || 0)}
               </p>
-              <p className="text-sm text-green-600 font-medium">Receita Total</p>
+              <p className="text-sm text-green-600 font-medium">Ingresos totales</p>
               <p className="text-xs text-green-500">
-                Hoje: {formatCurrency(businessData?.revenue_today || 0)}
+                Hoy: {formatCurrency(businessData?.revenue_today || 0)}
               </p>
             </div>
           </CardContent>
@@ -223,9 +223,9 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
               <p className="text-2xl sm:text-3xl font-bold text-blue-700">
                 {businessData?.total_orders || 0}
               </p>
-              <p className="text-sm text-blue-600 font-medium">Pedidos Total</p>
+              <p className="text-sm text-blue-600 font-medium">Pedidos totales</p>
               <p className="text-xs text-blue-500">
-                Hoje: {businessData?.orders_today || 0}
+                Hoy: {businessData?.orders_today || 0}
               </p>
             </div>
           </CardContent>
@@ -239,16 +239,16 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
                 <Users className="h-6 w-6 text-white" />
               </div>
               <Badge variant="secondary" className="bg-primary/10 text-primary/90">
-                {customerData?.repeat_customers || 0} fiéis
+                {customerData?.repeat_customers || 0} fieles
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-bold text-primary/90">
                 {customerData?.total_customers || 0}
               </p>
-              <p className="text-sm text-primary font-medium">Clientes Únicos</p>
+              <p className="text-sm text-primary font-medium">Clientes únicos</p>
               <p className="text-xs text-purple-500">
-                Novos hoje: {customerData?.new_customers_today || 0}
+                Nuevos hoy: {customerData?.new_customers_today || 0}
               </p>
             </div>
           </CardContent>
@@ -262,16 +262,16 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-                Média
+                Promedio
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-bold text-orange-700">
                 {formatCurrency(businessData?.avg_order_value || 0)}
               </p>
-              <p className="text-sm text-orange-600 font-medium">Ticket Médio</p>
+              <p className="text-sm text-orange-600 font-medium">Ticket promedio</p>
               <p className="text-xs text-orange-500">
-                Taxa sucesso: {getSuccessRate().toFixed(1)}%
+                Tasa de éxito: {getSuccessRate().toFixed(1)}%
               </p>
             </div>
           </CardContent>
@@ -285,21 +285,21 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-blue-600" />
-              Performance do Negócio
+              Rendimiento del negocio
             </CardTitle>
-            <CardDescription>Métricas de conversão e eficiência</CardDescription>
+            <CardDescription>Métricas de conversión y eficiencia</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <span className="text-sm font-medium text-green-700">Taxa de Conversão</span>
+              <span className="text-sm font-medium text-green-700">Tasa de conversión</span>
               <span className="text-lg font-bold text-green-600">{getSuccessRate().toFixed(1)}%</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-              <span className="text-sm font-medium text-blue-700">Pedidos Pendentes</span>
+              <span className="text-sm font-medium text-blue-700">Pedidos pendientes</span>
               <span className="text-lg font-bold text-blue-600">{businessData?.pending_orders || 0}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg">
-              <span className="text-sm font-medium text-primary/90">Taxa Clientes Fiéis</span>
+              <span className="text-sm font-medium text-primary/90">Tasa de clientes fieles</span>
               <span className="text-lg font-bold text-primary">{getRepeatCustomerRate().toFixed(1)}%</span>
             </div>
           </CardContent>
@@ -310,9 +310,9 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
-              Top Clientes
+              Top clientes
             </CardTitle>
-            <CardDescription>Maiores compradores do período</CardDescription>
+            <CardDescription>Mayores compradores del período</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -332,7 +332,7 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
                   </div>
                 </div>
               )) || (
-                <p className="text-center text-gray-500 py-4">Nenhum cliente encontrado</p>
+                <p className="text-center text-gray-500 py-4">Ningún cliente encontrado</p>
               )}
             </div>
           </CardContent>
@@ -344,23 +344,23 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-green-600" />
-            Crescimento de Clientes
+            Crecimiento de clientes
           </CardTitle>
-          <CardDescription>Novos clientes por período</CardDescription>
+          <CardDescription>Nuevos clientes por período</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <p className="text-2xl font-bold text-green-600">{customerData?.new_customers_today || 0}</p>
-              <p className="text-sm text-green-700 font-medium">Hoje</p>
+              <p className="text-sm text-green-700 font-medium">Hoy</p>
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <p className="text-2xl font-bold text-blue-600">{customerData?.new_customers_this_week || 0}</p>
-              <p className="text-sm text-blue-700 font-medium">Esta Semana</p>
+              <p className="text-sm text-blue-700 font-medium">Esta semana</p>
             </div>
             <div className="text-center p-4 bg-primary/5 rounded-lg">
               <p className="text-2xl font-bold text-primary">{customerData?.new_customers_this_month || 0}</p>
-              <p className="text-sm text-primary/90 font-medium">Este Mês</p>
+              <p className="text-sm text-primary/90 font-medium">Este mes</p>
             </div>
           </div>
         </CardContent>
@@ -371,12 +371,12 @@ export function SystemStatusWidget({ className = "", showDetails = false }: Syst
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Última atualização</p>
+              <p className="font-medium text-gray-900">Última actualización</p>
               <p className="text-sm text-gray-500">{lastUpdated.toLocaleString('es-BO')}</p>
             </div>
             <Button onClick={loadAnalytics} variant="outline" className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4" />
-              Atualizar Dados
+              Actualizar datos
             </Button>
           </div>
         </CardContent>

@@ -47,21 +47,21 @@ export function WhatsAppErrorIndicator({ errors, orderId, compact = false }: Wha
         <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-red-900">
-            Erro na Notificação WhatsApp
+            Error en la notificación de WhatsApp
           </p>
           <p className="text-xs text-red-700 mt-1">
             {hasCriticalErrors ? (
               <>
-                {criticalErrors.length} erro{criticalErrors.length > 1 ? 's' : ''} crítico{criticalErrors.length > 1 ? 's' : ''}
+                {criticalErrors.length} error{criticalErrors.length > 1 ? 'es' : ''} crítico{criticalErrors.length > 1 ? 's' : ''}
               </>
             ) : (
               <>
-                {errors.length} erro{errors.length > 1 ? 's' : ''} detectado{errors.length > 1 ? 's' : ''}
+                {errors.length} error{errors.length > 1 ? 'es' : ''} detectado{errors.length > 1 ? 's' : ''}
               </>
             )}
           </p>
           <p className="text-xs text-red-600 mt-1 underline">
-            Clique para ver detalhes
+            Hacé clic para ver detalles
           </p>
         </div>
         <Badge 

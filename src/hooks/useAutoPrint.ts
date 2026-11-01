@@ -182,7 +182,7 @@ export function useAutoPrint(options: UseAutoPrintOptions = {}): UseAutoPrintRet
         
         // Show user-friendly error message without blocking workflow
         // Requirement: 2.5
-        toast.error('Erro na impressão automática. Tente imprimir manualmente.');
+        toast.error('Error en la impresión automática. Intentá imprimir manualmente.');
         
         onError?.(error as Error);
       }
@@ -246,7 +246,7 @@ export function useAutoPrint(options: UseAutoPrintOptions = {}): UseAutoPrintRet
         
         // Show user-friendly error message without blocking workflow
         // Requirement: 2.5
-        toast.error('Erro na impressão automática. Tente imprimir manualmente.');
+        toast.error('Error en la impresión automática. Intentá imprimir manualmente.');
         
         onError?.(error as Error);
       }

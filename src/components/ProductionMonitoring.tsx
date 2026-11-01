@@ -129,22 +129,22 @@ export function ProductionMonitoring() {
 
     // Check WhatsApp connection
     if (health.services.whatsapp?.status !== 'connected') {
-      newAlerts.push('WhatsApp não está conectado');
+      newAlerts.push('WhatsApp no está conectado');
     }
 
     // Check delivery rate
     if (stats && stats.deliveryRate < 90 && stats.totalNotifications > 10) {
-      newAlerts.push(`Taxa de entrega baixa: ${stats.deliveryRate.toFixed(1)}%`);
+      newAlerts.push(`Tasa de entrega baja: ${stats.deliveryRate.toFixed(1)}%`);
     }
 
     // Check for high error rate
     if (stats && stats.failedNotifications > stats.successfulNotifications * 0.1) {
-      newAlerts.push('Alta taxa de erro detectada');
+      newAlerts.push('Se detectó una alta tasa de errores');
     }
 
     // Check environment configuration
     if (!health.environment.hasWhatsAppKey) {
-      newAlerts.push('Chave de criptografia do WhatsApp não configurada');
+      newAlerts.push('Clave de cifrado de WhatsApp no configurada');
     }
 
     setAlerts(newAlerts);
@@ -156,7 +156,7 @@ export function ProductionMonitoring() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-center">
             <Activity className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Carregando dados de monitoramento...</span>
+            <span className="ml-2">Cargando datos de monitoreo...</span>
           </div>
         </CardContent>
       </Card>
@@ -169,7 +169,7 @@ export function ProductionMonitoring() {
       {alerts.length > 0 && (
         <Alert variant="destructive" className="border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Alertas Detectados</AlertTitle>
+          <AlertTitle>Alertas detectados</AlertTitle>
           <AlertDescription>
             <ul className="list-disc list-inside mt-2">
               {alerts.map((alert, index) => (
@@ -185,14 +185,14 @@ export function ProductionMonitoring() {
         <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
           <CardTitle className="flex items-center gap-2 text-gray-800">
             <Activity className="h-5 w-5 text-blue-600" />
-            Saúde do Sistema
+            Estado del sistema
           </CardTitle>
-          <CardDescription className="text-gray-600">Status geral do sistema e saúde dos serviços</CardDescription>
+          <CardDescription className="text-gray-600">Estado general del sistema y salud de los servicios</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-700">Status Geral</span>
+              <span className="font-medium text-gray-700">Estado general</span>
               <Badge variant={
                 healthStatus?.status === 'healthy' ? 'default' :
                 healthStatus?.status === 'degraded' ? 'secondary' : 'destructive'
@@ -204,14 +204,14 @@ export function ProductionMonitoring() {
                 {healthStatus?.status === 'healthy' && <CheckCircle className="h-3 w-3 mr-1" />}
                 {healthStatus?.status === 'degraded' && <AlertTriangle className="h-3 w-3 mr-1" />}
                 {healthStatus?.status === 'unhealthy' && <AlertCircle className="h-3 w-3 mr-1" />}
-                {healthStatus?.status === 'healthy' ? 'Saudável' : 
+                {healthStatus?.status === 'healthy' ? 'Saludable' : 
                  healthStatus?.status === 'degraded' ? 'Degradado' : 
-                 healthStatus?.status === 'unhealthy' ? 'Não Saudável' : 'Desconhecido'}
+                 healthStatus?.status === 'unhealthy' ? 'No saludable' : 'Desconocido'}
               </Badge>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-700">Conexão WhatsApp</span>
+              <span className="font-medium text-gray-700">Conexión de WhatsApp</span>
               <Badge variant={
                 healthStatus?.services.whatsapp?.status === 'connected' ? 'default' : 'secondary'
               } className={
@@ -224,7 +224,7 @@ export function ProductionMonitoring() {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-700">Funções Cloudflare</span>
+              <span className="font-medium text-gray-700">Funciones de Cloudflare</span>
               <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Operacional
@@ -233,7 +233,7 @@ export function ProductionMonitoring() {
 
             {healthStatus?.services.whatsapp?.lastConnected && (
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Última Conexão</span>
+                <span>Última conexión</span>
                 <span>{new Date(healthStatus.services.whatsapp.lastConnected).toLocaleString('es-BO')}</span>
               </div>
             )}
@@ -246,29 +246,29 @@ export function ProductionMonitoring() {
         <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
           <CardTitle className="flex items-center gap-2 text-gray-800">
             <TrendingUp className="h-5 w-5 text-green-600" />
-            Estatísticas de Notificações (24h)
+            Estadísticas de notificaciones (24h)
           </CardTitle>
-          <CardDescription className="text-gray-600">Métricas de performance das últimas 24 horas</CardDescription>
+          <CardDescription className="text-gray-600">Métricas de rendimiento de las últimas 24 horas</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <div className="space-y-2 text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">Total Enviado</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">Total enviados</p>
               <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats?.totalNotifications || 0}</p>
             </div>
 
             <div className="space-y-2 text-center p-3 sm:p-4 bg-green-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">Bem-sucedidas</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">Exitosas</p>
               <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats?.successfulNotifications || 0}</p>
             </div>
 
             <div className="space-y-2 text-center p-3 sm:p-4 bg-red-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">Falharam</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">Fallidas</p>
               <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats?.failedNotifications || 0}</p>
             </div>
 
             <div className="space-y-2 text-center p-3 sm:p-4 bg-primary/5 rounded-lg">
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">Taxa de Entrega</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">Tasa de entrega</p>
               <p className="text-2xl sm:text-3xl font-bold text-primary">{stats?.deliveryRate.toFixed(1) || 0}%</p>
             </div>
           </div>
@@ -277,7 +277,7 @@ export function ProductionMonitoring() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 flex items-center gap-2 font-medium">
                 <Clock className="h-4 w-4" />
-                Tempo Médio de Resposta
+                Tiempo promedio de respuesta
               </span>
               <span className="font-bold text-lg text-gray-800">{stats?.avgResponseTime.toFixed(2) || 0}s</span>
             </div>
@@ -291,9 +291,9 @@ export function ProductionMonitoring() {
           <CardHeader className="bg-gradient-to-r from-red-50 to-pink-50">
             <CardTitle className="flex items-center gap-2 text-gray-800">
               <AlertCircle className="h-5 w-5 text-red-600" />
-              Erros Recentes
+              Errores recientes
             </CardTitle>
-            <CardDescription className="text-gray-600">Últimos 10 erros das últimas 24 horas</CardDescription>
+            <CardDescription className="text-gray-600">Últimos 10 errores de las últimas 24 horas</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-3">
@@ -316,8 +316,8 @@ export function ProductionMonitoring() {
       {/* Actions */}
       <Card className="border-gray-200 shadow-md">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50">
-          <CardTitle className="text-gray-800">Ações de Monitoramento</CardTitle>
-          <CardDescription className="text-gray-600">Ações manuais de monitoramento e manutenção</CardDescription>
+          <CardTitle className="text-gray-800">Acciones de monitoreo</CardTitle>
+          <CardDescription className="text-gray-600">Acciones manuales de monitoreo y mantenimiento</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="flex gap-3">
@@ -327,7 +327,7 @@ export function ProductionMonitoring() {
               className="border-blue-200 text-blue-700 hover:bg-blue-50"
             >
               <Activity className="h-4 w-4 mr-2" />
-              Atualizar Dados
+              Actualizar datos
             </Button>
           </div>
         </CardContent>

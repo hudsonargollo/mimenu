@@ -77,7 +77,7 @@ export function OrderEditDialog({
       setCustomerPhone(data?.customer_phone || "");
     } catch (error) {
       console.error("Error loading order data:", error);
-      toast.error("Erro ao carregar dados do pedido");
+      toast.error("Error al cargar los datos del pedido");
     }
   };
 
@@ -95,7 +95,7 @@ export function OrderEditDialog({
       setItems(data || []);
     } catch (error) {
       console.error("Error loading order items:", error);
-      toast.error("Erro ao carregar itens do pedido");
+      toast.error("Error al cargar los ítems del pedido");
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export function OrderEditDialog({
   const removeItem = (itemId: string) => {
     // Check if this is the last item before attempting to remove
     if (items.length <= 1) {
-      toast.error("Não é possível remover todos os itens. O pedido deve ter pelo menos um item.");
+      toast.error("No se pueden quitar todos los ítems. El pedido debe tener al menos un ítem.");
       return;
     }
     
@@ -152,7 +152,7 @@ export function OrderEditDialog({
 
     // Validate that we have items
     if (items.length === 0) {
-      toast.error("O pedido deve ter pelo menos um item.");
+      toast.error("El pedido debe tener al menos un ítem.");
       return;
     }
 
@@ -167,7 +167,7 @@ export function OrderEditDialog({
 
       if (fetchError) {
         console.error("Fetch error:", fetchError);
-        throw new Error("Erro ao carregar itens atuais");
+        throw new Error("Error al cargar los ítems actuales");
       }
 
       // Step 2: Determine what changed
@@ -194,7 +194,7 @@ export function OrderEditDialog({
 
         if (deleteError) {
           console.error("Delete error:", deleteError);
-          throw new Error("Erro ao remover itens");
+          throw new Error("Error al quitar ítems");
         }
       }
 
@@ -210,7 +210,7 @@ export function OrderEditDialog({
 
         if (updateError) {
           console.error("Update error:", updateError);
-          throw new Error("Erro ao atualizar itens");
+          throw new Error("Error al actualizar ítems");
         }
       }
 
@@ -230,7 +230,7 @@ export function OrderEditDialog({
 
         if (insertError) {
           console.error("Insert error:", insertError);
-          throw new Error("Erro ao adicionar novos itens");
+          throw new Error("Error al agregar nuevos ítems");
         }
       }
 
@@ -247,10 +247,10 @@ export function OrderEditDialog({
 
       if (updateOrderError) {
         console.error("Update order error:", updateOrderError);
-        throw new Error("Erro ao atualizar total do pedido");
+        throw new Error("Error al actualizar el total del pedido");
       }
 
-      toast.success("Pedido atualizado com sucesso!");
+      toast.success("¡Pedido actualizado con éxito!");
       
       // Update parent first
       onOrderUpdated();
@@ -261,7 +261,7 @@ export function OrderEditDialog({
       }, 100);
     } catch (error: any) {
       console.error("Error saving order changes:", error);
-      toast.error(error.message || 'Erro ao salvar alterações');
+      toast.error(error.message || 'Error al guardar los cambios');
     } finally {
       setSaving(false);
     }
@@ -282,7 +282,7 @@ export function OrderEditDialog({
         {loading ? (
           <div className="py-12 text-center text-gray-500">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Carregando...</p>
+            <p>Cargando...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 py-4 overflow-y-auto max-h-[calc(90vh-200px)]">
@@ -290,11 +290,11 @@ export function OrderEditDialog({
             <div className="space-y-6">
             {/* Current Items */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-3">📋 Itens do Pedido</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-3">📋 Ítems del Pedido</h3>
               <div className="space-y-3">
                 {items.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                    <p className="text-gray-500">Nenhum item no pedido</p>
+                    <p className="text-gray-500">No hay ítems en el pedido</p>
                   </div>
                 ) : (
                   items.map((item) => (
@@ -305,7 +305,7 @@ export function OrderEditDialog({
                       <div className="flex-1">
                         <p className="font-semibold text-gray-900">{item.item_name}</p>
                         <p className="text-sm text-gray-600">
-                          R$ {Number(item.unit_price).toFixed(2)} cada
+                          Bs. {Number(item.unit_price).toFixed(2)} cada
                         </p>
                       </div>
                       <div className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm">
@@ -342,14 +342,14 @@ export function OrderEditDialog({
                           removeItem(item.id);
                         }}
                         disabled={items.length === 1}
-                        title={items.length === 1 ? "Não é possível remover o último item" : "Remover item"}
+                        title={items.length === 1 ? "No se puede quitar el último ítem" : "Quitar ítem"}
                         className="h-9 w-9 hover:bg-red-100 hover:text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       <div className="text-right min-w-[90px]">
                         <p className="font-bold text-lg text-primary">
-                          R$ {(Number(item.quantity) * Number(item.unit_price)).toFixed(2)}
+                          Bs. {(Number(item.quantity) * Number(item.unit_price)).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -360,7 +360,7 @@ export function OrderEditDialog({
 
             {/* Add Items */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-3">➕ Adicionar Itens</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-3">➕ Agregar Ítems</h3>
               <div className="grid grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-3 bg-gray-50 rounded-xl border-2 border-gray-200">
                 {menuItems.map((menuItem) => (
                   <Button
@@ -374,7 +374,7 @@ export function OrderEditDialog({
                     <div className="text-left w-full">
                       <p className="font-semibold text-sm text-gray-900">{menuItem.name}</p>
                       <p className="text-xs text-primary font-medium mt-1">
-                        R$ {Number(menuItem.price).toFixed(2)}
+                        Bs. {Number(menuItem.price).toFixed(2)}
                       </p>
                     </div>
                   </Button>
@@ -386,7 +386,7 @@ export function OrderEditDialog({
             <div className="bg-gradient-to-r from-primary to-indigo-600 rounded-xl p-5 shadow-lg">
               <div className="flex justify-between items-center">
                 <span className="text-xl font-bold text-white">💰 Total:</span>
-                <span className="text-3xl font-bold text-white">R$ {totalAmount.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-white">Bs. {totalAmount.toFixed(2)}</span>
               </div>
             </div>
             </div>
@@ -397,7 +397,7 @@ export function OrderEditDialog({
                 <OrderChatPanel orderId={orderId} customerPhone={customerPhone} />
               ) : (
                 <div className="flex items-center justify-center h-full bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                  <p className="text-gray-400 text-sm">Carregando chat...</p>
+                  <p className="text-gray-400 text-sm">Cargando chat...</p>
                 </div>
               )}
             </div>
@@ -420,12 +420,12 @@ export function OrderEditDialog({
             {saving ? (
               <span className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Salvando...
+                Guardando...
               </span>
             ) : (
               <>
                 <Save className="mr-2 h-5 w-5" />
-                Salvar Alterações
+                Guardar cambios
               </>
             )}
           </Button>

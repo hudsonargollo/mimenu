@@ -123,10 +123,10 @@ export function OrderChatPanel({ orderId, customerPhone }: OrderChatPanelProps) 
       setSending(true);
       await sendMessage(messageInput);
       setMessageInput('');
-      toast.success('Mensagem enviada!');
+      toast.success('¡Mensaje enviado!');
     } catch (err) {
       console.error('Failed to send message:', err);
-      toast.error('Erro ao enviar mensagem. Tente novamente.');
+      toast.error('Error al enviar el mensaje. Intenta nuevamente.');
     } finally {
       setSending(false);
     }
@@ -209,10 +209,10 @@ export function OrderChatPanel({ orderId, customerPhone }: OrderChatPanelProps) 
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-indigo-600 px-4 py-3 rounded-t-xl">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          💬 Conversa com Cliente
+          💬 Conversación con el Cliente
           {hasUnreadMessages && (
             <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-              Novo
+              Nuevo
             </span>
           )}
         </h3>
@@ -223,27 +223,27 @@ export function OrderChatPanel({ orderId, customerPhone }: OrderChatPanelProps) 
         {loading && messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">
             <Loader2 className="h-8 w-8 animate-spin mb-2" />
-            <p className="text-sm">Carregando mensagens...</p>
+            <p className="text-sm">Cargando mensajes...</p>
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full text-red-500">
             <AlertCircle className="h-8 w-8 mb-2" />
-            <p className="text-sm">Erro ao carregar mensagens</p>
+            <p className="text-sm">Error al cargar los mensajes</p>
             <Button
               variant="outline"
               size="sm"
               className="mt-2"
               onClick={() => window.location.reload()}
             >
-              Tentar novamente
+              Intentar nuevamente
             </Button>
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-400">
             <p className="text-sm text-center">
-              Nenhuma mensagem ainda.
+              Aún no hay mensajes.
               <br />
-              Envie uma mensagem para iniciar a conversa!
+              ¡Envía un mensaje para iniciar la conversación!
             </p>
           </div>
         ) : (
@@ -261,7 +261,7 @@ export function OrderChatPanel({ orderId, customerPhone }: OrderChatPanelProps) 
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Digite sua mensagem..."
+            placeholder="Escribe tu mensaje..."
             disabled={sending}
             className="flex-1 border-2 border-primary/20 focus:border-purple-400 rounded-full px-4"
           />

@@ -34,7 +34,7 @@ const Welcome = () => {
         
         {/* Welcome Text */}
         <h1 className="text-4xl sm:text-5xl font-display font-bold text-primary mb-3 drop-shadow-lg tracking-wider uppercase">
-          Bem-vindo!
+          ¡Bienvenido!
         </h1>
         <p className="text-xl sm:text-2xl text-foreground mb-2 drop-shadow-md font-body">
           PONTAL Carapitangui - Praia Bar
@@ -53,14 +53,14 @@ const Welcome = () => {
           className="w-full text-xl py-7 bg-secondary text-white hover:bg-secondary/90 shadow-2xl transition-all transform hover:scale-105 font-display uppercase tracking-wider rounded-none"
         >
           <QrCode className="mr-2 h-6 w-6" />
-          Começar Pedido
+          Comenzar Pedido
         </Button>
         
         {/* Quick Info */}
         <div className="mt-8 bg-primary/5 backdrop-blur-sm p-4 text-foreground text-sm font-body border-2 border-accent rounded-none">
-          <p className="mb-2">✨ Peça pelo celular</p>
-          <p className="mb-2">💳 Pague com PIX</p>
-          <p>📱 Receba notificações no WhatsApp</p>
+          <p className="mb-2">✨ Pide desde tu celular</p>
+          <p className="mb-2">💳 Paga con PIX</p>
+          <p>📱 Recibe notificaciones por WhatsApp</p>
         </div>
       </div>
     </div>

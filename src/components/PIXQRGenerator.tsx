@@ -163,7 +163,7 @@ const PIXQRGenerator = ({
   const getStatusBadge = () => {
     switch (paymentStatus) {
       case 'approved':
-        return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" />Aprovado</Badge>;
+        return <Badge className="bg-green-500"><CheckCircle className="w-4 h-4 mr-1" />Aprobado</Badge>;
       case 'expired':
         return <Badge variant="destructive"><AlertCircle className="w-4 h-4 mr-1" />Expirado</Badge>;
       case 'error':
@@ -203,7 +203,7 @@ const PIXQRGenerator = ({
                 <span className="font-medium">{customerInfo.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Telefone:</span>
+                <span className="text-muted-foreground">Teléfono:</span>
                 <span className="font-medium">{customerInfo.phone}</span>
               </div>
               <div className="flex justify-between text-base font-bold border-t pt-2 mt-2">
@@ -258,7 +258,7 @@ const PIXQRGenerator = ({
                     onClick={generatePIXPayment}
                     disabled={loading}
                   >
-                    Tentar Novamente
+                    Intentar nuevamente
                   </Button>
                 </div>
               )}

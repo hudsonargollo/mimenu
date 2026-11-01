@@ -47,15 +47,15 @@ const PrintServerConfig = () => {
       if (available) {
         const status = await printServerClient.getStatus();
         setPrinterStatus(status);
-        toast.success('Servidor de impressão conectado!');
+        toast.success('¡Servidor de impresión conectado!');
       } else {
         setPrinterStatus(null);
-        toast.error('Servidor de impressão não encontrado');
+        toast.error('Servidor de impresión no encontrado');
       }
     } catch (error) {
       setIsConnected(false);
       setPrinterStatus(null);
-      toast.error('Erro ao conectar ao servidor');
+      toast.error('Error al conectar con el servidor');
     } finally {
       setIsChecking(false);
     }
@@ -63,7 +63,7 @@ const PrintServerConfig = () => {
 
   const handleSaveUrl = () => {
     printServerClient.setServerUrl(serverUrl);
-    toast.success('URL salva com sucesso!');
+    toast.success('¡URL guardada con éxito!');
     checkConnection();
   };
 
@@ -78,13 +78,13 @@ const PrintServerConfig = () => {
       });
 
       if (response.ok) {
-        toast.success('Impressão de teste enviada!');
+        toast.success('¡Impresión de prueba enviada!');
       } else {
         const error = await response.json();
-        toast.error(`Erro: ${error.message || 'Falha na impressão'}`);
+        toast.error(`Error: ${error.message || 'Fallo en la impresión'}`);
       }
     } catch (error) {
-      toast.error('Erro ao enviar impressão de teste');
+      toast.error('Error al enviar la impresión de prueba');
     } finally {
       setIsTesting(false);
     }
@@ -97,13 +97,13 @@ const PrintServerConfig = () => {
       });
 
       if (response.ok) {
-        toast.success('Impressora reconectada!');
+        toast.success('¡Impresora reconectada!');
         checkConnection();
       } else {
-        toast.error('Falha ao reconectar impressora');
+        toast.error('Fallo al reconectar la impresora');
       }
     } catch (error) {
-      toast.error('Erro ao reconectar');
+      toast.error('Error al reconectar');
     }
   };
 
@@ -205,7 +205,7 @@ echo.
 pause`;
     
     downloadFile('install-windows-service.bat', content);
-    toast.success('Script de instalação baixado!');
+    toast.success('¡Script de instalación descargado!');
   };
 
   const downloadStartScript = () => {
@@ -257,80 +257,80 @@ node server.js
 pause`;
     
     downloadFile('start-server.bat', content);
-    toast.success('Script de inicialização baixado!');
+    toast.success('¡Script de inicio descargado!');
   };
 
   const downloadGuide = () => {
-    const content = `# Guia de Instalação - Servidor de Impressão (Windows)
+    const content = `# Guía de Instalación - Servidor de Impresión (Windows)
 
 ## Requisitos
 
-- Windows 10 ou 11
-- Node.js 16 ou superior (baixe em: https://nodejs.org)
-- Impressora Térmica USB (compatível com ESC/POS)
-- Privilégios de Administrador
+- Windows 10 u 11
+- Node.js 16 o superior (descargalo en: https://nodejs.org)
+- Impresora térmica USB (compatible con ESC/POS)
+- Privilegios de administrador
 
-## Passo 1: Instalar Node.js
+## Paso 1: Instalar Node.js
 
-1. Acesse https://nodejs.org
-2. Baixe a versão LTS (recomendada)
-3. Execute o instalador
-4. Reinicie o computador
+1. Ingresá a https://nodejs.org
+2. Descargá la versión LTS (recomendada)
+3. Ejecutá el instalador
+4. Reiniciá la computadora
 
-## Passo 2: Baixar Arquivos do Servidor
+## Paso 2: Descargar los archivos del servidor
 
-1. Baixe todos os arquivos do servidor de impressão
-2. Coloque em uma pasta permanente: C:\\CocoLoko\\print-server\\
+1. Descargá todos los archivos del servidor de impresión
+2. Colocalos en una carpeta permanente: C:\\CocoLoko\\print-server\\
 
-Arquivos necessários:
+Archivos necesarios:
 - server.js
 - package.json
 - install-service.js
-- install-windows-service.bat (já baixado)
-- start-server.bat (já baixado)
+- install-windows-service.bat (ya descargado)
+- start-server.bat (ya descargado)
 
-## Passo 3: Conectar a Impressora
+## Paso 3: Conectar la impresora
 
-1. Conecte a impressora térmica via USB
-2. Ligue a impressora
-3. Aguarde o Windows reconhecer
+1. Conectá la impresora térmica por USB
+2. Encendé la impresora
+3. Esperá a que Windows la reconozca
 
-## Passo 4: Instalar como Serviço
+## Paso 4: Instalar como servicio
 
-1. Clique com botão direito em install-windows-service.bat
-2. Selecione "Executar como administrador"
-3. Aguarde a instalação
+1. Hacé clic derecho en install-windows-service.bat
+2. Seleccioná "Ejecutar como administrador"
+3. Esperá a que termine la instalación
 
-## Passo 5: Testar
+## Paso 5: Probar
 
-1. Abra o navegador
-2. Acesse: http://localhost:3001/health
-3. Deve mostrar: "status": "ok"
+1. Abrí el navegador
+2. Ingresá a: http://localhost:3001/health
+3. Debe mostrar: "status": "ok"
 
-## Gerenciar o Serviço
+## Gestionar el servicio
 
-Abrir Serviços do Windows:
-1. Pressione Win + R
-2. Digite: services.msc
-3. Procure "PONTAL Carapitangui Print Server"
+Abrir Servicios de Windows:
+1. Presioná Win + R
+2. Escribí: services.msc
+3. Buscá "PONTAL Carapitangui Print Server"
 
-## Solução de Problemas
+## Solución de problemas
 
-### Servidor não inicia
-- Verifique se Node.js está instalado
-- Execute como administrador
-- Verifique se a porta 3001 não está em uso
+### El servidor no inicia
+- Verificá si Node.js está instalado
+- Ejecutá como administrador
+- Verificá que el puerto 3001 no esté en uso
 
-### Impressora não detectada
-- Verifique conexão USB
-- Certifique-se que está ligada
-- Tente outra porta USB
-- Reinicie o serviço
+### Impresora no detectada
+- Verificá la conexión USB
+- Asegurate de que esté encendida
+- Probá con otro puerto USB
+- Reiniciá el servicio
 
-Para mais informações, acesse o repositório do projeto.`;
+Para más información, ingresá al repositorio del proyecto.`;
     
     downloadFile('GUIA_INSTALACAO.txt', content);
-    toast.success('Guia de instalação baixado!');
+    toast.success('¡Guía de instalación descargada!');
   };
 
   return (
@@ -342,10 +342,10 @@ Para mais informações, acesse o repositório do projeto.`;
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="h-5 w-5 text-primary" />
-                Download Rápido
+                Descarga rápida
               </CardTitle>
               <CardDescription>
-                Baixe os arquivos necessários para instalar o servidor de impressão
+                Descargá los archivos necesarios para instalar el servidor de impresión
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -357,7 +357,7 @@ Para mais informações, acesse o repositório do projeto.`;
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Download className="h-4 w-4" />
-                    <span className="font-semibold">Script de Instalação</span>
+                    <span className="font-semibold">Script de instalación</span>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     install-windows-service.bat
@@ -385,7 +385,7 @@ Para mais informações, acesse o repositório do projeto.`;
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Download className="h-4 w-4" />
-                    <span className="font-semibold">Guia de Instalação</span>
+                    <span className="font-semibold">Guía de instalación</span>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     GUIA_INSTALACAO.txt
@@ -410,7 +410,7 @@ Para mais informações, acesse o repositório do projeto.`;
               <Alert className="bg-blue-50 border-blue-200">
                 <AlertCircle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800">
-                  <strong>Importante:</strong> Além dos scripts acima, você precisará baixar os arquivos server.js, package.json e install-service.js do{' '}
+                  <strong>Importante:</strong> Además de los scripts anteriores, vas a necesitar descargar los archivos server.js, package.json e install-service.js del{' '}
                   <a 
                     href="https://github.com/hudsonargollo/praia-pix-order/tree/main/print-server" 
                     target="_blank" 
@@ -431,10 +431,10 @@ Para mais informações, acesse o repositório do projeto.`;
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Printer className="h-5 w-5" />
-                    Status do Servidor
+                    Estado del servidor
                   </CardTitle>
                   <CardDescription>
-                    Servidor local de impressão térmica
+                    Servidor local de impresión térmica
                   </CardDescription>
                 </div>
                 <div>
@@ -463,7 +463,7 @@ Para mais informações, acesse o repositório do projeto.`;
                   <div>
                     <p className="text-sm font-medium text-gray-700">Servidor</p>
                     <p className="text-lg font-bold text-green-700">
-                      {printerStatus.serverRunning ? 'Rodando' : 'Parado'}
+                      {printerStatus.serverRunning ? 'En ejecución' : 'Detenido'}
                     </p>
                   </div>
                   <div>
@@ -474,7 +474,7 @@ Para mais informações, acesse o repositório do projeto.`;
                   </div>
                   {printerStatus.printers && printerStatus.printers.length > 0 && (
                     <div className="col-span-2">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Impressoras Detectadas:</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Impresoras detectadas:</p>
                       {printerStatus.printers.map((printer: any, index: number) => (
                         <div key={index} className="text-sm text-gray-600 bg-white p-2 rounded border">
                           Vendor ID: {printer.vendorId} | Product ID: {printer.productId}
@@ -489,7 +489,7 @@ Para mais informações, acesse o repositório do projeto.`;
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Servidor de impressão não está rodando. Certifique-se de que o servidor está instalado e iniciado.
+                    El servidor de impresión no está en ejecución. Asegurate de que esté instalado e iniciado.
                   </AlertDescription>
                 </Alert>
               )}
@@ -501,15 +501,15 @@ Para mais informações, acesse o repositório do projeto.`;
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                Configuração
+                Configuración
               </CardTitle>
               <CardDescription>
-                Configure a URL do servidor de impressão local
+                Configurá la URL del servidor de impresión local
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="serverUrl">URL do Servidor</Label>
+                <Label htmlFor="serverUrl">URL del servidor</Label>
                 <div className="flex gap-2">
                   <Input
                     id="serverUrl"
@@ -519,11 +519,11 @@ Para mais informações, acesse o repositório do projeto.`;
                     className="flex-1"
                   />
                   <Button onClick={handleSaveUrl} variant="outline">
-                    Salvar
+                    Guardar
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  URL padrão: http://localhost:3001
+                  URL predeterminada: http://localhost:3001
                 </p>
               </div>
 
@@ -542,7 +542,7 @@ Para mais informações, acesse o repositório do projeto.`;
                   ) : (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4" />
-                      Testar Conexão
+                      Probar conexión
                     </>
                   )}
                 </Button>
@@ -555,12 +555,12 @@ Para mais informações, acesse o repositório do projeto.`;
                   {isTesting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Imprimindo...
+                      Imprimiendo...
                     </>
                   ) : (
                     <>
                       <Printer className="mr-2 h-4 w-4" />
-                      Imprimir Teste
+                      Imprimir prueba
                     </>
                   )}
                 </Button>
@@ -573,7 +573,7 @@ Para mais informações, acesse o repositório do projeto.`;
                   className="w-full"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Reconectar Impressora
+                  Reconectar impresora
                 </Button>
               )}
             </CardContent>
@@ -584,17 +584,17 @@ Para mais informações, acesse o repositório do projeto.`;
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="h-5 w-5" />
-                Instalação do Servidor
+                Instalación del servidor
               </CardTitle>
               <CardDescription>
-                Guia rápido para instalar o servidor de impressão
+                Guía rápida para instalar el servidor de impresión
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  O servidor de impressão deve ser instalado em cada computador que terá uma impressora térmica conectada.
+                  El servidor de impresión debe instalarse en cada computadora que tenga una impresora térmica conectada.
                 </AlertDescription>
               </Alert>
 
@@ -604,9 +604,9 @@ Para mais informações, acesse o repositório do projeto.`;
                     1
                   </div>
                   <div>
-                    <p className="font-medium">Instale o Node.js</p>
+                    <p className="font-medium">Instalá Node.js</p>
                     <p className="text-sm text-muted-foreground">
-                      Baixe e instale o Node.js de{' '}
+                      Descargá e instalá Node.js desde{' '}
                       <a 
                         href="https://nodejs.org" 
                         target="_blank" 
@@ -624,9 +624,9 @@ Para mais informações, acesse o repositório do projeto.`;
                     2
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium mb-2">Baixe os Arquivos de Instalação</p>
+                    <p className="font-medium mb-2">Descargá los archivos de instalación</p>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Baixe os scripts necessários para instalar o servidor
+                      Descargá los scripts necesarios para instalar el servidor
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <Button 
@@ -651,11 +651,11 @@ Para mais informações, acesse o repositório do projeto.`;
                         size="sm"
                       >
                         <Download className="mr-2 h-4 w-4" />
-                        Guia Completo
+                        Guía completa
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Nota: Você também precisará dos arquivos server.js, package.json e install-service.js do repositório
+                      Nota: también vas a necesitar los archivos server.js, package.json e install-service.js del repositorio
                     </p>
                   </div>
                 </div>
@@ -665,9 +665,9 @@ Para mais informações, acesse o repositório do projeto.`;
                     3
                   </div>
                   <div>
-                    <p className="font-medium">Conecte a Impressora USB</p>
+                    <p className="font-medium">Conectá la impresora USB</p>
                     <p className="text-sm text-muted-foreground">
-                      Conecte sua impressora térmica via USB e certifique-se de que está ligada
+                      Conectá tu impresora térmica por USB y asegurate de que esté encendida
                     </p>
                   </div>
                 </div>
@@ -677,9 +677,9 @@ Para mais informações, acesse o repositório do projeto.`;
                     4
                   </div>
                   <div>
-                    <p className="font-medium">Instale como Serviço do Windows</p>
+                    <p className="font-medium">Instalá como servicio de Windows</p>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Clique com botão direito em <code className="bg-gray-100 px-1 rounded">install-windows-service.bat</code> e selecione "Executar como administrador"
+                      Hacé clic derecho en <code className="bg-gray-100 px-1 rounded">install-windows-service.bat</code> y seleccioná "Ejecutar como administrador"
                     </p>
                     <div className="flex gap-2">
                       <Badge variant="outline" className="text-xs">
@@ -688,7 +688,7 @@ Para mais informações, acesse o repositório do projeto.`;
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Roda em segundo plano
+                        Se ejecuta en segundo plano
                       </Badge>
                     </div>
                   </div>
@@ -699,9 +699,9 @@ Para mais informações, acesse o repositório do projeto.`;
                     5
                   </div>
                   <div>
-                    <p className="font-medium">Teste a Conexão</p>
+                    <p className="font-medium">Probá la conexión</p>
                     <p className="text-sm text-muted-foreground">
-                      Use o botão "Testar Conexão" acima para verificar se o servidor está rodando
+                      Usá el botón "Probar conexión" de arriba para verificar si el servidor está en ejecución
                     </p>
                   </div>
                 </div>
@@ -710,7 +710,7 @@ Para mais informações, acesse o repositório do projeto.`;
               <Alert className="bg-blue-50 border-blue-200">
                 <AlertCircle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800">
-                  <strong>Dica:</strong> Para teste rápido, você pode executar <code className="bg-blue-100 px-1 rounded">start-server.bat</code> sem instalar como serviço. Porém, você precisará iniciar manualmente toda vez.
+                  <strong>Consejo:</strong> Para una prueba rápida, podés ejecutar <code className="bg-blue-100 px-1 rounded">start-server.bat</code> sin instalarlo como servicio. Pero vas a tener que iniciarlo manualmente cada vez.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -719,36 +719,36 @@ Para mais informações, acesse o repositório do projeto.`;
           {/* Troubleshooting Card */}
           <Card className="border-2 border-accent rounded-xl shadow-soft">
             <CardHeader>
-              <CardTitle>Solução de Problemas</CardTitle>
+              <CardTitle>Solución de problemas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <p className="font-medium text-sm">Servidor não conecta</p>
+                <p className="font-medium text-sm">El servidor no conecta</p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-1">
-                  <li>Verifique se o Node.js está instalado</li>
-                  <li>Certifique-se de que o serviço está rodando (services.msc)</li>
-                  <li>Verifique se a porta 3001 não está em uso</li>
-                  <li>Tente reiniciar o serviço</li>
+                  <li>Verificá si Node.js está instalado</li>
+                  <li>Asegurate de que el servicio esté en ejecución (services.msc)</li>
+                  <li>Verificá que el puerto 3001 no esté en uso</li>
+                  <li>Intentá reiniciar el servicio</li>
                 </ul>
               </div>
 
               <div>
-                <p className="font-medium text-sm">Impressora não detectada</p>
+                <p className="font-medium text-sm">Impresora no detectada</p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-1">
-                  <li>Verifique a conexão USB</li>
-                  <li>Certifique-se de que a impressora está ligada</li>
-                  <li>Tente uma porta USB diferente</li>
-                  <li>Use o botão "Reconectar Impressora"</li>
+                  <li>Verificá la conexión USB</li>
+                  <li>Asegurate de que la impresora esté encendida</li>
+                  <li>Probá con otro puerto USB</li>
+                  <li>Usá el botón "Reconectar impresora"</li>
                 </ul>
               </div>
 
               <div>
-                <p className="font-medium text-sm">Impressão não funciona</p>
+                <p className="font-medium text-sm">La impresión no funciona</p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-1">
-                  <li>Verifique se há papel na impressora</li>
-                  <li>Teste com "Imprimir Teste"</li>
-                  <li>Reconecte a impressora</li>
-                  <li>Reinicie o serviço do Windows</li>
+                  <li>Verificá que la impresora tenga papel</li>
+                  <li>Probá con "Imprimir prueba"</li>
+                  <li>Reconectá la impresora</li>
+                  <li>Reiniciá el servicio de Windows</li>
                 </ul>
               </div>
             </CardContent>

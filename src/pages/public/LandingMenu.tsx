@@ -251,7 +251,7 @@ const FlipCard = ({ item, direction, imageUrl, categoryLabel, onSwipeNext, onSwi
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-amber-100 to-amber-200/60">
                   <Sparkles className="w-8 h-8 text-amber-700/40" />
-                  <span className="text-[10px] text-amber-800/50 uppercase tracking-widest">Foto em breve</span>
+                  <span className="text-[10px] text-amber-800/50 uppercase tracking-widest">Foto próximamente</span>
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#f8efdc] via-transparent to-black/10" />
@@ -276,7 +276,7 @@ const FlipCard = ({ item, direction, imageUrl, categoryLabel, onSwipeNext, onSwi
                 )}
               </div>
               <div className="mt-2 inline-block bg-[#3d2b1f] text-amber-100 font-reel font-bold text-base px-5 py-1.5 rounded-full shadow-md shrink-0">
-                R$ {item.price.toFixed(2)}
+                Bs. {item.price.toFixed(2)}
               </div>
             </div>
           </motion.div>
@@ -300,7 +300,7 @@ const LandingMenu = () => {
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
-    document.title = "Cardápio Digital | MiMenu";
+    document.title = "Menú Digital | MiMenu";
     loadMenu();
   }, []);
 
@@ -328,7 +328,7 @@ const LandingMenu = () => {
       setMenuItems(itemsData || []);
     } catch (error) {
       console.error("Error loading menu:", error);
-      toast.error("Erro ao carregar cardápio");
+      toast.error("Error al cargar el menú");
     } finally {
       setLoading(false);
     }
@@ -418,7 +418,7 @@ const LandingMenu = () => {
       <div className="flex min-h-screen items-center justify-center bg-stone-950">
         <div className="text-center">
           <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-stone-800 border-t-amber-500" />
-          <p className="text-sm text-stone-400">Carregando cardápio...</p>
+          <p className="text-sm text-stone-400">Cargando menú...</p>
         </div>
       </div>
     );
@@ -444,13 +444,13 @@ const LandingMenu = () => {
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="flex items-center gap-1.5 text-[10px] font-semibold tracking-wider text-amber-200/90 uppercase">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <Sparkles className="w-3 h-3 text-amber-400" /> Cardápio Completo
+              <Sparkles className="w-3 h-3 text-amber-400" /> Menú Completo
             </span>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setShowInfo(true)}
                 className="flex items-center justify-center bg-stone-900/60 hover:bg-stone-800/80 text-amber-300 w-8 h-8 rounded-full transition border border-amber-500/30"
-                aria-label="Onde estamos"
+                aria-label="Dónde estamos"
               >
                 <Info className="w-3.5 h-3.5" />
               </button>
@@ -486,7 +486,7 @@ const LandingMenu = () => {
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
-              placeholder="Buscar petiscos, pratos, drinks..."
+              placeholder="Buscar picadas, platos, drinks..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -498,7 +498,7 @@ const LandingMenu = () => {
               <button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300"
-                aria-label="Limpar busca"
+                aria-label="Limpiar búsqueda"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -531,7 +531,7 @@ const LandingMenu = () => {
           <main className="relative z-[5] flex-1 overflow-y-auto px-4 pb-6 pt-1 space-y-2 scrollbar-hide">
             {searchResults.length === 0 ? (
               <div className="text-center py-16 text-stone-400 text-xs font-light">
-                Nenhum item encontrado para &ldquo;{searchQuery}&rdquo;.
+                No se encontraron ítems para &ldquo;{searchQuery}&rdquo;.
               </div>
             ) : (
               searchResults.map((item) => {
@@ -558,7 +558,7 @@ const LandingMenu = () => {
                       </p>
                     </div>
                     <span className="font-reel text-xs font-bold text-[#3d2b1f] shrink-0">
-                      R$ {item.price.toFixed(2)}
+                      Bs. {item.price.toFixed(2)}
                     </span>
                   </button>
                 );
@@ -572,7 +572,7 @@ const LandingMenu = () => {
                 <button
                   onClick={goPrev}
                   className="absolute left-0 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-stone-900/70 border border-amber-500/30 text-amber-300 hover:bg-stone-800/90 transition"
-                  aria-label="Item anterior"
+                  aria-label="Ítem anterior"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -597,7 +597,7 @@ const LandingMenu = () => {
                 >
                   <Sparkles className="w-8 h-8 text-amber-700/40" />
                   <p className="text-xs text-amber-800/60 font-reel italic">
-                    Nenhum item disponível nesta categoria.
+                    No hay ítems disponibles en esta categoría.
                   </p>
                 </div>
               )}
@@ -606,7 +606,7 @@ const LandingMenu = () => {
                 <button
                   onClick={goNext}
                   className="absolute right-0 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-stone-900/70 border border-amber-500/30 text-amber-300 hover:bg-stone-800/90 transition"
-                  aria-label="Próximo item"
+                  aria-label="Próximo ítem"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -633,7 +633,7 @@ const LandingMenu = () => {
                   )}
                 </div>
                 <span className="text-[9px] text-stone-500 tracking-widest uppercase">
-                  {isPlaying ? "Reproduzindo automaticamente" : "Deslize ou toque nas setas"}
+                  {isPlaying ? "Reproducción automática" : "Desliza o toca las flechas"}
                 </span>
               </div>
             )}
@@ -657,16 +657,16 @@ const LandingMenu = () => {
                 <X className="w-4 h-4" />
               </button>
               <h4 className="font-reel text-xs tracking-widest text-amber-400 uppercase mb-4 font-semibold">
-                — Onde Estamos —
+                — Dónde Estamos —
               </h4>
               <div className="space-y-3.5 text-left text-xs text-stone-300">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                  <span>Praia do Carapitangui, Barra Grande — Maraú, BA</span>
+                  <span>Playa Carapitangui, Barra Grande — Maraú, BA</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>Aberto todos os dias • 9h às 22h</span>
+                  <span>Abierto todos los días • 9:00 a 22:00</span>
                 </div>
                 <a
                   href="https://wa.me/5573999999999"
@@ -675,11 +675,11 @@ const LandingMenu = () => {
                   className="flex items-center gap-3 hover:text-amber-300 transition-colors"
                 >
                   <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>+55 (73) 99999-9999 — Falar no WhatsApp</span>
+                  <span>+55 (73) 99999-9999 — Hablar por WhatsApp</span>
                 </a>
               </div>
               <p className="font-reel italic text-sm text-stone-500 mt-6 text-center">
-                Gastronomia &amp; Drinks na Península de Maraú
+                Gastronomía &amp; Drinks en la Península de Maraú
               </p>
             </div>
           </div>

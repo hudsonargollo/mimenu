@@ -108,22 +108,22 @@ export class WhatsAppService {
     const message = error.message.toLowerCase();
     
     if (message.includes('network') || message.includes('connection')) {
-      return 'Erro de conexão ao enviar notificação. Tentaremos novamente.';
+      return 'Error de conexión al enviar la notificación. Volveremos a intentarlo.';
     }
     
     if (message.includes('invalid phone') || message.includes('invalid number')) {
-      return 'Número de WhatsApp inválido. Verifique o número cadastrado.';
+      return 'Número de WhatsApp inválido. Verificá el número registrado.';
     }
     
     if (message.includes('rate limit') || message.includes('429')) {
-      return 'Muitas mensagens enviadas. Aguarde um momento.';
+      return 'Se enviaron demasiados mensajes. Esperá un momento.';
     }
     
     if (message.includes('not configured') || message.includes('credentials')) {
-      return 'Serviço de notificação temporariamente indisponível.';
+      return 'El servicio de notificaciones no está disponible por el momento.';
     }
     
-    return `Erro ao enviar ${messageType}. Tentaremos novamente automaticamente.`;
+    return `Error al enviar ${messageType}. Volveremos a intentarlo automáticamente.`;
   }
 
   async sendOrderConfirmation(orderData: OrderData): Promise<string | null> {
@@ -155,7 +155,7 @@ export class WhatsAppService {
         await this.logNotification(orderData.id, orderData.customerPhone, 'confirmation', '', 'failed');
         
         // Show user-friendly error message
-        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'confirmação do pedido');
+        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'confirmación del pedido');
         toast.error(friendlyMessage);
         
         throw error;
@@ -192,7 +192,7 @@ export class WhatsAppService {
         await this.logNotification(orderData.id, orderData.customerPhone, 'ready', '', 'failed');
         
         // Show user-friendly error message
-        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'notificação de pedido pronto');
+        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'notificación de pedido listo');
         toast.error(friendlyMessage);
         
         throw error;
@@ -229,7 +229,7 @@ export class WhatsAppService {
         await this.logNotification(orderData.id, orderData.customerPhone, 'status_update', '', 'failed');
         
         // Show user-friendly error message
-        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'atualização de status');
+        const friendlyMessage = this.getUserFriendlyErrorMessage(error as Error, 'actualización de estado');
         toast.error(friendlyMessage);
         
         throw error;
@@ -335,7 +335,7 @@ export class WhatsAppService {
 
       // For now, just show a toast to staff
       toast.warning(
-        `WhatsApp indisponível. Notifique manualmente o cliente ${orderData.customerName} (${orderData.customerPhone}).`,
+        `WhatsApp no disponible. Notificá manualmente al cliente ${orderData.customerName} (${orderData.customerPhone}).`,
         { duration: 10000 }
       );
 
@@ -462,11 +462,11 @@ export class WhatsAppService {
         }
       }
 
-      toast.success(`Tentativa de reenvio concluída para ${failedNotifications.length} notificações.`);
+      toast.success(`Reintento completado para ${failedNotifications.length} notificaciones.`);
 
     } catch (error) {
       console.error('Error retrying failed notifications:', error);
-      toast.error('Erro ao tentar reenviar notificações.');
+      toast.error('Error al reintentar las notificaciones.');
     }
   }
 

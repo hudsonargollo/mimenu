@@ -41,7 +41,7 @@ export class WhatsAppRecoveryService {
       const currentAttempts = this.recoveryAttempts.get(orderId) || 0;
       if (currentAttempts >= maxRetryAttempts) {
         console.error(`Max recovery attempts reached for order ${orderId}`);
-        toast.error('Máximo de tentativas de reenvio atingido. Entre em contato com o suporte.');
+        toast.error('Se alcanzó el máximo de reintentos. Contactá al soporte.');
         return false;
       }
 
@@ -80,7 +80,7 @@ export class WhatsAppRecoveryService {
       
       if (recoverySuccess) {
         this.recoveryAttempts.delete(orderId);
-        toast.success('Notificações reenviadas com sucesso!');
+        toast.success('¡Notificaciones reenviadas con éxito!');
         return true;
       } else {
         // Schedule another recovery attempt if within limits
@@ -94,7 +94,7 @@ export class WhatsAppRecoveryService {
 
     } catch (error) {
       console.error('Error during notification recovery:', error);
-      toast.error('Erro durante recuperação de notificações.');
+      toast.error('Error durante la recuperación de notificaciones.');
       return false;
     } finally {
       this.activeRecoveries.delete(orderId);
@@ -250,7 +250,7 @@ export class WhatsAppRecoveryService {
       
       // Log critical failure
       toast.error(
-        `Falha crítica na notificação ${notificationType}. Verifique manualmente o pedido ${orderId}.`,
+        `Falla crítica en la notificación ${notificationType}. Verificá manualmente el pedido ${orderId}.`,
         { duration: 15000 }
       );
 

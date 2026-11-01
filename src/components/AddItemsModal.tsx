@@ -68,7 +68,7 @@ export const AddItemsModal = ({
       setMenuItems(data || []);
     } catch (error) {
       console.error("Error fetching menu items:", error);
-      toast.error("Erro ao carregar itens do cardápio");
+      toast.error("Error al cargar los ítems del menú");
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,7 @@ export const AddItemsModal = ({
   // Handle submit
   const handleSubmit = async () => {
     if (cart.size === 0) {
-      toast.error("Adicione pelo menos um item");
+      toast.error("Agrega al menos un ítem");
       return;
     }
 
@@ -141,7 +141,7 @@ export const AddItemsModal = ({
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast.error("Você precisa estar logado");
+        toast.error("Debes iniciar sesión");
         return;
       }
 
@@ -167,16 +167,16 @@ export const AddItemsModal = ({
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error || "Erro ao adicionar itens");
+        throw new Error(result.error || "Error al agregar ítems");
       }
 
       // Show success message
       if (result.pixInvalidated) {
-        toast.success("Itens adicionados!", {
-          description: "O PIX foi invalidado. Gere um novo PIX com o valor atualizado.",
+        toast.success("¡Ítems agregados!", {
+          description: "El PIX fue invalidado. Genera un nuevo PIX con el monto actualizado.",
         });
       } else {
-        toast.success("Itens adicionados com sucesso!");
+        toast.success("¡Ítems agregados con éxito!");
       }
 
       // Call success callback
@@ -189,7 +189,7 @@ export const AddItemsModal = ({
     } catch (error) {
       console.error("Error adding items:", error);
       toast.error(
-        error instanceof Error ? error.message : "Erro ao adicionar itens"
+        error instanceof Error ? error.message : "Error al agregar ítems"
       );
     } finally {
       setSubmitting(false);
@@ -202,10 +202,10 @@ export const AddItemsModal = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
-            Adicionar Itens ao Pedido
+            Agregar Ítems al Pedido
           </DialogTitle>
           <DialogDescription>
-            Selecione os itens que deseja adicionar ao pedido
+            Selecciona los ítems que deseas agregar al pedido
           </DialogDescription>
         </DialogHeader>
 
@@ -214,8 +214,8 @@ export const AddItemsModal = ({
           <Alert variant="destructive" className="mb-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Este pedido já possui um PIX gerado. Ao adicionar itens, o PIX será
-              invalidado e você precisará gerar um novo com o valor atualizado.
+              Este pedido ya tiene un PIX generado. Al agregar ítems, el PIX será
+              invalidado y deberás generar uno nuevo con el monto actualizado.
             </AlertDescription>
           </Alert>
         )}
@@ -225,7 +225,7 @@ export const AddItemsModal = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Buscar itens do cardápio..."
+              placeholder="Buscar ítems del menú..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -240,7 +240,7 @@ export const AddItemsModal = ({
               </div>
             ) : filteredMenuItems.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <p>Nenhum item encontrado</p>
+                <p>Ningún ítem encontrado</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -307,7 +307,7 @@ export const AddItemsModal = ({
                                 className="h-8 px-3"
                               >
                                 <Plus className="w-4 h-4 mr-1" />
-                                Adicionar
+                                Agregar
                               </Button>
                             )}
                           </div>
@@ -326,7 +326,7 @@ export const AddItemsModal = ({
               <CardContent className="p-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Total Atual:</span>
+                    <span className="text-gray-600">Total Actual:</span>
                     <span className="font-semibold">
                       {currentTotal.toLocaleString("es-BO", {
                         style: "currency",
@@ -335,7 +335,7 @@ export const AddItemsModal = ({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Itens Adicionados:</span>
+                    <span className="text-gray-600">Ítems Agregados:</span>
                     <span className="font-semibold text-primary">
                       +{" "}
                       {addedAmount.toLocaleString("es-BO", {
@@ -345,7 +345,7 @@ export const AddItemsModal = ({
                     </span>
                   </div>
                   <div className="border-t border-primary/20 pt-2 flex justify-between">
-                    <span className="font-bold text-gray-900">Novo Total:</span>
+                    <span className="font-bold text-gray-900">Nuevo Total:</span>
                     <span className="font-bold text-lg text-primary">
                       {newTotal.toLocaleString("es-BO", {
                         style: "currency",
@@ -354,7 +354,7 @@ export const AddItemsModal = ({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Nova Comissão (10%):</span>
+                    <span>Nueva Comisión (10%):</span>
                     <span className="font-semibold">
                       {newCommission.toLocaleString("es-BO", {
                         style: "currency",
@@ -381,12 +381,12 @@ export const AddItemsModal = ({
             {submitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Adicionando...
+                Agregando...
               </>
             ) : (
               <>
                 <Plus className="w-4 h-4 mr-2" />
-                Adicionar {cart.size} {cart.size === 1 ? "Item" : "Itens"}
+                Agregar {cart.size} {cart.size === 1 ? "Ítem" : "Ítems"}
               </>
             )}
           </Button>

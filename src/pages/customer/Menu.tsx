@@ -162,7 +162,7 @@ const Menu: React.FC = () => {
                 className="flex items-center gap-1.5 text-amber-400 hover:underline"
               >
                 <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
-                Get Directions
+                Cómo llegar
               </a>
               <button
                 type="button"
@@ -175,7 +175,7 @@ const Menu: React.FC = () => {
                 }}
                 className="flex items-center gap-1.5 hover:text-foreground"
               >
-                Share
+                Compartir
               </button>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />

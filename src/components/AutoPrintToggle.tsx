@@ -20,13 +20,13 @@ export function AutoPrintToggle({ enabled, onToggle }: AutoPrintToggleProps) {
         htmlFor="auto-print-toggle" 
         className="text-sm font-medium cursor-pointer"
       >
-        Impressão Automática
+        Impresión automática
       </Label>
       <Switch
         id="auto-print-toggle"
         checked={enabled}
         onCheckedChange={onToggle}
-        aria-label="Toggle automatic printing"
+        aria-label="Alternar impresión automática"
       />
     </div>
   );

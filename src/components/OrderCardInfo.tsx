@@ -71,7 +71,7 @@ export function OrderCardInfo({
           <span className="font-bold">Cliente:</span> {customerName}
         </div>
         <div className="text-sm text-gray-700">
-          <span className="font-bold">Telefone:</span> {formatPhoneNumber(customerPhone)}
+          <span className="font-bold">Teléfono:</span> {formatPhoneNumber(customerPhone)}
         </div>
 
         {/* Waiter/Cashier Badge and Print Button */}
@@ -84,7 +84,7 @@ export function OrderCardInfo({
           )}
           {createdByCashier && !waiterId && (
             <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-200 h-5 px-2 font-bold">
-              🏪 CAIXA
+              🏪 CAJA
             </Badge>
           )}
           
@@ -95,10 +95,10 @@ export function OrderCardInfo({
             onClick={handlePrintKitchen}
             disabled={isPrinting}
             className="h-5 px-2 text-xs"
-            title="Imprimir comanda da cozinha"
+            title="Imprimir comanda de cocina"
           >
             <Printer className="h-3 w-3 mr-1" />
-            {isPrinting ? 'Imprimindo...' : 'Cozinha'}
+            {isPrinting ? 'Imprimiendo...' : 'Cocina'}
           </Button>
           <Button
             variant="outline"
@@ -106,7 +106,7 @@ export function OrderCardInfo({
             onClick={handlePrintCustomer}
             disabled={isPrinting}
             className="h-5 px-2 text-xs"
-            title="Imprimir comprovante do cliente"
+            title="Imprimir comprobante del cliente"
           >
             <Printer className="h-3 w-3 mr-1" />
             Cliente

@@ -181,7 +181,7 @@ export default function WhatsAppAdmin() {
           connectedAt: statusData.lastConnected,
           profileName: statusData.profileName
         });
-        toast.success('WhatsApp já está conectado!');
+        toast.success('¡WhatsApp ya está conectado!');
         setShowConnectionDialog(false);
         return;
       }
@@ -250,16 +250,16 @@ export default function WhatsAppAdmin() {
           connectedAt: data.lastConnected,
           profileName: data.profileName
         });
-        toast.success('WhatsApp conectado com sucesso!');
+        toast.success('¡WhatsApp conectado con éxito!');
         setShowConnectionDialog(false);
       } else {
         // Start polling for QR code if not immediately available
-        toast.info('Gerando QR code... Aguarde alguns segundos.');
+        toast.info('Generando código QR... Esperá unos segundos.');
         pollForQrCode();
       }
     } catch (error) {
       console.error('Failed to connect WhatsApp:', error);
-      toast.error('Erro ao conectar WhatsApp. Verifique a conexão com a API.');
+      toast.error('Error al conectar WhatsApp. Verificá la conexión con la API.');
       setConnectionStatus('disconnected');
     }
   };
@@ -280,7 +280,7 @@ export default function WhatsAppAdmin() {
           setQrCode(null);
           setShowConnectionDialog(false);
           clearInterval(pollInterval);
-          toast.success('WhatsApp conectado com sucesso!');
+          toast.success('¡WhatsApp conectado con éxito!');
         }
       } catch (error) {
         console.error('Failed to poll connection status:', error);
@@ -292,7 +292,7 @@ export default function WhatsAppAdmin() {
       clearInterval(pollInterval);
       if (connectionStatus === 'connecting') {
         setConnectionStatus('disconnected');
-        toast.error('Tempo limite para conexão excedido');
+        toast.error('Se excedió el tiempo límite de conexión');
       }
     }, 120000);
   };
@@ -344,7 +344,7 @@ export default function WhatsAppAdmin() {
           });
           clearInterval(qrPollInterval);
           setShowConnectionDialog(false);
-          toast.success('WhatsApp conectado com sucesso!');
+          toast.success('¡WhatsApp conectado con éxito!');
         }
       } catch (error) {
         console.error('Failed to poll for QR code:', error);
@@ -355,7 +355,7 @@ export default function WhatsAppAdmin() {
     setTimeout(() => {
       clearInterval(qrPollInterval);
       if (!qrCode && connectionStatus === 'connecting') {
-        toast.error('Não foi possível gerar QR code. Tente reiniciar a conexão.');
+        toast.error('No se pudo generar el código QR. Intentá reiniciar la conexión.');
         setConnectionStatus('disconnected');
       }
     }, 45000);
@@ -373,18 +373,18 @@ export default function WhatsAppAdmin() {
       toast.success('WhatsApp desconectado');
     } catch (error) {
       console.error('Failed to disconnect WhatsApp:', error);
-      toast.error('Erro ao desconectar WhatsApp');
+      toast.error('Error al desconectar WhatsApp');
     }
   };
 
   const handleTestMessage = async () => {
     if (connectionStatus !== 'connected') {
-      toast.error('WhatsApp não está conectado. Conecte primeiro para enviar mensagens.');
+      toast.error('WhatsApp no está conectado. Conectá primero para enviar mensajes.');
       return;
     }
 
     if (!testPhoneNumber) {
-      toast.error('Digite um número de teste.');
+      toast.error('Ingresá un número de prueba.');
       return;
     }
 
@@ -392,7 +392,7 @@ export default function WhatsAppAdmin() {
     localStorage.setItem('whatsapp_test_number', testPhoneNumber);
 
     try {
-      toast.info(`Enviando mensagem de teste para ${testPhoneNumber}...`);
+      toast.info(`Enviando mensaje de prueba a ${testPhoneNumber}...`);
       
       const response = await fetch('/api/whatsapp/test-message', {
         method: 'POST',
@@ -401,23 +401,23 @@ export default function WhatsAppAdmin() {
         },
         body: JSON.stringify({
           phoneNumber: testPhoneNumber,
-          message: '🥥 Teste de conexão WhatsApp - PONTAL Carapitangui Açaiteria ✅\n\nSe você recebeu esta mensagem, o sistema de notificações está funcionando perfeitamente!\n\n📱 Mensagem enviada em: ' + new Date().toLocaleString('pt-BR')
+          message: '🥥 Prueba de conexión de WhatsApp - MiMenu ✅\n\nSi recibiste este mensaje, el sistema de notificaciones está funcionando perfectamente.\n\n📱 Mensaje enviado el: ' + new Date().toLocaleString('es-BO')
         })
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        toast.success('✅ Mensagem de teste enviada com sucesso!');
+        toast.success('✅ ¡Mensaje de prueba enviado con éxito!');
         // Update stats after successful test
         loadStats();
       } else {
         console.error('Test message failed:', data);
-        toast.error(`❌ Erro ao enviar mensagem: ${data.error || 'Erro desconhecido'}`);
+        toast.error(`❌ Error al enviar el mensaje: ${data.error || 'Error desconocido'}`);
       }
     } catch (error) {
       console.error('Failed to send test message:', error);
-      toast.error('❌ Erro de conexão ao enviar mensagem de teste');
+      toast.error('❌ Error de conexión al enviar el mensaje de prueba');
     }
   };
 
@@ -426,7 +426,7 @@ export default function WhatsAppAdmin() {
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <RefreshCw className="h-8 w-8 animate-spin text-green-600" />
-          <p className="text-sm text-gray-600">Carregando...</p>
+          <p className="text-sm text-gray-600">Cargando...</p>
         </div>
       </div>
     );
@@ -440,11 +440,11 @@ export default function WhatsAppAdmin() {
           <TabsList className="grid w-full grid-cols-2 mb-4 bg-white shadow-soft rounded-lg border-2 border-accent">
             <TabsTrigger value="overview" className="font-display uppercase tracking-wider rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white shadow-soft">
               <Activity className="h-4 w-4 mr-2" />
-              Visão Geral
+              Vista general
             </TabsTrigger>
             <TabsTrigger value="logs" className="font-display uppercase tracking-wider rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white shadow-soft">
               <FileText className="h-4 w-4 mr-2" />
-              Log de Erros
+              Registro de errores
             </TabsTrigger>
           </TabsList>
 
@@ -458,7 +458,7 @@ export default function WhatsAppAdmin() {
               </div>
               <div className="flex-1 min-w-0">
                 <CardTitle className={`text-xl font-bold ${connectionStatus === 'connected' ? 'text-green-800' : 'text-orange-800'}`}>
-                  {connectionStatus === 'connected' ? 'Notificações Ativas' : 'Notificações por WhatsApp'}
+                  {connectionStatus === 'connected' ? 'Notificaciones activas' : 'Notificaciones por WhatsApp'}
                 </CardTitle>
                 {connectionStatus === 'connected' && connectionInfo?.phoneNumber ? (
                   <CardDescription className="text-green-700 font-medium mt-1.5 flex items-center gap-1.5 text-sm">
@@ -467,7 +467,7 @@ export default function WhatsAppAdmin() {
                   </CardDescription>
                 ) : (
                   <CardDescription className="text-orange-700 mt-1.5 text-sm">
-                    Conecte sua conta para enviar alertas
+                    Conectá tu cuenta para enviar alertas
                   </CardDescription>
                 )}
               </div>
@@ -499,7 +499,7 @@ export default function WhatsAppAdmin() {
             <CardContent className="pt-0 pb-4 border-t">
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 mt-4">
                 <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="truncate">Conectado em: {new Date(connectionInfo.connectedAt).toLocaleString('pt-BR')}</span>
+                <span className="truncate">Conectado el: {new Date(connectionInfo.connectedAt).toLocaleString('es-BO')}</span>
               </div>
             </CardContent>
           )}
@@ -509,7 +509,7 @@ export default function WhatsAppAdmin() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium">Enviadas</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Enviados</CardTitle>
               <Send className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
             </CardHeader>
             <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
@@ -522,39 +522,39 @@ export default function WhatsAppAdmin() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium">Falhadas</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Fallidos</CardTitle>
               <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
             </CardHeader>
             <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
               <div className="text-xl sm:text-2xl font-bold">{stats.totalFailed}</div>
               <p className="text-xs text-muted-foreground">
-                Erros de entrega
+                Errores de entrega
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium">Pendentes</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Pendientes</CardTitle>
               <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
             </CardHeader>
             <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
               <div className="text-xl sm:text-2xl font-bold">{stats.totalPending}</div>
               <p className="text-xs text-muted-foreground">
-                Aguardando envio
+                Esperando envío
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium">Tempo Médio</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Tiempo promedio</CardTitle>
               <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
             </CardHeader>
             <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
               <div className="text-xl sm:text-2xl font-bold">0s</div>
               <p className="text-xs text-muted-foreground">
-                Tempo de entrega
+                Tiempo de entrega
               </p>
             </CardContent>
           </Card>
@@ -564,15 +564,15 @@ export default function WhatsAppAdmin() {
         <Card className="border-2 border-accent rounded-xl shadow-soft">
           <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
             <CardTitle className="text-base sm:text-lg">
-              Testar Notificações
+              Probar notificaciones
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm">
-              Envie uma mensagem de teste para verificar a conexão
+              Enviá un mensaje de prueba para verificar la conexión
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0 space-y-3">
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Número do WhatsApp</Label>
+              <Label className="text-sm font-medium">Número de WhatsApp</Label>
               <Input
                 placeholder="Ex: 5573987387231"
                 value={testPhoneNumber}
@@ -596,7 +596,7 @@ export default function WhatsAppAdmin() {
               className="w-full bg-green-600 hover:bg-green-700 h-10"
             >
               <SendHorizontal className="h-4 w-4 mr-2" />
-              Enviar Mensagem de Teste
+              Enviar mensaje de prueba
             </Button>
           </CardContent>
         </Card>
@@ -613,7 +613,7 @@ export default function WhatsAppAdmin() {
             <DialogHeader className="space-y-1 pr-8">
               <DialogTitle className="text-lg font-bold">Conectar WhatsApp</DialogTitle>
               <DialogDescription className="text-sm text-gray-600">
-                Escaneie o QR code
+                Escaneá el código QR
               </DialogDescription>
             </DialogHeader>
             
@@ -640,19 +640,19 @@ export default function WhatsAppAdmin() {
                     <ol className="text-sm text-gray-700 space-y-1.5 bg-gray-50 p-3 rounded-lg">
                       <li className="flex gap-2">
                         <span className="font-semibold text-green-600 flex-shrink-0">1.</span>
-                        <span>Abra WhatsApp no celular</span>
+                        <span>Abrí WhatsApp en el celular</span>
                       </li>
                       <li className="flex gap-2">
                         <span className="font-semibold text-green-600 flex-shrink-0">2.</span>
-                        <span>Vá em <strong>Configurações</strong> → <strong>Aparelhos conectados</strong></span>
+                        <span>Andá a <strong>Configuración</strong> → <strong>Dispositivos vinculados</strong></span>
                       </li>
                       <li className="flex gap-2">
                         <span className="font-semibold text-green-600 flex-shrink-0">3.</span>
-                        <span>Toque <strong>Conectar aparelho</strong></span>
+                        <span>Tocá <strong>Conectar dispositivo</strong></span>
                       </li>
                       <li className="flex gap-2">
                         <span className="font-semibold text-green-600 flex-shrink-0">4.</span>
-                        <span>Escaneie este QR code</span>
+                        <span>Escaneá este código QR</span>
                       </li>
                     </ol>
                   </div>
@@ -661,8 +661,8 @@ export default function WhatsAppAdmin() {
                 <div className="flex flex-col items-center space-y-4 py-8">
                   <RefreshCw className="h-14 w-14 animate-spin text-green-600" />
                   <div className="text-center space-y-1">
-                    <p className="text-base font-medium text-gray-900">Gerando QR code</p>
-                    <p className="text-sm text-gray-500">Aguarde...</p>
+                    <p className="text-base font-medium text-gray-900">Generando código QR</p>
+                    <p className="text-sm text-gray-500">Esperá...</p>
                   </div>
                 </div>
               ) : connectionStatus === 'connected' ? (

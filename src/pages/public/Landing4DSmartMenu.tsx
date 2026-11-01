@@ -37,7 +37,7 @@ const steps = [
     number: "03",
     title: "Realiza el pedido",
     description:
-      "Selecciona platos, personaliza y paga directamente desde la app. La orden llega en tiempo real a tu cocina.",
+      "Selecciona platos, personaliza y paga directamente desde la app. El pedido llega en tiempo real a tu cocina.",
     icon: ShoppingCart,
   },
   {
@@ -53,7 +53,7 @@ const benefits = [
   {
     title: "Servicio más rápido",
     description:
-      "Reduce tiempos de espera y atiende a más mesas con órdenes digitales.",
+      "Reduce tiempos de espera y atiende a más mesas con pedidos digitales.",
     icon: Clock,
   },
   {
@@ -281,7 +281,7 @@ export default function Landing4DSmartMenu() {
               Beneficios para tu negocio
             </h2>
             <p className="mt-4 text-[#9A8F84]">
-              Lo que ganás al implementar 4D Smart Menu
+              Lo que ganas al implementar 4D Smart Menu
             </p>
           </div>
 

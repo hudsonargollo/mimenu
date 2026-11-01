@@ -117,7 +117,7 @@ const Index = () => {
               className="h-auto py-6 sm:py-8 flex flex-col bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all rounded-2xl min-h-[120px] sm:min-h-[140px]"
             >
               <QrCode className="h-8 w-8 sm:h-10 sm:w-10 mb-2 sm:mb-3" />
-              <span className="font-bold text-sm sm:text-base text-center">Fazer Pedido</span>
+              <span className="font-bold text-sm sm:text-base text-center">Hacer Pedido</span>
             </Button>
             <Button
               size="lg"
@@ -142,7 +142,7 @@ const Index = () => {
       {/* Features Section */}
       <div className="bg-primary/20 py-8 sm:py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-foreground">Como Funciona</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-foreground">Cómo Funciona</h2>
           
           {/* Carousel Container */}
           <div 
@@ -151,7 +151,7 @@ const Index = () => {
             onKeyDown={handleKeyDown}
             tabIndex={0}
             role="region"
-            aria-label="Como Funciona carousel"
+            aria-label="Carrusel Cómo Funciona"
           >
             <div className="flex touch-pan-y -mx-2 sm:-mx-3">
               {/* Slide 1 - Fazer Pedido */}
@@ -160,9 +160,9 @@ const Index = () => {
                   <div className="bg-primary w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <QrCode className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg sm:text-xl mb-3 text-primary">Fazer Pedido</h3>
+                  <h3 className="font-bold text-lg sm:text-xl mb-3 text-primary">Hacer Pedido</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Escaneia QR Code, informa nome e WhatsApp, faz o pedido, paga com PIX e recebe notificações
+                    Escanea el código QR, ingresa tu nombre y WhatsApp, haz el pedido, paga con QR y recibe notificaciones
                   </p>
                 </Card>
               </div>
@@ -175,7 +175,7 @@ const Index = () => {
                   </div>
                   <h3 className="font-bold text-lg sm:text-xl mb-3 text-primary">Consultar Pedido</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Acompanhe o status do seu pedido em tempo real
+                    Sigue el estado de tu pedido en tiempo real
                   </p>
                 </Card>
               </div>
@@ -188,7 +188,7 @@ const Index = () => {
                   </div>
                   <h3 className="font-bold text-lg sm:text-xl mb-3 text-primary">Área Restrita</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Acesso para garçons e gerentes gerenciarem pedidos e operações
+                    Acceso para mozos y gerentes para gestionar pedidos y operaciones
                   </p>
                 </Card>
               </div>
@@ -207,7 +207,7 @@ const Index = () => {
                     ? 'bg-primary w-8 h-3'
                     : 'bg-primary/30 w-3 h-3'
                 }`}
-                aria-label={`Go to slide ${index + 1}`}
+                aria-label={`Ir a la diapositiva ${index + 1}`}
                 aria-current={index === selectedIndex ? 'true' : 'false'}
               />
             ))}

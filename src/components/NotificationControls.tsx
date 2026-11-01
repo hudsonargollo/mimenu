@@ -49,11 +49,11 @@ export function NotificationControls({
     setSendingReady(true);
     try {
       await notificationTriggers.onOrderReady(orderId);
-      toast.success('Notificação de pedido pronto enviada!');
+      toast.success('¡Notificación de pedido listo enviada!');
       onNotificationSent?.();
     } catch (error) {
       console.error('Error sending ready notification:', error);
-      toast.error('Erro ao enviar notificação');
+      toast.error('Error al enviar la notificación');
     } finally {
       setSendingReady(false);
     }
@@ -61,7 +61,7 @@ export function NotificationControls({
 
   const handleSendCustomMessage = async () => {
     if (!customMessage.trim()) {
-      toast.error('Digite uma mensagem');
+      toast.error('Escribí un mensaje');
       return;
     }
 
@@ -74,13 +74,13 @@ export function NotificationControls({
         delay: 0
       });
       
-      toast.success('Mensagem personalizada enviada!');
+      toast.success('¡Mensaje personalizado enviado!');
       setCustomMessage('');
       setIsCustomDialogOpen(false);
       onNotificationSent?.();
     } catch (error) {
       console.error('Error sending custom message:', error);
-      toast.error('Erro ao enviar mensagem');
+      toast.error('Error al enviar el mensaje');
     } finally {
       setSendingCustom(false);
     }
@@ -91,7 +91,7 @@ export function NotificationControls({
       return (
         <Badge variant="outline" className="text-xs">
           <Clock className="mr-1 h-3 w-3" />
-          Nenhuma notificação
+          Sin notificaciones
         </Badge>
       );
     }
@@ -142,23 +142,23 @@ export function NotificationControls({
     <div className="space-y-2">
       {/* Notification Status */}
       <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Status da Notificação:</span>
+        <span className="text-muted-foreground">Estado de la notificación:</span>
         {getNotificationStatusBadge()}
       </div>
 
       {lastNotification && (
         <div className="text-xs text-muted-foreground space-y-1">
           {lastNotification.sent_at && (
-            <p>Última enviada: {formatTimestamp(lastNotification.sent_at)}</p>
+            <p>Último envío: {formatTimestamp(lastNotification.sent_at)}</p>
           )}
           {lastNotification.notification_type && (
             <p>Tipo: {getNotificationTypeLabel(lastNotification.notification_type)}</p>
           )}
           {lastNotification.attempts > 1 && (
-            <p>Tentativas: {lastNotification.attempts}</p>
+            <p>Intentos: {lastNotification.attempts}</p>
           )}
           {lastNotification.error_message && (
-            <p className="text-destructive">Erro: {lastNotification.error_message}</p>
+            <p className="text-destructive">Error: {lastNotification.error_message}</p>
           )}
         </div>
       )}
@@ -166,7 +166,7 @@ export function NotificationControls({
       {hasFailedNotifications && (
         <div className="flex items-center gap-1 text-xs text-destructive">
           <AlertCircle className="h-3 w-3" />
-          <span>Notificações falharam - requer atenção</span>
+          <span>Fallaron las notificaciones - requiere atención</span>
         </div>
       )}
 
@@ -182,7 +182,7 @@ export function NotificationControls({
             className="flex-1"
           >
             <Bell className="mr-1 h-3 w-3" />
-            {sendingReady ? 'Enviando...' : 'Notificar Pronto'}
+            {sendingReady ? 'Enviando...' : 'Notificar Listo'}
           </Button>
         )}
 
@@ -191,22 +191,22 @@ export function NotificationControls({
           <DialogTrigger asChild>
             <Button size="sm" variant="outline" className={orderStatus === 'ready' || orderStatus === 'completed' ? 'flex-1' : ''}>
               <MessageSquare className="mr-1 h-3 w-3" />
-              Mensagem
+              Mensaje
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Enviar Mensagem Personalizada</DialogTitle>
+              <DialogTitle>Enviar mensaje personalizado</DialogTitle>
               <DialogDescription>
-                Envie uma mensagem WhatsApp personalizada para {customerName} ({customerPhone})
+                Enviá un mensaje de WhatsApp personalizado a {customerName} ({customerPhone})
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="custom-message">Mensagem</Label>
+                <Label htmlFor="custom-message">Mensaje</Label>
                 <Textarea
                   id="custom-message"
-                  placeholder="Digite sua mensagem aqui..."
+                  placeholder="Escribí tu mensaje aquí..."
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   rows={5}
@@ -217,8 +217,8 @@ export function NotificationControls({
                 </p>
               </div>
               <div className="bg-muted p-3 rounded-md text-sm">
-                <p className="font-medium mb-1">Pré-visualização:</p>
-                <p className="whitespace-pre-wrap">{customMessage || 'Sua mensagem aparecerá aqui...'}</p>
+                <p className="font-medium mb-1">Vista previa:</p>
+                <p className="whitespace-pre-wrap">{customMessage || 'Tu mensaje aparecerá aquí...'}</p>
               </div>
             </div>
             <DialogFooter>
@@ -234,7 +234,7 @@ export function NotificationControls({
                 disabled={sendingCustom || !customMessage.trim()}
               >
                 <Send className="mr-2 h-4 w-4" />
-                {sendingCustom ? 'Enviando...' : 'Enviar Mensagem'}
+                {sendingCustom ? 'Enviando...' : 'Enviar mensaje'}
               </Button>
             </DialogFooter>
           </DialogContent>

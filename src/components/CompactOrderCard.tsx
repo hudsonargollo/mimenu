@@ -79,7 +79,7 @@ export const CompactOrderCard = ({
               <Badge 
                 variant="destructive" 
                 className="h-5 px-1.5 text-xs font-semibold animate-pulse"
-                title={`${unreadMessageCount} mensagem${unreadMessageCount > 1 ? 'ns' : ''} não lida${unreadMessageCount > 1 ? 's' : ''}`}
+                title={`${unreadMessageCount} mensaje${unreadMessageCount > 1 ? 's' : ''} no leído${unreadMessageCount > 1 ? 's' : ''}`}
               >
                 <MessageSquare className="h-3 w-3 mr-1" />
                 {unreadMessageCount}
@@ -96,7 +96,7 @@ export const CompactOrderCard = ({
         
         <div className="text-right shrink-0">
           <p className="font-bold text-xl text-primary">
-            R$ {Number(order.total_amount).toFixed(2)}
+            Bs. {Number(order.total_amount).toFixed(2)}
           </p>
           <Button
             variant="ghost"
@@ -107,12 +107,12 @@ export const CompactOrderCard = ({
             {isExpanded ? (
               <>
                 <ChevronUp className="h-3 w-3 mr-1" />
-                Menos
+                Ver menos
               </>
             ) : (
               <>
                 <ChevronDown className="h-3 w-3 mr-1" />
-                Mais
+                Ver más
               </>
             )}
           </Button>
@@ -136,7 +136,7 @@ export const CompactOrderCard = ({
           {/* Items List */}
           {order.items && order.items.length > 0 && (
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs font-semibold text-gray-700 mb-2">Itens do Pedido:</p>
+              <p className="text-xs font-semibold text-gray-700 mb-2">Ítems del Pedido:</p>
               <div className="space-y-1">
                 {order.items.map((item: any, index: number) => (
                   <div key={index} className="flex justify-between text-xs">
@@ -144,7 +144,7 @@ export const CompactOrderCard = ({
                       {item.quantity}x {item.name}
                     </span>
                     <span className="font-medium text-gray-900">
-                      R$ {Number(item.price * item.quantity).toFixed(2)}
+                      Bs. {Number(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -161,7 +161,7 @@ export const CompactOrderCard = ({
                 size="sm"
               >
                 <CreditCard className="h-3 w-3 mr-1" />
-                Gerar Pagamento
+                Generar Pago
               </Button>
             )}
             <div className="flex gap-2">
@@ -173,7 +173,7 @@ export const CompactOrderCard = ({
                   className="flex-1"
                 >
                   <Eye className="h-3 w-3 mr-1" />
-                  Detalhes
+                  Detalles
                 </Button>
               )}
               {onNotify && (
@@ -193,10 +193,10 @@ export const CompactOrderCard = ({
                 onClick={handlePrintKitchen}
                 disabled={isPrinting}
                 className="flex-1"
-                title="Imprimir comanda da cozinha"
+                title="Imprimir comanda de cocina"
               >
                 <Printer className="h-3 w-3 mr-1" />
-                {isPrinting ? 'Imprimindo...' : 'Cozinha'}
+                {isPrinting ? 'Imprimiendo...' : 'Cocina'}
               </Button>
               <Button
                 variant="outline"
@@ -204,7 +204,7 @@ export const CompactOrderCard = ({
                 onClick={handlePrintCustomer}
                 disabled={isPrinting}
                 className="flex-1"
-                title="Imprimir comprovante do cliente"
+                title="Imprimir comprobante del cliente"
               >
                 <Printer className="h-3 w-3 mr-1" />
                 Cliente

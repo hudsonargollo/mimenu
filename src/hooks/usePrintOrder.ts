@@ -119,11 +119,11 @@ export function usePrintOrder() {
     receipt += `PEDIDO: #${data.order.order_number}\n`;
     receipt += `HORA: ${formatDate(data.order.created_at)}\n`;
     if (data.waiterName && data.waiterName !== 'Cliente') {
-      receipt += `GARZON: ${data.waiterName}\n`;
+      receipt += `GARZÓN: ${data.waiterName}\n`;
     }
     receipt += divider + '\n';
     receipt += '\n';
-    receipt += 'ITEMS:\n';
+    receipt += 'ÍTEMS:\n';
     receipt += divider2 + '\n';
     
     data.items.forEach(item => {
@@ -175,10 +175,10 @@ export function usePrintOrder() {
     receipt += `Fecha: ${formatDate(data.order.created_at)}\n`;
     receipt += `Cliente: ${data.order.customer_name}\n`;
     if (data.waiterName && data.waiterName !== 'Cliente') {
-      receipt += `Garzon: ${data.waiterName}\n`;
+      receipt += `Garzón: ${data.waiterName}\n`;
     }
     receipt += divider + '\n';
-    receipt += 'CANT  ITEM                  PRECIO\n';
+    receipt += 'CANT  ÍTEM                  PRECIO\n';
     receipt += divider2 + '\n';
     
     data.items.forEach(item => {

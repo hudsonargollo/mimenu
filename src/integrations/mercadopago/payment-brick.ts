@@ -108,7 +108,7 @@ function getErrorMessage(error: any): string {
     return ERROR_MESSAGES.SDK_LOAD_FAILED;
   }
 
-  // Return the original message if it's already in Portuguese, otherwise generic error
+  // Return the original message if it already carries an accent (likely localized), otherwise generic error
   if (error.message && /[áàâãéêíóôõúç]/i.test(error.message)) {
     return error.message;
   }
@@ -276,7 +276,7 @@ class PaymentBrickService {
 
       // Validate amount
       if (!config.amount || config.amount <= 0) {
-        throw new Error('Valor inválido para pagamento');
+        throw new Error('Monto inválido para el pago');
       }
 
       // Create brick configuration with defaults
@@ -428,7 +428,7 @@ class PaymentBrickService {
     try {
       // Validate amount if provided
       if (config.amount !== undefined && config.amount <= 0) {
-        throw new Error('Valor inválido para pagamento');
+        throw new Error('Monto inválido para el pago');
       }
 
       await this.brickController.update(config);

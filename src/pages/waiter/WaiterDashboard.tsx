@@ -33,7 +33,7 @@ const WaiterDashboard = () => {
   const isMobile = useIsMobile();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [waiterName, setWaiterName] = useState("Garçom");
+  const [waiterName, setWaiterName] = useState("Mesero");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showPIXGenerator, setShowPIXGenerator] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -52,7 +52,7 @@ const WaiterDashboard = () => {
 
     if (!user) {
       console.error('❌ No user found, redirecting to auth');
-      toast.error("Você precisa fazer login.");
+      toast.error("Necesitás iniciar sesión.");
       navigate("/auth");
       return;
     }
@@ -76,7 +76,7 @@ const WaiterDashboard = () => {
     }
 
     // Use display_name if available, otherwise fall back to full_name or email
-    const displayName = profile?.display_name || profile?.full_name || user.email || "Garçom";
+    const displayName = profile?.display_name || profile?.full_name || user.email || "Mesero";
     setWaiterName(displayName);
     setCurrentUserId(user.id);
 
@@ -88,7 +88,7 @@ const WaiterDashboard = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Erro ao carregar pedidos: " + error.message);
+      toast.error("Error al cargar los pedidos: " + error.message);
     } else {
       setOrders(data || []);
     }
@@ -115,8 +115,8 @@ const WaiterDashboard = () => {
         if (oldStatus !== updatedOrder.status) {
           if (ORDER_STATUS_CATEGORIES.PAID.includes(updatedOrder.status.toLowerCase())) {
             const commission = newTotal * 0.1;
-            toast.success('💰 Comissão confirmada! Pedido pago.', {
-              description: `${formatOrderNumber(updatedOrder)} - Comissão: ${commission.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+            toast.success('💰 ¡Comisión confirmada! Pedido pagado.', {
+              description: `${formatOrderNumber(updatedOrder)} - Comisión: ${commission.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
             });
           } else if (ORDER_STATUS_CATEGORIES.EXCLUDED.includes(updatedOrder.status.toLowerCase())) {
             toast.info('Pedido cancelado', {
@@ -129,8 +129,8 @@ const WaiterDashboard = () => {
           const newCommission = newTotal * 0.1;
           const commissionDiff = newCommission - oldCommission;
           
-          toast.info('Pedido atualizado', {
-            description: `Comissão ${commissionDiff > 0 ? 'aumentou' : 'diminuiu'}: ${Math.abs(commissionDiff).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+          toast.info('Pedido actualizado', {
+            description: `Comisión ${commissionDiff > 0 ? 'aumentó' : 'disminuyó'}: ${Math.abs(commissionDiff).toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
           });
         }
         
@@ -233,15 +233,15 @@ const WaiterDashboard = () => {
 
       if (error) {
         console.error('Error updating order status:', error);
-        toast.error('Erro ao atualizar status do pedido');
+        toast.error('Error al actualizar el estado del pedido');
       } else {
-        toast.success('Pedido marcado como pago!');
+        toast.success('¡Pedido marcado como pagado!');
         // Refresh orders to show updated status
         fetchWaiterData();
       }
     } catch (error) {
       console.error('Error handling payment completion:', error);
-      toast.error('Erro ao processar pagamento');
+      toast.error('Error al procesar el pago');
     }
 
     setShowPIXGenerator(false);
@@ -279,8 +279,8 @@ const WaiterDashboard = () => {
     
     // Show success notification with commission update
     const commissionStatus = getCommissionStatus(updatedOrder);
-    toast.success('Pedido atualizado!', {
-      description: `Nova comissão: ${commissionStatus.displayAmount}`
+    toast.success('¡Pedido actualizado!', {
+      description: `Nueva comisión: ${commissionStatus.displayAmount}`
     });
     
     console.log('✅ Dashboard refreshed with updated order data');
@@ -339,8 +339,8 @@ const WaiterDashboard = () => {
     // Fetch fresh data from the database to ensure consistency
     await fetchWaiterData();
     
-    toast.success('Itens adicionados com sucesso!', {
-      description: `Novo total: ${newTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+    toast.success('¡Ítems agregados con éxito!', {
+      description: `Nuevo total: ${newTotal.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
     });
     
     console.log('✅ Dashboard refreshed with updated order data');
@@ -385,15 +385,15 @@ const WaiterDashboard = () => {
 
       if (error) throw error;
 
-      toast.success('Pedido pronto para retirada!', {
-        description: `${formatOrderNumber(order)} - Cliente será notificado`
+      toast.success('¡Pedido listo para retiro!', {
+        description: `${formatOrderNumber(order)} - El cliente será notificado`
       });
 
       // Refresh data
       await fetchWaiterData();
     } catch (error) {
       console.error('Error marking order as ready:', error);
-      toast.error('Erro ao marcar pedido como pronto');
+      toast.error('Error al marcar el pedido como listo');
     }
   };
 
@@ -442,7 +442,7 @@ const WaiterDashboard = () => {
       <div className="min-h-screen bg-gradient-acai flex items-center justify-center">
         <div className="text-center text-white">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Carregando Dashboard...</p>
+          <p className="text-lg">Cargando panel...</p>
         </div>
       </div>
     );
@@ -452,7 +452,7 @@ const WaiterDashboard = () => {
     <AdminLayout>
       {/* Uniform Header */}
       <UniformHeader
-        title="Garçom"
+        title="Mesero"
         onLogout={handleLogout}
       />
 
@@ -469,12 +469,12 @@ const WaiterDashboard = () => {
                       <ShoppingCart className="w-7 h-7 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-2xl sm:text-3xl font-bold mb-1 leading-tight">Criar Novo Pedido</h3>
-                      <p className="text-green-50 text-sm sm:text-base">Comece a atender um novo cliente</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold mb-1 leading-tight">Crear Nuevo Pedido</h3>
+                      <p className="text-green-50 text-sm sm:text-base">Empezá a atender a un nuevo cliente</p>
                     </div>
                   </div>
                   <p className="text-white/95 text-sm sm:text-base leading-relaxed">
-                    Abra o cardápio digital para fazer um pedido personalizado
+                    Abrí el menú digital para hacer un pedido personalizado
                   </p>
                 </div>
                 <Button 
@@ -487,7 +487,7 @@ const WaiterDashboard = () => {
                   data-testid="new-order-button"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  Novo Pedido
+                  Nuevo Pedido
                 </Button>
               </CardContent>
             </Card>
@@ -501,10 +501,10 @@ const WaiterDashboard = () => {
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-500 group-hover:text-white/90 transition-colors uppercase tracking-wide mb-2">
-                    Total de Vendas
+                    Total de Ventas
                   </p>
                   <div className="text-3xl sm:text-4xl font-bold text-gray-900 group-hover:text-white transition-colors">
-                    {totalSales.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    {totalSales.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}
                   </div>
                 </div>
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-white/20 group-hover:shadow-xl transition-all duration-300 flex-shrink-0">
@@ -530,7 +530,7 @@ const WaiterDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="text-xl font-semibold text-gray-900 flex items-center">
                 <ShoppingCart className="w-5 h-5 mr-2 text-purple-600" />
-                Histórico de Pedidos
+                Historial de Pedidos
               </CardTitle>
               
               {/* Payment Status Tabs */}
@@ -545,11 +545,11 @@ const WaiterDashboard = () => {
                   </TabsTrigger>
                   <TabsTrigger value="pending" className="text-xs sm:text-sm">
                     <Clock className="w-3 h-3 mr-1" />
-                    Pendente ({pendingCount})
+                    Pendientes ({pendingCount})
                   </TabsTrigger>
                   <TabsTrigger value="confirmed" className="text-xs sm:text-sm">
                     <CheckCircle className="w-3 h-3 mr-1" />
-                    Confirmado ({confirmedCount})
+                    Confirmados ({confirmedCount})
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -576,11 +576,11 @@ const WaiterDashboard = () => {
                   <Card className="p-8 text-center">
                     <div className="flex flex-col items-center">
                       <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
-                      <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido encontrado</p>
+                      <p className="text-lg font-medium text-gray-700 mb-2">No se encontraron pedidos</p>
                       <p className="text-sm text-gray-500">
                         {paymentStatusFilter === 'all' 
-                          ? 'Clique em "Novo Pedido" para começar a atender clientes'
-                          : `Nenhum pedido com status de pagamento "${paymentStatusFilter === 'pending' ? 'Pendente' : 'Confirmado'}"`
+                          ? 'Hacé clic en "Nuevo Pedido" para empezar a atender clientes'
+                          : `No hay pedidos con estado de pago "${paymentStatusFilter === 'pending' ? 'Pendiente' : 'Confirmado'}"`
                         }
                       </p>
                     </div>
@@ -593,13 +593,13 @@ const WaiterDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-gray-200">
-                      <TableHead className="text-gray-600">ID do Pedido</TableHead>
+                      <TableHead className="text-gray-600">ID del Pedido</TableHead>
                       <TableHead className="text-gray-600">Cliente</TableHead>
-                      <TableHead className="text-gray-600">Data</TableHead>
+                      <TableHead className="text-gray-600">Fecha</TableHead>
                       <TableHead className="text-right text-gray-600">Total</TableHead>
-                      <TableHead className="text-right text-gray-600">Sua Comissão</TableHead>
-                      <TableHead className="text-gray-600">Status</TableHead>
-                      <TableHead className="text-gray-600">Ações</TableHead>
+                      <TableHead className="text-right text-gray-600">Tu Comisión</TableHead>
+                      <TableHead className="text-gray-600">Estado</TableHead>
+                      <TableHead className="text-gray-600">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -627,7 +627,7 @@ const WaiterDashboard = () => {
                           </div>
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {new Date(order.created_at).toLocaleDateString("pt-BR", {
+                          {new Date(order.created_at).toLocaleDateString("es-BO", {
                             day: "2-digit",
                             month: "2-digit",
                             year: "numeric",
@@ -636,7 +636,7 @@ const WaiterDashboard = () => {
                           })}
                         </TableCell>
                         <TableCell className="text-right font-semibold text-gray-900">
-                          {order.total_amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                          {order.total_amount.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}
                         </TableCell>
                         <TableCell className="text-right">
                           {(() => {
@@ -684,7 +684,7 @@ const WaiterDashboard = () => {
                                 className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white"
                               >
                                 <CheckCircle className="w-3 h-3" />
-                                Pronto p/ Retirada
+                                Listo p/ Retiro
                               </Button>
                             )}
                             {canAddItems(order) && (
@@ -698,7 +698,7 @@ const WaiterDashboard = () => {
                                 className="flex items-center gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
                               >
                                 <Plus className="w-3 h-3" />
-                                Adicionar Item
+                                Agregar Ítem
                               </Button>
                             )}
                             {canGeneratePIX(order) && (
@@ -712,7 +712,7 @@ const WaiterDashboard = () => {
                                 className="flex items-center gap-1 text-green-600 border-green-600 hover:bg-green-50"
                               >
                                 <CreditCard className="w-3 h-3" />
-                                Gerar Pagamento
+                                Generar Pago
                               </Button>
                             )}
                             {canEditOrder(order) ? (
@@ -725,7 +725,7 @@ const WaiterDashboard = () => {
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Clique no pedido para editar</p>
+                                    <p>Hacé clic en el pedido para editarlo</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -739,7 +739,7 @@ const WaiterDashboard = () => {
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Este pedido não pode ser editado</p>
+                                    <p>Este pedido no se puede editar</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -753,11 +753,11 @@ const WaiterDashboard = () => {
                         <TableCell colSpan={7} className="text-center py-12">
                           <div className="flex flex-col items-center">
                             <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
-                            <p className="text-lg font-medium text-gray-700 mb-2">Nenhum pedido encontrado</p>
+                            <p className="text-lg font-medium text-gray-700 mb-2">No se encontraron pedidos</p>
                             <p className="text-sm text-gray-500">
                               {paymentStatusFilter === 'all' 
-                                ? 'Clique em "Novo Pedido" para começar a atender clientes'
-                                : `Nenhum pedido com status de pagamento "${paymentStatusFilter === 'pending' ? 'Pendente' : 'Confirmado'}"`
+                                ? 'Hacé clic en "Nuevo Pedido" para empezar a atender clientes'
+                                : `No hay pedidos con estado de pago "${paymentStatusFilter === 'pending' ? 'Pendiente' : 'Confirmado'}"`
                               }
                             </p>
                           </div>

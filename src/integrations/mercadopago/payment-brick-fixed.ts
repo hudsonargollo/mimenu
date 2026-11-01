@@ -19,12 +19,12 @@ declare global {
 }
 
 const ERROR_MESSAGES = {
-  SDK_LOAD_FAILED: 'Erro ao carregar sistema de pagamento. Verifique sua conexão.',
-  PUBLIC_KEY_MISSING: 'Configuração de pagamento inválida.',
-  BRICK_CREATE_FAILED: 'Erro ao carregar formulário de pagamento.',
-  BRICK_NOT_INITIALIZED: 'Formulário de pagamento não inicializado.',
-  TOKEN_NOT_FOUND: 'Token não encontrado nos dados do formulário.',
-  GENERIC_ERROR: 'Erro inesperado. Tente novamente.',
+  SDK_LOAD_FAILED: 'Error al cargar el sistema de pago. Verifica tu conexión.',
+  PUBLIC_KEY_MISSING: 'Configuración de pago inválida.',
+  BRICK_CREATE_FAILED: 'Error al cargar el formulario de pago.',
+  BRICK_NOT_INITIALIZED: 'Formulario de pago no inicializado.',
+  TOKEN_NOT_FOUND: 'Token no encontrado en los datos del formulario.',
+  GENERIC_ERROR: 'Error inesperado. Intenta nuevamente.',
 } as const;
 
 class PaymentBrickServiceFixed {
@@ -100,7 +100,7 @@ class PaymentBrickServiceFixed {
       }
 
       this.mp = new window.MercadoPago(this.publicKey, {
-        locale: 'pt-BR'
+        locale: 'es-BO'
       });
 
       this.isInitialized = true;
@@ -131,7 +131,7 @@ class PaymentBrickServiceFixed {
       }
 
       if (!config.amount || config.amount <= 0) {
-        throw new Error('Valor inválido para pagamento');
+        throw new Error('Monto inválido para el pago');
       }
 
       console.log('Creating Card Payment Brick with amount:', config.amount);

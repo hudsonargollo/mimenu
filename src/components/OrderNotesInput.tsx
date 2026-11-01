@@ -22,7 +22,7 @@ const OrderNotesInput = ({
   // Validate notes length
   const validateNotes = useCallback((value: string): string | undefined => {
     if (value.length > maxLength) {
-      return `Observações não podem exceder ${maxLength} caracteres`;
+      return `Las observaciones no pueden exceder ${maxLength} caracteres`;
     }
     return undefined;
   }, [maxLength]);
@@ -61,18 +61,18 @@ const OrderNotesInput = ({
   return (
     <Card className={`p-6 shadow-lg border-2 border-orange-100 rounded-2xl ${className || ''}`}>
       <h2 className="font-bold text-xl mb-4 text-primary/70">
-        Observações do Pedido
+        Observaciones del Pedido
         <span className="text-sm font-normal text-muted-foreground ml-2">(Opcional)</span>
       </h2>
       
       <div className="space-y-2">
         <Label htmlFor="order-notes" className="text-sm font-medium">
-          Instruções especiais ou modificações
+          Instrucciones especiales o modificaciones
         </Label>
         
         <Textarea
           id="order-notes"
-          placeholder="Ex: Açaí sem granola, adicionar mel extra, sem leite condensado..."
+          placeholder="Ej: Açaí sin granola, agregar miel extra, sin leche condensada..."
           value={localNotes}
           onChange={handleNotesChange}
           className={`min-h-[100px] resize-none ${error ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
@@ -88,7 +88,7 @@ const OrderNotesInput = ({
         ) : (
           <div id="notes-help" className="flex justify-between items-center text-sm text-muted-foreground">
             <span>
-              Adicione instruções especiais para a cozinha (opcional)
+              Agrega instrucciones especiales para la cocina (opcional)
             </span>
             <span 
               className={`font-medium ${
@@ -99,7 +99,7 @@ const OrderNotesInput = ({
                     : 'text-muted-foreground'
               }`}
             >
-              {remainingChars} caracteres restantes
+              Quedan {remainingChars} caracteres
             </span>
           </div>
         )}
@@ -107,7 +107,7 @@ const OrderNotesInput = ({
         {localNotes.trim() && (
           <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm font-medium text-blue-900 mb-1">
-              Prévia das observações:
+              Vista previa de las observaciones:
             </p>
             <p className="text-sm text-blue-800 whitespace-pre-wrap">
               {localNotes.trim()}

@@ -37,7 +37,7 @@ export function CommissionCards({ orders }: CommissionCardsProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-green-700">
             <CheckCircle className="w-5 h-5" />
-            Comissões Confirmadas
+            Comisiones Confirmadas
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -58,7 +58,7 @@ export function CommissionCards({ orders }: CommissionCardsProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-yellow-700">
             <Clock className="w-5 h-5" />
-            Comissões Estimadas
+            Comisiones Estimadas
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -69,10 +69,10 @@ export function CommissionCards({ orders }: CommissionCardsProps) {
             })}
           </div>
           <p className="text-sm text-gray-600">
-            De {pendingOrdersCount} {pendingOrdersCount === 1 ? 'pedido pendente' : 'pedidos pendentes'}
+            De {pendingOrdersCount} {pendingOrdersCount === 1 ? 'pedido pendiente' : 'pedidos pendientes'}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Aguardando confirmação de pagamento
+            Esperando confirmación de pago
           </p>
         </CardContent>
       </Card>

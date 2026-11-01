@@ -118,7 +118,7 @@ export function formatBolivianPhone(phone: string): string {
  * Generate order description for MercadoPago
  */
 export function generateOrderDescription(orderNumber: number, customerName: string, itemCount: number): string {
-  return `Pedido #${orderNumber} - ${customerName} (${itemCount} ${itemCount === 1 ? 'item' : 'itens'})`;
+  return `Pedido #${orderNumber} - ${customerName} (${itemCount} ${itemCount === 1 ? 'ítem' : 'ítems'})`;
 }
 
 /**

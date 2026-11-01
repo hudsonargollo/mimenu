@@ -21,8 +21,8 @@ interface Waiter {
 
 const waiterSchema = z.object({
   email: z.string().trim().email({ message: "Email inválido" }).max(255),
-  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }).max(100),
-  full_name: z.string().min(1, { message: "Nome completo é obrigatório" }).max(255),
+  password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres" }).max(100),
+  full_name: z.string().min(1, { message: "El nombre completo es obligatorio" }).max(255),
 });
 
 const AdminWaiters = () => {
@@ -46,7 +46,7 @@ const AdminWaiters = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        toast.error("Sessão expirada. Faça login novamente.");
+        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
         navigate('/auth');
         return;
       }
@@ -65,18 +65,18 @@ const AdminWaiters = () => {
         
         // Handle specific error cases
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
-          toast.error("Sessão expirada. Faça login novamente.");
+          toast.error("Sesión expirada. Iniciá sesión nuevamente.");
           navigate('/auth');
           return;
         }
         
         if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-          toast.error("Acesso negado. Apenas administradores podem gerenciar garçons.");
+          toast.error("Acceso denegado. Solo los administradores pueden gestionar meseros.");
           navigate('/');
           return;
         }
         
-        toast.error("Erro ao carregar lista de garçons");
+        toast.error("Error al cargar la lista de meseros");
         setWaiters([]);
         return;
       }
@@ -85,7 +85,7 @@ const AdminWaiters = () => {
       
     } catch (error) {
       console.error("Error fetching waiters:", error);
-      toast.error("Erro ao carregar lista de garçons");
+      toast.error("Error al cargar la lista de meseros");
       setWaiters([]);
     } finally {
       setLoading(false);
@@ -110,7 +110,7 @@ const AdminWaiters = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        toast.error("Sessão expirada. Faça login novamente.");
+        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
         navigate('/auth');
         setIsSubmitting(false);
         return;
@@ -131,19 +131,19 @@ const AdminWaiters = () => {
         
         // Handle specific error cases
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
-          toast.error("Sessão expirada. Faça login novamente.");
+          toast.error("Sesión expirada. Iniciá sesión nuevamente.");
           navigate('/auth');
           return;
         }
         
         if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-          toast.error("Acesso negado. Apenas administradores podem gerenciar garçons.");
+          toast.error("Acceso denegado. Solo los administradores pueden gestionar meseros.");
           navigate('/');
           return;
         }
         
         if (error.message?.includes('already exists') || error.message?.includes('duplicate') || error.message?.includes('já existe')) {
-          toast.error("Este email já está cadastrado.");
+          toast.error("Este email ya está registrado.");
           return;
         }
         
@@ -152,25 +152,25 @@ const AdminWaiters = () => {
           return;
         }
         
-        toast.error("Erro ao criar conta de garçom.");
+        toast.error("Error al crear la cuenta del mesero.");
         return;
       }
 
-      toast.success("Garçom criado com sucesso!");
+      toast.success("¡Mesero creado con éxito!");
       setIsDialogOpen(false);
       setCurrentWaiter({});
       fetchWaiters(); // Refresh list
 
     } catch (error: any) {
       console.error('Create waiter error:', error);
-      toast.error("Erro no servidor. Tente novamente.");
+      toast.error("Error en el servidor. Intentá nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteWaiter = async (waiterId: string) => {
-    if (!window.confirm("Tem certeza que deseja deletar este garçom? Esta ação é irreversível.")) return;
+    if (!window.confirm("¿Seguro que querés eliminar este mesero? Esta acción es irreversible.")) return;
 
     setDeletingId(waiterId);
 
@@ -179,7 +179,7 @@ const AdminWaiters = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        toast.error("Sessão expirada. Faça login novamente.");
+        toast.error("Sesión expirada. Iniciá sesión nuevamente.");
         navigate('/auth');
         return;
       }
@@ -197,32 +197,32 @@ const AdminWaiters = () => {
         
         // Handle specific error cases
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
-          toast.error("Sessão expirada. Faça login novamente.");
+          toast.error("Sesión expirada. Iniciá sesión nuevamente.");
           navigate('/auth');
           return;
         }
         
         if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-          toast.error("Acesso negado. Apenas administradores podem gerenciar garçons.");
+          toast.error("Acceso denegado. Solo los administradores pueden gestionar meseros.");
           navigate('/');
           return;
         }
         
         if (error.message?.includes('400') || error.message?.includes('Bad Request')) {
-          toast.error("Garçom não encontrado.");
+          toast.error("Mesero no encontrado.");
           return;
         }
         
-        toast.error("Erro ao deletar conta de garçom.");
+        toast.error("Error al eliminar la cuenta del mesero.");
         return;
       }
 
-      toast.success("Garçom deletado com sucesso!");
+      toast.success("¡Mesero eliminado con éxito!");
       fetchWaiters(); // Refresh list
 
     } catch (error: any) {
       console.error('Delete waiter error:', error);
-      toast.error("Erro no servidor. Tente novamente.");
+      toast.error("Error en el servidor. Intentá nuevamente.");
     } finally {
       setDeletingId(null);
     }
@@ -241,10 +241,10 @@ const AdminWaiters = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <Users className="w-8 h-8 text-primary" />
-            Gestão de Garçons
+            Gestión de Meseros
           </h1>
           <p className="text-gray-600 mt-2">
-            Gerencie sua equipe de garçons
+            Gestioná tu equipo de meseros
           </p>
         </div>
         {/* Content Card */}
@@ -254,11 +254,11 @@ const AdminWaiters = () => {
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
                 <CardTitle className="text-lg font-semibold text-gray-900">
-                  Equipe de Garçons
+                  Equipo de Meseros
                 </CardTitle>
               </div>
               <span className="px-3 py-1 bg-primary/10 text-primary/90 rounded-full text-sm font-medium">
-                {waiters.length} garçom{waiters.length !== 1 ? 's' : ''}
+                {waiters.length} mesero{waiters.length !== 1 ? 's' : ''}
               </span>
             </div>
           </CardHeader>
@@ -266,15 +266,15 @@ const AdminWaiters = () => {
           {loading ? (
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3 text-primary" />
-              <p className="text-gray-500">Carregando lista de garçons...</p>
+              <p className="text-gray-500">Cargando lista de meseros...</p>
             </div>
           ) : waiters.length === 0 ? (
             <div className="text-center py-12">
               <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-500 mb-4">Nenhum garçom cadastrado</p>
+              <p className="text-gray-500 mb-4">Ningún mesero registrado</p>
               <Button onClick={openCreateDialog} className="bg-primary hover:bg-primary/90">
                 <Plus className="w-4 h-4 mr-2" />
-                Adicionar Primeiro Garçom
+                Agregar primer mesero
               </Button>
             </div>
           ) : (
@@ -303,15 +303,15 @@ const AdminWaiters = () => {
                       </Button>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                      <span className="text-xs text-gray-500">Criado em</span>
+                      <span className="text-xs text-gray-500">Creado el</span>
                       <span className="text-sm font-medium text-gray-700">
-                        {new Date(waiter.created_at).toLocaleDateString("pt-BR")}
+                        {new Date(waiter.created_at).toLocaleDateString("es-BO")}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">Status</span>
                       <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                        Ativo
+                        Activo
                       </span>
                     </div>
                   </div>
@@ -323,10 +323,10 @@ const AdminWaiters = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Nome Completo</TableHead>
+                      <TableHead>Nombre completo</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Criado em</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                      <TableHead>Creado el</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -334,7 +334,7 @@ const AdminWaiters = () => {
                       <TableRow key={waiter.id}>
                         <TableCell className="font-medium">{waiter.full_name}</TableCell>
                         <TableCell>{waiter.email}</TableCell>
-                        <TableCell>{new Date(waiter.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                        <TableCell>{new Date(waiter.created_at).toLocaleDateString("es-BO")}</TableCell>
                         <TableCell className="text-right space-x-2">
                           <Button 
                             variant="destructive" 
@@ -363,12 +363,12 @@ const AdminWaiters = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Editar Garçom" : "Adicionar Novo Garçom"}</DialogTitle>
+            <DialogTitle>{isEditing ? "Editar mesero" : "Agregar nuevo mesero"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateWaiter}>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="full_name">Nome Completo</Label>
+                <Label htmlFor="full_name">Nombre completo</Label>
                 <Input
                   id="full_name"
                   value={currentWaiter.full_name || ''}
@@ -388,7 +388,7 @@ const AdminWaiters = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Senha {isEditing ? "(Deixe em branco para não alterar)" : ""}</Label>
+                <Label htmlFor="password">Contraseña {isEditing ? "(Dejala en blanco para no cambiarla)" : ""}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -401,7 +401,7 @@ const AdminWaiters = () => {
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                {isEditing ? "Salvar Alterações" : "Criar Garçom"}
+                {isEditing ? "Guardar cambios" : "Crear mesero"}
               </Button>
             </DialogFooter>
           </form>

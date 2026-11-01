@@ -24,7 +24,9 @@ import {
   Layers,
   UploadCloud,
   Check,
-  MessageCircle
+  MessageCircle,
+  Send,
+  Smartphone
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { printServerClient } from '@/integrations/print-server/client';
@@ -52,7 +54,7 @@ const AdminSettings = () => {
   const [whatsappVerified, setWhatsappVerified] = useState(false);
 
   useEffect(() => {
-    document.title = 'Configurações | MiMenu';
+    document.title = 'Configuración | MiMenu';
     const saved = printServerClient.getServerUrl();
     setServerUrl(saved);
     checkPrinterConnection();
@@ -67,7 +69,7 @@ const AdminSettings = () => {
       if (available) {
         const status = await printServerClient.getStatus();
         setPrinterStatus(status);
-        toast.success('Servidor de impressão conectado!');
+        toast.success('¡Servidor de impresión conectado!');
       } else {
         setPrinterStatus(null);
       }
@@ -81,7 +83,7 @@ const AdminSettings = () => {
 
   const handleSavePrinterUrl = () => {
     printServerClient.setServerUrl(serverUrl);
-    toast.success('URL do servidor de impressão salva');
+    toast.success('URL del servidor de impresión guardada');
     checkPrinterConnection();
   };
 
@@ -96,13 +98,13 @@ const AdminSettings = () => {
       });
 
       if (response.ok) {
-        toast.success('Impressão de teste enviada com sucesso!');
+        toast.success('¡Impresión de prueba enviada con éxito!');
       } else {
         const error = await response.json();
-        toast.error(`Erro: ${error.message || 'Falha na impressão'}`);
+        toast.error(`Error: ${error.message || 'Fallo en la impresión'}`);
       }
     } catch {
-      toast.error('Erro ao conectar com servidor de impressão local');
+      toast.error('Error al conectar con el servidor de impresión local');
     } finally {
       setIsTesting(false);
     }
@@ -127,7 +129,7 @@ const AdminSettings = () => {
     link.download = `mimenu_backup_${venue?.slug || 'store'}_${Date.now()}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success('Backup exportado em JSON com sucesso');
+    toast.success('Backup exportado en JSON con éxito');
   };
 
   return (
@@ -141,11 +143,11 @@ const AdminSettings = () => {
                 <Settings className="w-4 h-4" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                Configurações da Plataforma
+                Configuración de la plataforma
               </h1>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Gerencie a conectividade do servidor de impressão, mensageria WhatsApp, isolamento multi-tenant e backups.
+              Gestioná la conectividad del servidor de impresión, la mensajería de WhatsApp, el aislamiento multi-tenant y los backups.
             </p>
           </div>
 
@@ -156,15 +158,15 @@ const AdminSettings = () => {
             className="text-xs font-bold gap-1.5 border-border hover:border-amber-500"
           >
             <Download className="w-3.5 h-3.5 text-amber-500" />
-            <span>Exportar Backup JSON</span>
+            <span>Exportar backup JSON</span>
           </Button>
         </div>
 
         {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 bg-muted/60 p-1 rounded-xl">
-            <TabsTrigger value="general" className="rounded-lg text-xs font-semibold">Geral & Tenant</TabsTrigger>
-            <TabsTrigger value="printer" className="rounded-lg text-xs font-semibold">Impressão Térmica</TabsTrigger>
+            <TabsTrigger value="general" className="rounded-lg text-xs font-semibold">General & Tenant</TabsTrigger>
+            <TabsTrigger value="printer" className="rounded-lg text-xs font-semibold">Impresión térmica</TabsTrigger>
             <TabsTrigger value="notifications" className="rounded-lg text-xs font-semibold">WhatsApp & Copilot</TabsTrigger>
             <TabsTrigger value="whatsapp" className="rounded-lg text-xs font-semibold">WhatsApp AI Concierge</TabsTrigger>
             <TabsTrigger value="database" className="rounded-lg text-xs font-semibold">KV Storage & Backup</TabsTrigger>
@@ -179,7 +181,7 @@ const AdminSettings = () => {
                   <span>Ambiente & Multi-Tenant KV</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Especificações de execução e integridade da infraestrutura edge.
+                  Especificaciones de ejecución e integridad de la infraestructura edge.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -189,7 +191,7 @@ const AdminSettings = () => {
                     <p className="text-sm font-bold text-foreground mt-0.5">MiMenu SaaS</p>
                   </div>
                   <div className="p-3.5 bg-muted/30 border border-border/60 rounded-xl">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Versão do Core</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Versión del Core</p>
                     <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">v2.4.0 (Edge)</p>
                   </div>
                   <div className="p-3.5 bg-muted/30 border border-border/60 rounded-xl">
@@ -197,7 +199,7 @@ const AdminSettings = () => {
                     <p className="text-sm font-bold text-foreground mt-0.5">Cloudflare KV</p>
                   </div>
                   <div className="p-3.5 bg-muted/30 border border-border/60 rounded-xl">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status do Gateway</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estado del Gateway</p>
                     <p className="text-sm font-bold text-emerald-500 mt-0.5 flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Online (0ms Cold)</span>
@@ -207,17 +209,17 @@ const AdminSettings = () => {
 
                 <div className="p-4 bg-muted/20 border border-border/60 rounded-xl space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-foreground">Loja Atual Conectada:</span>
+                    <span className="font-semibold text-foreground">Local actual conectado:</span>
                     <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold">
                       {venue?.name}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Slug Público:</span>
+                    <span className="text-muted-foreground">Slug público:</span>
                     <span className="font-mono text-xs text-foreground">mimenu.clubemkt.digital/loja/{venue?.slug}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Moeda e Localidade:</span>
+                    <span className="text-muted-foreground">Moneda y ubicación:</span>
                     <span className="font-medium text-foreground">{venue?.currency} ({venue?.city})</span>
                   </div>
                 </div>
@@ -231,10 +233,10 @@ const AdminSettings = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Printer className="w-4 h-4 text-amber-500" />
-                  <span>Servidor de Impressão Térmica (ESC/POS & PrintNode)</span>
+                  <span>Servidor de Impresión Térmica (ESC/POS & PrintNode)</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Integração para disparo automático de comandas de cozinha (KDS) e recibos de mesa via USB/Rede local.
+                  Integración para el envío automático de comandas de cocina (KDS) y recibos de mesa vía USB/red local.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
@@ -243,18 +245,18 @@ const AdminSettings = () => {
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                     <div>
-                      <p className="text-xs font-bold text-foreground">Servidor Local de Impressão</p>
+                      <p className="text-xs font-bold text-foreground">Servidor local de impresión</p>
                       <p className="text-[11px] text-muted-foreground">Driver WebSocket / HTTP ESC/POS</p>
                     </div>
                   </div>
                   <Badge className={isConnected ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'}>
-                    {isConnected ? 'Conectado' : 'Aguardando Servidor'}
+                    {isConnected ? 'Conectado' : 'Esperando servidor'}
                   </Badge>
                 </div>
 
                 {/* Server URL */}
                 <div className="space-y-2">
-                  <Label htmlFor="serverUrl" className="text-xs font-semibold">URL do Servidor Local</Label>
+                  <Label htmlFor="serverUrl" className="text-xs font-semibold">URL del servidor local</Label>
                   <div className="flex gap-2">
                     <Input
                       id="serverUrl"
@@ -268,7 +270,7 @@ const AdminSettings = () => {
                       onClick={handleSavePrinterUrl}
                       className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold h-10 px-5 rounded-xl shrink-0"
                     >
-                      Salvar URL
+                      Guardar URL
                     </Button>
                   </div>
                 </div>
@@ -282,7 +284,7 @@ const AdminSettings = () => {
                     className="text-xs font-semibold h-10 rounded-xl flex items-center justify-center gap-2"
                   >
                     {isChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                    <span>Testar Conexão</span>
+                    <span>Probar conexión</span>
                   </Button>
                   
                   <Button
@@ -292,7 +294,7 @@ const AdminSettings = () => {
                     className="text-xs font-semibold h-10 rounded-xl flex items-center justify-center gap-2"
                   >
                     {isTesting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlayCircle className="w-3.5 h-3.5" />}
-                    <span>Imprimir Comanda de Teste</span>
+                    <span>Imprimir comanda de prueba</span>
                   </Button>
                 </div>
               </CardContent>
@@ -305,10 +307,10 @@ const AdminSettings = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Bot className="w-4 h-4 text-emerald-500" />
-                  <span>WhatsApp Copilot & Webhooks de Notificação</span>
+                  <span>WhatsApp Copilot & Webhooks de notificación</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Automação de comandas, confirmação de Pix e comando de voz/texto.
+                  Automatización de comandas, confirmación de pago por QR y comandos de voz/texto.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -320,10 +322,10 @@ const AdminSettings = () => {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-foreground">Disparo Automático de Status</p>
-                        <p className="text-[10px] text-muted-foreground">Envia mensagem quando o pedido for aceito, preparado ou sair para entrega</p>
+                        <p className="text-[10px] text-muted-foreground">Envía un mensaje cuando el pedido es aceptado, preparado o sale para entrega</p>
                       </div>
                     </div>
-                    <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Ativo</Badge>
+                    <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Activo</Badge>
                   </div>
 
                   <div className="p-4 bg-muted/20 border border-border/60 rounded-xl flex items-center justify-between">
@@ -332,11 +334,11 @@ const AdminSettings = () => {
                         <Bot className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-foreground">Copiloto IA para Gerência</p>
-                        <p className="text-[10px] text-muted-foreground">Permite pausar itens, alterar preços e consultar vendas pelo WhatsApp</p>
+                        <p className="text-xs font-bold text-foreground">Copiloto IA para gerencia</p>
+                        <p className="text-[10px] text-muted-foreground">Permite pausar ítems, cambiar precios y consultar ventas por WhatsApp</p>
                       </div>
                     </div>
-                    <Badge className="bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">Ativo</Badge>
+                    <Badge className="bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">Activo</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -352,7 +354,7 @@ const AdminSettings = () => {
                   <span>WhatsApp AI Concierge (Evolution API)</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Conecte o agente de IA do cardápio ao WhatsApp via Evolution API. O concierge responde por conta do restaurante de forma personalizada.
+                  Conectá el agente de IA del menú a WhatsApp vía Evolution API. El concierge responde en nombre del restaurante de forma personalizada.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -363,8 +365,8 @@ const AdminSettings = () => {
                       <Smartphone className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-foreground">AI Concierge no WhatsApp</p>
-                      <p className="text-[10px] text-muted-foreground">Ativa a integração do chatbot com o WhatsApp via Evolution API</p>
+                      <p className="text-xs font-bold text-foreground">AI Concierge en WhatsApp</p>
+                      <p className="text-[10px] text-muted-foreground">Activa la integración del chatbot con WhatsApp vía Evolution API</p>
                     </div>
                   </div>
                   <button
@@ -399,7 +401,7 @@ const AdminSettings = () => {
                       type="password"
                       value={evolutionApiKey}
                       onChange={(e) => setEvolutionApiKey(e.target.value)}
-                      placeholder="Chave de API do Evolution"
+                      placeholder="Clave de API de Evolution"
                       className="text-xs h-10 rounded-xl"
                       disabled={!whatsappEnabled}
                     />
@@ -412,14 +414,14 @@ const AdminSettings = () => {
                       type="text"
                       value={evolutionInstanceName}
                       onChange={(e) => setEvolutionInstanceName(e.target.value)}
-                      placeholder="Nome da instância WhatsApp"
+                      placeholder="Nombre de la instancia de WhatsApp"
                       className="text-xs h-10 rounded-xl"
                       disabled={!whatsappEnabled}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="whatsappSenderPhone" className="text-xs font-semibold">Telefone do Restaurante (para respostas)</Label>
+                    <Label htmlFor="whatsappSenderPhone" className="text-xs font-semibold">Teléfono del restaurante (para respuestas)</Label>
                     <Input
                       id="whatsappSenderPhone"
                       type="tel"
@@ -436,10 +438,10 @@ const AdminSettings = () => {
                 <div className="p-3 bg-muted/30 border border-border/60 rounded-xl space-y-2">
                   <p className="text-xs font-semibold text-foreground">Webhook URL (Evolution API)</p>
                   <p className="text-[11px] font-mono text-muted-foreground break-all">
-                    {window.location.origin}/api/whatsapp/chatbot-webhook/{venue.slug || 'slug-do-venue'}
+                    {window.location.origin}/api/whatsapp/chatbot-webhook/{venue.slug || 'slug-del-local'}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
-                    Configure este URL no painel da Evolution API como webhook de mensagens.
+                    Configurá esta URL en el panel de Evolution API como webhook de mensajes.
                   </p>
                 </div>
 
@@ -448,7 +450,7 @@ const AdminSettings = () => {
                   <Button
                     onClick={async () => {
                       if (!whatsappEnabled) {
-                        toast.success('Configurações do WhatsApp salvas localmente');
+                        toast.success('Configuración de WhatsApp guardada localmente');
                         return;
                       }
                       setIsVerifyingWhatsapp(true);
@@ -457,16 +459,16 @@ const AdminSettings = () => {
                         const res = await fetch(`${window.location.origin}/api/whatsapp/send-message`, {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ number: whatsappSenderPhone, text: 'Teste de conexão MiMenu ✓' })
+                          body: JSON.stringify({ number: whatsappSenderPhone, text: 'Prueba de conexión MiMenu ✓' })
                         });
                         if (res.ok) {
                           setWhatsappVerified(true);
-                          toast.success('WhatsApp conectado com sucesso!');
+                          toast.success('¡WhatsApp conectado con éxito!');
                         } else {
-                          toast.error('Falha na conexão WhatsApp');
+                          toast.error('Fallo en la conexión de WhatsApp');
                         }
                       } catch {
-                        toast.error('Erro ao conectar WhatsApp');
+                        toast.error('Error al conectar WhatsApp');
                       } finally {
                         setIsVerifyingWhatsapp(false);
                       }
@@ -474,7 +476,7 @@ const AdminSettings = () => {
                     className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold h-10 px-5 rounded-xl flex items-center gap-2"
                   >
                     {isVerifyingWhatsapp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                    <span>Salvar e Verificar Conexão</span>
+                    <span>Guardar y verificar conexión</span>
                   </Button>
                   {whatsappVerified && (
                     <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold h-10 px-3 rounded-xl">
@@ -495,7 +497,7 @@ const AdminSettings = () => {
                   <span>Estado KV Storage & Snapshot Atômico</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Exportação de dados de cardápio, mesas, pedidos e CRM para backup completo.
+                  Exportación de datos de menú, mesas, pedidos y CRM para un backup completo.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -524,7 +526,7 @@ const AdminSettings = () => {
                     className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold h-10 px-5 rounded-xl flex items-center justify-center gap-2"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Baixar Snapshot JSON Completo</span>
+                    <span>Descargar snapshot JSON completo</span>
                   </Button>
                 </div>
               </CardContent>

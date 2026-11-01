@@ -68,15 +68,15 @@ export const useStoreStatus = () => {
       
       toast.success(
         newStatus 
-          ? '✅ Loja aberta! Clientes podem fazer pedidos.' 
-          : '🔒 Loja fechada! Novos pedidos estão bloqueados.',
+          ? '✅ ¡Local abierto! Los clientes pueden hacer pedidos.'
+          : '🔒 ¡Local cerrado! Los nuevos pedidos están bloqueados.',
         {
           duration: 3000,
         }
       );
     } catch (error) {
       console.error('Error updating store status:', error);
-      toast.error('Erro ao atualizar status da loja');
+      toast.error('Error al actualizar el estado del local');
     }
   };
 

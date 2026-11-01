@@ -400,11 +400,11 @@ export function processChatbotMessage(
   }
 
   if (/\b(horario|horarios|hours|opening|offnungszeiten|abre|cierra|öffnungszeiten|abertura)\b/.test(n)) {
-    return response(c.hours(venue.openingHours || 'Ask the restaurant for current hours.'));
+    return response(c.hours(venue.openingHours || 'Consulta con el restaurante el horario vigente.'));
   }
 
   if (/\b(ubicacion|direccion|donde|address|location|anfahrt|standort|endereco|localizacao|adresse|wie komme ich)\b/.test(n)) {
-    return response(c.location(venue.address || 'Ask the restaurant for its address.'));
+    return response(c.location(venue.address || 'Consulta con el restaurante su dirección.'));
   }
 
   if (/\b(vegano|vegana|vegan)\b/.test(n)) {

@@ -43,18 +43,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast.success("Logout realizado com sucesso!");
+    toast.success("Sesión cerrada con éxito!");
     navigate("/auth");
   };
 
   const defaultActions: HeaderAction[] = [
     {
-      label: "Relatórios",
+      label: "Reportes",
       icon: BarChart3,
       onClick: () => navigate("/reports"),
     },
     {
-      label: "Produtos",
+      label: "Productos",
       icon: Package,
       onClick: () => navigate("/admin/products"),
     },

@@ -248,7 +248,7 @@ export function MenuChatbot() {
 
   const toggleVoiceInput = () => {
     if (!SpeechRecognitionCtor) {
-      alert('Web Speech API not supported in this browser. Try Chrome or Edge.');
+      alert('La API de voz no está disponible en este navegador. Prueba con Chrome o Edge.');
       return;
     }
     const rec = recognitionRef.current;
@@ -301,7 +301,7 @@ export function MenuChatbot() {
                 <button
                   type="button"
                   onClick={stopAudio}
-                  aria-label="Stop audio"
+                  aria-label="Detener audio"
                   className="p-1 rounded hover:bg-white/10 text-amber-300"
                   title="Detener audio"
                 >
@@ -318,7 +318,7 @@ export function MenuChatbot() {
                 {ttsEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               </button>
               <select
-                aria-label="Chat language"
+                aria-label="Idioma del chat"
                 value={lang}
                 onChange={event => {
                   const language = event.target.value as ChatbotLang;
@@ -334,7 +334,7 @@ export function MenuChatbot() {
                 <option value="pt">PT</option>
                 <option value="de">DE</option>
               </select>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close chat" className="rounded-md p-1 hover:bg-white/10">
+              <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar chat" className="rounded-md p-1 hover:bg-white/10">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -391,7 +391,7 @@ export function MenuChatbot() {
             <button
               type="submit"
               disabled={busy || !text.trim()}
-              aria-label="Send message"
+              aria-label="Enviar mensaje"
               className="rounded-lg bg-amber-500 px-3 text-slate-950 disabled:opacity-50"
             >
               <Send className="h-4 w-4" />
@@ -402,7 +402,7 @@ export function MenuChatbot() {
       <button
         type="button"
         onClick={() => setOpen(value => !value)}
-        aria-label={open ? 'Close chat' : 'Open chat'}
+        aria-label={open ? 'Cerrar chat' : 'Abrir chat'}
         className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 text-slate-950 shadow-xl transition-transform hover:scale-105"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
