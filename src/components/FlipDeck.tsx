@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, Sparkles, Star, X, Flame } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, Star } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
-import { useCart } from '@/lib/cartContext';
 import { MenuItemDetail } from '@/types/mimenu';
 import { pickLocalText } from '@/lib/venueContext';
 import type { Lang } from '@/i18n/translations';
-import { toast } from 'sonner';
 
 interface FlipDeckProps {
   items: MenuItemDetail[];
@@ -129,7 +127,8 @@ const FlipCard = ({ item, direction, imageUrl, categoryLabel, itemName, itemDesc
                 </span>
                 <button
                   onClick={onAddToCart}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-amber-600 text-amber-50 shadow-md hover:bg-amber-700 transition"
+                  disabled={item.is_available === false}
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-amber-600 text-amber-50 shadow-md hover:bg-amber-700 transition disabled:cursor-not-allowed disabled:bg-stone-500/60"
                   aria-label="Agregar al carrito"
                 >
                   +
@@ -153,20 +152,22 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
 
   const [deckIndex, setDeckIndex] = useState(0);
   const [direction, setDirection] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  const deckItems = useMemo(() => {
-    let base = [...items].sort((a, b) => (b.hotness_score ?? 0) - (a.hotness_score ?? 0));
-    const q = searchQuery.trim().toLowerCase();
-    if (q) base = base.filter((i) => (pickLocalText(i.name_i18n, currentLang) || i.name).toLowerCase().includes(q));
-    return base;
-  }, [items, searchQuery, currentLang]);
+  const deckItems = useMemo(
+    () => [...items].sort((a, b) => (b.hotness_score ?? 0) - (a.hotness_score ?? 0)),
+    [items],
+  );
+
+  // Filters can shrink the deck while it is open; keep the index in range.
+  useEffect(() => {
+    setDeckIndex((index) => (deckItems.length ? index % deckItems.length : 0));
+  }, [deckItems.length]);
 
   useEffect(() => {
-    if (searchQuery || deckItems.length <= 1) return;
+    if (deckItems.length <= 1) return;
     const t = setInterval(() => { setDirection(1); setDeckIndex((i) => (i + 1) % deckItems.length); }, 4500);
     return () => clearInterval(t);
-  }, [searchQuery, deckItems.length]);
+  }, [deckItems.length]);
 
   const goNext = () => { if (!deckItems.length) return; setDirection(1); setDeckIndex((i) => (i + 1) % deckItems.length); };
   const goPrev = () => { if (!deckItems.length) return; setDirection(-1); setDeckIndex((i) => (i - 1 + deckItems.length) % deckItems.length); };
@@ -206,24 +207,6 @@ export const FlipDeck: React.FC<FlipDeckProps> = ({ items, currentLang, onAddToC
           </button>
         )}
       </div>
-
-      {/* Search */}
-      <div className="relative w-full max-w-[520px] mt-4">
-        <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-        <input
-          type="text"
-          placeholder="Buscar platos..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-stone-900/80 border border-stone-700/60 rounded-full py-2 pl-8 pr-8 text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-600 transition-colors"
-        />
-        {searchQuery && (
-          <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300" aria-label="Limpiar">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        )}
-      </div>
-
 
       {deckItems.length > 0 && (
         <div className="mt-3 flex flex-col items-center gap-1.5">

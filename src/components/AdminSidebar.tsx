@@ -50,6 +50,7 @@ const AdminSidebar = () => {
     { label: 'Mesas & QR', icon: <QrCode className="w-6 h-6" />, path: '/admin/tables', description: 'Table mapping' },
     { label: 'CRM & Clientes', icon: <Users className="w-6 h-6" />, path: '/admin/customers', description: 'Fidelización & VIP', feature: 'crm' },
     { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-6 h-6" />, path: '/admin/reviews', description: 'Moderación' },
+    { label: 'White-Label & Marca', icon: <Palette className="w-6 h-6" />, path: '/admin/branding', description: 'Portada, video & destacados', feature: 'custom_website' },
     { label: 'Configuraciones', icon: <Settings className="w-6 h-6" />, path: '/admin/settings', description: 'Sistema, Marca & Usuarios' },
   ];
 

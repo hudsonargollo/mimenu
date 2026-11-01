@@ -100,6 +100,30 @@ const STORAGE_KEYS = {
 
 const INITIAL_CUSTOMERS: CustomerProfile[] = [];
 
+/**
+ * Registry entries are the base tenant definition, but branding edits (hero
+ * media, colors, featured items) live in localStorage. Re-apply those overrides
+ * when a slug is resolved from the URL so customer-facing routes keep the
+ * configuration saved from the admin panel.
+ */
+function withSavedVenueOverrides(base: Venue): Venue {
+  if (typeof window === 'undefined') return base;
+  const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
+  if (!saved) return base;
+  try {
+    const parsed = JSON.parse(saved) as Partial<Venue> | null;
+    if (!parsed || parsed.slug !== base.slug) return base;
+    return applyPlanToVenue({
+      ...base,
+      ...parsed,
+      id: base.id,
+      slug: base.slug,
+    });
+  } catch {
+    return base;
+  }
+}
+
 export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Venue state — the active tenant, resolved from ?v=<slug> in the URL.
   const [venue, setVenue] = useState<Venue | null>(() => {
@@ -107,9 +131,12 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const { slug, requested, found } = resolveVenueSlug(window.location.search);
       if (requested) {
         const matched = findVenueBySlug(slug);
-        if (matched) return toVenue(matched);
+        if (matched) return withSavedVenueOverrides(toVenue(matched));
         // Unknown requested slug: keep the app usable on the default tenant.
-        if (!found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
+        if (!found) {
+          const fallback = findVenueBySlug(defaultVenueSlug());
+          return withSavedVenueOverrides(toVenue(fallback ?? DEFAULT_VENUE));
+        }
       }
       // No explicit ?v= (admin panels, docs, …): restore the venue the user was
       // last working on instead of snapping back to the default tenant.
@@ -231,7 +258,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!matched) return;
     setVenue((current) => {
       if (current.slug === matched.slug) return current;
-      const next = toVenue(matched);
+      const next = withSavedVenueOverrides(toVenue(matched));
       toast.info(`Cambiaste a ${next.name}${requested && !found ? ' (venue no encontrado)' : ''}`);
       return next;
     });
@@ -336,7 +363,6 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Plan fields are derived, never taken from the caller: re-applying them
     // keeps a stale or tampered localStorage override from unlocking features.
     setVenue(prev => (prev ? applyPlanToVenue({ ...prev, ...updated }) : prev));
-    toast.success('Configuración actualizada');
   };
 
   // Hotness recalculation

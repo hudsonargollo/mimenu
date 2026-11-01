@@ -36,6 +36,12 @@ export interface Venue {
   currency_code: string; // e.g. "BOB"
   logo_url: string;
   banner_url: string;
+  /** Optional looping video used as the menu hero background. */
+  hero_video_url?: string;
+  /** Still image shown while the hero video loads (or instead of it). */
+  hero_poster_url?: string;
+  /** Items highlighted in the customer menu's featured flip deck. */
+  featured_item_ids?: string[];
   primary_color: string;
   accent_color: string;
   background_theme: 'dark' | 'light';

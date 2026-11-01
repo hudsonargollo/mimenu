@@ -23,6 +23,9 @@ interface RegistryItem {
   currency: string;
   primary_color?: string;
   background_theme?: string;
+  hero_video_url?: string;
+  hero_poster_url?: string;
+  featured_item_ids?: string[];
   is_active: boolean;
   categories?: MenuCategoryDetail[];
   tables?: number | Array<Record<string, unknown>>;
@@ -116,6 +119,9 @@ export function toVenue(item: RegistryItem): Venue {
     currency_code: 'BOB',
     logo_url: '',
     banner_url: '',
+    hero_video_url: item.hero_video_url || '',
+    hero_poster_url: item.hero_poster_url || '',
+    featured_item_ids: item.featured_item_ids || [],
     primary_color: item.primary_color || '#BC6C25',
     accent_color: '#F2EEE4',
     background_theme: item.background_theme === 'dark' ? 'dark' : 'light',
