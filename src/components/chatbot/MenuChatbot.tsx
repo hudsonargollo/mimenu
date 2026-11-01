@@ -225,6 +225,7 @@ export function MenuChatbot() {
         address: venue.address,
         phone: venue.phone,
         openingHours: venue.opening_hours,
+        currency: venue.currency,
       }, menuItems, sessionKey, 'web');
       setSessionState(result.response.nextState);
       setLang(result.response.detectedLang);

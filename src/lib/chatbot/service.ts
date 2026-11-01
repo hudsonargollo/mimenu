@@ -103,9 +103,9 @@ export async function saveReservation(
 
     writeReservations([record, ...reservations]);
     return { success: true, data: record };
-  } catch (err: any) {
+  } catch (err) {
     console.error('Unexpected error saving chatbot reservation:', err);
-    return { success: false, error: err?.message || 'Unknown error' };
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
@@ -125,6 +125,8 @@ export async function loadSessionState(
       userName: session.state.userName,
       reservationDraft: session.state.reservationDraft || { step: 'idle' },
       lastReservation: session.state.lastReservation || undefined,
+      pendingIntent: session.state.pendingIntent,
+      pendingPartySize: session.state.pendingPartySize,
     };
   } catch (err) {
     console.error('Failed to load session state:', err);
