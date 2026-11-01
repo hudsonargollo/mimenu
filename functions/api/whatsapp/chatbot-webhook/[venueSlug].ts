@@ -14,6 +14,8 @@
  *               "message": { "conversation": "hi" | "extendedTextMessage": { "text": "..." } } } }
  */
 
+import { requireEntitlement } from '../../../lib/plans';
+
 interface Env {
   // Per-venue Evolution API overrides (if set, these take priority over env defaults)
   EVOLUTION_API_URL?: string;
@@ -613,6 +615,21 @@ export async function onRequest(context: { request: Request; env: Env; params: {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
+    }
+
+    // The AI concierge is a Pro entitlement. Answer 200 so Evolution does not
+    // retry the webhook; Basic venues simply get no automated reply.
+    const planCheck = requireEntitlement(venueSlug, 'whatsapp_concierge');
+    if (!planCheck.ok) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          ignored: 'plan_required',
+          feature: 'whatsapp_concierge',
+          venue: venueSlug,
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     // Extract sender phone

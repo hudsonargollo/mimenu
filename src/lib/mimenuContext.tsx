@@ -29,6 +29,7 @@ import {
   categoriesFor,
   tableCountFor,
 } from '@/lib/venueRegistry';
+import { applyPlanToVenue } from '@/lib/plans';
 
 interface MimenuContextType {
   venue: Venue;
@@ -110,7 +111,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (requested && !found) return toVenue(findVenueBySlug(defaultVenueSlug()) ?? DEFAULT_VENUE);
     }
     const saved = localStorage.getItem(STORAGE_KEYS.VENUE);
-    return saved ? JSON.parse(saved) : null;
+    return saved ? applyPlanToVenue(JSON.parse(saved)) : null;
   });
 
   // Categories & items state — the active tenant's menu.
@@ -302,7 +303,9 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateVenue = (updated: Partial<Venue>) => {
-    setVenue(prev => ({ ...prev, ...updated }));
+    // Plan fields are derived, never taken from the caller: re-applying them
+    // keeps a stale or tampered localStorage override from unlocking features.
+    setVenue(prev => (prev ? applyPlanToVenue({ ...prev, ...updated }) : prev));
     toast.success('Configuración actualizada');
   };
 
@@ -488,10 +491,10 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const batchSetupVenue = (venueData: Partial<Venue>, newCategories: MenuCategoryDetail[], tableCount: number) => {
-    const updatedVenue: Venue = {
+    const updatedVenue: Venue = applyPlanToVenue({
       ...venue,
       ...venueData,
-    };
+    });
     setVenue(updatedVenue);
 
     if (newCategories && newCategories.length > 0) {

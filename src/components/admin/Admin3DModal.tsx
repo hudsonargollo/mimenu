@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Camera, FolderOpen } from 'lucide-react';
 import ARMenuViewer from '@/components/ARMenuViewer';
+import { useMimenu } from '@/lib/mimenuContext';
 import { fetchARTaskStatus, startARGeneration, type ARStatus } from '@/hooks/useARModels';
 
 interface Admin3DModalProps {
@@ -31,6 +32,8 @@ interface Admin3DModalProps {
 }
 
 const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
+  const { venue } = useMimenu();
+  const venueSlug = venue?.slug ?? null;
   const providedStatus = initial?.ar_status;
   const [imageUrl, setImageUrl] = useState(menuItem?.image_url || '');
   const [status, setStatus] = useState<ARStatus>(initial?.ar_status || 'none');
@@ -48,7 +51,9 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch(`/api/ar/menu-item/${menuItem.id}`);
+        const res = await fetch(
+          `/api/ar/menu-item/${menuItem.id}?venue=${encodeURIComponent(venueSlug ?? '')}`
+        );
         if (!res.ok || cancelled) return;
         const data = await res.json();
         if (cancelled) return;
@@ -70,7 +75,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
     return () => {
       cancelled = true;
     };
-  }, [menuItem.id, providedStatus]);
+  }, [menuItem.id, providedStatus, venueSlug]);
 
   // Poll status while generating (PRD behaviour, ported to /api/ar/status).
   useEffect(() => {
@@ -78,7 +83,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
     if (status === 'generating' && taskId) {
       interval = setInterval(async () => {
         try {
-          const data = await fetchARTaskStatus(taskId);
+          const data = await fetchARTaskStatus(taskId, venueSlug);
           setProgress(data.progress ?? 0);
           if (data.status === 'SUCCEEDED') {
             // Worker-hosted files first, Meshy-signed URLs as a temporary fallback.
@@ -104,14 +109,14 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
       }, 5000);
     }
     return () => interval && clearInterval(interval);
-  }, [status, taskId]);
+  }, [status, taskId, venueSlug]);
 
   const handleAIGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      const res = await startARGeneration(menuItem.id, imageUrl, menuItem.name);
+      const res = await startARGeneration(menuItem.id, imageUrl, menuItem.name, venueSlug);
       if (res.success && res.taskId) {
         setTaskId(res.taskId);
         setStatus('generating');
@@ -148,6 +153,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
           menuItemId: menuItem.id,
           glbUrl: g,
           usdzUrl: u || undefined,
+          venueSlug,
         }),
       });
       const data = (await res.json()) as { success?: boolean; error?: string };

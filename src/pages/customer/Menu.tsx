@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/dialog';
 import ARMenuViewer from '@/components/ARMenuViewer';
 import { useARModels, useARModelsIds } from '@/hooks/useARModels';
+import { hasEntitlement } from '@/lib/plans';
 import { toast } from 'sonner';
 
 const Menu: React.FC = () => {
@@ -66,8 +67,11 @@ const Menu: React.FC = () => {
   }, [categories]);
 
   // AR/3D records for chips ("Ver en 3D") fetched from the KV/Functions layer.
-  const arIds = useARModelsIds(useMemo(() => allItems.map((i) => i.id), [allItems]));
-  const arRecords = useARModels(arIds);
+  // Premium-only: Basic/Pro venues never call the AR endpoints.
+  const hasAr = hasEntitlement(venue.slug, 'ar_3d');
+  const hasConcierge = hasEntitlement(venue.slug, 'whatsapp_concierge');
+  const arIds = useARModelsIds(useMemo(() => (hasAr ? allItems.map((i) => i.id) : []), [allItems, hasAr]));
+  const arRecords = useARModels(arIds, venue.slug);
 
   // Localized display fields for the current UI language (falls back to the
   // plain Spanish field when the tenant has no translation).
@@ -303,7 +307,7 @@ const Menu: React.FC = () => {
         </div>
       )}
 
-      <MenuChatbot />
+      {hasConcierge && <MenuChatbot />}
 
       {/* Item Review Dialog */}
       <ItemReviewDialog

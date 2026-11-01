@@ -29,7 +29,9 @@ import { useAdminCheck } from '@/hooks/useAdminCheck';
 import AdminLayout from '@/components/AdminLayout';
 import { MenuPhotoIngesterModal } from '@/components/MenuPhotoIngesterModal';
 import Admin3DModal from '@/components/admin/Admin3DModal';
-import { Box } from 'lucide-react';
+import { hasEntitlement, requiredPlanFor } from '@/lib/plans';
+import { useMimenu } from '@/lib/mimenuContext';
+import { Box, Lock } from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -51,6 +53,8 @@ interface Category {
 const AdminProducts = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAdminCheck();
+  const { venue } = useMimenu();
+  const canUseAr = hasEntitlement(venue?.slug, 'ar_3d');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -528,11 +532,13 @@ const AdminProducts = () => {
                         <Button
                           onClick={() => setArItem(item)}
                           variant="outline"
-                          className="w-full border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-display uppercase tracking-wider shadow-lg hover:shadow-xl rounded-lg transition-all"
+                          disabled={!canUseAr}
+                          title={canUseAr ? undefined : `Requiere plan ${requiredPlanFor('ar_3d').name}`}
+                          className="w-full border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-display uppercase tracking-wider shadow-lg hover:shadow-xl rounded-lg transition-all disabled:opacity-50"
                           size="sm"
                         >
-                          <Box className="mr-2 h-4 w-4" />
-                          3D / AR
+                          {canUseAr ? <Box className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                          {canUseAr ? '3D / AR' : `3D / AR · ${requiredPlanFor('ar_3d').name}`}
                         </Button>
                         <Button
                           onClick={() => handleDelete(item.id, item.name)}

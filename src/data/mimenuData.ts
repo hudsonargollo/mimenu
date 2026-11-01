@@ -12,6 +12,7 @@ import {
   MenuItemReview,
   HotnessLevel,
 } from '@/types/mimenu';
+import { planFieldsForVenue } from '@/lib/plans';
 
 export const DEFAULT_VENUE: Venue = {
   id: "venue-jaleo",
@@ -32,7 +33,7 @@ export const DEFAULT_VENUE: Venue = {
   accent_color: "#BC6C25",
   opening_hours: "",
   instagram: "@jaleo",
-  is_active: true,
+  ...planFieldsForVenue("jaleo"),
 };
 
 export const INITIAL_CATEGORIES: MenuCategoryDetail[] = [

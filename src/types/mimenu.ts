@@ -1,3 +1,5 @@
+import type { Entitlement, PlanId, PlanStatus } from '../../shared/plans';
+
 export type FulfillmentType = 'dine_in' | 'pickup' | 'delivery';
 
 export type HotnessLevel = 1 | 2 | 3 | 4 | 5;
@@ -6,7 +8,7 @@ export type HotnessLevel = 1 | 2 | 3 | 4 | 5;
 export interface LandingAssets {
   logoFile: string | null;
   featuredPhotos: string[];
-  plan: 'basic' | 'pro' | 'premium' | 'custom';
+  plan: PlanId;
   billingCycle: 'monthly' | 'yearly';
   hasCustomWebsite: boolean;
   hasCrm: boolean;
@@ -42,6 +44,11 @@ export interface Venue {
   facebook?: string;
   google_review_url?: string;
   is_active: boolean;
+  /** Effective plan resolved from shared/plans.ts (commerce + entitlements). */
+  plan: PlanId;
+  plan_status: PlanStatus;
+  plan_name: string;
+  plan_entitlements: Entitlement[];
   /** Onboarding-collected plan and landing assets. */
   landing_assets?: LandingAssets;
   delivery_zones?: {

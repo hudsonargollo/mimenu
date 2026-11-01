@@ -3,6 +3,7 @@
 // "View in 3D/AR" chips in a single round-trip.
 
 import { getMenuItemAR, json, type ARMenuItemRecord } from '../../lib/kv-ar';
+import { requireEntitlement, venueSlugFromRequest } from '../../lib/plans';
 
 interface Env {
   MIMENU_KV?: KVNamespace;
@@ -17,6 +18,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (ids.length === 0) {
     return json({ error: 'Provide ?ids=a,b,c (max 50 UUIDs).' }, 400);
   }
+
+  const planCheck = requireEntitlement(venueSlugFromRequest(request), 'ar_3d');
+  if (!planCheck.ok) return planCheck.response;
 
   let items: Record<string, ARMenuItemRecord | null>;
   try {

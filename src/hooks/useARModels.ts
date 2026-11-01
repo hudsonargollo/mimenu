@@ -29,14 +29,17 @@ export function useARModelsIds(ids: string[] | undefined | null): string[] | nul
 }
 
 /** Fetch a window of AR records. Pass null to skip (e.g. before ids are known). */
-export function useARModels(menuItemIds: string[] | null): Record<string, ARMenuItemRecord | null> {
+export function useARModels(
+  menuItemIds: string[] | null,
+  venueSlug?: string | null
+): Record<string, ARMenuItemRecord | null> {
   const [records, setRecords] = useState<Record<string, ARMenuItemRecord | null>>({});
   // Stable identity across renders: only refetch when the id set changes.
   const idsKey = useMemo(() => (menuItemIds ? menuItemIds.join(',') : ''), [menuItemIds]);
   const ids = useMemo(() => (idsKey ? idsKey.split(',') : null), [idsKey]);
 
   useEffect(() => {
-    if (!ids || ids.length === 0) {
+    if (!ids || ids.length === 0 || !venueSlug) {
       setRecords({});
       return;
     }
@@ -44,7 +47,8 @@ export function useARModels(menuItemIds: string[] | null): Record<string, ARMenu
 
     void (async () => {
       try {
-        const res = await fetch(`${BASE}/menu-items?ids=${encodeURIComponent(ids.slice(0, 50).join(','))}`);
+        const params = new URLSearchParams({ ids: ids.slice(0, 50).join(','), venue: venueSlug });
+        const res = await fetch(`${BASE}/menu-items?${params.toString()}`);
         if (!res.ok) return;
         const data = (await res.json()) as { items: Record<string, ARMenuItemRecord | null> };
         if (!cancelled) setRecords(data.items || {});
@@ -56,7 +60,7 @@ export function useARModels(menuItemIds: string[] | null): Record<string, ARMenu
     return () => {
       cancelled = true;
     };
-  }, [ids]);
+  }, [ids, venueSlug]);
 
   return records;
 }
@@ -77,21 +81,27 @@ export interface ARTaskStatus {
   error?: string;
 }
 
-export function fetchARTaskStatus(taskId: string, signal?: AbortSignal): Promise<ARTaskStatus> {
-  return fetch(`${BASE}/status/${taskId}`, { signal }).then((r) => r.json());
+export function fetchARTaskStatus(
+  taskId: string,
+  venueSlug?: string | null,
+  signal?: AbortSignal
+): Promise<ARTaskStatus> {
+  const params = venueSlug ? `?venue=${encodeURIComponent(venueSlug)}` : '';
+  return fetch(`${BASE}/status/${taskId}${params}`, { signal }).then((r) => r.json());
 }
 
 /** Kick off AI 3D generation via the Cloudflare Function. */
 export async function startARGeneration(
   menuItemId: string,
   imageUrl: string,
-  itemName?: string
+  itemName?: string,
+  venueSlug?: string | null
 ): Promise<{ success: boolean; taskId?: string; enqueued?: boolean; error?: string }> {
   try {
     const res = await fetch(`${BASE}/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ menuItemId, imageUrl, itemName }),
+      body: JSON.stringify({ menuItemId, imageUrl, itemName, venueSlug }),
     });
     return (await res.json()) as { success: boolean; taskId?: string; enqueued?: boolean; error?: string };
   } catch (err) {

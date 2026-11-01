@@ -8,6 +8,7 @@
 // session auth if/when a shared middleware lands.
 
 import { updateMenuItemAR, getMenuItemAR, json } from '../../lib/kv-ar';
+import { requireEntitlement, venueSlugFromRequest } from '../../lib/plans';
 
 interface Env {
   MIMENU_KV?: KVNamespace;
@@ -17,12 +18,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
   if (!env.MIMENU_KV) return json({ success: false, error: 'MIMENU_KV namespace not bound.' }, 500);
 
-  let body: { menuItemId?: string; glbUrl?: string; usdzUrl?: string; thumbnailUrl?: string };
+  let body: { menuItemId?: string; glbUrl?: string; usdzUrl?: string; thumbnailUrl?: string; venueSlug?: string };
   try {
     body = await request.json();
   } catch {
     return json({ success: false, error: 'Invalid JSON body.' }, 400);
   }
+
+  const planCheck = requireEntitlement(
+    venueSlugFromRequest(request, body as Record<string, unknown>),
+    'ar_3d'
+  );
+  if (!planCheck.ok) return planCheck.response;
 
   const menuItemId = body.menuItemId?.trim();
   const glbUrl = body.glbUrl?.trim();

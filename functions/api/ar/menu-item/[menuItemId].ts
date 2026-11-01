@@ -3,15 +3,19 @@
 // Returns 200 with { menuItemId, ar_status: 'none' } when nothing exists yet.
 
 import { getMenuItemAR, json, type ARMenuItemRecord } from '../../../lib/kv-ar';
+import { requireEntitlement, venueSlugFromRequest } from '../../../lib/plans';
 
 interface Env {
   MIMENU_KV?: KVNamespace;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { env } = context;
+  const { env, request } = context;
   const menuItemId = (context.params as { menuItemId?: string }).menuItemId;
   if (!menuItemId) return json({ error: 'menuItemId path param required.' }, 400);
+
+  const planCheck = requireEntitlement(venueSlugFromRequest(request), 'ar_3d');
+  if (!planCheck.ok) return planCheck.response;
 
   let record: ARMenuItemRecord | null = null;
   try {

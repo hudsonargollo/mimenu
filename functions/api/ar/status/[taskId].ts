@@ -13,6 +13,7 @@
 // }
 
 import { getARTask, updateMenuItemAR, json } from '../../../lib/kv-ar';
+import { requireEntitlement, venueSlugFromRequest } from '../../../lib/plans';
 
 interface Env {
   MIMENU_KV?: KVNamespace;
@@ -28,9 +29,12 @@ interface MeshyTask {
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { env } = context;
+  const { env, request } = context;
   const taskId = (context.params as { taskId?: string }).taskId;
   if (!taskId) return json({ error: 'Task not found.' }, 404);
+
+  const planCheck = requireEntitlement(venueSlugFromRequest(request), 'ar_3d');
+  if (!planCheck.ok) return planCheck.response;
 
   let task;
   try {

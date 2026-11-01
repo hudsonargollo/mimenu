@@ -1,11 +1,57 @@
 /**
- * MiMenu plans.
+ * MiMenu plans — marketing catalog plus client-side enforcement helpers.
+ *
+ * The marketing copy below feeds the landing, docs and onboarding screens. The
+ * entitlement matrix lives in `shared/plans.ts` so the SPA and the Pages
+ * Functions enforce exactly the same rules; this module re-exports that API and
+ * derives the plan fields carried on a `Venue`.
  *
  * Tier 1 (Basic) deliberately ships WITHOUT the AI concierge and AI analytics
  * on the dynamic menu — those are the differentiators of Tier 2 and 3.
  * Tier 4 is a high-ticket custom build (setup fee + monthly) for high-end
  * restaurants that want a complete system built end to end.
  */
+import {
+  ENTITLEMENT_LABELS,
+  PLANS as PLAN_CATALOG,
+  PLAN_ORDER,
+  assignmentFor,
+  effectivePlanFor,
+  hasEntitlement,
+  isAssignmentActive,
+  normalizePlanId,
+  normalizeVenueSlug,
+  requiredPlanFor,
+  resolveVenueAccess,
+  type Entitlement,
+  type PlanAccess,
+  type PlanDefinition,
+  type PlanStatus,
+  type VenuePlanAssignment,
+} from '../../shared/plans';
+
+export {
+  ENTITLEMENT_LABELS,
+  PLAN_CATALOG,
+  PLAN_ORDER,
+  assignmentFor,
+  effectivePlanFor,
+  hasEntitlement,
+  isAssignmentActive,
+  normalizePlanId,
+  normalizeVenueSlug,
+  requiredPlanFor,
+  resolveVenueAccess,
+};
+
+export type {
+  Entitlement,
+  PlanAccess,
+  PlanDefinition,
+  PlanStatus,
+  VenuePlanAssignment,
+};
+
 export type PlanId = 'basic' | 'pro' | 'premium' | 'custom';
 
 export type BillingCycle = 'monthly' | 'yearly';
@@ -209,4 +255,36 @@ export function requiredAssetsFor(plan: Plan | undefined): OnboardingAssets {
     featuredPhotos: premium,
     instagram: premium,
   };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Enforcement fields carried by a Venue                                       */
+/* -------------------------------------------------------------------------- */
+
+export interface VenuePlanFields {
+  plan: PlanId;
+  plan_status: PlanStatus;
+  plan_name: string;
+  plan_entitlements: Entitlement[];
+}
+
+/** Effective plan fields for a venue slug. Unknown venues resolve to Basic. */
+export function planFieldsForVenue(slug: string | null | undefined): VenuePlanFields {
+  const assignment = assignmentFor(slug);
+  const plan = effectivePlanFor(slug);
+  return {
+    plan: plan.id,
+    plan_status: assignment.status,
+    plan_name: plan.name,
+    plan_entitlements: plan.entitlements,
+  };
+}
+
+/**
+ * Attach the effective plan fields to any venue-shaped object. Use this when a
+ * venue is loaded from storage or created during onboarding so the UI never
+ * shows a stale plan.
+ */
+export function applyPlanToVenue<T extends { slug?: string | null }>(venue: T): T & VenuePlanFields {
+  return { ...venue, ...planFieldsForVenue(venue?.slug) };
 }

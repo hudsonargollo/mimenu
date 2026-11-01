@@ -18,9 +18,11 @@ import {
   ExternalLink,
   Users,
   Store,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Lock
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
+import { hasEntitlement, requiredPlanFor, type Entitlement } from '@/lib/plans';
 import { toast } from 'sonner';
 
 interface SidebarItem {
@@ -29,6 +31,8 @@ interface SidebarItem {
   path: string;
   description: string;
   badge?: string;
+  /** Entitlement the destination requires; locked items still navigate to the upgrade screen. */
+  feature?: Entitlement;
 }
 
 const AdminSidebar = () => {
@@ -38,16 +42,16 @@ const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems: SidebarItem[] = [
-    { label: 'AI Copilot', icon: <Bot className="w-5 h-5" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA' },
+    { label: 'AI Copilot', icon: <Bot className="w-5 h-5" />, path: '/admin/ai', description: 'Chat & Inteligencia', badge: 'IA', feature: 'whatsapp_concierge' },
     { label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, path: '/admin', description: 'Resumen & Kpis' },
-    { label: 'Ingestor Carta IA', icon: <Camera className="w-5 h-5" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision' },
-    { label: 'Cocina & KDS', icon: <ChefHat className="w-5 h-5" />, path: '/cashier', description: 'Pedidos en vivo' },
-    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-5 h-5" />, path: '/admin/offers', description: 'Cycling promos' },
-    { label: 'Hotness & Métricas', icon: <Flame className="w-5 h-5" />, path: '/admin/analytics', description: 'Velocidad & Ventas' },
+    { label: 'Ingestor Carta IA', icon: <Camera className="w-5 h-5" />, path: '/admin/ingest-menu', description: 'OCR & Auto-Tagging', badge: 'Vision', feature: 'photographed_menu' },
+    { label: 'Cocina & KDS', icon: <ChefHat className="w-5 h-5" />, path: '/cashier', description: 'Pedidos en vivo', feature: 'kds' },
+    { label: 'Ofertas Inteligentes', icon: <Sparkles className="w-5 h-5" />, path: '/admin/offers', description: 'Cycling promos', feature: 'smart_offers' },
+    { label: 'Hotness & Métricas', icon: <Flame className="w-5 h-5" />, path: '/admin/analytics', description: 'Velocidad & Ventas', feature: 'analytics' },
     { label: 'Mesas & QR', icon: <QrCode className="w-5 h-5" />, path: '/admin/tables', description: 'Table mapping' },
-    { label: 'CRM & Clientes', icon: <Users className="w-5 h-5" />, path: '/admin/customers', description: 'Fidelización & VIP' },
+    { label: 'CRM & Clientes', icon: <Users className="w-5 h-5" />, path: '/admin/customers', description: 'Fidelización & VIP', feature: 'crm' },
     { label: 'Reseñas & Feedback', icon: <MessageSquare className="w-5 h-5" />, path: '/admin/reviews', description: 'Moderación' },
-    { label: 'White-Label & Marca', icon: <Palette className="w-5 h-5" />, path: '/admin/branding', description: 'Personalización' },
+    { label: 'White-Label & Marca', icon: <Palette className="w-5 h-5" />, path: '/admin/branding', description: 'Personalización', feature: 'custom_website' },
     { label: 'Configuraciones', icon: <Settings className="w-5 h-5" />, path: '/admin/settings', description: 'Sistema & Red' },
   ];
 
@@ -88,9 +92,9 @@ const AdminSidebar = () => {
             {isOpen && (
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-sm tracking-tight text-[#2a1f55]">{venue.name}</span>
+                  <span className="font-black text-sm tracking-tight text-[#2a1f55]">{venue?.name ?? 'MiMenu'}</span>
                   <span className="text-[9px] font-black uppercase bg-white/60 text-[#5b4a9e] px-1 py-0.5 rounded">
-                    KV SaaS
+                    {venue?.plan_name ?? 'Basic'}
                   </span>
                 </div>
                 <p className="text-[10px] text-[#5b4a9e]/70">MIMENU Santa Cruz</p>
@@ -121,7 +125,10 @@ const AdminSidebar = () => {
 
         {/* Menu Items */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {menuItems.map((item) => (
+          {menuItems.map((item) => {
+            const locked = item.feature ? !hasEntitlement(venue?.slug, item.feature) : false;
+            const requiredPlan = item.feature && locked ? requiredPlanFor(item.feature) : null;
+            return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
@@ -135,25 +142,31 @@ const AdminSidebar = () => {
                   ? { background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }
                   : undefined
               }
-              title={!isOpen ? item.label : ''}
+              title={!isOpen ? item.label : locked ? `Requiere plan ${requiredPlan?.name}` : ''}
             >
               <div className="flex items-center gap-3">
-                <span className="flex-shrink-0">{item.icon}</span>
+                <span className={`flex-shrink-0 ${locked && !isActive(item.path) ? 'opacity-40' : ''}`}>{item.icon}</span>
                 {isOpen && (
                   <div className="text-left">
-                    <div className="text-xs font-bold">{item.label}</div>
-                    <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>{item.description}</div>
+                    <div className={`text-xs font-bold ${locked && !isActive(item.path) ? 'text-[#3a2f6b]/50' : ''}`}>{item.label}</div>
+                    <div className={`text-[10px] ${isActive(item.path) ? 'text-white/80' : 'text-[#5b4a9e]/70 group-hover:text-[#5b4a9e]'}`}>
+                      {locked ? `Plan ${requiredPlan?.name}` : item.description}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {isOpen && item.badge && (
+              {isOpen && locked && (
+                <Lock className="w-3.5 h-3.5 flex-shrink-0 text-[#8b5cf6]" aria-label={`Requiere plan ${requiredPlan?.name}`} />
+              )}
+              {isOpen && !locked && item.badge && (
                 <span className="text-[9px] font-black uppercase text-white px-1.5 py-0.5 rounded-full shadow-xs" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}>
                   {item.badge}
                 </span>
               )}
             </button>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Footer info */}

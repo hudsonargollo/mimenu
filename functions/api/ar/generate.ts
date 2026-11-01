@@ -12,6 +12,7 @@ import {
   getARTask,
   json,
 } from '../../lib/kv-ar';
+import { requireEntitlement, venueSlugFromRequest } from '../../lib/plans';
 
 interface Env {
   MIMENU_KV?: KVNamespace;
@@ -35,6 +36,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const menuItemId = body.menuItemId?.trim();
   const imageUrl = body.imageUrl?.trim();
+
+  const planCheck = requireEntitlement(
+    venueSlugFromRequest(request, body as Record<string, unknown>),
+    'ar_3d'
+  );
+  if (!planCheck.ok) return planCheck.response;
 
   if (!menuItemId || !imageUrl) {
     return json({ success: false, error: 'menuItemId and imageUrl are required.' }, 400);

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,8 @@ import { AuthProvider } from "@/lib/authContext";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import LoadingFallback from "@/components/LoadingFallback";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PlanGate from "@/components/PlanGate";
+import type { Entitlement } from "@/lib/plans";
 
 // Lazy load customer pages
 const QRLanding = lazy(() => import("./pages/customer/QRLanding"));
@@ -78,6 +80,13 @@ const Monitoring = lazy(() => import("./pages/debug/Monitoring"));
 const SystemDiagnostic = lazy(() => import("./pages/debug/SystemDiagnostic"));
 
 const queryClient = new QueryClient();
+
+/** Lazy page that additionally requires a plan entitlement. */
+const planPage = (feature: Entitlement, node: ReactNode) => (
+  <PlanGate feature={feature}>
+    <Suspense fallback={<LoadingFallback />}>{node}</Suspense>
+  </PlanGate>
+);
 
 const App = () => {
   // WhatsApp notification queue auto-processing disabled: Supabase is not
@@ -246,36 +255,12 @@ const App = () => {
                     } />
 
                     {/* Staff & Waiter routes */}
-                    <Route path="/waiter" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Waiter />
-                      </Suspense>
-                    } />
-                    <Route path="/waiter/setup" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WaiterSetup />
-                      </Suspense>
-                    } />
-                    <Route path="/waiter/dashboard" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WaiterDashboard />
-                      </Suspense>
-                    } />
-                    <Route path="/waiter-dashboard" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WaiterDashboard />
-                      </Suspense>
-                    } />
-                    <Route path="/kitchen" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Cashier />
-                      </Suspense>
-                    } />
-                    <Route path="/cashier" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Cashier />
-                      </Suspense>
-                    } />
+                    <Route path="/waiter" element={planPage('waiter_app', <Waiter />)} />
+                    <Route path="/waiter/setup" element={planPage('waiter_app', <WaiterSetup />)} />
+                    <Route path="/waiter/dashboard" element={planPage('waiter_app', <WaiterDashboard />)} />
+                    <Route path="/waiter-dashboard" element={planPage('waiter_app', <WaiterDashboard />)} />
+                    <Route path="/kitchen" element={planPage('kds', <Cashier />)} />
+                    <Route path="/cashier" element={planPage('kds', <Cashier />)} />
 
                     {/* Admin Command Center & AI Copilot Routes */}
                     <Route path="/admin" element={
@@ -283,31 +268,11 @@ const App = () => {
                         <Admin />
                       </Suspense>
                     } />
-                    <Route path="/admin/ai" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminAIChat />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/ingester" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminMenuIngester />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/ingest-menu" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminMenuIngester />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/offers" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminOffers />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/analytics" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminAnalytics />
-                      </Suspense>
-                    } />
+                    <Route path="/admin/ai" element={planPage('whatsapp_concierge', <AdminAIChat />)} />
+                    <Route path="/admin/ingester" element={planPage('photographed_menu', <AdminMenuIngester />)} />
+                    <Route path="/admin/ingest-menu" element={planPage('photographed_menu', <AdminMenuIngester />)} />
+                    <Route path="/admin/offers" element={planPage('smart_offers', <AdminOffers />)} />
+                    <Route path="/admin/analytics" element={planPage('analytics', <AdminAnalytics />)} />
                     <Route path="/admin/tables" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <AdminTables />
@@ -318,11 +283,7 @@ const App = () => {
                         <AdminReviews />
                       </Suspense>
                     } />
-                    <Route path="/admin/branding" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminBranding />
-                      </Suspense>
-                    } />
+                    <Route path="/admin/branding" element={planPage('custom_website', <AdminBranding />)} />
                     <Route path="/admin/products" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <AdminProducts />
@@ -333,41 +294,17 @@ const App = () => {
                         <AdminSettings />
                       </Suspense>
                     } />
-                    <Route path="/reports" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Reports />
-                      </Suspense>
-                    } />
-                    <Route path="/whatsapp-admin" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WhatsAppAdmin />
-                      </Suspense>
-                    } />
-                    <Route path="/print-server-config" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <PrintServerConfig />
-                      </Suspense>
-                    } />
+                    <Route path="/reports" element={planPage('analytics', <Reports />)} />
+                    <Route path="/whatsapp-admin" element={planPage('whatsapp_concierge', <WhatsAppAdmin />)} />
+                    <Route path="/print-server-config" element={planPage('printing', <PrintServerConfig />)} />
                     <Route path="/monitoring" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <Monitoring />
                       </Suspense>
                     } />
-                    <Route path="/waiter-management" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WaiterManagement />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/waiter-reports" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <AdminWaiterReportsPage />
-                      </Suspense>
-                    } />
-                    <Route path="/admin/customers" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <CustomerManagement />
-                      </Suspense>
-                    } />
+                    <Route path="/waiter-management" element={planPage('waiter_app', <WaiterManagement />)} />
+                    <Route path="/admin/waiter-reports" element={planPage('analytics', <AdminWaiterReportsPage />)} />
+                    <Route path="/admin/customers" element={planPage('crm', <CustomerManagement />)} />
                     <Route path="/diagnostic" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <SystemDiagnostic />

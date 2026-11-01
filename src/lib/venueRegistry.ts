@@ -8,6 +8,7 @@
  */
 import registry from '@/data/provisioned_venues.json';
 import type { MenuCategoryDetail, Venue } from '@/types/mimenu';
+import { planFieldsForVenue } from './plans';
 
 interface RegistryItem {
   id: string;
@@ -120,6 +121,7 @@ export function toVenue(item: RegistryItem): Venue {
     background_theme: item.background_theme === 'dark' ? 'dark' : 'light',
     opening_hours: '',
     is_active: item.is_active !== false,
+    ...planFieldsForVenue(item.slug),
   };
 }
 
