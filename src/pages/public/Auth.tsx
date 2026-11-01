@@ -321,17 +321,17 @@ const Auth = () => {
               transition={{ duration: 0.5, delay: 1.2 }}
             >
               <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
-                <span className="relative inline-flex items-center">
+                <span className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <span className="h-5 w-9 rounded-full border border-white/40 bg-white/40 backdrop-blur-md transition-all peer-checked:bg-white/70 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-white/60" />
-                  <span className="absolute left-[2px] top-[2px] h-4 w-4 rounded-full border border-white/60 bg-white/80 shadow-sm transition-all peer-checked:translate-x-[18px]" />
+                  <span className="h-5 w-9 rounded-full border border-slate-300 bg-slate-100 transition-all duration-200 peer-checked:bg-[hsl(var(--brand-violet))] peer-checked:border-[hsl(var(--brand-violet))] peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-[hsl(var(--brand-violet))/40] rounded-full" />
+                  <span className="absolute left-[3px] top-[3px] h-4 w-4 rounded-full border border-slate-300 bg-white shadow-sm transition-all duration-200 peer-checked:translate-x-[18px] peer-checked:border-[hsl(var(--brand-violet))]" />
                 </span>
-                <span className="font-semibold">Mantenerme conectado</span>
+                <span className="font-semibold tracking-tight">Mantenerme conectado</span>
               </label>
             </motion.div>
 
