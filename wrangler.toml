@@ -9,30 +9,5 @@ pages_build_output_dir = "dist"
 binding = "MIMENU_KV"
 id = "bfb8ba5a9b72487db588779f42883151"
 
-# Environment variables (available at build time and runtime)
-[vars]
-# Frontend environment variables - REMOVED: SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY
-# Authentication is now email-based, no external DB needed
-
-# MercadoPago Configuration (PIX and Credit Card Payments)
-# Public key is used by Payment Brick SDK for credit card tokenization
-# Access token is used for API calls (both PIX and card payments)
-VITE_MERCADOPAGO_PUBLIC_KEY = "APP_USR-ef0ab051-6520-4ea1-a3e3-5e53825685fe"
-VITE_MERCADOPAGO_ACCESS_TOKEN = "APP_USR-4813437808298526-110522-fa108581dfa5cb10a87458875e5c8136-1769074499"
-
-# Evolution API (WhatsApp Integration)
-VITE_EVOLUTION_API_URL = "http://wppapi.clubemmktdigital"
-VITE_EVOLUTION_API_KEY = "DD451E404240-4C45-AF35-BFCA6A976927"
-VITE_EVOLUTION_INSTANCE_NAME = "cocooo"
-
-# Runtime-only variables (available in Cloudflare Functions, NOT exposed to client)
-EVOLUTION_API_URL = "http://wppapi.clubemmktdigital"
-EVOLUTION_API_KEY = "DD451E404240-4C45-AF35-BFCA6A976927"
-EVOLUTION_INSTANCE_NAME = "cocooo"
-
-# MercadoPago Access Token (for payment processing in Cloudflare Functions)
-MERCADOPAGO_ACCESS_TOKEN = "APP_USR-4813437808298526-110522-fa108581dfa5cb10a87458875e5c8136-1769074499"
-
-# WhatsApp Configuration
-WHATSAPP_SESSION_ID = "coco-loko-main"
-WHATSAPP_ENCRYPTION_KEY = "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+# Secrets are configured in the Cloudflare dashboard (Pages project: mimenu):
+#   APP_SESSION_SECRET, RESEND_API_KEY, AR_WORKER_TOKEN, AR_WORKER_URL, MESHY_API_KEY

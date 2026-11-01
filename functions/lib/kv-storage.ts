@@ -1,5 +1,4 @@
-// KV Storage utility for session and data persistence
-// Replaces Supabase for session storage
+// KV-backed session and data persistence
 
 interface KVStorage {
   put: (key: string, value: string | object, expirationTtl?: number) => Promise<void>;

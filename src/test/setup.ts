@@ -21,10 +21,7 @@ if (typeof window !== 'undefined' && typeof window.localStorage === 'undefined')
 
 // Mock environment variables for tests
 Object.defineProperty(import.meta, 'env', {
-  value: {
-    VITE_MERCADOPAGO_ACCESS_TOKEN: 'test_access_token',
-    VITE_MERCADOPAGO_PUBLIC_KEY: 'test_public_key',
-  },
+  value: {},
   writable: true,
 })
 

@@ -1,7 +1,7 @@
 /**
  * MIMENU KV Storage Engine
  * Cloudflare Workers KV compatible client-side & edge storage layer.
- * Completely decouples MIMENU from Supabase, enabling pure KV-driven multi-tenant SaaS architecture.
+ * Provides a KV-driven multi-tenant storage layer for local and edge environments.
  */
 
 export interface KVMetadata {

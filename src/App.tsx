@@ -9,7 +9,6 @@ import { MimenuProvider } from "@/lib/mimenuContext";
 import { AuthProvider } from "@/lib/authContext";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import LoadingFallback from "@/components/LoadingFallback";
-import ProtectedRoute from "./components/ProtectedRoute";
 import PlanGate from "@/components/PlanGate";
 import type { Entitlement } from "@/lib/plans";
 
@@ -17,7 +16,6 @@ import type { Entitlement } from "@/lib/plans";
 const QRLanding = lazy(() => import("./pages/customer/QRLanding"));
 const Menu = lazy(() => import("./pages/customer/Menu"));
 const Checkout = lazy(() => import("./pages/customer/Checkout"));
-const CheckoutLegacy = lazy(() => import("./pages/customer/CheckoutLegacy"));
 const Payment = lazy(() => import("./pages/customer/Payment"));
 const OrderStatus = lazy(() => import("./pages/customer/OrderStatus"));
 
@@ -33,9 +31,7 @@ const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
 const AdminBranding = lazy(() => import("./pages/admin/AdminBranding"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminWaiterReportsPage = lazy(() => import("./pages/admin/AdminWaiterReportsPage"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
-const WhatsAppAdmin = lazy(() => import("./pages/admin/WhatsAppAdmin"));
 const CustomerManagement = lazy(() => import("./pages/admin/CustomerManagement"));
 const PrintServerConfig = lazy(() => import("./pages/admin/PrintServerConfig"));
 
@@ -45,9 +41,7 @@ const Cashier = lazy(() => import("./pages/staff/Cashier"));
 // Lazy load waiter pages
 const Waiter = lazy(() => import("./pages/waiter/Waiter"));
 const WaiterDashboard = lazy(() => import("./pages/waiter/WaiterDashboard"));
-const WaiterSetup = lazy(() => import("./pages/waiter/WaiterSetup"));
 const WaiterManagement = lazy(() => import("./pages/waiter/WaiterManagement"));
-const WaiterDiagnostic = lazy(() => import("./pages/waiter/WaiterDiagnostic"));
 
 // Lazy load public pages
 const LandingPlataforma = lazy(() => import("./pages/public/LandingPlataforma"));
@@ -70,15 +64,7 @@ const Auth = lazy(() => import("./pages/public/Auth"));
 const NotFound = lazy(() => import("./pages/public/NotFound"));
 
 // Lazy load debug pages
-const OrderLookup = lazy(() => import("./pages/debug/OrderLookup"));
 const QRRedirect = lazy(() => import("./pages/debug/QRRedirect"));
-const MenuDebug = lazy(() => import("./pages/debug/MenuDebug"));
-const PaymentDebug = lazy(() => import("./pages/debug/PaymentDebug"));
-const CreditCardDebug = lazy(() => import("./pages/debug/CreditCardDebug"));
-const CardPaymentTest = lazy(() => import("./pages/debug/CardPaymentTest"));
-const PaymentTest = lazy(() => import("./pages/debug/PaymentTest"));
-const Monitoring = lazy(() => import("./pages/debug/Monitoring"));
-const SystemDiagnostic = lazy(() => import("./pages/debug/SystemDiagnostic"));
 
 const queryClient = new QueryClient();
 
@@ -90,10 +76,6 @@ const planPage = (feature: Entitlement, node: ReactNode) => (
 );
 
 const App = () => {
-  // WhatsApp notification queue auto-processing disabled: Supabase is not
-  // part of the current architecture and the host does not resolve, which
-  // flooded the console with ERR_NAME_NOT_RESOLVED errors.
-
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
@@ -229,11 +211,6 @@ const App = () => {
                         <Checkout />
                       </Suspense>
                     } />
-                    <Route path="/checkout2" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <CheckoutLegacy />
-                      </Suspense>
-                    } />
                     <Route path="/payment/:orderId" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <Payment />
@@ -249,15 +226,9 @@ const App = () => {
                         <OrderStatus />
                       </Suspense>
                     } />
-                    <Route path="/order-lookup" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <OrderLookup />
-                      </Suspense>
-                    } />
 
                     {/* Staff & Waiter routes */}
                     <Route path="/waiter" element={planPage('waiter_app', <Waiter />)} />
-                    <Route path="/waiter/setup" element={planPage('waiter_app', <WaiterSetup />)} />
                     <Route path="/waiter/dashboard" element={planPage('waiter_app', <WaiterDashboard />)} />
                     <Route path="/waiter-dashboard" element={planPage('waiter_app', <WaiterDashboard />)} />
                     <Route path="/kitchen" element={planPage('kds', <Cashier />)} />
@@ -301,26 +272,9 @@ const App = () => {
                       </Suspense>
                     } />
                     <Route path="/reports" element={planPage('analytics', <Reports />)} />
-                    <Route path="/whatsapp-admin" element={planPage('whatsapp_concierge', <WhatsAppAdmin />)} />
                     <Route path="/print-server-config" element={planPage('printing', <PrintServerConfig />)} />
-                    <Route path="/monitoring" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Monitoring />
-                      </Suspense>
-                    } />
                     <Route path="/waiter-management" element={planPage('waiter_app', <WaiterManagement />)} />
-                    <Route path="/admin/waiter-reports" element={planPage('analytics', <AdminWaiterReportsPage />)} />
                     <Route path="/admin/customers" element={planPage('crm', <CustomerManagement />)} />
-                    <Route path="/diagnostic" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <SystemDiagnostic />
-                      </Suspense>
-                    } />
-                    <Route path="/waiter-diagnostic" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <WaiterDiagnostic />
-                      </Suspense>
-                    } />
 
                     {/* QR Code direct access route */}
                     <Route path="/:tableId" element={

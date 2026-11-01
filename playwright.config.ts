@@ -17,9 +17,5 @@ export default defineConfig({
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: {
-      VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
-      VITE_SUPABASE_PUBLISHABLE_KEY: 'browser-e2e-test-key',
-    },
   },
 });

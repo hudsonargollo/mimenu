@@ -80,6 +80,7 @@ interface MimenuContextType {
   // Order & CRM methods
   createOrder: (orderData: Omit<MimenuOrder, 'id' | 'order_number' | 'created_at' | 'status'>) => MimenuOrder;
   updateOrderStatus: (orderId: string, status: MimenuOrder['status']) => void;
+  updateOrder: (orderId: string, patch: Partial<MimenuOrder>) => void;
   updateCustomerNotes: (customerId: string, notes: string) => void;
 }
 
@@ -296,6 +297,22 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
   }, [orders]);
+
+  // Orders are shared between panels that may run in separate tabs (customer,
+  // kitchen, cashier, waiter). The storage event keeps them in sync without a
+  // backend.
+  useEffect(() => {
+    const syncOrders = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEYS.ORDERS || !event.newValue) return;
+      try {
+        setOrders(JSON.parse(event.newValue));
+      } catch {
+        // Ignore malformed payloads from other tabs.
+      }
+    };
+    window.addEventListener('storage', syncOrders);
+    return () => window.removeEventListener('storage', syncOrders);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
@@ -622,6 +639,10 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     toast.success(`Pedido actualizado: ${status}`);
   };
 
+  const updateOrder = (orderId: string, patch: Partial<MimenuOrder>) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...patch } : o));
+  };
+
   const updateCustomerNotes = (customerId: string, notes: string) => {
     setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, notes } : c));
     toast.success('Notas de cliente guardadas');
@@ -664,6 +685,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         batchSetupVenue,
         createOrder,
         updateOrderStatus,
+        updateOrder,
         updateCustomerNotes,
       }}
     >

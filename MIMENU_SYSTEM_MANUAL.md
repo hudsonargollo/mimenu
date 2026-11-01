@@ -42,10 +42,14 @@ Conforme as diretrizes das 132 skills de design instaladas (`taste-skill`, `ui-u
 ## 3. Guia de Deploy & Variáveis de Ambiente
 
 ### Variáveis no Cloudflare Pages / Workers:
-- `VITE_SUPABASE_URL`: Endpoint da API do banco de dados Supabase.
-- `VITE_SUPABASE_PUBLISHABLE_KEY`: Chave anônima para consultas no cliente.
-- `VITE_MERCADOPAGO_PUBLIC_KEY`: Chave pública para processamento de cartões e Pix.
+- `MIMENU_KV`: Binding do namespace KV que guarda meseros, tarefas AR e sessões.
+- `APP_SESSION_SECRET`: Chave HMAC para assinatura das sessões de admin/garçom.
+- `RESEND_API_KEY`: Envio de e-mails transacionais.
+- `AR_WORKER_URL`, `AR_WORKER_TOKEN`, `MESHY_API_KEY`: Pipeline WebAR / 3D.
 - `CLOUDFLARE_API_TOKEN`: Token de deploy para o GitHub Actions.
+
+Não há banco de dados externo: cardápio, pedidos e clientes ficam no navegador
+(`localStorage`) e o servidor usa apenas Cloudflare KV.
 
 ### Deploy Contínuo:
 Todo commit enviado para a branch `mimenu` no repositório GitHub dispara automaticamente o workflow de testes, build de produção e publicação no Cloudflare Pages.

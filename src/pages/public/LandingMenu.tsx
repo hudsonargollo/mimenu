@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import {
@@ -15,8 +15,7 @@ import {
   ChevronRight,
   Star,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useMimenu } from "@/lib/mimenuContext";
 
 // Background
 import menuBgBokeh from "@/assets/menu-bg-bokeh.jpg";
@@ -288,12 +287,10 @@ const FlipCard = ({ item, direction, imageUrl, categoryLabel, onSwipeNext, onSwi
 
 const LandingMenu = () => {
   const navigate = useNavigate();
+  const { categories: menuCategories } = useMimenu();
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeTab, setActiveTab] = useState(ALL_TAB);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deckIndex, setDeckIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -301,38 +298,41 @@ const LandingMenu = () => {
 
   useEffect(() => {
     document.title = "Menú Digital | MiMenu";
-    loadMenu();
   }, []);
 
-  const loadMenu = async () => {
-    try {
-      setLoading(true);
+  const categories = useMemo<Category[]>(
+    () =>
+      menuCategories
+        .map((category) => ({
+          id: category.id,
+          name: category.name,
+          display_order: category.order_index,
+        }))
+        .sort((a, b) => a.display_order - b.display_order),
+    [menuCategories]
+  );
 
-      const { data: categoriesData, error: catError } = await supabase
-        .from("menu_categories")
-        .select("*")
-        .order("display_order");
+  const menuItems = useMemo<MenuItem[]>(
+    () =>
+      menuCategories.flatMap((category) =>
+        category.items.map((item, index) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          category_id: item.category_id || category.id,
+          available: item.is_available,
+          image_url: item.image_url || null,
+          sort_order: index,
+        }))
+      ),
+    [menuCategories]
+  );
 
-      if (catError) throw catError;
-
-      const { data: itemsData, error: itemsError } = await supabase
-        .from("menu_items")
-        .select("*")
-        .eq("available", true)
-        .order("category_id")
-        .order("sort_order");
-
-      if (itemsError) throw itemsError;
-
-      setCategories(categoriesData || []);
-      setMenuItems(itemsData || []);
-    } catch (error) {
-      console.error("Error loading menu:", error);
-      toast.error("Error al cargar el menú");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const availableItems = useMemo(
+    () => menuItems.filter((item) => item.available),
+    [menuItems]
+  );
 
   const categoryNameById = categories.reduce<Record<string, string>>((acc, c) => {
     acc[c.id] = c.name;
@@ -345,13 +345,13 @@ const LandingMenu = () => {
     return filename ? imageMap[filename] : null;
   };
 
-  const deckItems = menuItems.filter(
+  const deckItems = availableItems.filter(
     (item) => activeTab === ALL_TAB || categoryNameById[item.category_id] === activeTab
   );
 
   const q = searchQuery.trim().toLowerCase();
   const searchResults = q
-    ? menuItems
+    ? availableItems
         .filter(
           (item) =>
             item.name.toLowerCase().includes(q) ||
@@ -382,13 +382,13 @@ const LandingMenu = () => {
 
   // Autoplay: flip to the next card on an interval
   useEffect(() => {
-    if (!isPlaying || loading || q || deckItems.length <= 1) return;
+    if (!isPlaying || q || deckItems.length <= 1) return;
     const timer = setInterval(() => {
       setDirection(1);
       setDeckIndex((i) => (i + 1) % deckItems.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [isPlaying, loading, q, deckItems.length, activeTab]);
+  }, [isPlaying, q, deckItems.length, activeTab]);
 
   const goNext = () => {
     if (deckItems.length === 0) return;
@@ -412,17 +412,6 @@ const LandingMenu = () => {
     setSearchQuery("");
     setIsPlaying(false);
   };
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-950">
-        <div className="text-center">
-          <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-stone-800 border-t-amber-500" />
-          <p className="text-sm text-stone-400">Cargando menú...</p>
-        </div>
-      </div>
-    );
-  }
 
   const categoryTabs = [ALL_TAB, ...categories.map((c) => c.name)];
   const currentItem = deckItems[deckIndex] ?? null;

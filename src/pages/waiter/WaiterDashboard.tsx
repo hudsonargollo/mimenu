@@ -1,809 +1,456 @@
-import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShoppingCart, TrendingUp, QrCode, CheckCircle, Clock, XCircle, Edit, Lock, Plus, CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  CheckCircle,
+  ChefHat,
+  Clock,
+  CreditCard,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+} from "lucide-react";
 import { UniformHeader } from "@/components";
 import AdminLayout from "@/components/AdminLayout";
-import { GeneratePaymentDialog } from "@/components/GeneratePaymentDialog";
-import { CommissionToggle } from "@/components/CommissionToggle";
-import { MobileOrderCard } from "@/components/MobileOrderCard";
-import { OrderEditModal } from "@/components/OrderEditModal";
-import { AddItemsModal } from "@/components/AddItemsModal";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { OrderStatus, PaymentStatus } from "@/components/StatusBadge";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { getCommissionStatus, ORDER_STATUS_CATEGORIES } from "@/lib/commissionUtils";
+import { useMimenu } from "@/lib/mimenuContext";
+import { useAuth } from "@/lib/authContext";
 import { formatPhoneNumber } from "@/lib/phoneUtils";
-import { formatOrderNumber, canEditOrder } from "@/lib/orderUtils";
-import type { Order } from "@/types/commission";
-import type { Order as RealtimeOrder } from "@/integrations/supabase/realtime";
+import type { MimenuOrder } from "@/types/mimenu";
 
-type PaymentStatusFilter = 'all' | 'pending' | 'confirmed';
+type PaymentFilter = "all" | "pending" | "paid";
+
+const PAYMENT_FILTER_KEY = "waiter-payment-filter";
+
+const toOrderStatus = (order: MimenuOrder): OrderStatus =>
+  order.status as OrderStatus;
+
+const toPaymentStatus = (order: MimenuOrder): PaymentStatus =>
+  order.payment_status === "paid" ? "confirmed" : "pending";
+
+const paymentMethodLabel: Record<MimenuOrder["payment_method"], string> = {
+  cash: "Efectivo",
+  qr_simple: "QR simple",
+  card: "Tarjeta",
+};
+
+const fulfillmentLabel = (order: MimenuOrder): string => {
+  if (order.fulfillment_type === "dine_in") {
+    return order.table_number ? `Mesa ${order.table_number}` : "Salón";
+  }
+  if (order.fulfillment_type === "pickup") return "Para llevar";
+  return "Delivery";
+};
 
 const WaiterDashboard = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [waiterName, setWaiterName] = useState("Mesero");
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [showPIXGenerator, setShowPIXGenerator] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddItemsModal, setShowAddItemsModal] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState<PaymentStatusFilter>(() => {
-    // Load from localStorage or default to 'all'
-    const saved = localStorage.getItem('waiter-payment-status-filter');
-    return (saved as PaymentStatusFilter) || 'all';
+  const { user, logout } = useAuth();
+  const { venue, orders, updateOrder } = useMimenu();
+
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>(() => {
+    const saved = localStorage.getItem(PAYMENT_FILTER_KEY);
+    return saved === "pending" || saved === "paid" ? saved : "all";
   });
 
-  const fetchWaiterData = useCallback(async () => {
-    setLoading(true);
-    console.log('📊 Fetching waiter data...');
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      console.error('❌ No user found, redirecting to auth');
-      toast.error("Necesitás iniciar sesión.");
-      navigate("/auth");
-      return;
-    }
-
-    console.log('✅ User found:', user.email, 'Role:', user.user_metadata?.role);
-    
-    // Check if waiter has set display name
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('display_name, has_set_display_name, full_name')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError) {
-      console.error('Error fetching profile:', profileError);
-    } else if (profile && !profile.has_set_display_name) {
-      // Redirect to setup if display name not set
-      console.log('🔄 Redirecting to setup - display name not set');
-      navigate('/waiter/setup', { replace: true });
-      return;
-    }
-
-    // Use display_name if available, otherwise fall back to full_name or email
-    const displayName = profile?.display_name || profile?.full_name || user.email || "Mesero";
-    setWaiterName(displayName);
-    setCurrentUserId(user.id);
-
-    // Fetch orders placed by the current waiter
-    const { data, error } = await (supabase as any)
-      .from("orders")
-      .select("*")
-      .eq("waiter_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error("Error al cargar los pedidos: " + error.message);
-    } else {
-      setOrders(data || []);
-    }
-    setLoading(false);
-  }, [navigate]);
-
-  // Handle real-time order updates
-  const handleOrderUpdate = useCallback((updatedOrder: RealtimeOrder) => {
-    console.log('📡 Real-time order update received:', updatedOrder.id, 'Status:', updatedOrder.status);
-    
-    setOrders(prevOrders => {
-      const existingIndex = prevOrders.findIndex(o => o.id === updatedOrder.id);
-      
-      if (existingIndex >= 0) {
-        const oldOrder = prevOrders[existingIndex];
-        const newOrders = [...prevOrders];
-        newOrders[existingIndex] = updatedOrder as Order;
-        
-        // Show toast notification for status changes that affect commissions
-        const oldStatus = oldOrder.status;
-        const oldTotal = oldOrder.total_amount;
-        const newTotal = updatedOrder.total_amount;
-        
-        if (oldStatus !== updatedOrder.status) {
-          if (ORDER_STATUS_CATEGORIES.PAID.includes(updatedOrder.status.toLowerCase())) {
-            const commission = newTotal * 0.1;
-            toast.success('💰 ¡Comisión confirmada! Pedido pagado.', {
-              description: `${formatOrderNumber(updatedOrder)} - Comisión: ${commission.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
-            });
-          } else if (ORDER_STATUS_CATEGORIES.EXCLUDED.includes(updatedOrder.status.toLowerCase())) {
-            toast.info('Pedido cancelado', {
-              description: formatOrderNumber(updatedOrder)
-            });
-          }
-        } else if (Math.abs(oldTotal - newTotal) > 0.01) {
-          // Order total changed (from edit)
-          const oldCommission = oldTotal * 0.1;
-          const newCommission = newTotal * 0.1;
-          const commissionDiff = newCommission - oldCommission;
-          
-          toast.info('Pedido actualizado', {
-            description: `Comisión ${commissionDiff > 0 ? 'aumentó' : 'disminuyó'}: ${Math.abs(commissionDiff).toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
-          });
-        }
-        
-        console.log('✅ Order updated in local state, commission cards will auto-refresh');
-        return newOrders;
-      }
-      
-      return prevOrders;
-    });
-  }, []);
-
-  // Handle new orders (in case waiter creates order from another device)
-  const handleOrderInsert = useCallback((newOrder: RealtimeOrder) => {
-    console.log('📡 Real-time new order received:', newOrder.id);
-    
-    setOrders(prevOrders => {
-      // Check if order already exists
-      if (prevOrders.some(o => o.id === newOrder.id)) {
-        return prevOrders;
-      }
-      
-      // Add new order at the beginning
-      return [newOrder as Order, ...prevOrders];
-    });
-  }, []);
-
   useEffect(() => {
-    console.log('🚀 WaiterDashboard mounted');
-    fetchWaiterData();
-  }, [fetchWaiterData]);
+    localStorage.setItem(PAYMENT_FILTER_KEY, paymentFilter);
+  }, [paymentFilter]);
 
-  // Set up real-time subscriptions
-  useEffect(() => {
-    if (!currentUserId) {
-      return;
-    }
+  const venueOrders = useMemo(
+    () =>
+      orders
+        .filter((order) => order.venue_id === venue.id)
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ),
+    [orders, venue.id]
+  );
 
-    console.log('🔔 Setting up real-time subscriptions for waiter:', currentUserId);
-    
-    // Subscribe to new orders and updates
-    const channelName = 'waiter-orders';
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'orders',
-          filter: `waiter_id=eq.${currentUserId}`,
-        },
-        (payload) => {
-          handleOrderInsert(payload.new as RealtimeOrder);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: `waiter_id=eq.${currentUserId}`,
-        },
-        (payload) => {
-          handleOrderUpdate(payload.new as RealtimeOrder);
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Waiter orders subscription status: ${status}`);
-      });
+  const pendingPaymentCount = venueOrders.filter(
+    (order) => order.payment_status === "pending" && order.status !== "cancelled"
+  ).length;
+  const paidCount = venueOrders.filter(
+    (order) => order.payment_status === "paid" && order.status !== "cancelled"
+  ).length;
+  const openOrders = venueOrders.filter((order) =>
+    ["pending", "preparing", "ready"].includes(order.status)
+  );
+  const readyOrders = venueOrders.filter((order) => order.status === "ready");
+  const totalSales = venueOrders
+    .filter(
+      (order) =>
+        order.payment_status === "paid" && order.status !== "cancelled"
+    )
+    .reduce((sum, order) => sum + order.total, 0);
 
-    return () => {
-      console.log('🔕 Cleaning up real-time subscriptions');
-      supabase.removeChannel(channel);
-    };
-  }, [currentUserId, handleOrderUpdate, handleOrderInsert]);
+  const filteredOrders = venueOrders.filter((order) => {
+    if (paymentFilter === "all") return true;
+    return order.payment_status === paymentFilter;
+  });
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const setStatus = (order: MimenuOrder, status: MimenuOrder["status"]) => {
+    updateOrder(order.id, { status });
+    toast.success(`Pedido #${order.order_number} actualizado`);
+  };
+
+  const confirmPayment = (order: MimenuOrder) => {
+    updateOrder(order.id, { payment_status: "paid" });
+    toast.success(`Pago del pedido #${order.order_number} confirmado`);
+  };
+
+  const handleLogout = () => {
+    logout();
     navigate("/auth");
   };
 
-  const handleGeneratePIX = (order: Order) => {
-    setSelectedOrder(order);
-    setShowPIXGenerator(true);
-  };
-
-  const handlePIXPaymentComplete = async (paymentId: string) => {
-    if (!selectedOrder) return;
-
-    try {
-      // Update order status to paid
-      const { error } = await supabase
-        .from('orders')
-        .update({ 
-          status: 'paid',
-          mercadopago_payment_id: paymentId
-        })
-        .eq('id', selectedOrder.id);
-
-      if (error) {
-        console.error('Error updating order status:', error);
-        toast.error('Error al actualizar el estado del pedido');
-      } else {
-        toast.success('¡Pedido marcado como pagado!');
-        // Refresh orders to show updated status
-        fetchWaiterData();
-      }
-    } catch (error) {
-      console.error('Error handling payment completion:', error);
-      toast.error('Error al procesar el pago');
-    }
-
-    setShowPIXGenerator(false);
-    setSelectedOrder(null);
-  };
-
-  const handleClosePIXGenerator = () => {
-    setShowPIXGenerator(false);
-    setSelectedOrder(null);
-  };
-
-  const handleOrderClick = (order: Order) => {
-    setSelectedOrder(order);
-    setShowEditModal(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setShowEditModal(false);
-    setSelectedOrder(null);
-  };
-
-  const handleSaveOrder = async (updatedOrder: Order) => {
-    console.log('💾 Order saved, refreshing dashboard data...');
-    
-    // Immediately update the local state with the updated order
-    setOrders(prevOrders => {
-      const updatedOrders = prevOrders.map(order => 
-        order.id === updatedOrder.id ? updatedOrder : order
-      );
-      return updatedOrders;
+  const formatCurrency = (amount: number) =>
+    amount.toLocaleString("es-BO", {
+      style: "currency",
+      currency: venue.currency_code || "BOB",
     });
-    
-    // Fetch fresh data from the database to ensure consistency
-    await fetchWaiterData();
-    
-    // Show success notification with commission update
-    const commissionStatus = getCommissionStatus(updatedOrder);
-    toast.success('¡Pedido actualizado!', {
-      description: `Nueva comisión: ${commissionStatus.displayAmount}`
+
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleString("es-BO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
-    
-    console.log('✅ Dashboard refreshed with updated order data');
-  };
 
-  const canGeneratePIX = (order: Order): boolean => {
-    // Only show button if:
-    // 1. Payment status is pending
-    // 2. No PIX QR code exists OR PIX has expired
-    // 3. Customer info is available
-    
-    if (order.payment_status !== 'pending') {
-      return false;
-    }
-
-    if (!order.customer_name || !order.customer_phone) {
-      return false;
-    }
-
-    // If PIX exists, check if it's expired
-    if (order.pix_qr_code && order.pix_expires_at) {
-      const expiresAt = new Date(order.pix_expires_at);
-      if (expiresAt > new Date()) {
-        // PIX exists and not expired, don't show button
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  const canAddItems = (order: Order): boolean => {
-    // Only show button if:
-    // 1. Order status is in_preparation
-    // 2. Waiter owns the order (checked by currentUserId)
-    
-    if (order.status !== 'in_preparation') {
-      return false;
-    }
-
-    if (order.waiter_id !== currentUserId) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleAddItems = (order: Order) => {
-    setSelectedOrder(order);
-    setShowAddItemsModal(true);
-  };
-
-  const handleAddItemsSuccess = async (newTotal: number) => {
-    console.log('💾 Items added successfully, refreshing dashboard data...');
-    
-    // Fetch fresh data from the database to ensure consistency
-    await fetchWaiterData();
-    
-    toast.success('¡Ítems agregados con éxito!', {
-      description: `Nuevo total: ${newTotal.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}`
-    });
-    
-    console.log('✅ Dashboard refreshed with updated order data');
-  };
-
-  const handleCloseAddItemsModal = () => {
-    setShowAddItemsModal(false);
-    setSelectedOrder(null);
-  };
-
-  const canMarkAsReady = (order: Order): boolean => {
-    // Only show button if:
-    // 1. Order status is in_preparation
-    // 2. Waiter owns the order
-    // 3. Payment status is pending (waiter hasn't confirmed payment yet)
-    
-    if (order.status !== 'in_preparation') {
-      return false;
-    }
-
-    if (order.waiter_id !== currentUserId) {
-      return false;
-    }
-
-    if (order.payment_status !== 'pending') {
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleMarkAsReady = async (order: Order) => {
-    try {
-      const { error } = await supabase
-        .from('orders')
-        .update({
-          status: 'ready',
-          payment_status: 'confirmed',
-          payment_confirmed_at: new Date().toISOString()
-        })
-        .eq('id', order.id);
-
-      if (error) throw error;
-
-      toast.success('¡Pedido listo para retiro!', {
-        description: `${formatOrderNumber(order)} - El cliente será notificado`
-      });
-
-      // Refresh data
-      await fetchWaiterData();
-    } catch (error) {
-      console.error('Error marking order as ready:', error);
-      toast.error('Error al marcar el pedido como listo');
-    }
-  };
-
-  // Handle payment status filter change
-  const handlePaymentStatusFilterChange = (value: PaymentStatusFilter) => {
-    setPaymentStatusFilter(value);
-    localStorage.setItem('waiter-payment-status-filter', value);
-  };
-
-  // Filter orders by payment status
-  const filteredOrders = orders.filter(order => {
-    if (paymentStatusFilter === 'all') return true;
-    
-    const paymentStatus = order.payment_status?.toLowerCase();
-    
-    if (paymentStatusFilter === 'pending') {
-      return paymentStatus === 'pending' || !paymentStatus;
-    }
-    
-    if (paymentStatusFilter === 'confirmed') {
-      return paymentStatus === 'confirmed';
-    }
-    
-    return true;
-  });
-
-  // Calculate counts for each payment status
-  const pendingCount = orders.filter(order => {
-    const paymentStatus = order.payment_status?.toLowerCase();
-    return paymentStatus === 'pending' || !paymentStatus;
-  }).length;
-
-  const confirmedCount = orders.filter(order => {
-    const paymentStatus = order.payment_status?.toLowerCase();
-    return paymentStatus === 'confirmed';
-  }).length;
-
-  // Only count paid orders for total sales
-  const validOrders = orders.filter(order => 
-    ORDER_STATUS_CATEGORIES.PAID.includes(order.status.toLowerCase())
+  const renderActions = (order: MimenuOrder) => (
+    <div className="flex flex-wrap items-center gap-2">
+      {order.payment_status === "pending" && order.status !== "cancelled" && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-green-700 border-green-600 hover:bg-green-50"
+          onClick={() => confirmPayment(order)}
+        >
+          <CreditCard className="w-3.5 h-3.5 mr-1" />
+          Cobrar
+        </Button>
+      )}
+      {order.status === "pending" && (
+        <Button
+          size="sm"
+          className="bg-amber-600 hover:bg-amber-700 text-white"
+          onClick={() => setStatus(order, "preparing")}
+        >
+          <ChefHat className="w-3.5 h-3.5 mr-1" />
+          A cocina
+        </Button>
+      )}
+      {order.status === "preparing" && (
+        <Button
+          size="sm"
+          className="bg-green-600 hover:bg-green-700 text-white"
+          onClick={() => setStatus(order, "ready")}
+        >
+          <CheckCircle className="w-3.5 h-3.5 mr-1" />
+          Listo
+        </Button>
+      )}
+      {order.status === "ready" && (
+        <Button
+          size="sm"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+          onClick={() => setStatus(order, "delivered")}
+        >
+          <Package className="w-3.5 h-3.5 mr-1" />
+          Entregar
+        </Button>
+      )}
+    </div>
   );
-  const totalSales = validOrders.reduce((sum, order) => sum + order.total_amount, 0);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-acai flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Cargando panel...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <AdminLayout>
-      {/* Uniform Header */}
-      <UniformHeader
-        title="Mesero"
-        onLogout={handleLogout}
-      />
+      <UniformHeader title="Panel de Mesero" onLogout={handleLogout} />
 
-      {/* Side-by-side layout for Place Order and Total Sales on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Place Order Card */}
-          <div data-testid="new-order-section">
-            <Card className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white shadow-2xl border-0 overflow-hidden relative h-full hover:shadow-3xl transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.1),transparent_50%)]"></div>
-              <CardContent className="p-6 sm:p-8 relative flex flex-col h-full">
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-lg flex-shrink-0">
-                      <ShoppingCart className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl sm:text-3xl font-bold mb-1 leading-tight">Crear Nuevo Pedido</h3>
-                      <p className="text-green-50 text-sm sm:text-base">Empezá a atender a un nuevo cliente</p>
-                    </div>
-                  </div>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">
-                    Abrí el menú digital para hacer un pedido personalizado
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => {
-                    console.log('🛒 Novo Pedido button clicked, navigating to /menu');
-                    navigate("/menu");
-                  }}
-                  size="lg"
-                  className="bg-white text-green-600 hover:bg-green-50 font-bold px-6 sm:px-8 py-4 sm:py-5 text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] w-full rounded-xl mt-4"
-                  data-testid="new-order-button"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Nuevo Pedido
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">
+          {user?.name || "Mesero"}
+        </h2>
+        <p className="text-sm text-gray-500">
+          {venue.name} · {venue.city}
+        </p>
+      </div>
 
-          {/* Total Sales Card */}
-          <Card className="group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border-0 bg-white shadow-xl overflow-hidden relative h-full">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-bl-full opacity-50"></div>
-            <CardContent className="p-6 sm:p-8 relative z-10 flex flex-col h-full">
-              <div className="flex items-start justify-between mb-6">
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-500 group-hover:text-white/90 transition-colors uppercase tracking-wide mb-2">
-                    Total de Ventas
-                  </p>
-                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 group-hover:text-white transition-colors">
-                    {totalSales.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}
-                  </div>
-                </div>
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-white/20 group-hover:shadow-xl transition-all duration-300 flex-shrink-0">
-                  <ShoppingCart className="h-6 w-6 text-white" />
-                </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-blue-100">
+                  Total de ventas
+                </p>
+                <p className="text-2xl font-bold mt-1">
+                  {formatCurrency(totalSales)}
+                </p>
+                <p className="text-xs text-blue-100 mt-1">
+                  {paidCount} pedidos pagados
+                </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 group-hover:text-white/90 transition-colors mt-auto">
-                <TrendingUp className="w-4 h-4" />
-                <span className="font-medium">{validOrders.length} pedidos pagos</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Commission Toggle */}
-        <div className="mb-8">
-          <CommissionToggle orders={orders} />
-        </div>
-
-        {/* Orders History */}
-        <Card className="bg-white/95 backdrop-blur-sm shadow-lg border-0">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="text-xl font-semibold text-gray-900 flex items-center">
-                <ShoppingCart className="w-5 h-5 mr-2 text-purple-600" />
-                Historial de Pedidos
-              </CardTitle>
-              
-              {/* Payment Status Tabs */}
-              <Tabs 
-                value={paymentStatusFilter} 
-                onValueChange={(value) => handlePaymentStatusFilterChange(value as PaymentStatusFilter)}
-                className="w-full sm:w-auto"
-              >
-                <TabsList className="grid w-full grid-cols-3 sm:w-auto">
-                  <TabsTrigger value="all" className="text-xs sm:text-sm">
-                    Todos ({orders.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="pending" className="text-xs sm:text-sm">
-                    <Clock className="w-3 h-3 mr-1" />
-                    Pendientes ({pendingCount})
-                  </TabsTrigger>
-                  <TabsTrigger value="confirmed" className="text-xs sm:text-sm">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Confirmados ({confirmedCount})
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <TrendingUp className="w-8 h-8 text-white/80" />
             </div>
-          </CardHeader>
-          <CardContent>
-            {/* Mobile Card Layout */}
-            {isMobile ? (
-              <div className="space-y-3">
-                {filteredOrders.map((order) => (
-                  <MobileOrderCard
-                    key={order.id}
-                    order={order}
-                    onGeneratePIX={handleGeneratePIX}
-                    canGeneratePIX={canGeneratePIX(order)}
-                    onAddItems={handleAddItems}
-                    canAddItems={canAddItems(order)}
-                    onMarkAsReady={handleMarkAsReady}
-                    canMarkAsReady={canMarkAsReady(order)}
-                    onClick={handleOrderClick}
-                  />
-                ))}
-                {filteredOrders.length === 0 && (
-                  <Card className="p-8 text-center">
-                    <div className="flex flex-col items-center">
-                      <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
-                      <p className="text-lg font-medium text-gray-700 mb-2">No se encontraron pedidos</p>
-                      <p className="text-sm text-gray-500">
-                        {paymentStatusFilter === 'all' 
-                          ? 'Hacé clic en "Nuevo Pedido" para empezar a atender clientes'
-                          : `No hay pedidos con estado de pago "${paymentStatusFilter === 'pending' ? 'Pendiente' : 'Confirmado'}"`
-                        }
-                      </p>
-                    </div>
-                  </Card>
-                )}
-              </div>
-            ) : (
-              /* Desktop Table Layout */
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gray-200">
-                      <TableHead className="text-gray-600">ID del Pedido</TableHead>
-                      <TableHead className="text-gray-600">Cliente</TableHead>
-                      <TableHead className="text-gray-600">Fecha</TableHead>
-                      <TableHead className="text-right text-gray-600">Total</TableHead>
-                      <TableHead className="text-right text-gray-600">Tu Comisión</TableHead>
-                      <TableHead className="text-gray-600">Estado</TableHead>
-                      <TableHead className="text-gray-600">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredOrders.map((order) => (
-                      <TableRow 
-                        key={order.id} 
-                        className="border-gray-100 hover:bg-purple-50/50 cursor-pointer transition-colors duration-150"
-                        onClick={() => handleOrderClick(order)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleOrderClick(order);
-                          }
-                        }}
-                      >
-                        <TableCell className="font-medium text-gray-900">
-                          {formatOrderNumber(order, false)}
-                        </TableCell>
-                        <TableCell className="text-gray-600">
-                          <div>
-                            <div className="font-medium">{order.customer_name || 'N/A'}</div>
-                            <div className="text-sm text-gray-500">{formatPhoneNumber(order.customer_phone)}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-gray-600">
-                          {new Date(order.created_at).toLocaleDateString("es-BO", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold text-gray-900">
-                          {order.total_amount.toLocaleString("es-BO", { style: "currency", currency: "BOB" })}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {(() => {
-                            const commissionStatus = getCommissionStatus(order);
-                            const IconComponent = commissionStatus.icon === 'CheckCircle' ? CheckCircle : 
-                                                 commissionStatus.icon === 'Clock' ? Clock : XCircle;
-                            
-                            return (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center justify-end gap-2">
-                                      <IconComponent className="w-4 h-4" />
-                                      <span className={commissionStatus.className}>
-                                        {commissionStatus.displayAmount}
-                                      </span>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>{commissionStatus.tooltip}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            );
-                          })()}
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge 
-                            orderStatus={order.status as OrderStatus}
-                            paymentStatus={order.payment_status as PaymentStatus}
-                            showBoth={!!order.payment_status}
-                            compact={false}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {canMarkAsReady(order) && (
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMarkAsReady(order);
-                                }}
-                                className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white"
-                              >
-                                <CheckCircle className="w-3 h-3" />
-                                Listo p/ Retiro
-                              </Button>
-                            )}
-                            {canAddItems(order) && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAddItems(order);
-                                }}
-                                className="flex items-center gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
-                              >
-                                <Plus className="w-3 h-3" />
-                                Agregar Ítem
-                              </Button>
-                            )}
-                            {canGeneratePIX(order) && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleGeneratePIX(order);
-                                }}
-                                className="flex items-center gap-1 text-green-600 border-green-600 hover:bg-green-50"
-                              >
-                                <CreditCard className="w-3 h-3" />
-                                Generar Pago
-                              </Button>
-                            )}
-                            {canEditOrder(order) ? (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1 text-blue-600">
-                                      <Edit className="w-4 h-4" />
-                                      <span className="text-xs font-medium">Editável</span>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Hacé clic en el pedido para editarlo</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ) : (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1 text-gray-400">
-                                      <Lock className="w-4 h-4" />
-                                      <span className="text-xs font-medium">Bloqueado</span>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Este pedido no se puede editar</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredOrders.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center py-12">
-                          <div className="flex flex-col items-center">
-                            <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
-                            <p className="text-lg font-medium text-gray-700 mb-2">No se encontraron pedidos</p>
-                            <p className="text-sm text-gray-500">
-                              {paymentStatusFilter === 'all' 
-                                ? 'Hacé clic en "Nuevo Pedido" para empezar a atender clientes'
-                                : `No hay pedidos con estado de pago "${paymentStatusFilter === 'pending' ? 'Pendiente' : 'Confirmado'}"`
-                              }
-                            </p>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
           </CardContent>
         </Card>
 
-      {/* Payment Generator Modal (PIX or Credit Card) */}
-      {selectedOrder && (
-        <GeneratePaymentDialog
-          isOpen={showPIXGenerator}
-          onClose={handleClosePIXGenerator}
-          orderId={selectedOrder.id}
-          orderNumber={selectedOrder.order_number}
-          amount={selectedOrder.total_amount}
-          customerName={selectedOrder.customer_name}
-          customerPhone={selectedOrder.customer_phone}
-          onPaymentComplete={handlePIXPaymentComplete}
-        />
-      )}
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">
+                  Pedidos activos
+                </p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  {openOrders.length}
+                </p>
+              </div>
+              <ShoppingCart className="w-8 h-8 text-gray-300" />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Order Edit Modal */}
-      <OrderEditModal
-        order={selectedOrder}
-        isOpen={showEditModal}
-        onClose={handleCloseEditModal}
-        onSave={handleSaveOrder}
-      />
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">
+                  Por cobrar
+                </p>
+                <p className="text-2xl font-bold text-amber-600 mt-1">
+                  {pendingPaymentCount}
+                </p>
+              </div>
+              <Clock className="w-8 h-8 text-amber-300" />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Add Items Modal */}
-      {selectedOrder && (
-        <AddItemsModal
-          isOpen={showAddItemsModal}
-          orderId={selectedOrder.id}
-          currentTotal={selectedOrder.total_amount}
-          hasPIX={!!selectedOrder.pix_qr_code && !!selectedOrder.pix_expires_at && new Date(selectedOrder.pix_expires_at) > new Date()}
-          onClose={handleCloseAddItemsModal}
-          onSuccess={handleAddItemsSuccess}
-        />
-      )}
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">
+                  Listos para entregar
+                </p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  {readyOrders.length}
+                </p>
+              </div>
+              <Package className="w-8 h-8 text-green-300" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-0 shadow-lg bg-white/95">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <CardTitle className="text-xl font-semibold text-gray-900 flex items-center">
+              <ShoppingCart className="w-5 h-5 mr-2 text-purple-600" />
+              Pedidos del salón
+            </CardTitle>
+
+            <Tabs
+              value={paymentFilter}
+              onValueChange={(value) =>
+                setPaymentFilter(value as PaymentFilter)
+              }
+            >
+              <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+                <TabsTrigger value="all">
+                  Todos ({venueOrders.length})
+                </TabsTrigger>
+                <TabsTrigger value="pending">
+                  Por cobrar ({pendingPaymentCount})
+                </TabsTrigger>
+                <TabsTrigger value="paid">
+                  Pagados ({paidCount})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {filteredOrders.length === 0 ? (
+            <div className="py-12 text-center">
+              <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-700 mb-2">
+                No hay pedidos en esta vista
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                Creá un pedido desde el menú para empezar a atender.
+              </p>
+              <Button onClick={() => navigate("/menu")} className="gap-2">
+                <ShoppingCart className="w-4 h-4" />
+                Nuevo pedido
+              </Button>
+            </div>
+          ) : isMobile ? (
+            <div className="space-y-3">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="shadow-sm">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="font-bold text-gray-900">
+                          Pedido #{order.order_number}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {order.customer_name || "Cliente"} ·{" "}
+                          {formatPhoneNumber(order.customer_phone)}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {fulfillmentLabel(order)} ·{" "}
+                          {paymentMethodLabel[order.payment_method]}
+                        </p>
+                      </div>
+                      <StatusBadge
+                        orderStatus={toOrderStatus(order)}
+                        paymentStatus={toPaymentStatus(order)}
+                        showBoth
+                        compact
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      {order.items.map((item, index) => (
+                        <div
+                          key={`${item.item_id}-${index}`}
+                          className="flex justify-between text-sm"
+                        >
+                          <span className="text-gray-600">
+                            {item.quantity}x {item.name}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {formatCurrency(item.price * item.quantity)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between border-t pt-2">
+                      <span className="text-xs text-gray-500">
+                        {formatDate(order.created_at)}
+                      </span>
+                      <span className="font-bold text-gray-900">
+                        {formatCurrency(order.total)}
+                      </span>
+                    </div>
+
+                    {renderActions(order)}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Pedido</TableHead>
+                    <TableHead>Cliente</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Pago</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium text-gray-900">
+                        <div>#{order.order_number}</div>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {fulfillmentLabel(order)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        <div className="font-medium">
+                          {order.customer_name || "Cliente"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {formatPhoneNumber(order.customer_phone)}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {order.items
+                            .map((item) => `${item.quantity}x ${item.name}`)
+                            .join(", ")}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600 whitespace-nowrap">
+                        {formatDate(order.created_at)}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold text-gray-900">
+                        {formatCurrency(order.total)}
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge
+                          orderStatus={toOrderStatus(order)}
+                          paymentStatus={toPaymentStatus(order)}
+                          compact
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={
+                            order.status === "cancelled"
+                              ? "bg-red-100 text-red-700"
+                              : order.status === "delivered"
+                                ? "bg-gray-100 text-gray-700"
+                                : order.status === "ready"
+                                  ? "bg-green-100 text-green-700"
+                                  : order.status === "preparing"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-yellow-100 text-yellow-700"
+                          }
+                        >
+                          {order.status === "pending"
+                            ? "Recibido"
+                            : order.status === "preparing"
+                              ? "En preparación"
+                              : order.status === "ready"
+                                ? "Listo"
+                                : order.status === "delivered"
+                                  ? "Entregado"
+                                  : "Cancelado"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{renderActions(order)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </AdminLayout>
   );
 };

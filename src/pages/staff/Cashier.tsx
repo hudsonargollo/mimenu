@@ -3,32 +3,22 @@ import {
   CreditCard,
   Clock,
   CheckCircle,
-  Bell,
-  AlertCircle,
   Timer,
   DollarSign,
   ChefHat,
   Package,
   Eye,
-  Edit,
-  BarChart3,
   X,
   Users,
-  Plus,
-  MessageSquare,
-  Store,
-  QrCode,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useMimenu } from "@/lib/mimenuContext";
-import { notificationTriggers } from "@/integrations/whatsapp";
+import { useAuth } from "@/lib/authContext";
 import AdminLayout from "@/components/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
@@ -52,32 +42,21 @@ import type { OrderStatus, PaymentStatus } from "@/components/StatusBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { OrderCardInfo } from "@/components/OrderCardInfo";
 import { formatPhoneNumber } from "@/lib/phoneUtils";
-import { fetchAllWaiters, getWaiterName } from "@/lib/waiterUtils";
 
 const Cashier = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const {
     venue,
     orders: contextOrders,
     tables,
-    cyclingOffers,
     updateOrderStatus,
-    createOrder,
+    updateOrder,
   } = useMimenu();
 
-  const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<MimenuOrder | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("pending");
-  const [selectedWaiterId, setSelectedWaiterId] = useState<string | null>(
-    (() => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("cashier_waiter_filter") || null;
-      }
-      return null;
-    })()
-  );
-  const [waiters, setWaiters] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
 
   // Timer tick every 10 seconds
@@ -91,26 +70,8 @@ const Cashier = () => {
     document.title = `Caja & KDS | ${venue.name}`;
   }, [venue.name]);
 
-  // Persist waiter filter to localStorage
-  useEffect(() => {
-    if (selectedWaiterId) {
-      localStorage.setItem("cashier_waiter_filter", selectedWaiterId);
-    } else {
-      localStorage.removeItem("cashier_waiter_filter");
-    }
-  }, [selectedWaiterId]);
-
-  // Load waiters from registry
-  useEffect(() => {
-    const loadWaiters = async () => {
-      const waitersList = await fetchAllWaiters();
-      setWaiters(waitersList);
-    };
-    loadWaiters();
-  }, []);
-
   const handleLogout = () => {
-    // No Supabase auth to sign out — just redirect to auth
+    logout();
     navigate("/auth");
   };
 
@@ -162,7 +123,6 @@ const Cashier = () => {
   const readyPaymentBreakdown = getPaymentBreakdown(readyOrders);
   const completedPaymentBreakdown = getPaymentBreakdown(completedOrders);
 
-  // Payment status — no Supabase/MercadoPago integration
   const getPaymentStatus = (order: MimenuOrder) => {
     if (order.payment_status === "paid") {
       return {
@@ -196,7 +156,8 @@ const Cashier = () => {
   };
 
   const completeOrder = (orderId: string) => {
-    updateOrderStatus(orderId, "cancelled");
+    updateOrder(orderId, { status: "delivered" });
+    toast.success("Pedido entregado");
   };
 
   const moveToPreparation = (orderId: string) => {
@@ -207,7 +168,7 @@ const Cashier = () => {
     updateOrderStatus(orderId, "ready");
   };
 
-  // Payment verification stub — Supabase edge functions removed
+  // Payment confirmation is manual until an online gateway is connected
   const verifyPayment = (orderId: string) => {
     const order = orders.find((o) => o.id === orderId);
     if (order?.payment_status === "paid") {
@@ -217,16 +178,6 @@ const Cashier = () => {
     toast.info("Se requiere confirmación manual del pago. El pago aún no se verifica automáticamente.");
   };
 
-  const confirmPaymentManually = (orderId: string) => {
-    updateOrderStatus(orderId, "preparing");
-    toast.success("¡Pago confirmado!");
-  };
-
-  const notifyCustomer = (orderId: string) => {
-    void notificationTriggers.onOrderReady(orderId);
-    toast.success("Cliente notificado por WhatsApp!");
-  };
-
   const openDetails = (order: MimenuOrder) => {
     setSelectedOrder(order);
     setIsDetailsDialogOpen(true);
@@ -234,7 +185,6 @@ const Cashier = () => {
 
   return (
     <AdminLayout>
-      {/* Payment Confirmation Dialog - disabled (Supabase edge functions removed) */}
       {/* Order Details Dialog */}
       {/* Uniform Header */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
@@ -742,25 +692,14 @@ const Cashier = () => {
                     )}
 
                     <div className="border-t pt-3">
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          onClick={() => completeOrder(order.id)}
-                          className="flex-1 min-h-[44px] text-base"
-                          variant="outline"
-                        >
-                          <Package className="mr-2 h-4 w-4 text-green-400" />
-                          Entregado / Finalizar
-                        </Button>
-                        {order.customer_phone && (
-                          <Button
-                            className="flex-1 min-h-[44px] text-base"
-                            onClick={() => notifyCustomer(order.id)}
-                          >
-                            <MessageSquare className="mr-2 h-4 w-4" />
-                            Notificar Cliente
-                          </Button>
-                        )}
-                      </div>
+                      <Button
+                        onClick={() => completeOrder(order.id)}
+                        className="w-full min-h-[44px] text-base"
+                        variant="outline"
+                      >
+                        <Package className="mr-2 h-4 w-4 text-green-400" />
+                        Entregado / Finalizar
+                      </Button>
                     </div>
                   </Card>
                 );

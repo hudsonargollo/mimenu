@@ -12,18 +12,18 @@ export async function onRequest(context) {
   }
 
   const envCheck = {
-    hasSupabaseUrl: !!context.env.SUPABASE_URL,
-    hasSupabaseKey: !!context.env.SUPABASE_SERVICE_ROLE_KEY,
-    hasWhatsAppKey: !!context.env.WHATSAPP_ENCRYPTION_KEY,
+    hasKV: !!context.env.MIMENU_KV,
+    hasSessionSecret: !!context.env.APP_SESSION_SECRET,
+    hasResendKey: !!context.env.RESEND_API_KEY,
     timestamp: new Date().toISOString(),
-    message: 'Cloudflare Functions are working!'
+    message: 'Cloudflare Functions are working!',
   };
 
   return new Response(JSON.stringify(envCheck, null, 2), {
     status: 200,
     headers: {
       ...corsHeaders,
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
 }

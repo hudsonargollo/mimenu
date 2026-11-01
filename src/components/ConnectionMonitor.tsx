@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-// REMOVED: supabase import - no longer using Supabase real-time
 
 interface ConnectionMonitorProps {
   onConnectionChange?: (isConnected: boolean) => void;

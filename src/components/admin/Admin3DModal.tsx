@@ -217,7 +217,7 @@ const Admin3DModal: React.FC<Admin3DModalProps> = ({ menuItem, initial }) => {
 
         <TabsContent value="upload">
           <p className="text-sm text-muted-foreground mb-3">
-            Registrá assets compilados (.glb / .usdz) ya alojados (Supabase Storage, CDN, etc.).
+            Registrá assets compilados (.glb / .usdz) ya alojados en un CDN o servidor de archivos.
           </p>
           <form onSubmit={handleManualSubmit} className="space-y-4">
             <div>

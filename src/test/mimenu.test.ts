@@ -91,7 +91,7 @@ describe('MIMENU - Demo Test Suite', () => {
     });
   });
 
-  describe('KV Storage Engine (No Supabase Dependency)', () => {
+  describe('KV Storage Engine', () => {
     it('should persist and retrieve objects by namespace key', async () => {
       const testKey = KV_KEYS.venue('test-venue-1');
       await kv.put(testKey, { name: "Test Demo", city: "Santa Cruz" });

@@ -1,9 +1,9 @@
 /**
  * Waiter accounts for the admin panel.
  *
- * Stored as one JSON array in the MIMENU_KV namespace (the Pages project has
- * no Supabase bindings), so the admin API and the login endpoint share one
- * source. A single key keeps reads consistent right after a write.
+ * Stored as one JSON array in the MIMENU_KV namespace, so the admin API and
+ * the login endpoint share one source. A single key keeps reads consistent
+ * right after a write.
  */
 import { APP_CREDENTIALS } from '../../shared/app-credentials';
 

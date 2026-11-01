@@ -2,8 +2,6 @@ import type { AppRole } from '../../shared/app-credentials';
 
 interface AuthEnv {
   APP_SESSION_SECRET?: string;
-  VITE_SUPABASE_URL?: string;
-  SUPABASE_SERVICE_ROLE_KEY?: string;
 }
 
 export interface AppSessionClaims {
@@ -82,8 +80,8 @@ export async function verifyAppSessionToken(
 }
 
 /**
- * Accepts either the app's signed session token (mint via /api/auth/session)
- * or a Supabase JWT whose user is an admin.
+ * Accepts the app's signed session token (minted via /api/auth/session) and
+ * requires the admin role.
  */
 export async function requireAdmin(
   request: Request,
@@ -93,24 +91,8 @@ export async function requireAdmin(
   if (!header?.startsWith('Bearer ')) return null;
 
   const token = header.slice(7);
+  if (!env.APP_SESSION_SECRET) return null;
 
-  if (env.APP_SESSION_SECRET) {
-    const claims = await verifyAppSessionToken(env.APP_SESSION_SECRET, token);
-    if (claims) return claims.role === 'admin' ? { email: claims.email } : null;
-  }
-
-  if (!env.VITE_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return null;
-
-  try {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (!error && user?.user_metadata?.role === 'admin') {
-      return { email: user.email || '' };
-    }
-  } catch (error) {
-    console.error('Supabase token verification failed:', error);
-  }
-
-  return null;
+  const claims = await verifyAppSessionToken(env.APP_SESSION_SECRET, token);
+  return claims?.role === 'admin' ? { email: claims.email } : null;
 }

@@ -1,18 +1,19 @@
 import { useCallback, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { printServerClient } from '@/integrations/print-server/client';
+import type { MimenuOrder } from '@/types/mimenu';
+
+const ORDERS_KEY = 'mimenu_orders_v2';
 
 interface OrderData {
   id: string;
-  order_number: number;
+  order_number: string | number;
   customer_name: string;
   customer_phone: string;
   total_amount: number;
   order_notes?: string | null;
   created_at: string;
-  waiter_id?: string | null;
 }
 
 interface OrderItem {
@@ -41,60 +42,38 @@ export function usePrintOrder() {
   const [currentOrderData, setCurrentOrderData] = useState<PrintOrderData | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
-  // Fetch order data including items and waiter name
+  // Read the order from the local store used by the customer/kitchen panels
   const fetchOrderData = useCallback(async (orderId: string): Promise<PrintOrderData | null> => {
     try {
-      // Fetch order details
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .select('id, order_number, customer_name, customer_phone, total_amount, order_notes, created_at, waiter_id')
-        .eq('id', orderId)
-        .single();
-
-      if (orderError) {
-        console.error('Error fetching order:', orderError);
-        toast.error('Error al buscar el pedido');
-        return null;
-      }
+      const stored = localStorage.getItem(ORDERS_KEY);
+      const orders: MimenuOrder[] = stored ? JSON.parse(stored) : [];
+      const order = orders.find((candidate) => candidate.id === orderId);
 
       if (!order) {
         toast.error('Pedido no encontrado');
         return null;
       }
 
-      // Fetch order items
-      const { data: items, error: itemsError } = await supabase
-        .from('order_items')
-        .select('id, item_name, quantity, unit_price')
-        .eq('order_id', orderId);
-
-      if (itemsError) {
-        console.error('Error fetching order items:', itemsError);
-        toast.error('Error al buscar los ítems del pedido');
-        return null;
-      }
-
-      // Fetch waiter name if waiter_id exists
-      let waiterName: string | null = null;
-      if (order.waiter_id) {
-        const { data: waiterData, error: waiterError } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', order.waiter_id)
-          .single();
-
-        if (!waiterError && waiterData) {
-          waiterName = waiterData.full_name;
-        }
-      }
-
       return {
-        order: order as OrderData,
-        items: (items || []) as OrderItem[],
-        waiterName,
+        order: {
+          id: order.id,
+          order_number: order.order_number,
+          customer_name: order.customer_name,
+          customer_phone: order.customer_phone,
+          total_amount: order.total,
+          order_notes: order.customer_notes ?? null,
+          created_at: order.created_at,
+        },
+        items: order.items.map((item, index) => ({
+          id: `${order.id}-${index}`,
+          item_name: item.name,
+          quantity: item.quantity,
+          unit_price: item.price,
+        })),
+        waiterName: null,
       };
     } catch (error) {
-      console.error('Error fetching order data:', error);
+      console.error('Error reading order data:', error);
       toast.error('Error al cargar los datos del pedido');
       return null;
     }

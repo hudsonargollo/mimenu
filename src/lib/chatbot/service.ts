@@ -1,4 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
 import {
   processChatbotMessage,
   ChatbotSessionState,
@@ -8,6 +7,9 @@ import {
   ChatbotResponse,
   ReservationRequest
 } from './engine';
+
+const RESERVATIONS_KEY = 'mimenu_chatbot_reservations_v1';
+const SESSIONS_KEY = 'mimenu_chatbot_sessions_v1';
 
 export interface PersistedReservationRecord {
   id: string;
@@ -21,10 +23,48 @@ export interface PersistedReservationRecord {
   status: 'pending' | 'confirmed' | 'cancelled';
   created_at: string;
   idempotency_key?: string | null;
+  notes?: string | null;
 }
 
+interface StoredSession {
+  language: ChatbotSessionState['language'];
+  state: ChatbotSessionState;
+  last_interaction: string;
+}
+
+const readReservations = (): PersistedReservationRecord[] => {
+  try {
+    const raw = localStorage.getItem(RESERVATIONS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeReservations = (records: PersistedReservationRecord[]): void => {
+  localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(records));
+};
+
+const readSessions = (): Record<string, StoredSession> => {
+  try {
+    const raw = localStorage.getItem(SESSIONS_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const writeSessions = (sessions: Record<string, StoredSession>): void => {
+  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+};
+
+const sessionStorageKey = (venueId: string, sessionKey: string) =>
+  `${venueId}:${sessionKey}`;
+
 /**
- * Persists a pending reservation request to public.chatbot_reservations.
+ * Persists a pending reservation request in the local chatbot store.
  */
 export async function saveReservation(
   request: ReservationRequest,
@@ -34,7 +74,20 @@ export async function saveReservation(
     if (!request.idempotencyKey) {
       return { success: false, error: 'A reservation idempotency key is required.' };
     }
-    const payload = {
+
+    const reservations = readReservations();
+    const existing = reservations.find(
+      (record) =>
+        record.venue_id === request.venueId &&
+        record.idempotency_key === request.idempotencyKey
+    );
+
+    if (existing) {
+      return { success: true, data: existing, duplicate: true };
+    }
+
+    const record: PersistedReservationRecord = {
+      id: `res-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       venue_id: request.venueId,
       customer_name: request.customerName,
       customer_phone: request.customerPhone,
@@ -43,32 +96,13 @@ export async function saveReservation(
       reservation_time: request.reservationTime,
       source: request.source,
       status: 'pending',
-      notes: notes || null,
+      created_at: new Date().toISOString(),
       idempotency_key: request.idempotencyKey,
+      notes: notes || null,
     };
-    const { data, error } = await supabase
-      .from('chatbot_reservations')
-      .insert(payload)
-      .select()
-      .single();
 
-    if (!error && data) return { success: true, data: data as PersistedReservationRecord };
-
-    // Concurrent/replayed confirmation is resolved through the unique DB key.
-    if (error?.code === '23505') {
-      const existing = await supabase
-        .from('chatbot_reservations')
-        .select('*')
-        .eq('venue_id', request.venueId)
-        .eq('idempotency_key', request.idempotencyKey)
-        .maybeSingle();
-      if (!existing.error && existing.data) {
-        return { success: true, data: existing.data as PersistedReservationRecord, duplicate: true };
-      }
-    }
-
-    console.error('Error inserting chatbot reservation:', error);
-    return { success: false, error: error?.message || 'Reservation could not be saved.' };
+    writeReservations([record, ...reservations]);
+    return { success: true, data: record };
   } catch (err: any) {
     console.error('Unexpected error saving chatbot reservation:', err);
     return { success: false, error: err?.message || 'Unknown error' };
@@ -76,27 +110,21 @@ export async function saveReservation(
 }
 
 /**
- * Loads conversation session state from public.chatbot_sessions.
+ * Loads conversation session state from the local chatbot store.
  */
 export async function loadSessionState(
   venueId: string,
   sessionKey: string
 ): Promise<ChatbotSessionState | null> {
   try {
-    const { data, error } = await supabase
-      .from('chatbot_sessions')
-      .select('language, state')
-      .eq('venue_id', venueId)
-      .eq('session_key', sessionKey)
-      .maybeSingle();
-
-    if (error || !data) return null;
+    const session = readSessions()[sessionStorageKey(venueId, sessionKey)];
+    if (!session?.state) return null;
 
     return {
-      language: (data.language as any) || 'es',
-      userName: data.state?.userName,
-      reservationDraft: data.state?.reservationDraft || { step: 'idle' },
-      lastReservation: data.state?.lastReservation || undefined
+      language: session.language || 'es',
+      userName: session.state.userName,
+      reservationDraft: session.state.reservationDraft || { step: 'idle' },
+      lastReservation: session.state.lastReservation || undefined,
     };
   } catch (err) {
     console.error('Failed to load session state:', err);
@@ -105,7 +133,7 @@ export async function loadSessionState(
 }
 
 /**
- * Persists conversation session state into public.chatbot_sessions.
+ * Persists conversation session state in the local chatbot store.
  */
 export async function saveSessionState(
   venueId: string,
@@ -113,26 +141,17 @@ export async function saveSessionState(
   state: ChatbotSessionState
 ): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('chatbot_sessions')
-      .upsert({
-        venue_id: venueId,
-        session_key: sessionKey,
-        language: state.language || 'es',
-        state: {
-          userName: state.userName,
-          reservationDraft: state.reservationDraft || { step: 'idle' },
-          lastReservation: state.lastReservation || null
-        },
-        last_interaction: new Date().toISOString()
-      }, {
-        onConflict: 'venue_id,session_key'
-      });
-
-    if (error) {
-      console.error('Failed to save session state:', error);
-      return false;
-    }
+    const sessions = readSessions();
+    sessions[sessionStorageKey(venueId, sessionKey)] = {
+      language: state.language || 'es',
+      state: {
+        ...state,
+        reservationDraft: state.reservationDraft || { step: 'idle' },
+        lastReservation: state.lastReservation || undefined,
+      },
+      last_interaction: new Date().toISOString(),
+    };
+    writeSessions(sessions);
     return true;
   } catch (err) {
     console.error('Unexpected error saving session state:', err);
@@ -143,8 +162,8 @@ export async function saveSessionState(
 /**
  * Executes a full chatbot turn:
  * 1. Computes the engine response.
- * 2. If `create_reservation` is triggered, records it into `chatbot_reservations`.
- * 3. Persists updated session state to `chatbot_sessions` (clearing draft to step: 'idle').
+ * 2. If `create_reservation` is triggered, records it in the local reservation store.
+ * 3. Persists updated session state, clearing the draft back to step: 'idle'.
  */
 export async function handleChatTurn(
   message: string,

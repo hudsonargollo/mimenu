@@ -1,6 +1,6 @@
 # MiMenu — Sistema Operacional & Cardápio Digital Inteligente para Gastronomia
 
-> Plataforma multi-tenant de cardápios digitais, pedidos em mesa via QR Code, delivery direto com 0% de comissão, KDS de cozinha, copiloto WhatsApp e CRM gastronômico.
+> Plataforma multi-tenant de cardápios digitais, pedidos em mesa via QR Code, delivery direto com 0% de comissão, KDS de cozinha, copiloto IA e CRM gastronômico.
 
 ---
 
@@ -11,7 +11,7 @@
 - **0% de Comissão:** Mensalidade fixa sem cobranças percentuais por pedido.
 - **Link Próprio Fixo:** Endereço exclusivo (`mimenu.clubemkt.digital/loja/suamarca`) para Instagram, TikTok e WhatsApp.
 - **Operação Unificada em 1 Tela:** Do pedido na mesa ou delivery até o KDS da cozinha e fechamento do caixa.
-- **Copiloto por WhatsApp:** Administração da carta e pausas de estoque em tempo real por áudio ou texto.
+- **Copiloto IA:** Administração da carta e pausas de estoque em tempo real por chat.
 - **Base de Clientes 100% Própria:** CRM integrado com histórico de consumo, ticket médio e fidelização.
 
 ---
@@ -58,7 +58,7 @@ A plataforma adota o framework unificado de alta fidelidade visual compilado a p
 | Rota | Descrição |
 | :--- | :--- |
 | `/` & `/cardapio-digital` | Landing page oficial com oferta Cardápio Gênio AI (0% comissão, Raio-X operacional, calculadora ROI e planos). |
-| `/saas` | Landing page técnica avançada com simulador do Copiloto WhatsApp e Bento Grid de 8 módulos. |
+| `/saas` | Landing page técnica avançada com simulador do Copiloto IA e Bento Grid de 8 módulos. |
 | `/onboarding` | Wizard interativo em 5 passos para novos restaurantes configurarem sua loja. |
 | `/menu` | Experiência de cardápio digital para o comensal com carrinho express, fotos e maridagem. |
 | `/kds` & `/kitchen` | Tela cheia da cozinha com fila de preparo e tempos em tempo real. |
@@ -73,7 +73,7 @@ A plataforma adota o framework unificado de alta fidelidade visual compilado a p
 - **Build Tool:** Vite + React 18 + TypeScript + Tailwind CSS
 - **Edge Runtime:** Cloudflare Workers / Cloudflare Pages
 - **Domínios Ativos:** `mimenu.clubemkt.digital`, `mimenu.clubemkt.online`
-- **CI/CD:** GitHub Actions configurado para deploy automático na branch `mimenu` via `.github/workflows/deploy-cloudflare.yml`.
+- **CI/CD:** GitHub Actions configurado para deploy automático na branch `mimenu` via `.github/workflows/deploy.yml`.
 
 ### Comandos de Desenvolvimento
 

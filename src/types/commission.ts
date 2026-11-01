@@ -6,15 +6,37 @@
  * components and utilities.
  */
 
-import { Tables } from "@/integrations/supabase/types";
-
 /**
- * Order type from Supabase database
- * 
- * Extended from the orders table schema with all fields needed for
- * commission calculations and display.
+ * Order shape consumed by commission components.
+ *
+ * `total_amount` is the historical field used by the commission math while the
+ * rest of the app stores orders with `total`; callers mapping local orders
+ * should provide `total_amount` explicitly (see `toCommissionOrder`).
  */
-export type Order = Tables<"orders">;
+export interface Order {
+  id: string;
+  created_at: string;
+  status: string;
+  total_amount: number;
+  payment_status?: string | null;
+  order_number?: string | number;
+  customer_name?: string | null;
+  customer_phone?: string | null;
+  waiter_id?: string | null;
+  table_number?: string | number | null;
+  payment_method?: string | null;
+  items?: unknown[];
+  pix_qr_code?: string | null;
+  pix_expires_at?: string | null;
+  kitchen_notified_at?: string | null;
+  notified_at?: string | null;
+  payment_confirmed_at?: string | null;
+  payment_expires_at?: string | null;
+  mercadopago_payment_id?: string | null;
+  pix_copy_paste?: string | null;
+  qr_code_data?: string | null;
+  ready_at?: string | null;
+}
 
 /**
  * Commission display configuration

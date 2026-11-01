@@ -21,26 +21,6 @@ async function logError(context, error, endpoint) {
   };
 
   console.error('Function Error:', JSON.stringify(errorLog, null, 2));
-
-  // Optionally log to Supabase if configured
-  if (context.env.SUPABASE_URL && context.env.SUPABASE_SERVICE_ROLE_KEY) {
-    try {
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        context.env.SUPABASE_URL,
-        context.env.SUPABASE_SERVICE_ROLE_KEY
-      );
-
-      await supabase.from('whatsapp_error_logs').insert({
-        error_type: 'function_error',
-        error_message: error.message,
-        error_details: errorLog,
-        created_at: new Date().toISOString()
-      });
-    } catch (logError) {
-      console.error('Failed to log error to database:', logError);
-    }
-  }
 }
 
 // CORS headers
