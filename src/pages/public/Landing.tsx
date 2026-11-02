@@ -258,15 +258,12 @@ export const Landing: React.FC = () => {
   return (
     <div className="min-h-[100dvh] bg-[#08090C] text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black font-sans antialiased overflow-x-hidden">
       
-      {/* Top Ambient Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-amber-500/10 blur-[140px] pointer-events-none -z-10 rounded-full" />
-      <div className="fixed top-[40%] right-[-100px] w-[500px] h-[350px] bg-orange-600/5 blur-[160px] pointer-events-none -z-10 rounded-full" />
+      {/* Ambient deco */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-amber-500/5 blur-[180px] pointer-events-none -z-10 rounded-full" />
 
-      {/* Global Live Notice Banner */}
-      <div className="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/15 border-b border-amber-500/20 text-xs font-medium py-2 px-4 text-center flex items-center justify-center gap-2 text-amber-300">
-        <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" aria-hidden="true" />
-        <span><strong>Lanzamiento 2026:</strong> Copiloto por WhatsApp y Cazador de Reseñas Google Maps integrados.</span>
-        <span className="hidden md:inline text-amber-400/60">| 14 dias de prueba sin tarjeta.</span>
+      {/* Live Notice */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/8 to-amber-500/10 border-b border-white/[0.06] text-[11px] font-medium py-2.5 px-4 text-center text-slate-300">
+        <span className="font-bold text-amber-400/80">Lanzamiento 2026:</span> Copiloto por WhatsApp y Cazador de Reseñas Google Maps integrados. Prueba 14 dias sin tarjeta.
       </div>
 
       {/* Main Glass Navigation */}
@@ -330,7 +327,7 @@ export const Landing: React.FC = () => {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
               <div className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.1] px-4 py-1.5 rounded-full text-xs font-semibold text-amber-400 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-amber-400/70" />
                 <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
                 <span>Menu inteligente con 0% de comision por comanda</span>
               </div>
@@ -344,11 +341,11 @@ export const Landing: React.FC = () => {
               </h1>
 
               <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-                Sube tu ticket promedio un <strong>+24%</strong> con sugerencias automaticas, captura <strong>reseñas 5 estrellas en Google Maps</strong> en cada mesa y gestiona todo tu restaurante por <strong>WhatsApp con IA</strong>.
+                Sube tu ticket promedio un <strong>+24%</strong> con sugerencias inteligentes, captura <strong>reseñas 5 estrellas en Google Maps</strong> al momento y manda comandas, pausa platos y consulta ventas por WhatsApp.
               </p>
 
               {/* CTAs */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <div className="pt-5 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 <Button
                   size="lg"
                   onClick={() => navigate('/onboarding')}
@@ -370,18 +367,18 @@ export const Landing: React.FC = () => {
               </div>
 
               {/* Proof Signals */}
-              <div className="pt-4 grid grid-cols-3 gap-4 border-t border-white/[0.08] max-w-lg mx-auto lg:mx-0 text-left">
+              <div className="pt-6 grid grid-cols-3 gap-3 border-t border-white/[0.08] max-w-lg mx-auto lg:mx-0 text-left">
                 <div>
-                  <div className="text-xl sm:text-2xl font-black text-white">+24%</div>
-                  <div className="text-[11px] font-medium text-slate-400">Ticket promedio</div>
+                  <div className="text-xl sm:text-3xl font-black text-white">+24%</div>
+                  <div className="text-[11px] font-medium text-slate-400 mt-0.5">Ticket promedio</div>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-black text-amber-400">0%</div>
-                  <div className="text-[11px] font-medium text-slate-400">Comision por venta</div>
+                  <div className="text-xl sm:text-3xl font-black text-amber-400">0%</div>
+                  <div className="text-[11px] font-medium text-slate-400 mt-0.5">Comisión por venta</div>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-black text-white">4.9 ★</div>
-                  <div className="text-[11px] font-medium text-slate-400">En Google Maps</div>
+                  <div className="text-xl sm:text-3xl font-black text-white">4.9 ★</div>
+                  <div className="text-[11px] font-medium text-slate-400 mt-0.5">En Google Maps</div>
                 </div>
               </div>
 
@@ -389,19 +386,18 @@ export const Landing: React.FC = () => {
 
             {/* Right: Live Interactive Gastronomic Device Preview */}
             <div className="lg:col-span-5 relative space-y-6">
-              <AnimatedLogo className="w-full" />
-
-              <div className="relative mx-auto max-w-[380px] rounded-[36px] bg-gradient-to-b from-white/15 to-white/5 p-[1px] shadow-2xl shadow-black/80">
+              {/* Premium hero device phone with editorial photo placeholder */}
+              <div className="relative mx-auto max-w-[360px] rounded-[36px] bg-gradient-to-b from-white/15 to-white/5 p-[1px] shadow-2xl shadow-black/80">
                 <div className="rounded-[35px] bg-[#0D0E15] p-5 space-y-4 overflow-hidden border border-white/[0.05]">
                   
-                  {/* Top Bar of Mobile Simulation */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] text-xs">
+                  {/* Top Bar of Device */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-500/60" />
                       <span className="font-bold text-slate-200">{venue?.name || "Mesa 14 · Terraza"}</span>
                     </div>
                     <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
-                      QR ACTIVO
+                      Menu
                     </span>
                   </div>
 
@@ -458,37 +454,34 @@ export const Landing: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Google Maps Review Booster Box */}
-                  <div className="p-3 rounded-2xl bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/25 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-yellow-300 flex items-center gap-1.5">
+                  {/* Google Maps Review CTA */}
+                  <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 text-slate-400">
                         <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                        Cazador de Reseñas Google
-                      </span>
-                      <span className="text-[9px] text-slate-400">Post-consumo</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 py-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setHeroReviewGiven(true)}
-                          className="hover:scale-125 transition-transform"
-                        >
-                          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        </button>
-                      ))}
-                    </div>
-                    {heroReviewGiven && (
-                      <div className="text-center text-[10px] font-bold text-emerald-400 animate-fade-in">
-                        Redirigiendo a Google Maps con 5 estrellas registradas
+                        <span className="text-[10px] font-bold text-yellow-300">5 Estrellas Google Maps</span>
                       </div>
-                    )}
+                      <button className="text-xs font-black text-amber-400 hover:text-amber-300 transition-colors">
+                        Calificar
+                      </button>
+                    </div>
+                    <div className="text-[10px] text-slate-500 leading-relaxed">
+                      After every reservation, invite guests to rate the experience on Google Maps. Recovers 30% of your ad spend.
+                    </div>
                   </div>
 
-                  {/* Live Copilot Floating Pill */}
-                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 text-[11px] text-emerald-300">
-                    <Bot className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span className="truncate">Copiloto WhatsApp: sincronizado con cocina y caja</span>
+                  {/* Copilot CTA */}
+                  <div className="p-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 space-y-2">
+                    <div className="flex items-center gap-2.5 text-xs text-emerald-300">
+                      <Bot className="w-4 h-4" />
+                      <div>
+                        <span className="font-bold">Copiloto MiMenu</span>
+                        <span className="text-[10px] text-emerald-200/70 ml-1">· Sincronizado con cocina y caja</span>
+                      </div>
+                    </div>
+                    <button className="w-full text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/20 hover:bg-emerald-500/30 px-3 py-1.5 rounded-lg transition-colors">
+                      Seguir consiguiendo +24% por WhatsApp
+                    </button>
                   </div>
 
                 </div>
@@ -505,13 +498,13 @@ export const Landing: React.FC = () => {
           
           <div className="space-y-4 max-w-3xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              Arquitectura de Alto Desempeño
+              Soluciones Integrales
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-              8 Modulos diseñados para facturar mas y operar con fluidez.
+              Del menú a la mesa, en un solo sistema.
             </h2>
             <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              Cada componente fue estructurado para maximizar el margen de ganancia por mesa, agilizar la cocina y eliminar fricciones en el servicio.
+              Ocho módulos que trabajan en red para subir el ticket, fidelizar estudiantes y eliminar el trabajo de fondo.
             </p>
           </div>
 
@@ -559,8 +552,8 @@ export const Landing: React.FC = () => {
       <section id="copiloto-ia" className="py-24 bg-[#08090C] border-b border-white/[0.08] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
           
-          <div className="text-center max-w-3xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3.5 py-1 rounded-full border border-emerald-500/20">
+          <div className="text-center max-w-3xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3.5 py-1 rounded-full border border-emerald-500/20">
               <Bot className="w-4 h-4" />
               Gestion Gastronomica con Lenguaje Natural
             </div>
@@ -799,14 +792,13 @@ export const Landing: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/20">
               <Award className="w-4 h-4" />
-              Comparativa de Soluciones
+              La Diferencia
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-              Por que los mejores restaurantes eligen MiMenu.
+              Carta de papel, QR estático o <br />
+              plataforma de delivery: <br />
+              cómo las deja tu competencia.
             </h2>
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              Descubre las diferencias operativas frente a cartas de papel, codigos QR estaticos y plataformas agregadoras tradicionales.
-            </p>
           </div>
 
           <div className="overflow-x-auto">
@@ -861,13 +853,14 @@ export const Landing: React.FC = () => {
           
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/20">
-              Planes Transparentes
+              Precios Claros
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-              Suscripciones claras, sin comisiones por venta.
+              Sin surtir y esperar. <br />
+              Una factura mensual.
             </h2>
             <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              Elige el plan ideal para tu modelo de negocio. Prueba 14 dias sin costo y cancela en cualquier momento.
+              Sin comisiones por venta, sin sorpresas. Solo una factura fija mensual por cada restaurante.
             </p>
 
             {/* Billing Cycle Switcher */}
@@ -1009,7 +1002,7 @@ export const Landing: React.FC = () => {
           
           <div className="text-center space-y-3">
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">Preguntas Frecuentes</h2>
-            <p className="text-slate-400 text-xs sm:text-sm">Todo lo que necesitas saber antes de dar el paso.</p>
+            <p className="text-slate-400 text-xs sm:text-sm">Poco tiempo. Poco ruido. Solo lo que importa.</p>
           </div>
 
           <div className="space-y-3">
