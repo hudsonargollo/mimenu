@@ -77,6 +77,16 @@ export interface ChatbotResponse {
   nextState: ChatbotSessionState;
   actionRequired?: 'create_reservation';
   reservationData?: ReservationRequest;
+  /** Set when the reply came from a superadmin-curated answer. */
+  learnedId?: string;
+}
+
+/** A superadmin-approved answer that overrides the fallback for matching questions. */
+export interface LearnedAnswer {
+  id: string;
+  lang: ChatbotLang;
+  triggers: string[];
+  reply: string;
 }
 
 type ReservationData = Required<Pick<ReservationDraft, 'name' | 'partySize' | 'date' | 'time'>>;
@@ -666,6 +676,33 @@ function findMenuItem(text: string, items: ChatbotMenuItem[]): ChatbotMenuItem |
   return best;
 }
 
+/**
+ * Picks the curated answer whose trigger phrases appear in the message.
+ * Longer triggers win, so "aceptan perros" beats a bare "perros".
+ */
+function matchLearned(normalized: string, answers: LearnedAnswer[], lang: ChatbotLang): LearnedAnswer | null {
+  let best: LearnedAnswer | null = null;
+  let bestScore = 0;
+
+  for (const answer of answers) {
+    if (answer.lang !== lang || !answer.reply) continue;
+    let score = 0;
+    for (const trigger of answer.triggers || []) {
+      const value = normalize(trigger);
+      if (value.length < 3) continue;
+      if (new RegExp(`\\b${escapeRegExp(value)}`).test(normalized)) {
+        score += value.split(/\s+/).length + 1;
+      }
+    }
+    if (score > bestScore) {
+      best = answer;
+      bestScore = score;
+    }
+  }
+
+  return best;
+}
+
 const INTENT_PATTERNS = {
   status: /\b(mi mesa|mi reserva|mi reservacion|my table|my reservation|reservation status|estado de (?:mi|la) reserva|ya (?:hice|reserve|reservé)|ya tengo reserva|donde esta mi mesa|is my reservation|qual (?:e )?minha mesa|meu pedido|reservierung status)\b/,
   price: /\b(cuanto (?:cuesta|sale|vale|es)|cuanto|cuesta|precio|precios|how much|price|cost|costs|quanto (?:custa|e)|preco|precos|preis|kostet|wie viel)\b/,
@@ -788,7 +825,8 @@ export function processChatbotMessage(
   state: ChatbotSessionState,
   venue: ChatbotVenueContext,
   menuItems: ChatbotMenuItem[] = [],
-  source: ChatSource = 'web'
+  source: ChatSource = 'web',
+  learnedAnswers: LearnedAnswer[] = []
 ): ChatbotResponse {
   const text = message.trim();
   const n = normalize(text);
@@ -824,6 +862,13 @@ export function processChatbotMessage(
     name,
     draft,
     lastReservation: state.lastReservation
+  };
+
+  const sideAnswer = (value: string, normalized: string) => {
+    const builtin = composeAnswers(value, normalized, { ...ctx, draft });
+    if (builtin) return { text: builtin };
+    const learned = matchLearned(normalized, learnedAnswers, lang);
+    return learned ? { text: learned.reply, learnedId: learned.id } : null;
   };
 
   if (!text) return respond(name ? c.fallback(name) : c.askNameFirst);
@@ -863,6 +908,8 @@ export function processChatbotMessage(
         });
       }
     }
+    const learned = matchLearned(n, learnedAnswers, lang);
+    if (learned) return respond(`${learned.reply}\n\n${c.askNameFirst}`, { extra: { learnedId: learned.id } });
     return respond(c.askNameFirst);
   }
 
@@ -878,8 +925,8 @@ export function processChatbotMessage(
         draft = withInlineDate(text, { ...draft, partySize: party });
         return respond(`${c.partyAck(party)} ${stepPromptFor(draft.step, c)}`, { draft });
       }
-      const side = composeAnswers(text, n, { ...ctx, draft });
-      if (side) return respond(`${side}\n\n${c.askParty}`, { draft });
+      const side = sideAnswer(text, n);
+      if (side) return respond(`${side.text}\n\n${c.askParty}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
       return respond(c.askParty, { draft });
     }
 
@@ -894,8 +941,8 @@ export function processChatbotMessage(
         draft = { ...draft, date: text, step: 'time' };
         return respond(c.askTime, { draft });
       }
-      const side = composeAnswers(text, n, { ...ctx, draft });
-      if (side) return respond(`${side}\n\n${c.askDate}`, { draft });
+      const side = sideAnswer(text, n);
+      if (side) return respond(`${side.text}\n\n${c.askDate}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
       return respond(c.askDate, { draft });
     }
 
@@ -905,8 +952,8 @@ export function processChatbotMessage(
         draft = { ...draft, time, step: 'phone' };
         return respond(c.askPhone, { draft });
       }
-      const side = composeAnswers(text, n, { ...ctx, draft });
-      if (side) return respond(`${side}\n\n${c.askTime}`, { draft });
+      const side = sideAnswer(text, n);
+      if (side) return respond(`${side.text}\n\n${c.askTime}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
       return respond(c.askTime, { draft });
     }
 
@@ -929,8 +976,8 @@ export function processChatbotMessage(
         draft = { ...draft, phone: '', step: 'confirm', idempotencyKey: draft.idempotencyKey || newIdempotencyKey() };
         return respond(`${c.declinePhone} ${c.confirm(spokenDraft(draft, lang), name, false)}`, { draft });
       }
-      const side = composeAnswers(text, n, { ...ctx, draft });
-      if (side) return respond(`${side}\n\n${c.askPhone}`, { draft });
+      const side = sideAnswer(text, n);
+      if (side) return respond(`${side.text}\n\n${c.askPhone}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
       return respond(c.askPhone, { draft });
     }
 
@@ -957,9 +1004,12 @@ export function processChatbotMessage(
       if (negative.test(n)) {
         return respond(c.cancelled(name), { draft: { step: 'idle' } });
       }
-      const side = composeAnswers(text, n, { ...ctx, draft });
+      const side = sideAnswer(text, n);
       if (side) {
-        return respond(`${side}\n\n${c.confirm(spokenDraft(draft, lang), name, Boolean(draft.phone))}`, { draft });
+        return respond(`${side.text}\n\n${c.confirm(spokenDraft(draft, lang), name, Boolean(draft.phone))}`, {
+          draft,
+          extra: side.learnedId ? { learnedId: side.learnedId } : undefined
+        });
       }
       return respond(c.confirm(spokenDraft(draft, lang), name, Boolean(draft.phone)), { draft });
     }
@@ -990,6 +1040,9 @@ export function processChatbotMessage(
 
   const answer = composeAnswers(text, n, ctx);
   if (answer) return respond(answer);
+
+  const learned = matchLearned(n, learnedAnswers, lang);
+  if (learned) return respond(learned.reply, { extra: { learnedId: learned.id } });
 
   if (intent === 'greeting') return respond(c.welcome(venue.name, name));
 

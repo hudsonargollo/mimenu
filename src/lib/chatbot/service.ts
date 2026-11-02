@@ -5,7 +5,8 @@ import {
   ChatbotMenuItem,
   ChatSource,
   ChatbotResponse,
-  ReservationRequest
+  ReservationRequest,
+  LearnedAnswer
 } from './engine';
 
 const RESERVATIONS_KEY = 'mimenu_chatbot_reservations_v1';
@@ -173,14 +174,15 @@ export async function handleChatTurn(
   venue: ChatbotVenueContext,
   menuItems: ChatbotMenuItem[] = [],
   sessionKey?: string,
-  source: ChatSource = 'web'
+  source: ChatSource = 'web',
+  learnedAnswers: LearnedAnswer[] = []
 ): Promise<{
   response: ChatbotResponse;
   reservationSaved: boolean;
   reservationId?: string;
   sessionUpdated: boolean;
 }> {
-  const result = processChatbotMessage(message, currentState, venue, menuItems, source);
+  const result = processChatbotMessage(message, currentState, venue, menuItems, source, learnedAnswers);
   let reservationSaved = false;
   let reservationId: string | undefined;
   let nextState = result.nextState;

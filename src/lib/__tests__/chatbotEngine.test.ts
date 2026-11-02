@@ -5,6 +5,7 @@ import {
   type ChatbotMenuItem,
   type ChatbotSessionState,
   type ChatbotVenueContext,
+  type LearnedAnswer,
 } from '../chatbot/engine';
 
 const venue: ChatbotVenueContext = {
@@ -38,9 +39,10 @@ const menu: ChatbotMenuItem[] = [
 function turn(
   message: string,
   state: ChatbotSessionState,
-  items: ChatbotMenuItem[] = menu
+  items: ChatbotMenuItem[] = menu,
+  learnedAnswers: LearnedAnswer[] = []
 ) {
-  const result = processChatbotMessage(message, state, venue, items, 'web');
+  const result = processChatbotMessage(message, state, venue, items, 'web', learnedAnswers);
   return { reply: result.reply, state: result.nextState, result };
 }
 
@@ -195,5 +197,51 @@ describe('concierge reservation flow', () => {
     const result = turn('cuanto cuesta la paella', state);
     expect(result.state.userName).toBeUndefined();
     expect(result.reply).toContain('Paella Valenciana');
+  });
+});
+
+describe('concierge learned answers', () => {
+  const learned: LearnedAnswer[] = [
+    {
+      id: 'learned-pets',
+      lang: 'es',
+      triggers: ['aceptan mascotas', 'llevar a mi perro'],
+      reply: 'Sí, aceptamos mascotas en la terraza.',
+    },
+  ];
+
+  it('uses a curated answer matched by trigger', () => {
+    const result = turn(
+      'hola, aceptan mascotas?',
+      { language: 'es', reservationDraft: { step: 'idle' } },
+      menu,
+      learned
+    );
+    expect(result.reply).toContain('terraza');
+    expect(result.result.learnedId).toBe('learned-pets');
+  });
+
+  it('answers a curated side question mid-reservation without losing the step', () => {
+    const result = turn(
+      'puedo llevar a mi perro?',
+      { language: 'es', userName: 'Hudson', reservationDraft: { step: 'party_size', name: 'Hudson' } },
+      menu,
+      learned
+    );
+    expect(result.reply).toContain('terraza');
+    expect(result.reply).toContain('cuántas personas');
+    expect(result.state.reservationDraft?.step).toBe('party_size');
+    expect(result.result.learnedId).toBe('learned-pets');
+  });
+
+  it('ignores curated answers in another language', () => {
+    const result = turn(
+      'do you accept pets?',
+      { language: 'en', reservationDraft: { step: 'idle' } },
+      menu,
+      learned
+    );
+    expect(result.reply).not.toContain('terraza');
+    expect(result.result.learnedId).toBeUndefined();
   });
 });

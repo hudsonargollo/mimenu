@@ -10,6 +10,7 @@ interface AdminLayoutProps {
 const SECTION_LABELS: Record<string, string> = {
   '/admin': 'Panel',
   '/admin/ai': 'AI Copilot',
+  '/admin/concierge': 'Conserje · QA',
   '/admin/ingest-menu': 'Ingestor de carta',
   '/admin/offers': 'Ofertas',
   '/admin/analytics': 'Hotness',

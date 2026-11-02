@@ -56,6 +56,27 @@ export function listVenueSlugs(): string[] {
   return ITEMS.map((v) => v.slug);
 }
 
+export interface VenueSummary {
+  id: string;
+  slug: string;
+  name: string;
+  isActive: boolean;
+}
+
+/** Registry entries in picker order, including the stable `id` the app logs against. */
+export function listVenues(): VenueSummary[] {
+  return ITEMS.map((v) => ({
+    id: v.id,
+    slug: v.slug,
+    name: v.name,
+    isActive: v.is_active !== false,
+  }));
+}
+
+export function findVenueIdBySlug(slug: string): string | null {
+  return ITEMS.find((v) => v.slug === slug)?.id ?? null;
+}
+
 /** Find a venue by slug. Returns null for unknown or reserved slugs. */
 export function findVenueBySlug(slug: string): RegistryItem | null {
   if (!slug || isReservedSlug(slug)) return null;
