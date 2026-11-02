@@ -11,7 +11,7 @@ interface ResendEnvironment {
   RESEND_FROM?: string;
 }
 
-const DEFAULT_FROM = 'MiMenu <no-reply@atencion.clubemkt.digital>';
+const DEFAULT_FROM = 'MiMenu <no-reply@mimenu.clubemkt.digital>';
 
 export async function sendEmail(
   env: ResendEnvironment,
