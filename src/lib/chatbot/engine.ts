@@ -60,6 +60,8 @@ export interface ChatbotSessionState {
   lastReservation?: LastReservationSummary;
   pendingIntent?: PendingIntent;
   pendingPartySize?: number;
+  pendingDate?: string;
+  pendingTime?: string;
 }
 export interface ReservationRequest {
   venueId: string;
@@ -109,6 +111,7 @@ type Copy = {
   reserve: (name?: string) => string;
   askParty: string;
   partyAck: (partySize: number) => string;
+  heldDetails: (partySize: number | undefined, dateLabel: string | null, time: string | null) => string;
   askDate: string;
   askTime: string;
   askName: string;
@@ -150,6 +153,12 @@ const COPY: Record<ChatbotLang, Copy> = {
     reserve: n => n ? `Claro ${n}, ¿para cuántas personas es la reserva?` : '¿Para cuántas personas es la reserva?',
     askParty: 'Indícame cuántas personas (de 1 a 50).',
     partyAck: count => `Perfecto, ${count} ${count === 1 ? 'persona' : 'personas'}.`,
+    heldDetails: (party, date, time) =>
+      `Anotado: ${[
+        party ? `${party} ${party === 1 ? 'persona' : 'personas'}` : '',
+        date ? `el ${date}` : '',
+        time ? `a las ${time}` : '',
+      ].filter(Boolean).join(' ')}.`,
     askDate: '¿Para qué fecha?',
     askTime: '¿A qué hora? (por ejemplo, 20:30)',
     askName: '¿A nombre de quién?',
@@ -197,6 +206,12 @@ const COPY: Record<ChatbotLang, Copy> = {
     reserve: n => n ? `Sure ${n}, how many guests for the reservation?` : 'How many guests for the reservation?',
     askParty: 'Please give the number of guests (1–50).',
     partyAck: count => `Perfect, ${count} ${count === 1 ? 'guest' : 'guests'}.`,
+    heldDetails: (party, date, time) =>
+      `Noted: ${[
+        party ? `${party} ${party === 1 ? 'guest' : 'guests'}` : '',
+        date ? `on ${date}` : '',
+        time ? `at ${time}` : '',
+      ].filter(Boolean).join(' ')}.`,
     askDate: 'What date would you like?',
     askTime: 'What time? (for example, 8:30 PM)',
     askName: 'What name should I use?',
@@ -244,6 +259,12 @@ const COPY: Record<ChatbotLang, Copy> = {
     reserve: n => n ? `Claro ${n}, para quantas pessoas é a reserva?` : 'Para quantas pessoas é a reserva?',
     askParty: 'Informe o número de pessoas (1 a 50).',
     partyAck: count => `Perfeito, ${count} ${count === 1 ? 'pessoa' : 'pessoas'}.`,
+    heldDetails: (party, date, time) =>
+      `Anotado: ${[
+        party ? `${party} ${party === 1 ? 'pessoa' : 'pessoas'}` : '',
+        date ? `em ${date}` : '',
+        time ? `às ${time}` : '',
+      ].filter(Boolean).join(' ')}.`,
     askDate: 'Para qual data?',
     askTime: 'A que horas? (por exemplo, 20:30)',
     askName: 'Em nome de quem?',
@@ -291,6 +312,12 @@ const COPY: Record<ChatbotLang, Copy> = {
     reserve: n => n ? `Klar ${n}, für wie viele Personen ist die Reservierung?` : 'Für wie viele Personen ist die Reservierung?',
     askParty: 'Bitte nennen Sie die Personenzahl (1 bis 50).',
     partyAck: count => `Perfekt, ${count} ${count === 1 ? 'Person' : 'Personen'}.`,
+    heldDetails: (party, date, time) =>
+      `Notiert: ${[
+        party ? `${party} ${party === 1 ? 'Person' : 'Personen'}` : '',
+        date ? `am ${date}` : '',
+        time ? `um ${time}` : '',
+      ].filter(Boolean).join(' ')}.`,
     askDate: 'Für welches Datum?',
     askTime: 'Um wie viel Uhr? (zum Beispiel 20:30)',
     askName: 'Auf welchen Namen?',
@@ -339,6 +366,8 @@ const LANG_HINTS: Record<ChatbotLang, Array<[RegExp, number]>> = {
     [/\b(price|how much|cost|costs)\b/, 2],
     [/\b(where|location|address|opening|hours)\b/, 1],
     [/\b(want|need|would like|can i|could i|my|i am|i'm)\b/, 1],
+    [/\b(i'd|i would|we'd|we would|id like|what's up|whats up)\b/, 1],
+    [/\b(dinner|lunch|tonight|tomorrow|today)\b/, 1],
     [/\b(nothing|okay|ok|sure|great)\b/, 1]
   ],
   pt: [
@@ -479,12 +508,46 @@ function resolveName(text: string): string | null {
 }
 
 /**
- * Reads a party size from free text: "para 3", "table for 4", "3 personas", "x2".
+ * Word numbers guests actually type when booking ("dinner for two", "para
+ * dos", "zwei Personen"). Articles that double as "one" (una/um/eine) are
+ * deliberately absent so "una reserva" is not read as a single guest.
+ */
+const NUMBER_WORDS: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+  eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50,
+  dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, once: 11,
+  doce: 12, trece: 13, catorce: 14, quince: 15, dieciseis: 16, diecisiete: 17, dieciocho: 18,
+  diecinueve: 19, veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50,
+  dois: 2, duas: 2, quatro: 4, sete: 7, oito: 8, nove: 9, dez: 10, onze: 11, treze: 13, catorze: 14,
+  quinze: 15, dezesseis: 16, dezessete: 17, dezoito: 18, dezenove: 19, vinte: 20, trinta: 30,
+  quarenta: 40, cinquenta: 50,
+  zwei: 2, drei: 3, vier: 4, funf: 5, sechs: 6, sieben: 7, acht: 8, neun: 9, zehn: 10, elf: 11,
+  zwolf: 12, dreizehn: 13, vierzehn: 14, funfzehn: 15, sechzehn: 16, siebzehn: 17, achtzehn: 18,
+  neunzehn: 19, zwanzig: 20, dreissig: 30, vierzig: 40, funfzig: 50
+};
+
+const NUMBER_WORD = Object.keys(NUMBER_WORDS)
+  .sort((a, b) => b.length - a.length)
+  .join('|');
+
+const PARTY_WORD_PATTERNS = [
+  new RegExp(`\\b(?:para|for|party of|mesa para|table for|somos|seremos|we are|we're|we re|wir sind)\\s+(?:ser\\s+|somos\\s+|the\\s+)?(${NUMBER_WORD})\\b`),
+  new RegExp(`\\b(${NUMBER_WORD})\\s+(?:personas|people|guests|adultos|pax|comensales|pessoas|personen|gaste|of us)\\b`),
+  new RegExp(`\\b(?:just|only|solo|apenas)\\s+(${NUMBER_WORD})\\b`),
+  new RegExp(`^\\s*(${NUMBER_WORD})\\s*$`),
+];
+
+const COUPLE_PATTERN = /\b(couple|pareja|casal|paar|los dos|las dos|nos dois|beide|un par|um par)\b/;
+
+/**
+ * Reads a party size from free text: "para 3", "table for 4", "3 personas",
+ * "dinner for two", "somos dos", "we are a couple", "x2".
  */
 function extractPartySize(text: string): number | undefined {
   const n = normalize(text);
   const patterns = [
-    /\b(?:para|for|somos|seremos|we are|party of|mesa para|table for)\s*(?:ser|somos)?\s*(\d{1,2})\b/,
+    /\b(?:para|for|somos|seremos|we are|we're|we re|party of|mesa para|table for|wir sind)\s*(?:ser|somos)?\s*(\d{1,2})\b/,
     /\b(\d{1,2})\s*(?:personas|people|guests|adultos|pax|comensales|pessoas|personen|gaste)\b/,
     /\bx\s?(\d{1,2})\b/,
     /^\s*(\d{1,2})\s*$/
@@ -496,6 +559,14 @@ function extractPartySize(text: string): number | undefined {
       if (count >= 1 && count <= 50) return count;
     }
   }
+  for (const pattern of PARTY_WORD_PATTERNS) {
+    const match = n.match(pattern);
+    if (match) {
+      const count = NUMBER_WORDS[match[1]];
+      if (count >= 1 && count <= 50) return count;
+    }
+  }
+  if (COUPLE_PATTERN.test(n)) return 2;
   return undefined;
 }
 
@@ -602,6 +673,8 @@ function parseTime(text: string): string | null {
     const meridiem = colon[3];
     if (meridiem === 'pm' && hour < 12) hour += 12;
     if (meridiem === 'am' && hour === 12) hour = 0;
+    // "at 7:00 on Sunday" is dinner, not breakfast, unless am/pm says otherwise.
+    if (!meridiem && hour >= 1 && hour <= 11) hour += 12;
     return `${pad(hour)}:${minutes}`;
   }
 
@@ -633,15 +706,38 @@ function parseEmbeddedTime(text: string): string | null {
   return parseTime(cleaned);
 }
 
-/** Moves a draft to the next unanswered field once the party size is known. */
-function withInlineDate(text: string, draft: ReservationDraft): ReservationDraft {
-  const date = parseDate(text);
-  if (!date) return { ...draft, step: 'date' };
-  const time = parseEmbeddedTime(text);
-  return time ? { ...draft, date, time, step: 'phone' } : { ...draft, date, step: 'time' };
+/**
+ * Fills every field the message already contains, regardless of the step the
+ * guest is on. Combined replies ("dinner for two on Sunday at 7") skip the
+ * prompts whose answers are already known instead of asking again.
+ */
+function advanceReservationDraft(text: string, draft: ReservationDraft): ReservationDraft {
+  const next = { ...draft };
+  if (!next.partySize) {
+    const party = extractPartySize(text);
+    if (party) next.partySize = party;
+  }
+  if (!next.date) {
+    const date = parseDate(text);
+    if (date) next.date = date;
+  }
+  if (!next.time) {
+    const time = parseEmbeddedTime(text) ?? (draft.step === 'time' ? parseTime(text) : null);
+    if (time) next.time = time;
+  }
+  return next;
+}
+
+/** Next prompt the draft still needs an answer for. */
+function reservationStep(draft: ReservationDraft): ReservationStep {
+  if (!draft.partySize) return 'party_size';
+  if (!draft.date) return 'date';
+  if (!draft.time) return 'time';
+  return 'phone';
 }
 
 function stepPromptFor(step: ReservationStep, c: Copy): string {
+  if (step === 'party_size') return c.askParty;
   if (step === 'phone') return c.askPhone;
   if (step === 'time') return c.askTime;
   return c.askDate;
@@ -873,26 +969,82 @@ export function processChatbotMessage(
 
   if (!text) return respond(name ? c.fallback(name) : c.askNameFirst);
 
-  // --- Name gate: remember a reservation request expressed before the name ---
+  // --- Name gate: hold reservation details expressed before the name ---
   if (!name) {
     const resolved = resolveName(text);
     if (resolved) {
-      const pending = state.pendingIntent === 'reservation' ? state.pendingPartySize : undefined;
       if (state.pendingIntent === 'reservation') {
-        const startedDraft: ReservationDraft = pending
-          ? { step: 'date', name: resolved, partySize: pending, idempotencyKey: newIdempotencyKey() }
-          : { step: 'party_size', name: resolved, idempotencyKey: newIdempotencyKey() };
-        return respond(
-          pending ? `${c.partyAck(pending)} ${c.askDate}` : c.reserve(resolved),
-          { draft: startedDraft, state: { userName: resolved, pendingIntent: undefined, pendingPartySize: undefined } }
-        );
+        const base: ReservationDraft = {
+          step: 'idle',
+          name: resolved,
+          partySize: state.pendingPartySize,
+          date: state.pendingDate,
+          time: state.pendingTime,
+          idempotencyKey: newIdempotencyKey(),
+        };
+        const started = advanceReservationDraft(text, base);
+        const step = reservationStep(started);
+        const ack =
+          started.partySize || started.date || started.time
+            ? c.heldDetails(
+                started.partySize,
+                started.date ? formatDateLabel(started.date, lang) : null,
+                started.time ?? null
+              )
+            : '';
+        const prompt = step === 'party_size' ? c.reserve(resolved) : stepPromptFor(step, c);
+        return respond(ack ? `${ack} ${prompt}` : prompt, {
+          draft: { ...started, step },
+          state: {
+            userName: resolved,
+            pendingIntent: undefined,
+            pendingPartySize: undefined,
+            pendingDate: undefined,
+            pendingTime: undefined,
+          },
+        });
       }
       return respond(c.welcome(venue.name, resolved), {
-        state: { userName: resolved, pendingIntent: undefined, pendingPartySize: undefined }
+        state: {
+          userName: resolved,
+          pendingIntent: undefined,
+          pendingPartySize: undefined,
+          pendingDate: undefined,
+          pendingTime: undefined,
+        },
       });
     }
 
     const intent = detectIntent(n);
+    if (state.pendingIntent === 'reservation' && (intent === 'none' || intent === 'greeting' || intent === 'reservation')) {
+      const held = advanceReservationDraft(text, {
+        step: 'idle',
+        partySize: state.pendingPartySize,
+        date: state.pendingDate,
+        time: state.pendingTime,
+      });
+      const gained =
+        held.partySize !== state.pendingPartySize ||
+        held.date !== state.pendingDate ||
+        held.time !== state.pendingTime;
+      if (gained) {
+        return respond(
+          `${c.heldDetails(
+            held.partySize,
+            held.date ? formatDateLabel(held.date, lang) : null,
+            held.time ?? null
+          )} ${c.askName}`,
+          {
+            state: {
+              pendingIntent: 'reservation',
+              pendingPartySize: held.partySize,
+              pendingDate: held.date,
+              pendingTime: held.time,
+            },
+          }
+        );
+      }
+    }
     if (intent === 'reservation') {
       const party = extractPartySize(text);
       return respond(c.askNameForReservation(party), {
@@ -920,30 +1072,32 @@ export function processChatbotMessage(
     }
 
     if (draft.step === 'party_size') {
-      const party = extractPartySize(text);
-      if (party) {
-        draft = withInlineDate(text, { ...draft, partySize: party });
-        return respond(`${c.partyAck(party)} ${stepPromptFor(draft.step, c)}`, { draft });
+      const advanced = advanceReservationDraft(text, draft);
+      if (advanced.partySize) {
+        const step = reservationStep(advanced);
+        return respond(`${c.partyAck(advanced.partySize)} ${stepPromptFor(step, c)}`, {
+          draft: { ...advanced, step },
+        });
       }
       const side = sideAnswer(text, n);
-      if (side) return respond(`${side.text}\n\n${c.askParty}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
-      return respond(c.askParty, { draft });
+      if (side) return respond(`${side.text}\n\n${c.askParty}`, { draft: advanced, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
+      return respond(c.askParty, { draft: advanced });
     }
 
     if (draft.step === 'date') {
-      const parsed = parseDate(text);
+      const advanced = advanceReservationDraft(text, draft);
       const question = /[?¿]/.test(text) || /\b(que|cuanto|cuando|donde|como|cual|what|when|where|how|price|horario|hours)\b/.test(n);
-      if (parsed) {
-        draft = { ...draft, date: parsed, step: 'time' };
-        return respond(c.askTime, { draft });
+      if (advanced.date) {
+        const step = reservationStep(advanced);
+        return respond(stepPromptFor(step, c), { draft: { ...advanced, step } });
       }
-      if (!question && text.length <= 40) {
-        draft = { ...draft, date: text, step: 'time' };
+      if (!question && text.length <= 40 && !parseTime(text)) {
+        draft = { ...advanced, date: text, step: 'time' };
         return respond(c.askTime, { draft });
       }
       const side = sideAnswer(text, n);
-      if (side) return respond(`${side.text}\n\n${c.askDate}`, { draft, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
-      return respond(c.askDate, { draft });
+      if (side) return respond(`${side.text}\n\n${c.askDate}`, { draft: advanced, extra: side.learnedId ? { learnedId: side.learnedId } : undefined });
+      return respond(c.askDate, { draft: advanced });
     }
 
     if (draft.step === 'time') {
@@ -1023,19 +1177,18 @@ export function processChatbotMessage(
   const intent = detectIntent(n);
 
   if (intent === 'reservation') {
-    const party = extractPartySize(text);
-    if (!party) {
-      return respond(c.reserve(name), {
-        draft: { step: 'party_size', name, idempotencyKey: newIdempotencyKey() }
-      });
-    }
-    const started = withInlineDate(text, {
-      step: 'date',
+    const started = advanceReservationDraft(text, {
+      step: 'party_size',
       name,
-      partySize: party,
       idempotencyKey: newIdempotencyKey()
     });
-    return respond(`${c.partyAck(party)} ${stepPromptFor(started.step, c)}`, { draft: started });
+    if (!started.partySize) {
+      return respond(c.reserve(name), { draft: { ...started, step: 'party_size' } });
+    }
+    const step = reservationStep(started);
+    return respond(`${c.partyAck(started.partySize)} ${stepPromptFor(step, c)}`, {
+      draft: { ...started, step },
+    });
   }
 
   const answer = composeAnswers(text, n, ctx);

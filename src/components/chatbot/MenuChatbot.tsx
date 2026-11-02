@@ -1,23 +1,64 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bot, ChevronUp, Send, X, Loader2, Mic, MicOff, Volume2, VolumeX, Pause } from 'lucide-react';
+import { ChevronUp, Keyboard, Loader2, Mic, MicOff, Pause, Send, Volume2, VolumeX, X } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
 import { ChatbotLang, ChatbotSessionState, LearnedAnswer } from '@/lib/chatbot/engine';
 import { handleChatTurn, loadSessionState, saveSessionState } from '@/lib/chatbot/service';
 import { fetchLearnedAnswers, logConciergeTurn } from '@/lib/chatbot/conciergeApi';
 import { pickLocalText } from '@/lib/venueContext';
+import { ConciergeOrb, OrbState } from './ConciergeOrb';
 
-type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string; inputMode?: 'text' | 'voice' };
+type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string; inputMode?: 'text' | 'voice'; lang?: ChatbotLang };
+type ConciergeMode = 'text' | 'voice';
 
-const labels: Record<ChatbotLang, { title: string; launcher: string; placeholder: string; welcome: string; error: string; privacy: string }> = {
+type ChatLabels = {
+  title: string;
+  launcher: string;
+  placeholder: string;
+  welcome: string;
+  error: string;
+  privacy: string;
+  modeGroup: string;
+  modeText: string;
+  modeVoice: string;
+  tapToSpeak: string;
+  listening: string;
+  thinking: string;
+  speaking: string;
+  writeInstead: string;
+  playReply: string;
+  stopSpeaking: string;
+  stopListening: string;
+  speakOnce: string;
+  noSpeech: string;
+  micDenied: string;
+  voiceUnsupported: string;
+};
+
+const labels: Record<ChatbotLang, ChatLabels> = {
   es: {
     title: 'Asistente',
     launcher: 'Asistente',
     placeholder: 'Escribe tu mensaje…',
     welcome: '¡Hola! Puedo ayudarte con el menú, horarios, ubicación y solicitudes de reserva.',
     error: 'No pude confirmar si tu solicitud quedó registrada. Vuelve a enviar la misma confirmación; si ya se guardó, no se creará otra reserva.',
-    privacy: 'Esta conversación se registra para mejorar el asistente.'
+    privacy: 'Esta conversación se registra para mejorar el asistente.',
+    modeGroup: 'Modo de conversación',
+    modeText: 'Texto',
+    modeVoice: 'Voz',
+    tapToSpeak: 'Toca el orbe y habla',
+    listening: 'Te escucho…',
+    thinking: 'Pensando…',
+    speaking: 'Hablando…',
+    writeInstead: 'Prefiero escribir',
+    playReply: 'Escuchar respuesta',
+    stopSpeaking: 'Detener audio',
+    stopListening: 'Detener micrófono',
+    speakOnce: 'Hablar',
+    noSpeech: 'No te escuché. Toca el orbe para intentar de nuevo.',
+    micDenied: 'No pude acceder al micrófono. Revisa los permisos del navegador.',
+    voiceUnsupported: 'Este navegador no admite conversación por voz. Puedes escribir tu mensaje.'
   },
   en: {
     title: 'Assistant',
@@ -25,7 +66,22 @@ const labels: Record<ChatbotLang, { title: string; launcher: string; placeholder
     placeholder: 'Type a message…',
     welcome: 'Hi! I can help with the menu, hours, location, and reservation requests.',
     error: 'I could not confirm whether your request was recorded. Send the same confirmation again; if it was already saved, no duplicate request will be created.',
-    privacy: 'This conversation is recorded to improve the assistant.'
+    privacy: 'This conversation is recorded to improve the assistant.',
+    modeGroup: 'Conversation mode',
+    modeText: 'Text',
+    modeVoice: 'Voice',
+    tapToSpeak: 'Tap the orb and speak',
+    listening: 'Listening…',
+    thinking: 'Thinking…',
+    speaking: 'Speaking…',
+    writeInstead: "I'd rather type",
+    playReply: 'Play reply',
+    stopSpeaking: 'Stop audio',
+    stopListening: 'Stop microphone',
+    speakOnce: 'Speak',
+    noSpeech: "I didn't catch that. Tap the orb to try again.",
+    micDenied: "I couldn't access the microphone. Check your browser permissions.",
+    voiceUnsupported: "This browser doesn't support voice conversation. You can type instead."
   },
   pt: {
     title: 'Assistente',
@@ -33,7 +89,22 @@ const labels: Record<ChatbotLang, { title: string; launcher: string; placeholder
     placeholder: 'Digite sua mensagem…',
     welcome: 'Olá! Posso ajudar com o cardápio, horários, localização e solicitações de reserva.',
     error: 'Não consegui confirmar se sua solicitação foi registrada. Envie a mesma confirmação novamente; se já tiver sido salva, não será criada outra reserva.',
-    privacy: 'Esta conversa é registrada para melhorar o assistente.'
+    privacy: 'Esta conversa é registrada para melhorar o assistente.',
+    modeGroup: 'Modo de conversa',
+    modeText: 'Texto',
+    modeVoice: 'Voz',
+    tapToSpeak: 'Toque no orbe e fale',
+    listening: 'Estou ouvindo…',
+    thinking: 'Pensando…',
+    speaking: 'Falando…',
+    writeInstead: 'Prefiro digitar',
+    playReply: 'Ouvir resposta',
+    stopSpeaking: 'Parar áudio',
+    stopListening: 'Parar microfone',
+    speakOnce: 'Falar',
+    noSpeech: 'Não te ouvi. Toque no orbe para tentar de novo.',
+    micDenied: 'Não consegui acessar o microfone. Verifique as permissões do navegador.',
+    voiceUnsupported: 'Este navegador não oferece conversa por voz. Você pode digitar.'
   },
   de: {
     title: 'Assistent',
@@ -41,17 +112,34 @@ const labels: Record<ChatbotLang, { title: string; launcher: string; placeholder
     placeholder: 'Nachricht schreiben…',
     welcome: 'Hallo! Ich helfe bei Speisekarte, Öffnungszeiten, Anfahrt und Reservierungsanfragen.',
     error: 'Ich konnte nicht bestätigen, ob Ihre Anfrage gespeichert wurde. Senden Sie dieselbe Bestätigung erneut; falls sie bereits gespeichert ist, wird keine doppelte Anfrage erstellt.',
-    privacy: 'Dieses Gespräch wird zur Verbesserung des Assistenten aufgezeichnet.'
+    privacy: 'Dieses Gespräch wird zur Verbesserung des Assistenten aufgezeichnet.',
+    modeGroup: 'Gesprächsmodus',
+    modeText: 'Text',
+    modeVoice: 'Stimme',
+    tapToSpeak: 'Tippe auf den Orb und sprich',
+    listening: 'Ich höre zu…',
+    thinking: 'Denke nach…',
+    speaking: 'Spreche…',
+    writeInstead: 'Lieber tippen',
+    playReply: 'Antwort anhören',
+    stopSpeaking: 'Audio stoppen',
+    stopListening: 'Mikrofon stoppen',
+    speakOnce: 'Sprechen',
+    noSpeech: 'Ich habe dich nicht verstanden. Tippe auf den Orb.',
+    micDenied: 'Kein Zugriff auf das Mikrofon. Prüfe die Browser-Berechtigungen.',
+    voiceUnsupported: 'Dieser Browser unterstützt keine Sprachunterhaltung. Du kannst tippen.'
   }
 };
 
-// Map ChatbotLang to BCP-47 language tags for Web Speech API (speech-to-text)
+// Map ChatbotLang to BCP-47 language tags for Web Speech API
 const LANG_TAGS: Record<ChatbotLang, string> = {
   es: 'es-ES',
   en: 'en-US',
   pt: 'pt-BR',
   de: 'de-DE'
 };
+
+const MODE_STORAGE_KEY = 'mimenu-concierge-mode';
 
 // Web Speech API type definitions (for speech-to-text input)
 interface SpeechRecognitionInstance {
@@ -65,10 +153,24 @@ interface SpeechRecognitionInstance {
   maxAlternatives: number;
 }
 
+interface SpeechResultList {
+  isFinal: boolean;
+  0?: { transcript?: string };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const W = typeof window !== 'undefined' ? (window as any) : {};
 const SpeechRecognitionCtor: (new (opts?: { lang?: string; continuous?: boolean; interimResults?: boolean }) => SpeechRecognitionInstance) | null =
   W.SpeechRecognition || W.webkitSpeechRecognition || null;
+
+const readStoredMode = (): ConciergeMode => {
+  if (!SpeechRecognitionCtor) return 'text';
+  try {
+    return window.localStorage.getItem(MODE_STORAGE_KEY) === 'voice' ? 'voice' : 'text';
+  } catch {
+    return 'text';
+  }
+};
 
 export function MenuChatbot() {
   const { venue, categories } = useMimenu();
@@ -90,9 +192,13 @@ export function MenuChatbot() {
   const [lang, setLang] = useState<ChatbotLang>('es');
   const [sessionState, setSessionState] = useState<ChatbotSessionState>({ language: 'es', reservationDraft: { step: 'idle' } });
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: 'welcome', role: 'assistant', text: labels.es.welcome }]);
-  const [voiceInputActive, setVoiceInputActive] = useState(false);
+  const [mode, setMode] = useState<ConciergeMode>(readStoredMode);
+  const [listening, setListening] = useState(false);
+  const [interim, setInterim] = useState('');
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const [speaking, setSpeaking] = useState(false);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [ttsEnabled, setTtsEnabled] = useState(true);
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [learnedAnswers, setLearnedAnswers] = useState<LearnedAnswer[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -100,7 +206,19 @@ export function MenuChatbot() {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const submitRef = useRef<(message: string, inputMode: 'text' | 'voice') => void>(() => {});
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioQueueRef = useRef<string | null>(null); // URL of audio waiting to play after current finishes
+  const objectUrlRef = useRef<string | null>(null);
+  const audioResolveRef = useRef<((played: boolean) => void) | null>(null);
+  const browserSpeechResolveRef = useRef<(() => void) | null>(null);
+  const speechGenerationRef = useRef(0);
+
+  const listeningRef = useRef(false);
+  const speakingRef = useRef(false);
+  const busyRef = useRef(false);
+  const openRef = useRef(false);
+  const modeRef = useRef(mode);
+  const langRef = useRef(lang);
+  const audioEnabledRef = useRef(ttsEnabled);
+  const startListeningRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     let active = true;
@@ -131,127 +249,362 @@ export function MenuChatbot() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, busy, open]);
+  }, [messages, busy, open, interim]);
 
   useEffect(() => {
-    if (!open) return;
+    openRef.current = open;
+    if (!open) {
+      try { recognitionRef.current?.stop(); } catch { /* noop */ }
+      listeningRef.current = false;
+      setListening(false);
+      setInterim('');
+      return;
+    }
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 320);
+    const focusTimer = window.setTimeout(() => {
+      if (modeRef.current === 'text') inputRef.current?.focus();
+    }, 320);
     return () => {
       document.body.style.overflow = previous;
       window.clearTimeout(focusTimer);
     };
   }, [open]);
 
-  // Initialize audio element
   useEffect(() => {
-    audioRef.current = new Audio();
-    audioRef.current.onended = () => {
-      setCurrentlyPlaying(null);
-      // Play queued audio if any
-      if (audioQueueRef.current) {
-        const next = audioQueueRef.current;
-        audioQueueRef.current = null;
-        setCurrentlyPlaying(next);
-        audioRef.current!.src = next;
-        audioRef.current!.play().catch(console.error);
-      }
-    };
-    audioRef.current.onerror = () => {
-      console.error('Audio playback failed');
-      setCurrentlyPlaying(null);
-    };
-  }, []);
-
-  // Initialize SpeechRecognition once
-  useEffect(() => {
-    if (!SpeechRecognitionCtor) return;
-    const rec = new SpeechRecognitionCtor();
-    rec.lang = LANG_TAGS[lang];
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.addEventListener('result', (ev: unknown) => {
-      const e = ev as { results: { transcript: string }[][] };
-      const transcript = e.results?.[0]?.[0]?.transcript || '';
-      if (transcript) {
-        setVoiceInputActive(false);
-        submitRef.current(transcript.trim(), 'voice');
-      }
-    });
-    rec.addEventListener('end', () => setVoiceInputActive(false));
-    rec.addEventListener('error', (ev: unknown) => {
-      const e = ev as { error: string };
-      setVoiceInputActive(false);
-      if (e.error === 'no-speech') return;
-      console.error('Speech recognition error:', e.error);
-    });
-    recognitionRef.current = rec;
+    langRef.current = lang;
   }, [lang]);
 
-  const menuItems = useMemo(() => categories.flatMap(category => category.items.map(item => {
-    const dietary = item.dietary || [];
-    return {
-      id: item.id,
-      name: pickLocalText(item.name_i18n, lang) || item.name,
-      description: pickLocalText(item.description_i18n, lang) || item.description,
-      price: item.price,
-      category: pickLocalText(category.name_i18n, lang) || category.name,
-      isAvailable: item.is_available,
-      isFeatured: item.is_featured,
-      isVegetarian: dietary.includes('Vegetariano') || dietary.includes('Vegetarian'),
-      isVegan: dietary.includes('Vegan') || dietary.includes('Vegano'),
-      isGlutenFree: dietary.includes('Sin Gluten') || dietary.includes('Gluten-Free'),
-    };
-  })), [categories, lang]);
+  useEffect(() => {
+    audioEnabledRef.current = ttsEnabled;
+  }, [ttsEnabled]);
 
-  /** Fetches natural neural-voice audio from the Edge Function and plays it. */
-  const playAudioFromTTS = useCallback(async (replyText: string, targetLang: ChatbotLang) => {
-    if (!ttsEnabled || !audioRef.current) return;
+  useEffect(() => {
+    audioRef.current = new Audio();
+  }, []);
+
+  const releaseObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
+
+  /** Stops whatever is being spoken (neural MP3 or browser speech). */
+  const stopSpeech = useCallback(() => {
+    speechGenerationRef.current += 1;
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.onended = null;
+      audio.onerror = null;
+      audio.removeAttribute('src');
+      audio.load();
+    }
+    releaseObjectUrl();
+    const resolveAudio = audioResolveRef.current;
+    audioResolveRef.current = null;
+    resolveAudio?.(false);
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    const resolveBrowser = browserSpeechResolveRef.current;
+    browserSpeechResolveRef.current = null;
+    resolveBrowser?.();
+    speakingRef.current = false;
+    setSpeaking(false);
+    setSpeakingId(null);
+  }, [releaseObjectUrl]);
+
+  useEffect(() => {
+    if (open) return;
+    stopSpeech();
+    setVoiceNote(null);
+  }, [open, stopSpeech]);
+
+  const fetchTtsAudio = useCallback(async (replyText: string, targetLang: ChatbotLang): Promise<Blob | null> => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 9000);
     try {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: replyText, lang: targetLang }),
+        signal: controller.signal,
       });
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error('TTS fetch failed:', errorData.error || res.statusText);
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return blob.size > 0 ? blob : null;
+    } catch {
+      return null;
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }, []);
+
+  const playAudioBlob = useCallback((blob: Blob) => new Promise<boolean>(resolve => {
+    const audio = audioRef.current;
+    if (!audio) {
+      resolve(false);
+      return;
+    }
+    releaseObjectUrl();
+    const url = URL.createObjectURL(blob);
+    objectUrlRef.current = url;
+    audioResolveRef.current = resolve;
+    const settle = (played: boolean) => {
+      if (audioResolveRef.current !== resolve) return;
+      audioResolveRef.current = null;
+      audio.onended = null;
+      audio.onerror = null;
+      resolve(played);
+    };
+    audio.onended = () => settle(true);
+    audio.onerror = () => settle(false);
+    audio.src = url;
+    audio.play().catch(() => settle(false));
+  }), [releaseObjectUrl]);
+
+  /** Last-resort voice: the browser's own speech engine, no network needed. */
+  const speakWithBrowser = useCallback((replyText: string, targetLang: ChatbotLang) => new Promise<void>(resolve => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      resolve();
+      return;
+    }
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(replyText);
+    utterance.lang = LANG_TAGS[targetLang];
+    utterance.rate = 1.02;
+    const voices = synth.getVoices();
+    const matchedVoice = voices.find(voice => voice.lang?.toLowerCase().startsWith(targetLang));
+    if (matchedVoice) utterance.voice = matchedVoice;
+
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      browserSpeechResolveRef.current = null;
+      resolve();
+    };
+    browserSpeechResolveRef.current = finish;
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    try {
+      synth.speak(utterance);
+    } catch {
+      finish();
+    }
+  }), []);
+
+  const resumeListening = useCallback(() => {
+    window.setTimeout(() => {
+      if (!openRef.current || modeRef.current !== 'voice' || busyRef.current || speakingRef.current || listeningRef.current) return;
+      startListeningRef.current();
+    }, 380);
+  }, []);
+
+  /** Plays a reply, preferring the neural service and falling back to the browser voice. */
+  const speakText = useCallback(async (replyText: string, targetLang: ChatbotLang, messageId: string) => {
+    stopSpeech();
+    const generation = speechGenerationRef.current;
+    speakingRef.current = true;
+    setSpeaking(true);
+    setSpeakingId(messageId);
+    try {
+      const blob = await fetchTtsAudio(replyText, targetLang);
+      if (speechGenerationRef.current !== generation) return;
+      if (blob) {
+        const played = await playAudioBlob(blob);
+        if (speechGenerationRef.current !== generation) return;
+        if (played) return;
+      }
+      await speakWithBrowser(replyText, targetLang);
+    } finally {
+      if (speechGenerationRef.current === generation) {
+        speakingRef.current = false;
+        setSpeaking(false);
+        setSpeakingId(null);
+        if (openRef.current && modeRef.current === 'voice') resumeListening();
+      }
+    }
+  }, [fetchTtsAudio, playAudioBlob, speakWithBrowser, resumeListening, stopSpeech]);
+
+  const startListening = useCallback(() => {
+    if (!SpeechRecognitionCtor) {
+      setVoiceNote(labels[langRef.current].voiceUnsupported);
+      return;
+    }
+    if (busyRef.current || speakingRef.current || listeningRef.current) return;
+    const rec = recognitionRef.current;
+    if (!rec) return;
+    stopSpeech();
+    rec.lang = LANG_TAGS[langRef.current] ?? 'es-ES';
+    try {
+      rec.start();
+      listeningRef.current = true;
+      setListening(true);
+      setInterim('');
+      setVoiceNote(null);
+    } catch {
+      listeningRef.current = false;
+      setListening(false);
+    }
+  }, [stopSpeech]);
+
+  useEffect(() => {
+    startListeningRef.current = startListening;
+  }, [startListening]);
+
+  const stopListening = useCallback(() => {
+    const rec = recognitionRef.current;
+    if (rec) {
+      try { rec.stop(); } catch { /* noop */ }
+    }
+    listeningRef.current = false;
+    setListening(false);
+    setInterim('');
+  }, []);
+
+  const changeMode = useCallback((next: ConciergeMode) => {
+    if (next === 'voice' && !SpeechRecognitionCtor) {
+      setVoiceNote(labels[langRef.current].voiceUnsupported);
+      return;
+    }
+    if (next === 'text') {
+      stopListening();
+      stopSpeech();
+    }
+    setMode(next);
+  }, [stopListening, stopSpeech]);
+
+  useEffect(() => {
+    modeRef.current = mode;
+    try {
+      window.localStorage.setItem(MODE_STORAGE_KEY, mode);
+    } catch {
+      /* storage can be disabled */
+    }
+    if (mode === 'text') {
+      stopListening();
+      stopSpeech();
+      window.setTimeout(() => inputRef.current?.focus(), 120);
+    }
+  }, [mode, stopListening, stopSpeech]);
+
+  // Auto-listen when the sheet opens in voice mode, and whenever you switch into it.
+  useEffect(() => {
+    if (!open || mode !== 'voice' || !SpeechRecognitionCtor) return;
+    const timer = window.setTimeout(() => startListeningRef.current(), 520);
+    return () => window.clearTimeout(timer);
+  }, [open, mode]);
+
+  // Initialize SpeechRecognition once; handlers read live values through refs.
+  useEffect(() => {
+    if (!SpeechRecognitionCtor) return;
+    const rec = new SpeechRecognitionCtor();
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    rec.lang = LANG_TAGS[langRef.current] ?? 'es-ES';
+
+    rec.addEventListener('result', (ev: unknown) => {
+      const e = ev as { results?: ArrayLike<SpeechResultList> };
+      const results = e.results;
+      if (!results) return;
+      let transcript = '';
+      let isFinal = false;
+      for (let i = 0; i < results.length; i += 1) {
+        const result = results[i];
+        transcript += result?.[0]?.transcript ?? '';
+        if (result?.isFinal) isFinal = true;
+      }
+      transcript = transcript.trim();
+      if (!transcript) return;
+      setInterim(transcript);
+      if (!isFinal) return;
+      setInterim('');
+      listeningRef.current = false;
+      setListening(false);
+      submitRef.current(transcript, 'voice');
+    });
+
+    rec.addEventListener('end', () => {
+      listeningRef.current = false;
+      setListening(false);
+      setInterim('');
+    });
+
+    rec.addEventListener('error', (ev: unknown) => {
+      const error = (ev as { error?: string }).error ?? '';
+      listeningRef.current = false;
+      setListening(false);
+      setInterim('');
+      if (error === 'no-speech') {
+        setVoiceNote(labels[langRef.current].noSpeech);
         return;
       }
-      const blob = await res.blob();
-      const audioUrl = URL.createObjectURL(blob);
-
-      if (currentlyPlaying && audioRef.current.paused === false) {
-        // Queue this audio to play after the current one finishes
-        audioQueueRef.current = audioUrl;
-      } else {
-        setCurrentlyPlaying(audioUrl);
-        audioRef.current.src = audioUrl;
-        audioRef.current.play().catch(err => {
-          console.error('Audio play error:', err);
-          setCurrentlyPlaying(null);
-        });
+      if (error === 'aborted') return;
+      if (error === 'not-allowed' || error === 'service-not-allowed' || error === 'audio-capture') {
+        setVoiceNote(labels[langRef.current].micDenied);
+        return;
       }
-    } catch (error) {
-      console.error('TTS playback error:', error);
-    }
-  }, [ttsEnabled, currentlyPlaying]);
+      console.warn('Speech recognition error:', error);
+    });
 
-  const stopAudio = () => {
+    recognitionRef.current = rec;
+    return () => {
+      try { rec.abort(); } catch { /* noop */ }
+      recognitionRef.current = null;
+    };
+  }, []);
+
+  // Free audio resources on unmount.
+  useEffect(() => () => {
+    speechGenerationRef.current += 1;
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
     }
-    setCurrentlyPlaying(null);
-    audioQueueRef.current = null;
-  };
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+  }, []);
+
+  const menuItems = useMemo(() => {
+    // Menu content only ships es/en/pt; German conversations read the Spanish text.
+    const contentLang = lang === 'de' ? 'es' : lang;
+    return categories.flatMap(category => category.items.map(item => {
+      const dietary = item.dietary || [];
+      return {
+        id: item.id,
+        name: pickLocalText(item.name_i18n, contentLang) || item.name,
+        description: pickLocalText(item.description_i18n, contentLang) || item.description,
+        price: item.price,
+        category: pickLocalText(category.name_i18n, contentLang) || category.name,
+        isAvailable: item.is_available,
+        isFeatured: item.is_featured,
+        isVegetarian: dietary.includes('Vegetariano') || dietary.includes('Vegetarian'),
+        isVegan: dietary.includes('Vegan') || dietary.includes('Vegano'),
+        isGlutenFree: dietary.includes('Sin Gluten') || dietary.includes('Gluten-Free'),
+      };
+    }));
+  }, [categories, lang]);
 
   const handleSubmit = useCallback(async (message: string, inputMode: 'text' | 'voice') => {
     const trimmed = message.trim();
-    if (!trimmed || busy) return;
+    if (!trimmed || busyRef.current) return;
+    if (listeningRef.current) {
+      try { recognitionRef.current?.stop(); } catch { /* noop */ }
+      listeningRef.current = false;
+      setListening(false);
+      setInterim('');
+    }
     if (inputMode === 'text') setText('');
+    setVoiceNote(null);
     setMessages(current => [...current, { id: `${Date.now()}-user`, role: 'user', text: trimmed, inputMode }]);
+    busyRef.current = true;
     setBusy(true);
     try {
       const result = await handleChatTurn(trimmed, sessionState, {
@@ -264,7 +617,14 @@ export function MenuChatbot() {
       }, menuItems, sessionKey, 'web', learnedAnswers);
       setSessionState(result.response.nextState);
       setLang(result.response.detectedLang);
-      setMessages(current => [...current, { id: `${Date.now()}-assistant`, role: 'assistant', text: result.response.reply, inputMode }]);
+      const replyId = `${Date.now()}-assistant`;
+      setMessages(current => [...current, {
+        id: replyId,
+        role: 'assistant',
+        text: result.response.reply,
+        inputMode,
+        lang: result.response.detectedLang,
+      }]);
       logConciergeTurn({
         venueId: venue.id,
         sessionId: sessionKey,
@@ -275,17 +635,25 @@ export function MenuChatbot() {
         learnedId: result.response.learnedId,
         reservationSaved: result.reservationSaved,
       });
-      // Speak the response only when the user's last input was via voice
-      if (inputMode === 'voice' && ttsEnabled) {
-        await playAudioFromTTS(result.response.reply, result.response.detectedLang);
+      const shouldSpeak = audioEnabledRef.current && (inputMode === 'voice' || modeRef.current === 'voice');
+      if (shouldSpeak) {
+        await speakText(result.response.reply, result.response.detectedLang, replyId);
+      } else if (modeRef.current === 'voice') {
+        resumeListening();
       }
     } catch (error) {
       console.error('Chatbot turn failed:', error);
-      setMessages(current => [...current, { id: `${Date.now()}-error`, role: 'assistant', text: labels[lang].error }]);
+      const errorId = `${Date.now()}-error`;
+      const errorText = labels[langRef.current].error;
+      setMessages(current => [...current, { id: errorId, role: 'assistant', text: errorText, lang: langRef.current }]);
+      if (modeRef.current === 'voice') {
+        await speakText(errorText, langRef.current, errorId);
+      }
     } finally {
+      busyRef.current = false;
       setBusy(false);
     }
-  }, [busy, sessionState, venue, menuItems, sessionKey, learnedAnswers, lang, ttsEnabled, playAudioFromTTS]);
+  }, [sessionState, venue, menuItems, sessionKey, learnedAnswers, speakText, resumeListening]);
 
   const submitMessage = async (event: FormEvent) => {
     event.preventDefault();
@@ -298,46 +666,39 @@ export function MenuChatbot() {
     };
   }, [handleSubmit]);
 
-  const toggleVoiceInput = () => {
-    if (!SpeechRecognitionCtor) {
-      alert('La API de voz no está disponible en este navegador. Prueba con Chrome o Edge.');
-      return;
-    }
-    const rec = recognitionRef.current;
-    if (!rec) return;
-
-    if (voiceInputActive) {
-      rec.stop();
-      setVoiceInputActive(false);
-      return;
-    }
-
-    rec.lang = LANG_TAGS[lang];
-    setVoiceInputActive(true);
-    try {
-      rec.start();
-    } catch (err) {
-      console.warn('SpeechRecognition start failed:', err);
-    }
-  };
-
   const toggleTts = () => {
-    if (ttsEnabled) {
-      stopAudio();
-    }
+    if (ttsEnabled) stopSpeech();
     setTtsEnabled(!ttsEnabled);
   };
 
-  const replayLastVoice = async () => {
-    // Find the last assistant message that was triggered by voice input
-    const lastVoiceReply = messages
-      .slice()
-      .reverse()
-      .find(m => m.role === 'assistant' && m.inputMode === 'voice');
-    if (lastVoiceReply) {
-      await playAudioFromTTS(lastVoiceReply.text, lang);
+  const handlePlayMessage = (message: ChatMessage) => {
+    if (speakingId === message.id && speaking) {
+      stopSpeech();
+      return;
     }
+    void speakText(message.text, message.lang ?? lang, message.id);
   };
+
+  const handleOrbPress = () => {
+    if (listening) {
+      stopListening();
+      return;
+    }
+    if (speaking) {
+      stopSpeech();
+    }
+    startListening();
+  };
+
+  const orbState: OrbState = busy ? 'thinking' : speaking ? 'speaking' : listening ? 'listening' : 'idle';
+  const voiceStatus = busy
+    ? labels[lang].thinking
+    : speaking
+      ? labels[lang].speaking
+      : listening
+        ? labels[lang].listening
+        : labels[lang].tapToSpeak;
+  const modeToggle = SpeechRecognitionCtor !== null;
 
   return (
     <>
@@ -370,18 +731,52 @@ export function MenuChatbot() {
               <header className="bg-slate-900 px-4 pb-3 pt-2 text-white">
                 <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-white/20" aria-hidden="true" />
                 <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold leading-tight">{labels[lang].title}</p>
-                    <p className="truncate text-xs text-slate-300">{venue.name}</p>
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <ConciergeOrb size={38} state={orbState} />
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold leading-tight text-white">{labels[lang].title}</p>
+                      <p className="truncate text-xs text-slate-300">{venue.name}</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar chat" className="border-transparent bg-transparent p-1 hover:bg-white/10">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="mt-2.5 flex items-center justify-between gap-2">
+                  <div role="group" aria-label={labels[lang].modeGroup} className="flex rounded-full bg-white/10 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => changeMode('text')}
+                      aria-pressed={mode === 'text'}
+                      className={`flex items-center gap-1 rounded-full border-transparent px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                        mode === 'text' ? 'bg-white text-slate-900' : 'bg-transparent text-slate-300 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      <Keyboard className="h-3 w-3" aria-hidden="true" />
+                      {labels[lang].modeText}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => changeMode('voice')}
+                      aria-pressed={mode === 'voice'}
+                      disabled={!modeToggle}
+                      title={!modeToggle ? labels[lang].voiceUnsupported : undefined}
+                      className={`flex items-center gap-1 rounded-full border-transparent px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                        mode === 'voice' ? 'bg-amber-400 text-slate-950' : 'bg-transparent text-slate-300 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      <Mic className="h-3 w-3" aria-hidden="true" />
+                      {labels[lang].modeVoice}
+                    </button>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    {currentlyPlaying && (
+                    {speaking && (
                       <button
                         type="button"
-                        onClick={stopAudio}
-                        aria-label="Detener audio"
-                        className="rounded p-1 text-amber-300 hover:bg-white/10"
-                        title="Detener audio"
+                        onClick={stopSpeech}
+                        aria-label={labels[lang].stopSpeaking}
+                        className="border-transparent bg-transparent p-1 text-amber-300 hover:bg-white/10"
+                        title={labels[lang].stopSpeaking}
                       >
                         <Pause className="h-4 w-4" />
                       </button>
@@ -390,8 +785,8 @@ export function MenuChatbot() {
                       type="button"
                       onClick={toggleTts}
                       aria-label={ttsEnabled ? 'Desactivar voz' : 'Activar voz'}
-                      className={`rounded p-1 hover:bg-white/10 ${ttsEnabled ? 'text-amber-400' : 'text-slate-500'}`}
-                      title={ttsEnabled ? 'Voz natural ON' : 'Voz natural OFF'}
+                      className={`border-transparent bg-transparent p-1 hover:bg-white/10 ${ttsEnabled ? 'text-amber-400' : 'text-slate-500'}`}
+                      title={ttsEnabled ? 'Voz ON' : 'Voz OFF'}
                     >
                       {ttsEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                     </button>
@@ -412,9 +807,6 @@ export function MenuChatbot() {
                       <option value="pt">PT</option>
                       <option value="de">DE</option>
                     </select>
-                    <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar chat" className="rounded-md p-1 hover:bg-white/10">
-                      <X className="h-4 w-4" />
-                    </button>
                   </div>
                 </div>
               </header>
@@ -422,62 +814,100 @@ export function MenuChatbot() {
                 {messages.map(message => (
                   <div
                     key={message.id}
-                    className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
+                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${
                       message.role === 'user' ? 'ml-auto bg-amber-500 text-slate-950' : 'bg-muted text-foreground'
                     }`}
                   >
-                    {message.text}
-                    {message.role === 'assistant' && message.inputMode === 'voice' && (
-                      <button
-                        type="button"
-                        onClick={replayLastVoice}
-                        aria-label="Repetir mensaje"
-                        className="mt-1 rounded-md p-1 text-muted-foreground hover:bg-muted-foreground/10"
-                        title="Repetir voz"
-                      >
-                        <Volume2 className="h-3.5 w-3.5" />
-                      </button>
+                    {message.role === 'assistant' ? (
+                      <div className="flex items-end gap-2">
+                        <span className="min-w-0 flex-1 whitespace-pre-wrap">{message.text}</span>
+                        <button
+                          type="button"
+                          onClick={() => handlePlayMessage(message)}
+                          aria-label={speakingId === message.id && speaking ? labels[lang].stopSpeaking : labels[lang].playReply}
+                          className="mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-transparent bg-transparent text-muted-foreground transition-colors hover:bg-muted-foreground/10 hover:text-foreground"
+                          title={speakingId === message.id && speaking ? labels[lang].stopSpeaking : labels[lang].playReply}
+                        >
+                          {speakingId === message.id && speaking ? (
+                            <Pause className="h-3.5 w-3.5" />
+                          ) : (
+                            <Volume2 className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="whitespace-pre-wrap">{message.text}</span>
                     )}
                   </div>
                 ))}
                 {busy && <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" />…</div>}
               </div>
-              <form onSubmit={submitMessage} className="border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-                <div className="flex gap-2">
-                  <input
-                    ref={inputRef}
-                    value={text}
-                    onChange={event => setText(event.target.value)}
-                    placeholder={labels[lang].placeholder}
-                    aria-label={labels[lang].placeholder}
-                    disabled={busy}
-                    className="min-w-0 flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                  {SpeechRecognitionCtor && (
+              {mode === 'voice' ? (
+                <div className="border-t border-border px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-4">
+                  <div className="flex flex-col items-center gap-2.5">
+                    <motion.button
+                      type="button"
+                      onClick={handleOrbPress}
+                      aria-label={listening ? labels[lang].stopListening : labels[lang].tapToSpeak}
+                      title={listening ? labels[lang].stopListening : labels[lang].tapToSpeak}
+                      whileTap={{ scale: 0.94 }}
+                      className="rounded-full border-transparent bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    >
+                      <ConciergeOrb size={84} state={orbState} />
+                    </motion.button>
+                    <p className="text-sm font-medium text-foreground" aria-live="polite">{voiceStatus}</p>
+                    {interim && <p className="max-w-[90%] truncate text-xs text-muted-foreground">“{interim}”</p>}
+                    {voiceNote && <p className="max-w-[90%] text-center text-[11px] text-muted-foreground">{voiceNote}</p>}
                     <button
                       type="button"
-                      onClick={toggleVoiceInput}
-                      disabled={busy || voiceInputActive}
-                      aria-label={voiceInputActive ? 'Detener grabación' : 'Hablar'}
-                      title={voiceInputActive ? 'Detener' : 'Hablar (reconocimiento de voz)'}
-                      className={`rounded-xl px-2.5 text-slate-950 transition-colors disabled:opacity-50 ${
-                        voiceInputActive ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-amber-400 hover:bg-amber-500'
-                      }`}
+                      onClick={() => changeMode('text')}
+                      className="border-transparent bg-transparent px-1 py-0.5 text-[11px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
                     >
-                      {voiceInputActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                      {labels[lang].writeInstead}
                     </button>
-                  )}
-                  <button
-                    type="submit"
-                    disabled={busy || !text.trim()}
-                    aria-label="Enviar mensaje"
-                    className="rounded-xl bg-amber-500 px-3.5 text-slate-950 disabled:opacity-50"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
+                    <p className="text-center text-[10px] leading-tight text-muted-foreground">{labels[lang].privacy}</p>
+                  </div>
                 </div>
-                <p className="mt-2 text-center text-[10px] leading-tight text-muted-foreground">{labels[lang].privacy}</p>
-              </form>
+              ) : (
+                <form onSubmit={submitMessage} className="border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+                  <div className="flex gap-2">
+                    <input
+                      ref={inputRef}
+                      value={text}
+                      onChange={event => setText(event.target.value)}
+                      placeholder={labels[lang].placeholder}
+                      aria-label={labels[lang].placeholder}
+                      disabled={busy}
+                      className="min-w-0 flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                    {SpeechRecognitionCtor && (
+                      <button
+                        type="button"
+                        onClick={() => (listening ? stopListening() : startListening())}
+                        disabled={busy}
+                        aria-label={listening ? labels[lang].stopListening : labels[lang].speakOnce}
+                        title={listening ? labels[lang].stopListening : labels[lang].speakOnce}
+                        className={`rounded-xl px-2.5 text-slate-950 transition-colors disabled:opacity-50 ${
+                          listening ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-amber-400 hover:bg-amber-500'
+                        }`}
+                      >
+                        {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={busy || !text.trim()}
+                      aria-label="Enviar mensaje"
+                      className="rounded-xl bg-amber-500 px-3.5 text-slate-950 disabled:opacity-50"
+                    >
+                      <Send className="h-4 w-4" />
+                    </button>
+                  </div>
+                  {listening && <p className="mt-2 text-center text-[11px] text-amber-600">{labels[lang].listening}</p>}
+                  {!listening && voiceNote && <p className="mt-2 text-center text-[11px] text-muted-foreground">{voiceNote}</p>}
+                  <p className="mt-2 text-center text-[10px] leading-tight text-muted-foreground">{labels[lang].privacy}</p>
+                </form>
+              )}
             </motion.section>
           </motion.div>
         )}
@@ -492,11 +922,9 @@ export function MenuChatbot() {
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Abrir chat"
-            className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900 py-2.5 pl-2.5 pr-4 text-white shadow-xl shadow-slate-950/20 transition-transform hover:-translate-y-0.5"
+            className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900/95 py-2 pl-2 pr-4 text-white shadow-xl shadow-slate-950/25 backdrop-blur transition-transform hover:-translate-y-0.5"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-slate-950">
-              <Bot className="h-4 w-4" />
-            </span>
+            <ConciergeOrb size={42} state="idle" />
             <span className="text-sm font-semibold tracking-tight">{labels[lang].launcher}</span>
             <ChevronUp className="h-4 w-4 text-slate-400 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
           </button>

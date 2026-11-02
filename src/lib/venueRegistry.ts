@@ -23,6 +23,12 @@ interface RegistryItem {
   currency: string;
   primary_color?: string;
   background_theme?: string;
+  logo_url?: string;
+  logo_aspect?: number;
+  logo_source_aspect?: number;
+  logo_zoom?: number;
+  logo_x?: number;
+  logo_y?: number;
   hero_video_url?: string;
   hero_poster_url?: string;
   featured_item_ids?: string[];
@@ -138,7 +144,12 @@ export function toVenue(item: RegistryItem): Venue {
     whatsapp: item.whatsapp || '',
     currency: item.currency || 'Bs.',
     currency_code: 'BOB',
-    logo_url: '',
+    logo_url: item.logo_url || '',
+    logo_aspect: item.logo_aspect,
+    logo_source_aspect: item.logo_source_aspect ?? item.logo_aspect,
+    logo_zoom: item.logo_zoom,
+    logo_x: item.logo_x,
+    logo_y: item.logo_y,
     banner_url: '',
     hero_video_url: item.hero_video_url || '',
     hero_poster_url: item.hero_poster_url || '',

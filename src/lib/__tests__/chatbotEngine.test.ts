@@ -87,6 +87,42 @@ describe('concierge reservation flow', () => {
     expect(first.reply).toContain('fecha');
   });
 
+  it('keeps party, date and time given before the name and stops repeating the name question', () => {
+    let state: ChatbotSessionState = { language: 'es', reservationDraft: { step: 'idle' } };
+
+    const first = turn("hey what's up I'd like to make a reservation", state);
+    expect(first.result.detectedLang).toBe('en');
+    expect(first.state.pendingIntent).toBe('reservation');
+    expect(first.reply.toLowerCase()).toContain('name');
+
+    const second = turn('well I want to have a dinner for two on', first.state);
+    expect(second.state.pendingIntent).toBe('reservation');
+    expect(second.state.pendingPartySize).toBe(2);
+    expect(second.reply).toContain('2 guests');
+    expect(second.reply.toLowerCase()).toContain('name');
+    expect(second.reply).not.toContain('1–50');
+
+    const third = turn('at 7:00 on Sunday', second.state);
+    expect(third.state.pendingIntent).toBe('reservation');
+    expect(third.state.pendingTime).toBe('19:00');
+    expect(third.state.pendingDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(third.reply).toContain('19:00');
+    expect(third.reply).toContain('2 guests');
+    expect(third.reply.toLowerCase()).toContain('name');
+    expect(third.reply).not.toContain('1–50');
+
+    const named = turn('Hudson', third.state);
+    expect(named.state.userName).toBe('Hudson');
+    expect(named.state.pendingIntent).toBeUndefined();
+    expect(named.state.reservationDraft).toMatchObject({
+      step: 'phone',
+      partySize: 2,
+      time: '19:00',
+    });
+    expect(named.state.reservationDraft?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(named.reply.toLowerCase()).toContain('phone');
+  });
+
   it('captures party size, date and time from a single message', () => {
     const result = turn('para 3 el viernes a las 21', {
       language: 'es',
@@ -96,6 +132,58 @@ describe('concierge reservation flow', () => {
     expect(result.state.reservationDraft).toMatchObject({ step: 'phone', partySize: 3, time: '21:00' });
     expect(result.state.reservationDraft?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(result.reply).toContain('teléfono');
+  });
+
+  it('understands word numbers and combines a date with its time', () => {
+    let state: ChatbotSessionState = {
+      language: 'en',
+      userName: 'Ana',
+      reservationDraft: { step: 'party_size', name: 'Ana' },
+    };
+
+    const party = turn('well I want to have a dinner for two on', state);
+    state = party.state;
+    expect(state.reservationDraft).toMatchObject({ step: 'date', partySize: 2 });
+    expect(party.reply).not.toContain('number of guests');
+
+    const combined = turn('at 7:00 on Sunday', state);
+    expect(combined.state.reservationDraft).toMatchObject({ step: 'phone', partySize: 2, time: '19:00' });
+    expect(combined.state.reservationDraft?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(combined.reply).toContain('phone');
+  });
+
+  it('captures party, date and time from one request without re-asking', () => {
+    const result = turn('I would like a table for two on Friday at 8:30 PM', {
+      language: 'en',
+      userName: 'Ana',
+      reservationDraft: { step: 'idle' },
+    });
+    expect(result.state.reservationDraft).toMatchObject({ step: 'phone', partySize: 2, time: '20:30' });
+    expect(result.reply).toContain('phone');
+  });
+
+  it('reads party sizes written as words in Spanish, Portuguese and as a couple', () => {
+    const spanish = turn('para dos el viernes a las 21', {
+      language: 'es',
+      userName: 'Hudson',
+      reservationDraft: { step: 'party_size', name: 'Hudson' },
+    });
+    expect(spanish.state.reservationDraft).toMatchObject({ step: 'phone', partySize: 2, time: '21:00' });
+
+    const portuguese = turn('gostaria de uma reserva para dois', {
+      language: 'pt',
+      userName: 'Ana',
+      reservationDraft: { step: 'idle' },
+    });
+    expect(portuguese.state.reservationDraft).toMatchObject({ step: 'date', partySize: 2 });
+    expect(portuguese.reply).toContain('2 pessoas');
+
+    const couple = turn('somos una pareja', {
+      language: 'es',
+      userName: 'Ana',
+      reservationDraft: { step: 'party_size', name: 'Ana' },
+    });
+    expect(couple.state.reservationDraft).toMatchObject({ step: 'date', partySize: 2 });
   });
 
   it('runs the full flow, treats a declined phone as optional, and asks for no repeat', () => {

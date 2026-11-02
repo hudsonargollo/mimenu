@@ -35,6 +35,15 @@ export interface Venue {
   currency: string; // e.g. "Bs."
   currency_code: string; // e.g. "BOB"
   logo_url: string;
+  /** Visible logo slot ratio (width / height), set by the admin cropper. */
+  logo_aspect?: number;
+  /** Uploaded file's own ratio, used to clamp panning without exposing edges. */
+  logo_source_aspect?: number;
+  /** Logo scale inside its slot (1–3). */
+  logo_zoom?: number;
+  /** Logo pan inside its slot, in % of the slot width/height. */
+  logo_x?: number;
+  logo_y?: number;
   banner_url: string;
   /** Optional looping video used as the menu hero background. */
   hero_video_url?: string;

@@ -2204,7 +2204,13 @@
     ]
    }
   ],
-  "tables": 12
+  "tables": 12,
+  "logo_url": "/jaleo/jaleo.webp",
+  "logo_aspect": 2.01,
+  "logo_zoom": 1,
+  "logo_x": 0,
+  "logo_y": 0,
+  "logo_source_aspect": 2.01
  },
  {
   "id": "venue-021-hall-restobar",

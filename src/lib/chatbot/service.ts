@@ -128,6 +128,8 @@ export async function loadSessionState(
       lastReservation: session.state.lastReservation || undefined,
       pendingIntent: session.state.pendingIntent,
       pendingPartySize: session.state.pendingPartySize,
+      pendingDate: session.state.pendingDate,
+      pendingTime: session.state.pendingTime,
     };
   } catch (err) {
     console.error('Failed to load session state:', err);

@@ -51,6 +51,12 @@ const VENUE = {
   currency: 'Bs.',
   primary_color: '#BC6C25',
   background_theme: 'light' as const,
+  logo_url: '/jaleo/jaleo.webp',
+  logo_aspect: 2.01,
+  logo_source_aspect: 2.01,
+  logo_zoom: 1,
+  logo_x: 0,
+  logo_y: 0,
   is_active: true,
 };
 

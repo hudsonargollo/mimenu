@@ -1,16 +1,56 @@
 // POST /api/tts
-// Text-to-Speech via the local VPS edge-tts service (Microsoft Edge neural voices).
+// Text-to-Speech via the VPS edge-tts service (Microsoft Edge neural voices).
 // Produces natural-sounding speech with no API key and no GPU required.
 //
 // Body JSON: { text: string, lang?: ChatbotLang }
-// Returns: audio/mpeg MP3 stream that the client plays via <audio>.
+// Returns: audio/mpeg MP3 that the client plays via HTMLAudioElement.
 
 interface Env {
   TTS_SERVICE_URL?: string;
+  TTS_FALLBACK_URL?: string;
 }
 
-// Fallback URL — the nginx reverse proxy for the edge-tts container
-const TTS_SERVICE_URL = 'https://tts.clubemkt.online';
+// The public hostname has pointed at other projects before, so always keep a
+// direct route to the container as a fallback instead of failing the reply.
+const DEFAULT_SERVICE_URLS = [
+  'https://tts.clubemkt.online',
+  'http://62.171.137.90:8788',
+];
+
+const TTS_TIMEOUT_MS = 9000;
+
+// Remember the endpoint that worked so a stale hostname is only retried once
+// per isolate instead of on every spoken reply.
+let preferredServiceUrl: string | null = null;
+
+async function requestTts(baseUrl: string, text: string, lang: string): Promise<ArrayBuffer> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TTS_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/tts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'mimenu-voice-agent/1.0',
+      },
+      body: JSON.stringify({ text, lang }),
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      throw new Error(`${response.status} ${response.statusText}: ${errorBody.slice(0, 200)}`);
+    }
+
+    const audio = await response.arrayBuffer();
+    if (audio.byteLength === 0) throw new Error('Empty audio response');
+    return audio;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export const onRequestPost = async (context: { request: Request; env: Env }) => {
   const { request, env } = context;
@@ -29,40 +69,41 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
     return new Response(JSON.stringify({ success: false, error: 'text is required.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
-  const serviceUrl = env.TTS_SERVICE_URL || TTS_SERVICE_URL;
-
   // Limit text length — edge-tts handles long text but we cap for latency
   const truncatedText = text.length > 500 ? text.slice(0, 500) + '...' : text;
 
-  try {
-    const ttsRes = await fetch(`${serviceUrl}/tts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'mimenu-voice-agent/1.0',
-      },
-      body: JSON.stringify({ text: truncatedText, lang }),
-      // Cloudflare edge needs explicit redirect handling
-      redirect: 'follow',
-    });
+  const serviceUrls = Array.from(
+    new Set(
+      [preferredServiceUrl, env.TTS_SERVICE_URL, env.TTS_FALLBACK_URL, ...DEFAULT_SERVICE_URLS]
+        .map(url => url?.trim())
+        .filter((url): url is string => Boolean(url)),
+    ),
+  );
 
-    if (!ttsRes.ok) {
-      const errText = await ttsRes.text().catch(() => '');
-      const errSlice = errText.length > 300 ? errText.slice(0, 300) : errText;
-      console.error(`TTS service error: ${ttsRes.status} ${ttsRes.statusText}`, { body: errSlice });
-      return new Response(JSON.stringify({ success: false, error: `TTS service error (${ttsRes.status}): ${errSlice}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+  const failures: string[] = [];
+  for (const serviceUrl of serviceUrls) {
+    try {
+      const audio = await requestTts(serviceUrl, truncatedText, lang);
+      preferredServiceUrl = serviceUrl;
+      return new Response(audio, {
+        status: 200,
+        headers: {
+          'Content-Type': 'audio/mpeg',
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      failures.push(`${serviceUrl} -> ${message}`);
+      console.warn(`TTS attempt failed: ${serviceUrl}`, message);
     }
-
-    // Stream the MP3 directly to the client
-    return new Response(ttsRes.body, {
-      status: 200,
-      headers: { 'Content-Type': 'audio/mpeg' },
-    });
-  } catch (err) {
-    console.error('TTS generation failed:', err);
-    const msg = err instanceof Error ? err.message : 'Unexpected error.';
-    return new Response(JSON.stringify({ success: false, error: msg }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
+
+  console.error('TTS generation failed for every endpoint:', failures.join(' | '));
+  return new Response(JSON.stringify({ success: false, error: 'TTS service unavailable.' }), {
+    status: 502,
+    headers: { 'Content-Type': 'application/json' },
+  });
 };
 
 export const onRequestOptions = async () => new Response(null, { status: 204 });
