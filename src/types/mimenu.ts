@@ -30,6 +30,9 @@ export interface Venue {
   description_i18n?: Record<'es' | 'en' | 'pt', string>;
   city: string;
   address: string;
+  /** Physical location. Optional — omits the Google Maps detail when empty. */
+  latitude?: number | null;
+  longitude?: number | null;
   phone: string;
   whatsapp: string;
   currency: string; // e.g. "Bs."

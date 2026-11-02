@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ShoppingBag,
   UtensilsCrossed,
+  ArrowUpRight,
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
 import { isSafeMediaUrl } from '@/lib/media';
@@ -63,6 +64,8 @@ export const AdminBranding: React.FC = () => {
   const [description, setDescription] = useState(venue.description);
   const [city, setCity] = useState(venue.city);
   const [address, setAddress] = useState(venue.address);
+  const [latitude, setLatitude] = useState<string>(venue.latitude?.toString() ?? '');
+  const [longitude, setLongitude] = useState<string>(venue.longitude?.toString() ?? '');
   const [whatsapp, setWhatsapp] = useState(venue.whatsapp);
   const [currency, setCurrency] = useState(venue.currency);
   const [primaryColor, setPrimaryColor] = useState(venue.primary_color);
@@ -127,6 +130,58 @@ export const AdminBranding: React.FC = () => {
   const hasInvalidLogo = !!logoUrl.trim() && !previewLogo;
   const logoPan = logoPanLimits(logoLayout, logoSourceAspect);
   const logoAspectLabel = `${logoLayout.aspect.toFixed(2)}:1`;
+
+  // Google Maps embed pinned to the stored coordinate (when present) or the
+  // free-text address, with a datalist of previously-used places and a
+  // "use my location" fallback. No Google API key is assumed here.
+  const mapsQuery = latitude != null && longitude != null
+    ? `${latitude},${longitude}`
+    : address || city;
+  const mapsSearchUrl = `https://www.google.com/maps/?q=${encodeURIComponent(mapsQuery)}`;
+  const mapsEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(mapsQuery)}&output=embed&hl=es&z=16`;
+
+  const [placeSuggestions, setPlaceSuggestions] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('mimenu:places');
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    addPlaceSuggestion(address);
+  }, [address]);
+
+  const addPlaceSuggestion = (value: string) => {
+    const cleaned = value.trim();
+    if (!cleaned) return;
+    setPlaceSuggestions((prev) => {
+      const next = [...new Set([cleaned, ...prev])].slice(0, 8);
+      try {
+        localStorage.setItem('mimenu:places', JSON.stringify(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Tu navegador no soporta geolocalización.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLatitude(String(pos.coords.latitude));
+        setLongitude(String(pos.coords.longitude));
+        toast.success('Ubicación geolocalizada');
+      },
+      () => toast.error('No se pudo obtener tu ubicación'),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const updateLogoLayout = (patch: Partial<VenueLogoLayout>) => {
     setLogoLayout((prev) => {
@@ -292,6 +347,8 @@ export const AdminBranding: React.FC = () => {
       description,
       city,
       address,
+      latitude: latitude ? Number(latitude) : null,
+      longitude: longitude ? Number(longitude) : null,
       whatsapp,
       currency,
       primary_color: primaryColor,
@@ -650,6 +707,97 @@ export const AdminBranding: React.FC = () => {
                     onChange={(e) => setAddress(e.target.value)}
                     className="text-xs"
                   />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-foreground mb-1 block">
+                    Latitud
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">
+                      (opcional)
+                    </span>
+                  </label>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    placeholder="-17.9231"
+                    className="text-xs"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-foreground mb-1 block">
+                    Longitud
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">(opcional)</span>
+                  </label>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    placeholder="-63.1971"
+                    className="text-xs"
+                  />
+                </div>
+
+                {/* Ubicación + Google Maps */}
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-foreground mb-1 block">
+                    Ubicación física
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">(usada para el mapa del menú)</span>
+                  </label>
+                  <Input
+                    list="mimenu-places-list"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Ej: Av. Santa Cruz 123, Santa Cruz de la Sierra"
+                    className="text-xs"
+                  />
+                  <datalist id="mimenu-places-list">
+                    {placeSuggestions.map((s) => (
+                      <option key={s} value={s} />
+                    ))}
+                  </datalist>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={useMyLocation}
+                      className="text-[11px] whitespace-nowrap"
+                    >
+                      Usar mi ubicación
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setAddress('')}
+                      className="text-[11px] whitespace-nowrap"
+                    >
+                      Limpiar
+                    </Button>
+                    <a
+                      href={mapsSearchUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+                    >
+                      Abrir en Google Maps
+                      <ArrowUpRight className="h-3 w-3" />
+                    </a>
+                  </div>
+                  {latitude !== '' && longitude !== '' ? (
+                    <p className="mt-1 text-[10px] font-mono text-emerald-600">
+                      Pin: {Number(latitude).toFixed(5)}, {Number(longitude).toFixed(5)}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      Escribí la dirección, elegí un lugar sugerido o geolocalizá para
+                      dejar el punto exacto en el mapa.
+                    </p>
+                  )}
                 </div>
 
                 <div>
