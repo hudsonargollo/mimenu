@@ -79,6 +79,9 @@ interface MimenuContextType {
   
   // Order & CRM methods
   createOrder: (orderData: Omit<MimenuOrder, 'id' | 'order_number' | 'created_at' | 'status'>) => MimenuOrder;
+  addCustomer: (customer: Omit<CustomerProfile, 'id'>) => string;
+  updateCustomer: (id: string, customer: Partial<CustomerProfile>) => void;
+  deleteCustomer: (id: string) => void;
   updateOrderStatus: (orderId: string, status: MimenuOrder['status']) => void;
   updateOrder: (orderId: string, patch: Partial<MimenuOrder>) => void;
   updateCustomerNotes: (customerId: string, notes: string) => void;
@@ -686,6 +689,26 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     toast.success('Notas de cliente guardadas');
   };
 
+  const addCustomer = (customer: Omit<CustomerProfile, 'id'>): string => {
+    const newCustomer: CustomerProfile = {
+      ...customer,
+      id: `cust-${Date.now()}`,
+    };
+    setCustomers(prev => [newCustomer, ...prev]);
+    toast.success('Cliente agregado');
+    return newCustomer.id;
+  };
+
+  const updateCustomer = (id: string, patch: Partial<CustomerProfile>) => {
+    setCustomers(prev => prev.map(c => c.id === id ? { ...c, ...patch } : c));
+    toast.success('Cliente actualizado');
+  };
+
+  const deleteCustomer = (id: string) => {
+    setCustomers(prev => prev.filter(c => c.id !== id));
+    toast.success('Cliente eliminado');
+  };
+
   return (
     <MimenuContext.Provider
       value={{
@@ -722,6 +745,9 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setTables,
         batchSetupVenue,
         createOrder,
+        addCustomer,
+        updateCustomer,
+        deleteCustomer,
         updateOrderStatus,
         updateOrder,
         updateCustomerNotes,

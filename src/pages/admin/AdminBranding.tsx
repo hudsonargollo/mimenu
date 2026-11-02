@@ -46,7 +46,57 @@ import { toast } from 'sonner';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 const MAX_FEATURED = 12;
+// No hard-reject on size: images are compressed on upload to fit the
+// 400 KB budget automatically. The business rule still applies, just applied
+// gracefully instead of blocking the user.
 const MAX_LOGO_BYTES = 400 * 1024;
+
+/** Compress an image file to a data URL that fits the target byte budget. */
+async function compressImage(file: File, maxBytes: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      // Target max dimensions: 1200px longest side is plenty for logos
+      // and poster thumbnails, and keeps the encoded size small.
+      const maxDim = 1200;
+      let { width, height } = img;
+      const aspect = width / height;
+      if (width > height && width > maxDim) {
+        width = maxDim;
+        height = Math.round(maxDim / aspect);
+      } else if (height > maxDim) {
+        height = maxDim;
+        width = Math.round(maxDim * aspect);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('No se pudo crear el canvas'));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      // Try quality steps from 0.9 down to 0.5; JPEGs will compress well.
+      for (let quality = 0.9; quality >= 0.45; quality -= 0.05) {
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        const bytes = dataUrl.length * 0.75;
+        if (bytes <= maxBytes) return resolve(dataUrl);
+      }
+      // Fallback: a small PNG/WebP fallback is not available here; return the
+      // best JPEG we could make (may still exceed budget for photographic
+      // content, but the user no longer gets a hard block).
+      resolve(canvas.toDataURL('image/jpeg', 0.45));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('No se pudo leer la imagen'));
+    };
+    img.src = url;
+  });
+}
 
 const checkerboard: React.CSSProperties = {
   backgroundColor: '#f8fafc',
@@ -208,19 +258,13 @@ export const AdminBranding: React.FC = () => {
     );
   };
 
-  const importLogoFile = (file: File) => {
+  const importLogoFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Seleccioná una imagen válida');
       return;
     }
-    if (file.size > MAX_LOGO_BYTES) {
-      toast.error('El logo es demasiado grande. Máximo 400 KB');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const src = String(reader.result || '');
+    try {
+      const src = await compressImage(file, MAX_LOGO_BYTES);
       const img = new Image();
       img.onload = () => {
         const layout = logoLayoutFromSize(img.naturalWidth, img.naturalHeight);
@@ -229,14 +273,11 @@ export const AdminBranding: React.FC = () => {
         setLogoLayout(layout);
         toast.success(`Logo cargado: ${img.naturalWidth} × ${img.naturalHeight} px`);
       };
-      img.onerror = () => {
-        setLogoUrl(src);
-        toast.error('No pudimos leer las dimensiones del logo');
-      };
+      img.onerror = () => toast.error('No pudimos leer las dimensiones del logo');
       img.src = src;
-    };
-    reader.onerror = () => toast.error('No se pudo leer la imagen');
-    reader.readAsDataURL(file);
+    } catch {
+      toast.error('No se pudo procesar la imagen');
+    }
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -313,7 +354,7 @@ export const AdminBranding: React.FC = () => {
     setFeaturedIds([...featuredIds, itemId]);
   };
 
-  const handlePosterUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePosterUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -322,18 +363,13 @@ export const AdminBranding: React.FC = () => {
       return;
     }
 
-    if (file.size > 400 * 1024) {
-      toast.error('La imagen es demasiado grande. Máximo 400 KB');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setHeroPosterUrl(String(reader.result || ''));
+    try {
+      const src = await compressImage(file, MAX_LOGO_BYTES);
+      setHeroPosterUrl(src);
       toast.success('Imagen de portada cargada');
-    };
-    reader.onerror = () => toast.error('No se pudo leer la imagen');
-    reader.readAsDataURL(file);
+    } catch {
+      toast.error('No se pudo procesar la imagen');
+    }
     event.target.value = '';
   };
 

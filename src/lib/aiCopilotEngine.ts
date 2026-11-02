@@ -186,7 +186,7 @@ export class MimenuAIEngine {
     const timestamp = new Date().toISOString();
 
     // 1. ADD MENU ITEM INTENT
-    if (lower.includes('agregar') || lower.includes('añadir') || lower.includes('crear plato') || lower.includes('nuevo item') || lower.includes('nuevo plato')) {
+    if (lower.includes('agregar') || lower.includes('agrega') || lower.includes('añadir') || lower.includes('crear plato') || lower.includes('nuevo item') || lower.includes('nuevo plato') || lower.includes('nueva')) {
       // Use the first item from the venue's menu as the default suggestion
       const defaultItem = allItems.find(i => i.is_available) || allItems[0];
       let suggestedName = defaultItem?.name || "Nuevo Plato";
