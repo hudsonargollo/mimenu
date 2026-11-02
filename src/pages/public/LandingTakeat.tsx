@@ -1831,9 +1831,7 @@ export const LandingTakeat: React.FC = () => {
             {/* Brand column */}
             <div className="lg:col-span-4 space-y-4">
               <Link to="/" className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accent-foreground font-display font-bold text-xl">
-                  M
-                </div>
+                <img src="/mimenu.svg" alt="MiMenu" className="h-8 w-8 shrink-0" />
                 <span className="font-display font-extrabold text-xl text-white tracking-tight">
                   Mi<span className="text-accent">Menu</span>
                 </span>
