@@ -29,16 +29,10 @@
     <meta name="pragma" content="no-cache" />
     <meta name="expires" content="0" />
 
-    <meta property="og:title" content="MiMenu | Sistema de Gestión para Restaurantes, Garzón Digital & Delivery" />
-    <meta property="og:description" content="Menú QR Code en mesa, Garzón Digital, KDS en Cocina y Delivery Propio con 0% de comisión. Todo en un sistema solo." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://mimenu.clubemkt.digital/" />
-    <meta property="og:image" content="/mimenu-og.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="MiMenu | Sistema de Gestión para Restaurantes" />
-    <meta name="twitter:description" content="Menú QR Code, Garzón Digital, KDS en Cocina y Delivery Propio con 0% de comisión." />
-    <meta name="twitter:image" content="/mimenu-og.png" />
+    <!-- ONLY loads the Google Maps JS API when VITE_GOOGLE_MAPS_API_KEY
+         is set (Cloudflare Pages secret, public, not secret). Keeps the
+         public pages working with the no-key embed/search fallback. -->
+    <script type="module" src="/src/lib/googleMaps.ts"></script>
   </head>
 
   <body>
