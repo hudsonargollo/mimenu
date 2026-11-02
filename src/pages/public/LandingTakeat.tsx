@@ -39,7 +39,12 @@ import {
   Menu as MenuIcon,
   X,
   Play,
-  Flame
+  Flame,
+  Bot,
+  Box,
+  Camera,
+  Users,
+  Languages
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -85,6 +90,66 @@ const CountUp: React.FC<CountUpProps> = ({ to, decimals = 0, prefix = "", suffix
   );
 };
 
+interface TypewriterProps {
+  phrases: readonly string[];
+  className?: string;
+}
+
+/**
+ * Typewriter — types and deletes each phrase in sequence.
+ * Renders the first phrase statically when prefers-reduced-motion is on.
+ */
+const Typewriter: React.FC<TypewriterProps> = ({ phrases, className }) => {
+  const reduced = useReducedMotion();
+  const [index, setIndex] = React.useState(0);
+  const [text, setText] = React.useState("");
+  const [deleting, setDeleting] = React.useState(false);
+
+  React.useEffect(() => {
+    setText(reduced ? phrases[0] ?? "" : "");
+    setDeleting(false);
+    setIndex(0);
+  }, [phrases, reduced]);
+
+  React.useEffect(() => {
+    if (reduced || phrases.length === 0) return;
+
+    const current = phrases[index % phrases.length];
+    let delay = deleting ? 26 : 42;
+
+    if (!deleting && text === current) delay = 2400;
+    else if (deleting && text.length === 0) delay = 320;
+
+    const timer = window.setTimeout(() => {
+      if (!deleting) {
+        if (text === current) {
+          setDeleting(true);
+        } else {
+          setText(current.slice(0, text.length + 1));
+        }
+        return;
+      }
+      if (text.length === 0) {
+        setDeleting(false);
+        setIndex((i) => (i + 1) % phrases.length);
+        return;
+      }
+      setText(current.slice(0, text.length - 1));
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [text, deleting, index, phrases, reduced]);
+
+  return (
+    <span className={className}>
+      <span aria-hidden="true" className="border-r-2 border-accent pr-1">
+        {text}
+      </span>
+      <span className="sr-only">{phrases.join(", ")}</span>
+    </span>
+  );
+};
+
 export const LandingTakeat: React.FC = () => {
   const { lang, setLang, t } = useLang();
   /** Currency symbol per locale (Bolivia market uses Bs). */
@@ -113,12 +178,12 @@ export const LandingTakeat: React.FC = () => {
   const [leadName, setLeadName] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
   const [leadVenueName, setLeadVenueName] = useState("");
-  const [leadSegment, setLeadSegment] = useState(t.landing.leadSegmentDefault);
+  const [leadSegment, setLeadSegment] = useState<"opt1" | "opt2" | "opt3" | "opt4" | "opt5">("opt1");
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
     document.title = t.landing.docTitle;
-  }, []);
+  }, [t.landing.docTitle]);
 
   // ROI calculations
   const totalGrossRevenue = useMemo(() => {
@@ -141,7 +206,7 @@ export const LandingTakeat: React.FC = () => {
     e.preventDefault();
     setFormSubmitted(true);
 
-    const msg = `${t.landing.waMsgIntro}\n\n*${t.landing.waName}:* ${leadName || t.landing.waResponsible}\n*${t.landing.waVenue}:* ${leadVenueName || t.landing.waNotInformed}\n*${t.landing.waPhone}:* ${leadPhone || t.landing.waNotInformed}\n*${t.landing.waOp}:* ${leadSegment}\n\n${t.landing.waCta}`;
+    const msg = `${t.landing.waMsgIntro}\n\n*${t.landing.waName}:* ${leadName || t.landing.waResponsible}\n*${t.landing.waVenue}:* ${leadVenueName || t.landing.waNotInformed}\n*${t.landing.waPhone}:* ${leadPhone || t.landing.waNotInformed}\n*${t.landing.waOp}:* ${t.landing[leadSegment]}\n\n${t.landing.waCta}`;
     const whatsappUrl = `https://wa.me/59170000000?text=${encodeURIComponent(msg)}`;
 
     setTimeout(() => {
@@ -191,19 +256,19 @@ export const LandingTakeat: React.FC = () => {
               value={lang}
               onChange={(e) => setLang(e.target.value as "es" | "en" | "pt")}
               className="rounded-full border border-border bg-card px-2 py-1.5 text-base leading-none"
-              aria-label="Language"
+              aria-label={t.landing.langAria}
             >
               <option value="es">🇪🇸</option>
               <option value="en">🇺🇸</option>
               <option value="pt">🇧🇷</option>
             </select>
             {/* Desktop Navigation Links */}
-            <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-6">
-              <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navSolucoes}</a>
-              <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navModulos}</a>
-              <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navCalc}</a>
-              <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navSegmentos}</a>
-              <a href="#depoimentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">{t.landing.navQuemUsa}</a>
+            <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-4 xl:gap-6">
+              <a href="#novedades" className="text-sm font-semibold text-accent hover:text-accent/80 transition-colors whitespace-nowrap">{t.landing.navNovedades}</a>
+              <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSolucoes}</a>
+              <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navModulos}</a>
+              <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navCalc}</a>
+              <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSegmentos}</a>
               <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">FAQ</a>
             </nav>
             <div className="hidden sm:flex items-center gap-3">
@@ -227,7 +292,7 @@ export const LandingTakeat: React.FC = () => {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2 rounded-xl border border-border text-muted-foreground hover:bg-muted transition-colors"
-            aria-label="Abrir menu"
+            aria-label={t.landing.menuAriaOpen}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
           </button>
@@ -236,6 +301,13 @@ export const LandingTakeat: React.FC = () => {
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-b border-border bg-background px-4 pt-2 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
+            <a
+              href="#novedades"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-base font-semibold text-accent hover:text-accent/80"
+            >
+              {t.landing.navNovedades}
+            </a>
             <a
               href="#solucoes"
               onClick={() => setMobileMenuOpen(false)}
@@ -330,9 +402,34 @@ export const LandingTakeat: React.FC = () => {
               </h1>
             </ScrollReveal>
 
-            {/* Subtitle */}
+            {/* Rotating capability line */}
             <ScrollReveal direction="up" delay={300}>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
+              <div className="mb-6">
+                <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                  {t.landing.heroTypePrefix}
+                </p>
+                <div className="mt-2 flex min-h-[5.5rem] items-start justify-center">
+                  <p className="max-w-3xl text-2xl sm:text-3xl lg:text-4xl font-display font-bold leading-tight text-accent">
+                    <Typewriter phrases={t.landing.heroTypePhrases} />
+                  </p>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  {t.landing.heroChips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-[11px] sm:text-xs font-semibold text-muted-foreground"
+                    >
+                      <Check className="h-3 w-3 text-success stroke-[3]" />
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Supporting line */}
+            <ScrollReveal direction="up" delay={350}>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
                 {t.landing.heroSub}
               </p>
             </ScrollReveal>
@@ -475,7 +572,7 @@ export const LandingTakeat: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
                             {t.landing.tab1Eyebrow}
                           </span>
-                          <h3 className="text-2xl sm:text-3xl font-display font-bold">
+                          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
                             {t.landing.tab1Title}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
@@ -501,10 +598,10 @@ export const LandingTakeat: React.FC = () => {
                           <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
                             <div className="text-sm font-bold text-white flex items-center gap-2">
                               <QrCode className="w-4 h-4 text-accent" />
-                              Mesa 08 · Comanda #142
+                              {t.landing.mockTableLabel}
                             </div>
                             <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">
-                              Conta Aberta
+                              {t.landing.mockOpenBill}
                             </span>
                           </div>
 
@@ -515,13 +612,13 @@ export const LandingTakeat: React.FC = () => {
                                   🍔
                                 </div>
                                 <div>
-                                  <div className="text-sm font-semibold">Hamburguesa Smash Doble Artesanal</div>
-                                  <div className="text-xs text-white/40">Término: Al punto · + Tocino crocante</div>
+                                  <div className="text-sm font-semibold">{t.landing.mockBurger}</div>
+                                  <div className="text-xs text-white/40">{t.landing.mockBurgerNote}</div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-sm font-bold">Bs 44,90</div>
-                                <span className="text-[10px] text-emerald-400 font-medium">En Cocina (KDS)</span>
+                                <div className="text-sm font-bold">{CUR} 44,90</div>
+                                <span className="text-[10px] text-emerald-400 font-medium">{t.landing.mockInKitchen}</span>
                               </div>
                             </div>
 
@@ -531,21 +628,21 @@ export const LandingTakeat: React.FC = () => {
                                   🍹
                                 </div>
                                 <div>
-                                  <div className="text-sm font-semibold">Gin Tropical con Frutos Rojos</div>
+                                  <div className="text-sm font-semibold">{t.landing.mockGin}</div>
                                   <div className="text-xs text-white/40">{t.landing.noSugar}</div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-sm font-bold">Bs 32,00</div>
-                                <span className="text-[10px] text-blue-400 font-medium">Listo en la Barra</span>
+                                <div className="text-sm font-bold">{CUR} 32,00</div>
+                                <span className="text-[10px] text-blue-400 font-medium">{t.landing.mockReadyBar}</span>
                               </div>
                             </div>
                           </div>
 
                           <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/40">
-                            <span>Total de la Mesa: <strong className="text-white text-sm">Bs 76,90</strong></span>
+                            <span>{t.landing.mockTableTotal} <strong className="text-white text-sm">{CUR} 76,90</strong></span>
                             <button className="px-3 py-1.5 rounded-lg bg-accent text-accent-foreground font-bold text-xs hover:bg-accent/90">
-                              Pedir la Cuenta y Dividir
+                              {t.landing.mockSplitCta}
                             </button>
                           </div>
                         </div>
@@ -561,7 +658,7 @@ export const LandingTakeat: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
                             {t.landing.kdsEyebrow}
                           </span>
-                          <h3 className="text-2xl sm:text-3xl font-display font-bold">
+                          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
                             {t.landing.kdsTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
@@ -586,25 +683,25 @@ export const LandingTakeat: React.FC = () => {
                         <div className="md:col-span-7 grid grid-cols-2 gap-3">
                           <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30">
                             <div className="flex items-center justify-between text-xs mb-2">
-                              <span className="font-bold text-amber-400 font-mono">MESA 04</span>
+                              <span className="font-bold text-amber-400 font-mono">{t.landing.mockTable04}</span>
                               <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">04:12 min</span>
                             </div>
-                            <div className="text-sm font-bold text-white">1x Picaña a la Plancha 400g</div>
+                            <div className="text-sm font-bold text-white">{t.landing.mockPicanha}</div>
                             <div className="text-xs text-white/40 mt-1">{t.landing.obsSteak}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 text-xs font-bold">
-                              Marcar como Listo
+                              {t.landing.mockMarkReady}
                             </button>
                           </div>
 
                           <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
                             <div className="flex items-center justify-between text-xs mb-2">
                               <span className="font-bold text-emerald-400 font-mono">DELIVERY #109</span>
-                              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Listo</span>
+                              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">{t.landing.mockReady}</span>
                             </div>
-                            <div className="text-sm font-bold text-white">2x Pizza Calabresa Especial</div>
+                            <div className="text-sm font-bold text-white">{t.landing.mockPizza}</div>
                             <div className="text-xs text-white/40 mt-1">{t.landing.crustBorder}</div>
                             <button className="mt-3 w-full py-1.5 rounded bg-success hover:bg-success/90 text-success-foreground text-xs font-bold">
-                              Despachar al Repartidor
+                              {t.landing.mockDispatch}
                             </button>
                           </div>
                         </div>
@@ -620,7 +717,7 @@ export const LandingTakeat: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
                             {t.landing.garcomEyebrow}
                           </span>
-                          <h3 className="text-2xl sm:text-3xl font-display font-bold">
+                          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
                             {t.landing.garcomTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
@@ -645,23 +742,23 @@ export const LandingTakeat: React.FC = () => {
                         <div className="md:col-span-7 bg-secondary/20 p-5 rounded-2xl border border-white/10">
                           <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
                             <span className="text-xs font-semibold text-white/40">{t.landing.waiterName}</span>
-                            <span className="text-xs font-bold text-emerald-400">8 Mesas Ativas</span>
+                            <span className="text-xs font-bold text-emerald-400">{t.landing.mockTablesActive}</span>
                           </div>
                           <div className="grid grid-cols-3 gap-2">
                             <div className="p-3 rounded-xl bg-white/5 text-center border border-white/5">
-                              <div className="text-xs text-white/40">Mesa 01</div>
-                              <div className="text-base font-bold text-white">Bs 145,00</div>
-                              <span className="text-[10px] text-amber-400">Comiendo</span>
+                              <div className="text-xs text-white/40">{t.landing.mockTable} 01</div>
+                              <div className="text-base font-bold text-white">{CUR} 145,00</div>
+                              <span className="text-[10px] text-amber-400">{t.landing.mockEating}</span>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5 text-center border border-white/5">
-                              <div className="text-xs text-white/40">Mesa 02</div>
-                              <div className="text-base font-bold text-white">Bs 89,50</div>
-                              <span className="text-[10px] text-blue-400">Pidiendo la cuenta</span>
+                              <div className="text-xs text-white/40">{t.landing.mockTable} 02</div>
+                              <div className="text-base font-bold text-white">{CUR} 89,50</div>
+                              <span className="text-[10px] text-blue-400">{t.landing.mockAskingBill}</span>
                             </div>
                             <div className="p-3 rounded-xl bg-emerald-900/30 text-center border border-emerald-500/20">
-                              <div className="text-xs text-emerald-300">Mesa 03</div>
-                              <div className="text-base font-bold text-white">Libre</div>
-                              <span className="text-[10px] text-emerald-400">Abrir Comanda</span>
+                              <div className="text-xs text-emerald-300">{t.landing.mockTable} 03</div>
+                              <div className="text-base font-bold text-white">{t.landing.mockFree}</div>
+                              <span className="text-[10px] text-emerald-400">{t.landing.mockOpenOrder}</span>
                             </div>
                           </div>
                         </div>
@@ -677,7 +774,7 @@ export const LandingTakeat: React.FC = () => {
                           <span className="text-xs font-bold uppercase tracking-wider text-accent">
                             {t.landing.pdvEyebrow}
                           </span>
-                          <h3 className="text-2xl sm:text-3xl font-display font-bold">
+                          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
                             {t.landing.pdvTitle}
                           </h3>
                           <p className="text-sm text-white/70 leading-relaxed">
@@ -702,19 +799,19 @@ export const LandingTakeat: React.FC = () => {
                         <div className="md:col-span-7 bg-secondary/20 p-5 rounded-2xl border border-white/10 space-y-3">
                           <div className="grid grid-cols-3 gap-3">
                             <div className="p-3 rounded-xl bg-white/5">
-                              <div className="text-xs text-white/40">Facturación Hoy</div>
-                              <div className="text-lg font-bold text-emerald-400">Bs 5.480,00</div>
-                              <div className="text-[10px] text-emerald-500">+18% vs ayer</div>
+                              <div className="text-xs text-white/40">{t.landing.mockRevenueToday}</div>
+                              <div className="text-lg font-bold text-emerald-400">{CUR} 5.480,00</div>
+                              <div className="text-[10px] text-emerald-500">{t.landing.mockVsYesterday}</div>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
-                              <div className="text-xs text-white/40">Pedidos Totales</div>
-                              <div className="text-lg font-bold text-white">94 pedidos</div>
-                              <div className="text-[10px] text-white/40">{t.landing.avgTicket}</div>
+                              <div className="text-xs text-white/40">{t.landing.mockTotalOrders}</div>
+                              <div className="text-lg font-bold text-white">{t.landing.mockOrdersCount}</div>
+                              <div className="text-[10px] text-white/40">{t.landing.avgTicket} {CUR} 58</div>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5">
                               <div className="text-xs text-white/40">{t.landing.commissionPaid}</div>
-                              <div className="text-lg font-bold text-accent">Bs 0,00</div>
-                              <div className="text-[10px] text-emerald-400">Ahorro de Bs 1.260</div>
+                              <div className="text-lg font-bold text-accent">{CUR} 0,00</div>
+                              <div className="text-[10px] text-emerald-400">{t.landing.mockSavings} {CUR} 1.260</div>
                             </div>
                           </div>
                         </div>
@@ -816,6 +913,179 @@ export const LandingTakeat: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 5b. NEW CAPABILITIES SPOTLIGHT — AI concierge, AR menu, Google reviews */}
+      <ScrollReveal direction="up" delay={100}>
+        <section id="novedades" className="relative overflow-hidden bg-background py-20 sm:py-28">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 45% at 50% 0%, hsla(20, 100%, 56%, 0.10) 0%, hsla(20, 100%, 56%, 0) 70%)",
+            }}
+          />
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto mb-14 max-w-3xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-accent">
+                <Sparkles className="h-3.5 w-3.5" />
+                {t.landing.spotlightEyebrow}
+              </span>
+              <h2 className="mt-4 mb-4 text-3xl font-display font-bold text-primary sm:text-4xl lg:text-5xl">
+                {t.landing.spotlightTitle}
+              </h2>
+              <p className="text-base text-muted-foreground sm:text-lg">{t.landing.spotlightSub}</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* AI CONCIERGE */}
+              <Card className="flex flex-col overflow-hidden border-border/80 shadow-lg transition-shadow hover:shadow-xl">
+                <div className="relative flex h-60 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#2b1273] via-[#3c1a8c] to-[#4d28ab] p-5">
+                  <div aria-hidden className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-accent/25 blur-3xl" />
+                  <div className="relative flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/70">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                    {t.landing.aiMockStatus}
+                  </div>
+                  <div className="relative space-y-2">
+                    <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md border border-white/10 bg-white/10 px-3.5 py-2 text-xs text-white/90 backdrop-blur-sm">
+                      {t.landing.aiMockQ}
+                    </div>
+                    <div className="w-fit max-w-[92%] rounded-2xl rounded-bl-md bg-accent px-3.5 py-2 text-xs font-medium text-accent-foreground shadow-lg shadow-accent/20">
+                      {t.landing.aiMockA}
+                    </div>
+                  </div>
+                  <div className="relative flex items-center gap-1.5" aria-hidden>
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-accent">{t.landing.aiKicker}</span>
+                  <h3 className="mt-1 text-xl font-display font-bold text-primary">{t.landing.aiTitle}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.landing.aiDesc}</p>
+                  <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+                    {[t.landing.aiB1, t.landing.aiB2, t.landing.aiB3].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-5">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-bold text-primary">
+                    <Bot className="h-3 w-3" /> {t.landing.aiPlan}
+                  </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* AR MENU */}
+              <Card className="flex flex-col overflow-hidden border-border/80 shadow-lg transition-shadow hover:shadow-xl">
+                <div className="relative flex h-60 flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-br from-[#1b1236] via-[#2b1273] to-[#3c1a8c]">
+                  <div aria-hidden className="absolute h-44 w-44 rounded-full bg-accent/25 blur-3xl" />
+                  <div aria-hidden className="absolute h-64 w-64 rounded-full border border-white/10" />
+                  <div aria-hidden className="absolute h-44 w-44 rounded-full border border-white/15" />
+                  <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/25 to-white/5 shadow-2xl animate-[float_6s_ease-in-out_infinite]">
+                    <Box className="h-12 w-12 text-white/85" />
+                  </div>
+                  <span className="relative text-[11px] font-bold uppercase tracking-widest text-white/60">{t.landing.arMockLabel}</span>
+                  <span className="relative inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-[11px] font-bold text-primary shadow-lg">
+                    <Box className="h-3.5 w-3.5" /> {t.landing.arMockCta}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-accent">{t.landing.arKicker}</span>
+                  <h3 className="mt-1 text-xl font-display font-bold text-primary">{t.landing.arTitle}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.landing.arDesc}</p>
+                  <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+                    {[t.landing.arB1, t.landing.arB2, t.landing.arB3].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-5">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-bold text-primary">
+                    <Box className="h-3 w-3" /> {t.landing.arPlan}
+                  </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* GOOGLE REVIEW HUNTER */}
+              <Card className="flex flex-col overflow-hidden border-border/80 shadow-lg transition-shadow hover:shadow-xl">
+                <div className="relative flex h-60 flex-col items-center justify-center gap-2 overflow-hidden bg-gradient-to-br from-[#1b1236] via-[#2b1273] to-[#3c1a8c] px-6 text-center">
+                  <div aria-hidden className="absolute -bottom-20 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-warning/20 blur-3xl" />
+                  <div className="relative flex gap-1">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <Star key={i} className="h-6 w-6 fill-warning text-warning" />
+                    ))}
+                  </div>
+                  <p className="relative text-sm font-bold text-white">{t.landing.revMockTitle}</p>
+                  <p className="relative text-[11px] text-white/50">{t.landing.revMockSub}</p>
+                  <span className="relative mt-1 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-[11px] font-bold text-primary shadow-lg">
+                    <Star className="h-3.5 w-3.5 fill-warning text-warning" /> {t.landing.revMockCta}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-accent">{t.landing.revKicker}</span>
+                  <h3 className="mt-1 text-xl font-display font-bold text-primary">{t.landing.revTitle}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.landing.revDesc}</p>
+                  <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+                    {[t.landing.revB1, t.landing.revB2, t.landing.revB3].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-5">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-bold text-primary">
+                    <Star className="h-3 w-3" /> {t.landing.revPlan}
+                  </span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* MORE INCLUDED CAPABILITIES */}
+            <div className="mt-12 rounded-3xl border border-border bg-muted/60 p-6 sm:p-8">
+              <div className="text-center">
+                <h3 className="text-xl font-display font-bold text-primary sm:text-2xl">{t.landing.extraTitle}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{t.landing.extraSub}</p>
+              </div>
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { icon: Camera, title: t.landing.x1Title, desc: t.landing.x1Desc },
+                  { icon: Users, title: t.landing.x2Title, desc: t.landing.x2Desc },
+                  { icon: BadgePercent, title: t.landing.x3Title, desc: t.landing.x3Desc },
+                  { icon: TrendingUp, title: t.landing.x4Title, desc: t.landing.x4Desc },
+                  { icon: Languages, title: t.landing.x5Title, desc: t.landing.x5Desc },
+                  { icon: Printer, title: t.landing.x6Title, desc: t.landing.x6Desc },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div key={title} className="flex gap-3 rounded-2xl border border-border bg-card p-4">
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <h4 className="text-sm font-bold text-primary">{title}</h4>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* 6. CORE OPERATIONAL PILLARS */}
       <ScrollReveal direction="up" delay={100}>
@@ -1097,7 +1367,7 @@ export const LandingTakeat: React.FC = () => {
                         {t.landing.calcOrders}
                       </label>
                       <span className="text-base font-bold text-white bg-white/10 px-3 py-1 rounded-lg">
-                        {monthlyOrders} pedidos
+                        {monthlyOrders} {t.landing.calcOrdersUnit}
                       </span>
                     </div>
                     <input
@@ -1110,9 +1380,9 @@ export const LandingTakeat: React.FC = () => {
                       className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-accent"
                     />
                     <div className="flex justify-between text-[10px] text-white/40 mt-1">
-                      <span>100 pedidos</span>
-                      <span>1.500 pedidos</span>
-                      <span>3.000+ pedidos</span>
+                      <span>100 {t.landing.calcOrdersUnit}</span>
+                      <span>1.500 {t.landing.calcOrdersUnit}</span>
+                      <span>3.000+ {t.landing.calcOrdersUnit}</span>
                     </div>
                   </div>
 
@@ -1233,7 +1503,7 @@ export const LandingTakeat: React.FC = () => {
             <div className="p-8 sm:p-12 rounded-3xl bg-card border border-border shadow-sm max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
               <div className="md:col-span-7 space-y-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                  Personalizado para {currentSegment.name}
+                  {t.landing.segPersonalized} {currentSegment.name}
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-display font-bold text-primary">
                   {currentSegment.headline}
@@ -1305,7 +1575,7 @@ export const LandingTakeat: React.FC = () => {
                       RC
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-primary">Rodrigo Carvalho</div>
+                      <div className="text-sm font-bold text-primary">{t.landing.t1Name}</div>
                       <div className="text-xs text-muted-foreground">{t.landing.t1Role}</div>
                     </div>
                   </div>
@@ -1331,7 +1601,7 @@ export const LandingTakeat: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-primary">{t.landing.t2Name}</div>
-                      <div className="text-xs text-muted-foreground">Gerente General de Trattoria Di Napoli</div>
+                      <div className="text-xs text-muted-foreground">{t.landing.t2Role}</div>
                     </div>
                   </div>
                 </Card>
@@ -1355,7 +1625,7 @@ export const LandingTakeat: React.FC = () => {
                       GS
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-primary">Gustavo Santos</div>
+                      <div className="text-sm font-bold text-primary">{t.landing.t3Name}</div>
                       <div className="text-xs text-muted-foreground">{t.landing.t3Role}</div>
                     </div>
                   </div>
@@ -1375,7 +1645,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.duvidasTitle}
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-primary mt-2 mb-4">
-                Lo que los dueños de restaurante preguntan antes de contratar
+                {t.landing.faqHeading}
               </h2>
             </div>
 
@@ -1443,11 +1713,11 @@ export const LandingTakeat: React.FC = () => {
               {/* Left Value Column */}
               <div className="lg:col-span-6 space-y-6">
                 <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                  Empieza Hoy Mismo
+                  {t.landing.finalEyebrow}
                 </span>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
                   {t.landing.finalTitle}{" "}
-                  <span className="text-accent">restaurante ahora</span>.
+                  <span className="text-accent">{t.landing.finalTitleTail}</span>.
                 </h2>
                 <p className="text-base text-white/70 leading-relaxed max-w-lg">
                   {t.landing.finalSub}
@@ -1458,19 +1728,19 @@ export const LandingTakeat: React.FC = () => {
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Sin fidelidad:</strong> úsalo mientras tenga sentido para tu restaurante</span>
+                    <span><strong className="text-white">{t.landing.finalB1Label}</strong> {t.landing.finalB1Text}</span>
                   </li>
                   <li className="flex items-center gap-3 text-sm text-white/80">
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Soporte 7 días por semana:</strong> atención humana por WhatsApp</span>
+                    <span><strong className="text-white">{t.landing.finalB2Label}</strong> {t.landing.finalB2Text}</span>
                   </li>
                   <li className="flex items-center gap-3 text-sm text-white/80">
                     <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span><strong className="text-white">Implantación asistida:</strong> {t.landing.implantDesc}</span>
+                    <span><strong className="text-white">{t.landing.finalB3Label}</strong> {t.landing.implantDesc}</span>
                   </li>
                 </ul>
               </div>
@@ -1493,7 +1763,7 @@ export const LandingTakeat: React.FC = () => {
                         onClick={() => setFormSubmitted(false)}
                         className="text-xs text-accent hover:underline pt-2"
                       >
-                        Volver a completar
+                        {t.landing.formBack}
                       </button>
                     </div>
                   ) : (
@@ -1509,12 +1779,12 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          Tu Nombre Completo
+                          {t.landing.formName}
                         </label>
                         <input
                           type="text"
                           required
-                          placeholder="Ej: Carlos Eduardo"
+                          placeholder={t.landing.formNamePlaceholder}
                           value={leadName}
                           onChange={(e) => setLeadName(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1528,7 +1798,7 @@ export const LandingTakeat: React.FC = () => {
                         <input
                           type="text"
                           required
-                          placeholder="Ej: Brasa Burger & Bar"
+                          placeholder={t.landing.formVenuePlaceholder}
                           value={leadVenueName}
                           onChange={(e) => setLeadVenueName(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1537,12 +1807,12 @@ export const LandingTakeat: React.FC = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-white/70 mb-1">
-                          WhatsApp (con código de país y área)
+                          {t.landing.formPhone}
                         </label>
                         <input
                           type="tel"
                           required
-                          placeholder="Ej: +591 700 00000"
+                          placeholder={t.landing.formPhonePlaceholder}
                           value={leadPhone}
                           onChange={(e) => setLeadPhone(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -1555,14 +1825,14 @@ export const LandingTakeat: React.FC = () => {
                         </label>
                         <select
                           value={leadSegment}
-                          onChange={(e) => setLeadSegment(e.target.value)}
+                          onChange={(e) => setLeadSegment(e.target.value as "opt1" | "opt2" | "opt3" | "opt4" | "opt5")}
                           className="w-full px-4 py-3 rounded-xl bg-primary border border-white/10 text-white text-sm focus:outline-none focus:border-accent transition-colors"
                         >
-                          <option value="Salón & Mesas">{t.landing.opt1}</option>
-                          <option value="Delivery Propio">{t.landing.opt2}</option>
-                          <option value="Cocina KDS">{t.landing.opt3}</option>
-                          <option value="PDV Mostrador">{t.landing.opt4}</option>
-                          <option value="Operación Completa">{t.landing.opt5}</option>
+                          <option value="opt1">{t.landing.opt1}</option>
+                          <option value="opt2">{t.landing.opt2}</option>
+                          <option value="opt3">{t.landing.opt3}</option>
+                          <option value="opt4">{t.landing.opt4}</option>
+                          <option value="opt5">{t.landing.opt5}</option>
                         </select>
                       </div>
 
@@ -1571,7 +1841,7 @@ export const LandingTakeat: React.FC = () => {
                         className="w-full py-4 px-6 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all mt-6"
                       >
                         <MessageCircle className="w-5 h-5" />
-                        Hablar con Especialista por WhatsApp
+                        {t.landing.formCta}
                       </button>
 
                       <div className="text-center text-[11px] text-white/40 pt-2">
@@ -1604,7 +1874,7 @@ export const LandingTakeat: React.FC = () => {
                 {t.landing.footerTagline}
               </p>
               <div className="text-xs text-white/50">
-                Contacto: <a href="mailto:contacto@mimenu.clubemkt.digital" className="text-white hover:underline">contacto@mimenu.clubemkt.digital</a>
+                {t.landing.footerContact} <a href="mailto:contacto@mimenu.clubemkt.digital" className="text-white hover:underline">contacto@mimenu.clubemkt.digital</a>
               </div>
             </div>
 
@@ -1644,9 +1914,9 @@ export const LandingTakeat: React.FC = () => {
               </div>
               <ul className="space-y-2 text-xs">
                 <li className="text-white/50">{t.landing.pixInstant}</li>
-                <li className="text-white/50">SSL 256-bit Encrypted</li>
-                <li className="text-white/50">Hospedagem Cloudflare</li>
-                <li className="text-white/50">LGPD Compliant</li>
+                <li className="text-white/50">{t.landing.badgeSsl}</li>
+                <li className="text-white/50">{t.landing.badgeHosting}</li>
+                <li className="text-white/50">{t.landing.badgeData}</li>
               </ul>
             </div>
           </div>
