@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageProvider";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Sparkles,
   QrCode,
@@ -151,7 +152,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ phrases, className }) => {
 };
 
 export const LandingTakeat: React.FC = () => {
-  const { lang, setLang, t } = useLang();
+  const { lang, t } = useLang();
   /** Currency symbol per locale (Bolivia market uses Bs). */
   const CUR = lang === "es" ? "Bs" : lang === "pt" ? "R$" : "$";
   const { scrollY } = useScroll();
@@ -251,19 +252,9 @@ export const LandingTakeat: React.FC = () => {
               </span>
             </div>
           </Link>
-          <div className="flex items-center gap-3">
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as "es" | "en" | "pt")}
-              className="rounded-full border border-border bg-card px-2 py-1.5 text-base leading-none"
-              aria-label={t.landing.langAria}
-            >
-              <option value="es">🇪🇸</option>
-              <option value="en">🇺🇸</option>
-              <option value="pt">🇧🇷</option>
-            </select>
+          <div className="flex items-center gap-3 ml-auto">
             {/* Desktop Navigation Links */}
-            <nav aria-label={t.landing.navAria} className="hidden lg:flex items-center gap-4 xl:gap-6">
+            <nav aria-label={t.landing.navAria} className="hidden xl:flex items-center gap-3 2xl:gap-6">
               <a href="#novedades" className="text-sm font-semibold text-accent hover:text-accent/80 transition-colors whitespace-nowrap">{t.landing.navNovedades}</a>
               <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSolucoes}</a>
               <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navModulos}</a>
@@ -271,27 +262,22 @@ export const LandingTakeat: React.FC = () => {
               <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSegmentos}</a>
               <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">FAQ</a>
             </nav>
+            <LanguageSwitcher ariaLabel={t.landing.langAria} className="hidden xl:inline-flex" />
             <div className="hidden sm:flex items-center gap-3">
               <Link
                 to="/auth"
-                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-primary rounded-xl hover:bg-muted transition-colors"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap px-5 py-2.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
               >
-                {t.landing.navJaSouCliente}
-              </Link>
-              <a
-                href="#contato"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
-              >
-                {t.landing.navAgendarDemo}
+                {t.landing.navEnterNow}
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl border border-border text-muted-foreground hover:bg-muted transition-colors"
+            className="xl:hidden p-2 rounded-xl border border-border text-muted-foreground hover:bg-muted transition-colors"
             aria-label={t.landing.menuAriaOpen}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
@@ -300,7 +286,7 @@ export const LandingTakeat: React.FC = () => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b border-border bg-background px-4 pt-2 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <div className="xl:hidden border-b border-border bg-background px-4 pt-2 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
             <a
               href="#novedades"
               onClick={() => setMobileMenuOpen(false)}
@@ -350,20 +336,17 @@ export const LandingTakeat: React.FC = () => {
             >
               FAQ
             </a>
+            <div className="pt-2">
+              <LanguageSwitcher ariaLabel={t.landing.langAria} expand />
+            </div>
             <div className="pt-4 border-t border-border flex flex-col gap-2">
               <Link
                 to="/auth"
-                className="w-full text-center py-2.5 text-sm font-semibold text-muted-foreground bg-muted rounded-xl"
-              >
-                {t.landing.navJaSouCliente}
-              </Link>
-              <a
-                href="#contato"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-3 text-sm font-bold text-accent-foreground bg-accent rounded-xl shadow-md"
               >
-                {t.landing.cta}
-              </a>
+                {t.landing.navEnterNow}
+              </Link>
             </div>
           </div>
         )}
@@ -383,14 +366,6 @@ export const LandingTakeat: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            {/* Social proof badge */}
-            <ScrollReveal direction="up" delay={100}>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border shadow-sm mb-6 text-xs sm:text-sm font-semibold text-muted-foreground">
-                <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span>{t.landing.badge}</span>
-              </div>
-            </ScrollReveal>
-
             {/* Main Headline */}
             <ScrollReveal direction="up" delay={200}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-primary leading-[1.08] mb-6">
@@ -427,23 +402,16 @@ export const LandingTakeat: React.FC = () => {
               </div>
             </ScrollReveal>
 
-            {/* Supporting line */}
-            <ScrollReveal direction="up" delay={350}>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
-                {t.landing.heroSub}
-              </p>
-            </ScrollReveal>
-
             {/* Primary Action Buttons */}
             <ScrollReveal direction="up" delay={400}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-                <a
-                  href="#contato"
+                <Link
+                  to="/auth"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base shadow-md hover:shadow-lg active:scale-95 transition-all"
                 >
                   {t.landing.cta}
                   <ArrowRight className="w-5 h-5" />
-                </a>
+                </Link>
                 <a
                   href="#solucoes"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-card hover:bg-muted text-foreground font-bold text-base border border-border hover:shadow transition-all"
@@ -1935,13 +1903,13 @@ export const LandingTakeat: React.FC = () => {
 
       {/* 14. FLOATING CONVERSION CTA FOR MOBILE TRAFFIC */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-md border-t border-border z-40 shadow-xl flex items-center gap-3">
-        <a
-          href="#contato"
+        <Link
+          to="/auth"
           className="w-full py-3 px-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm shadow-md text-center flex items-center justify-center gap-2"
         >
-          <MessageCircle className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4" />
           {t.landing.mobileCta}
-        </a>
+        </Link>
       </div>
     </div>
   );
