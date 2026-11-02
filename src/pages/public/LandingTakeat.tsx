@@ -250,17 +250,17 @@ export const LandingTakeat: React.FC = () => {
               <span className="font-display font-black text-2xl tracking-tight text-primary leading-none">
                 Mi<span className="text-accent">Menu</span>
               </span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3 ml-auto">
-            {/* Desktop Navigation Links */}
-            <nav aria-label={t.landing.navAria} className="hidden xl:flex items-center gap-3 2xl:gap-6">
+              </div>
+              </Link>
+              <div className="flex items-center gap-3">
+              {/* Desktop Navigation Links */}
+              <nav aria-label={t.landing.navAria} className="hidden xl:flex items-center gap-3 2xl:gap-6">
               <a href="#novedades" className="text-sm font-semibold text-accent hover:text-accent/80 transition-colors whitespace-nowrap">{t.landing.navNovedades}</a>
               <a href="#solucoes" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSolucoes}</a>
               <a href="#modulos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navModulos}</a>
               <a href="#calculadora" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navCalc}</a>
               <a href="#segmentos" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">{t.landing.navSegmentos}</a>
-              <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors">FAQ</a>
+              <a href="#faq" className="text-sm font-semibold text-muted-foreground hover:text-accent transition-colors whitespace-nowrap">FAQ</a>
             </nav>
             <LanguageSwitcher ariaLabel={t.landing.langAria} className="hidden xl:inline-flex" />
             <div className="hidden sm:flex items-center gap-3">
