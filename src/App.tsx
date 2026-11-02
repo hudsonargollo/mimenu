@@ -50,7 +50,7 @@ const LandingTakeat = lazy(() => import("./pages/public/LandingTakeat"));
 const Docs = lazy(() => import("./pages/public/Docs"));
 const LandingARSelfHosted = lazy(() => import("./pages/public/LandingARSelfHosted"));
 const Landing4DSmartMenu = lazy(() => import("./pages/public/Landing4DSmartMenu"));
-const Landing = lazy(() => import("./pages/public/Landing"));
+const LandingMkt = lazy(() => import("./pages/public/Landing"));
 const LandingGenio = lazy(() => import("./pages/public/LandingGenio"));
 const LandingTakeatOld = lazy(() => import("./pages/public/LandingTakeatOld"));
 const LandingClassic = lazy(() => import("./pages/public/LandingClassic"));
@@ -101,22 +101,22 @@ const App = () => {
                     {/* Public & SEO Landing (redesigned premium landing) */}
                     <Route path="/" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <Landing />
+                        <LandingMkt />
                       </Suspense>
                     } />
                     <Route path="/cardapio-digital" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <Landing />
+                        <LandingMkt />
                       </Suspense>
                     } />
                     <Route path="/saas" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <Landing />
+                        <LandingMkt />
                       </Suspense>
                     } />
                     <Route path="/takeat" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <Landing />
+                        <LandingMkt />
                       </Suspense>
                     } />
                     <Route path="/landing-genio" element={
