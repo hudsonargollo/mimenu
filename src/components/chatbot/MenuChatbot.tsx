@@ -710,46 +710,66 @@ export function MenuChatbot() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.22 }}
           >
             <button
               type="button"
               aria-label="Cerrar chat"
               onClick={() => setOpen(false)}
-              className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-[#050507]/70 backdrop-blur-md"
             />
             <motion.section
               role="dialog"
               aria-modal="true"
               aria-label={labels[lang].title}
-              className="relative flex h-[min(88vh,760px)] w-full flex-col overflow-hidden rounded-t-[28px] border border-b-0 border-border bg-background shadow-[0_-20px_60px_-15px_rgba(2,6,23,0.5)] sm:h-[min(82vh,720px)] sm:max-w-2xl sm:rounded-t-[32px]"
+              className="relative flex h-[min(92vh,820px)] w-full flex-col overflow-hidden rounded-t-[32px] border-x border-t border-[#E8C15A]/15 bg-[#0B0B0E] shadow-[0_-24px_80px_-20px_rgba(0,0,0,0.9)] sm:h-[min(85vh,760px)] sm:max-w-xl"
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 34 }}
             >
-              <header className="bg-slate-900 px-4 pb-3 pt-2 text-white">
-                <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-white/20" aria-hidden="true" />
+              <div
+                className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#E8C15A]/70 to-transparent"
+                aria-hidden="true"
+              />
+              <header className="relative bg-gradient-to-b from-[#121217] to-[#0B0B0E] px-5 pb-4 pt-3">
+                <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-[#E8C15A]/30" aria-hidden="true" />
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <ConciergeOrb size={38} state={orbState} />
+                  <div className="flex min-w-0 items-center gap-3">
+                    <ConciergeOrb size={42} state={orbState} />
                     <div className="min-w-0">
-                      <p className="truncate font-semibold leading-tight text-white">{labels[lang].title}</p>
-                      <p className="truncate text-xs text-slate-300">{venue.name}</p>
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-[#C8B26A]">
+                        Concierge
+                      </p>
+                      <p className="truncate font-display text-lg leading-tight text-[#F5E7C1]">
+                        {labels[lang].title}
+                      </p>
+                      <p className="truncate text-[11px] text-[#9A9484]">{venue.name}</p>
                     </div>
                   </div>
-                  <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar chat" className="border-transparent bg-transparent p-1 hover:bg-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    aria-label="Cerrar chat"
+                    className="rounded-full border border-white/10 bg-white/5 p-2 text-[#C8B26A] transition-colors hover:border-[#E8C15A]/40 hover:text-[#F5D68A]"
+                  >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="mt-2.5 flex items-center justify-between gap-2">
-                  <div role="group" aria-label={labels[lang].modeGroup} className="flex rounded-full bg-white/10 p-0.5">
+                <div className="mt-3.5 flex items-center justify-between gap-2">
+                  <div
+                    role="group"
+                    aria-label={labels[lang].modeGroup}
+                    className="flex rounded-full border border-white/10 bg-black/40 p-0.5"
+                  >
                     <button
                       type="button"
                       onClick={() => changeMode('text')}
                       aria-pressed={mode === 'text'}
-                      className={`flex items-center gap-1 rounded-full border-transparent px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                        mode === 'text' ? 'bg-white text-slate-900' : 'bg-transparent text-slate-300 hover:bg-white/10 hover:text-white'
+                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
+                        mode === 'text'
+                          ? 'bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
+                          : 'text-[#9A9484] hover:text-[#EDEAE0]'
                       }`}
                     >
                       <Keyboard className="h-3 w-3" aria-hidden="true" />
@@ -761,21 +781,23 @@ export function MenuChatbot() {
                       aria-pressed={mode === 'voice'}
                       disabled={!modeToggle}
                       title={!modeToggle ? labels[lang].voiceUnsupported : undefined}
-                      className={`flex items-center gap-1 rounded-full border-transparent px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                        mode === 'voice' ? 'bg-amber-400 text-slate-950' : 'bg-transparent text-slate-300 hover:bg-white/10 hover:text-white'
+                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                        mode === 'voice'
+                          ? 'bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
+                          : 'text-[#9A9484] hover:text-[#EDEAE0]'
                       }`}
                     >
                       <Mic className="h-3 w-3" aria-hidden="true" />
                       {labels[lang].modeVoice}
                     </button>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 items-center gap-1.5">
                     {speaking && (
                       <button
                         type="button"
                         onClick={stopSpeech}
                         aria-label={labels[lang].stopSpeaking}
-                        className="border-transparent bg-transparent p-1 text-amber-300 hover:bg-white/10"
+                        className="rounded-full border border-white/10 bg-white/5 p-1.5 text-[#F5D68A] transition-colors hover:border-[#E8C15A]/40"
                         title={labels[lang].stopSpeaking}
                       >
                         <Pause className="h-4 w-4" />
@@ -785,7 +807,9 @@ export function MenuChatbot() {
                       type="button"
                       onClick={toggleTts}
                       aria-label={ttsEnabled ? 'Desactivar voz' : 'Activar voz'}
-                      className={`border-transparent bg-transparent p-1 hover:bg-white/10 ${ttsEnabled ? 'text-amber-400' : 'text-slate-500'}`}
+                      className={`rounded-full border border-white/10 bg-white/5 p-1.5 transition-colors hover:border-[#E8C15A]/40 ${
+                        ttsEnabled ? 'text-[#F5D68A]' : 'text-[#6B6B75]'
+                      }`}
                       title={ttsEnabled ? 'Voz ON' : 'Voz OFF'}
                     >
                       {ttsEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
@@ -800,7 +824,7 @@ export function MenuChatbot() {
                         setSessionState(updated);
                         void saveSessionState(venue.id, sessionKey, updated);
                       }}
-                      className="rounded-md border border-white/20 bg-slate-800 px-2 py-1 text-xs text-white"
+                      className="rounded-full border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-[#EDEAE0] outline-none transition-colors focus:border-[#E8C15A]/50"
                     >
                       <option value="es">ES</option>
                       <option value="en">EN</option>
@@ -810,12 +834,14 @@ export function MenuChatbot() {
                   </div>
                 </div>
               </header>
-              <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
+              <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
                 {messages.map(message => (
                   <div
                     key={message.id}
-                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${
-                      message.role === 'user' ? 'ml-auto bg-amber-500 text-slate-950' : 'bg-muted text-foreground'
+                    className={`max-w-[85%] px-4 py-2.5 text-sm leading-relaxed ${
+                      message.role === 'user'
+                        ? 'ml-auto rounded-2xl rounded-br-md bg-gradient-to-br from-[#F5D68A] via-[#E8C15A] to-[#C9973C] text-[#1A1408] shadow-[0_8px_24px_-10px_rgba(232,193,90,0.45)]'
+                        : 'rounded-2xl rounded-bl-md border border-white/5 bg-[#16161C] text-[#EDEAE0]'
                     }`}
                   >
                     {message.role === 'assistant' ? (
@@ -824,9 +850,17 @@ export function MenuChatbot() {
                         <button
                           type="button"
                           onClick={() => handlePlayMessage(message)}
-                          aria-label={speakingId === message.id && speaking ? labels[lang].stopSpeaking : labels[lang].playReply}
-                          className="mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-transparent bg-transparent text-muted-foreground transition-colors hover:bg-muted-foreground/10 hover:text-foreground"
-                          title={speakingId === message.id && speaking ? labels[lang].stopSpeaking : labels[lang].playReply}
+                          aria-label={
+                            speakingId === message.id && speaking
+                              ? labels[lang].stopSpeaking
+                              : labels[lang].playReply
+                          }
+                          className="mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-transparent bg-transparent text-[#C8B26A] transition-colors hover:bg-[#E8C15A]/10 hover:text-[#F5D68A]"
+                          title={
+                            speakingId === message.id && speaking
+                              ? labels[lang].stopSpeaking
+                              : labels[lang].playReply
+                          }
                         >
                           {speakingId === message.id && speaking ? (
                             <Pause className="h-3.5 w-3.5" />
@@ -840,36 +874,53 @@ export function MenuChatbot() {
                     )}
                   </div>
                 ))}
-                {busy && <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" />…</div>}
+                {busy && (
+                  <div className="flex items-center gap-2 px-1 text-xs text-[#C8B26A]">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />…
+                  </div>
+                )}
               </div>
               {mode === 'voice' ? (
-                <div className="border-t border-border px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-4">
-                  <div className="flex flex-col items-center gap-2.5">
+                <div className="border-t border-white/5 bg-gradient-to-t from-[#08080A] to-[#0B0B0E] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-5">
+                  <div className="flex flex-col items-center gap-3">
                     <motion.button
                       type="button"
                       onClick={handleOrbPress}
                       aria-label={listening ? labels[lang].stopListening : labels[lang].tapToSpeak}
                       title={listening ? labels[lang].stopListening : labels[lang].tapToSpeak}
                       whileTap={{ scale: 0.94 }}
-                      className="rounded-full border-transparent bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      className="rounded-full border-transparent bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-[#E8C15A]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0B0E]"
                     >
-                      <ConciergeOrb size={84} state={orbState} />
+                      <ConciergeOrb size={92} state={orbState} />
                     </motion.button>
-                    <p className="text-sm font-medium text-foreground" aria-live="polite">{voiceStatus}</p>
-                    {interim && <p className="max-w-[90%] truncate text-xs text-muted-foreground">“{interim}”</p>}
-                    {voiceNote && <p className="max-w-[90%] text-center text-[11px] text-muted-foreground">{voiceNote}</p>}
+                    <p className="font-display text-base text-[#F5E7C1]" aria-live="polite">
+                      {voiceStatus}
+                    </p>
+                    {interim && (
+                      <p className="max-w-[90%] truncate font-reel text-sm italic text-[#C8B26A]">
+                        “{interim}”
+                      </p>
+                    )}
+                    {voiceNote && (
+                      <p className="max-w-[90%] text-center text-[11px] text-[#9A9484]">{voiceNote}</p>
+                    )}
                     <button
                       type="button"
                       onClick={() => changeMode('text')}
-                      className="border-transparent bg-transparent px-1 py-0.5 text-[11px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                      className="border-transparent bg-transparent px-1 py-0.5 text-[11px] font-medium text-[#9A9484] underline decoration-[#E8C15A]/40 underline-offset-2 transition-colors hover:text-[#F5E7C1]"
                     >
                       {labels[lang].writeInstead}
                     </button>
-                    <p className="text-center text-[10px] leading-tight text-muted-foreground">{labels[lang].privacy}</p>
+                    <p className="text-center text-[10px] leading-tight text-[#6B6B75]">
+                      {labels[lang].privacy}
+                    </p>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={submitMessage} className="border-t border-border px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+                <form
+                  onSubmit={submitMessage}
+                  className="border-t border-white/5 bg-[#0B0B0E] px-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-3"
+                >
                   <div className="flex gap-2">
                     <input
                       ref={inputRef}
@@ -878,7 +929,7 @@ export function MenuChatbot() {
                       placeholder={labels[lang].placeholder}
                       aria-label={labels[lang].placeholder}
                       disabled={busy}
-                      className="min-w-0 flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                      className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-[#14141A] px-4 py-3 text-sm text-[#EDEAE0] outline-none transition-colors placeholder:text-[#6B6B75] focus:border-[#E8C15A]/50 focus:ring-1 focus:ring-[#E8C15A]/40"
                     />
                     {SpeechRecognitionCtor && (
                       <button
@@ -887,8 +938,10 @@ export function MenuChatbot() {
                         disabled={busy}
                         aria-label={listening ? labels[lang].stopListening : labels[lang].speakOnce}
                         title={listening ? labels[lang].stopListening : labels[lang].speakOnce}
-                        className={`rounded-xl px-2.5 text-slate-950 transition-colors disabled:opacity-50 ${
-                          listening ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-amber-400 hover:bg-amber-500'
+                        className={`rounded-2xl border px-3 transition-colors disabled:opacity-50 ${
+                          listening
+                            ? 'border-transparent bg-rose-500 text-white hover:bg-rose-600'
+                            : 'border-[#E8C15A]/30 bg-[#1C1C23] text-[#F5D68A] hover:bg-[#E8C15A]/10'
                         }`}
                       >
                         {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -898,14 +951,22 @@ export function MenuChatbot() {
                       type="submit"
                       disabled={busy || !text.trim()}
                       aria-label="Enviar mensaje"
-                      className="rounded-xl bg-amber-500 px-3.5 text-slate-950 disabled:opacity-50"
+                      className="rounded-2xl bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] px-4 text-[#1A1408] shadow-[0_8px_20px_-8px_rgba(232,193,90,0.6)] transition-opacity disabled:opacity-40"
                     >
                       <Send className="h-4 w-4" />
                     </button>
                   </div>
-                  {listening && <p className="mt-2 text-center text-[11px] text-amber-600">{labels[lang].listening}</p>}
-                  {!listening && voiceNote && <p className="mt-2 text-center text-[11px] text-muted-foreground">{voiceNote}</p>}
-                  <p className="mt-2 text-center text-[10px] leading-tight text-muted-foreground">{labels[lang].privacy}</p>
+                  {listening && (
+                    <p className="mt-2 text-center text-[11px] text-[#E8C15A]">
+                      {labels[lang].listening}
+                    </p>
+                  )}
+                  {!listening && voiceNote && (
+                    <p className="mt-2 text-center text-[11px] text-[#9A9484]">{voiceNote}</p>
+                  )}
+                  <p className="mt-2 text-center text-[10px] leading-tight text-[#6B6B75]">
+                    {labels[lang].privacy}
+                  </p>
                 </form>
               )}
             </motion.section>
@@ -918,16 +979,25 @@ export function MenuChatbot() {
           className="fixed inset-x-0 z-40 flex justify-center px-4"
           style={{ bottom: `calc(${cartCount > 0 ? '5.5rem' : '1rem'} + env(safe-area-inset-bottom))` }}
         >
-          <button
+          <motion.button
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Abrir chat"
-            className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900/95 py-2 pl-2 pr-4 text-white shadow-xl shadow-slate-950/25 backdrop-blur transition-transform hover:-translate-y-0.5"
+            whileTap={{ scale: 0.97 }}
+            className="group flex items-center gap-2.5 rounded-full border border-[#E8C15A]/25 bg-[#0B0B0E]/95 py-1.5 pl-1.5 pr-5 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8),0_0_24px_-6px_rgba(232,193,90,0.35)] backdrop-blur transition-transform hover:-translate-y-0.5"
           >
-            <ConciergeOrb size={42} state="idle" />
-            <span className="text-sm font-semibold tracking-tight">{labels[lang].launcher}</span>
-            <ChevronUp className="h-4 w-4 text-slate-400 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
-          </button>
+            <ConciergeOrb size={44} state="idle" />
+            <span className="flex flex-col items-start leading-none">
+              <span className="text-[8px] font-semibold uppercase tracking-[0.3em] text-[#C8B26A]">
+                Concierge
+              </span>
+              <span className="font-display text-[15px] text-[#F5E7C1]">{labels[lang].launcher}</span>
+            </span>
+            <ChevronUp
+              className="h-4 w-4 text-[#E8C15A] transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+          </motion.button>
         </div>
       )}
     </>
