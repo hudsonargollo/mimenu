@@ -98,23 +98,28 @@ const App = () => {
                       </Suspense>
                     } />
 
-                    {/* Public & SEO Landing (redesigned premium landing) */}
+                    {/* Public & SEO Landing (marketing landing) */}
                     <Route path="/" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <LandingMkt />
+                        <LandingTakeat />
                       </Suspense>
                     } />
                     <Route path="/cardapio-digital" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <LandingMkt />
+                        <LandingTakeat />
                       </Suspense>
                     } />
                     <Route path="/saas" element={
                       <Suspense fallback={<LoadingFallback />}>
-                        <LandingMkt />
+                        <LandingTakeat />
                       </Suspense>
                     } />
                     <Route path="/takeat" element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <LandingTakeat />
+                      </Suspense>
+                    } />
+                    <Route path="/premium" element={
                       <Suspense fallback={<LoadingFallback />}>
                         <LandingMkt />
                       </Suspense>

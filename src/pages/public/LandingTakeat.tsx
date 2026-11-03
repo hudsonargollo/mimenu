@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BrandMark } from "@/components/site/BrandMark";
 import {
   Sparkles,
   QrCode,
@@ -1831,7 +1832,7 @@ export const LandingTakeat: React.FC = () => {
             {/* Brand column */}
             <div className="lg:col-span-4 space-y-4">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/mimenu.svg" alt="MiMenu" className="h-8 w-8 shrink-0" />
+                <BrandMark size={32} className="shrink-0" />
                 <span className="font-display font-extrabold text-xl text-white tracking-tight">
                   Mi<span className="text-accent">Menu</span>
                 </span>
