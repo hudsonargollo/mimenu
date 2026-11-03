@@ -21,8 +21,10 @@ import {
   Menu,
   ArrowUpRight,
   ClipboardCheck,
+  LogOut,
 } from 'lucide-react';
 import { useMimenu } from '@/lib/mimenuContext';
+import { useAuth } from '@/lib/authContext';
 import { hasEntitlement, requiredPlanFor, type Entitlement } from '@/lib/plans';
 
 interface SidebarItem {
@@ -72,6 +74,7 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { venue } = useMimenu();
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(() =>
     typeof window === 'undefined' ? true : window.innerWidth >= 1024
   );
@@ -277,6 +280,40 @@ const AdminSidebar = () => {
               )}
             </Link>
           )}
+
+          <div className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} gap-1`}>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="sb-45 sb-hover-text flex items-center gap-2 rounded-[3px] border-0 bg-transparent px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              title="Ir a la landing"
+            >
+              <Store className="h-3.5 w-3.5" aria-hidden="true" />
+              {isOpen && <span>Landing</span>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate('/auth', { replace: true });
+              }}
+              className="sb-45 sb-hover-text flex items-center gap-2 rounded-[3px] border-0 bg-transparent px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              title="Cerrar sesión"
+            >
+              <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+              {isOpen && <span>Salir</span>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen((open) => !open)}
+              aria-label={isOpen ? 'Colapsar navegación' : 'Expandir navegación'}
+              className="sb-45 sb-hover sb-hover-text hidden h-7 w-7 items-center justify-center rounded-[3px] border-0 bg-transparent lg:flex"
+            >
+              {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
       </aside>
     </>
