@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { onRequestGet as menuGet } from '../../functions/api/concierge/menu';
 import { onRequestGet as venueInfoGet } from '../../functions/api/concierge/venue-info';
 import { onRequestGet as faqGet } from '../../functions/api/concierge/faq';
-import { onRequestPost as reservationPost } from '../../functions/api/concierge/reservations';
+import { onRequestDelete as reservationDelete, onRequestPost as reservationPost } from '../../functions/api/concierge/reservations';
 import { onRequestGet as agentGet } from '../../functions/api/concierge/agent';
 import { onRequestGet as settingsGet, onRequestPut as settingsPut } from '../../functions/api/concierge/settings';
 import { onRequestGet as syncGet, onRequestPost as syncPost } from '../../functions/api/concierge/sync';
@@ -21,6 +21,7 @@ interface MemoryKV {
   map: Map<string, string>;
   get(key: string): Promise<string | null>;
   put(key: string, value: string): Promise<void>;
+  delete(key: string): Promise<void>;
   list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise<{
     keys: Array<{ name: string }>;
     cursor?: string;
@@ -36,6 +37,9 @@ function memoryKV(): MemoryKV {
     },
     async put(key, value) {
       map.set(key, value);
+    },
+    async delete(key) {
+      map.delete(key);
     },
     async list(options = {}) {
       const prefix = options.prefix || '';
@@ -321,6 +325,76 @@ describe('reservation tool', () => {
     });
 
     expect(response.status).toBe(400);
+  });
+});
+
+describe('reservation purge', () => {
+  const target = 'res_1793734695853_02b781b5';
+  const other = 'res_1793734695854_11112222';
+
+  function seedTwoReservations(kv: MemoryKV) {
+    kv.map.set(`concierge:reservation:${venue.id}:9999999999998:${target}`, '{}');
+    kv.map.set(
+      `concierge:reservation:idem:${venue.id}:conv-1`,
+      JSON.stringify({ id: target, summary: 'x' })
+    );
+    kv.map.set(`concierge:reservation:${venue.id}:9999999999997:${other}`, '{}');
+    kv.map.set(
+      `concierge:reservation:idem:${venue.id}:conv-2`,
+      JSON.stringify({ id: other, summary: 'y' })
+    );
+  }
+
+  function deleteRequest(id: string, token: string) {
+    return new Request(`${BASE}/api/concierge/reservations?venue=jaleo&id=${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  it('deletes a reservation plus its idempotency keys for an admin', async () => {
+    const kv = memoryKV();
+    seedTwoReservations(kv);
+    const admin = await createAppSessionToken(APP_SECRET, 'admin@jaleo.com', 'admin');
+
+    const response = await reservationDelete({
+      request: deleteRequest(target, admin),
+      env: { MIMENU_KV: kv, APP_SESSION_SECRET: APP_SECRET },
+    });
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ ok: true, id: target, deleted: 2 });
+    expect(Array.from(kv.map.keys()).some((key) => key.endsWith(`:${target}`))).toBe(false);
+    expect(kv.map.has(`concierge:reservation:idem:${venue.id}:conv-1`)).toBe(false);
+    expect(kv.map.has(`concierge:reservation:${venue.id}:9999999999997:${other}`)).toBe(true);
+    expect(kv.map.has(`concierge:reservation:idem:${venue.id}:conv-2`)).toBe(true);
+  });
+
+  it('rejects non-admin sessions', async () => {
+    const kv = memoryKV();
+    seedTwoReservations(kv);
+    const waiter = await createAppSessionToken(APP_SECRET, 'mozo@jaleo.com', 'waiter');
+
+    const response = await reservationDelete({
+      request: deleteRequest(target, waiter),
+      env: { MIMENU_KV: kv, APP_SESSION_SECRET: APP_SECRET },
+    });
+
+    expect(response.status).toBe(403);
+    expect(kv.map.has(`concierge:reservation:${venue.id}:9999999999998:${target}`)).toBe(true);
+  });
+
+  it('returns 404 when the reservation does not exist', async () => {
+    const kv = memoryKV();
+    const admin = await createAppSessionToken(APP_SECRET, 'admin@jaleo.com', 'admin');
+
+    const response = await reservationDelete({
+      request: deleteRequest('res_1793734695853_deadbeef', admin),
+      env: { MIMENU_KV: kv, APP_SESSION_SECRET: APP_SECRET },
+    });
+
+    expect(response.status).toBe(404);
   });
 });
 

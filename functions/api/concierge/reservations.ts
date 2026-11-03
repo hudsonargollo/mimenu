@@ -1,13 +1,24 @@
 import { clientIp, isRateLimited } from '../../lib/rate-limit';
 import { requireConciergeTool } from '../../lib/concierge-tool-auth';
+import { canReviewVenue, requireConciergeAdmin } from '../../lib/concierge-auth';
+import { findVenueSnapshot } from '../../lib/venue-registry';
 import { readSettings, reservationIdempotencyKey, storeReservation } from '../../lib/concierge-settings';
 import type { KVLike } from '../../lib/concierge-settings';
 import { renderEmailLayout, sendEmail } from '../../lib/email';
 import type { ConciergeLang, ConciergeReservation } from '../../../shared/dograh/types';
 
+interface ConciergeKV extends KVLike {
+  delete(key: string): Promise<void>;
+  list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise<{
+    keys: Array<{ name: string }>;
+    cursor?: string;
+  }>;
+}
+
 interface Env {
+  APP_SESSION_SECRET?: string;
   CONCIERGE_TOOL_SECRET?: string;
-  MIMENU_KV?: KVLike;
+  MIMENU_KV?: ConciergeKV;
   RESEND_API_KEY?: string;
   RESEND_FROM?: string;
 }
@@ -190,4 +201,62 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
     email_sent: emailSent,
     handoff_message: settings.handoffMessage,
   });
+};
+
+const RESERVATION_ID_PATTERN = /^res_[0-9]{10,16}_[a-z0-9]{6,16}$/i;
+
+async function listAllKeys(kv: ConciergeKV, prefix: string): Promise<string[]> {
+  const names: string[] = [];
+  let cursor: string | undefined;
+  for (let page = 0; page < 20; page += 1) {
+    const result = await kv.list({ prefix, limit: 1000, cursor });
+    for (const key of result.keys) names.push(key.name);
+    if (!result.cursor) break;
+    cursor = result.cursor;
+  }
+  return names;
+}
+
+/**
+ * DELETE /api/concierge/reservations?venue=<slug>&id=<res_id>
+ * Admin-only purge of one reservation and any idempotency keys pointing at it.
+ */
+export const onRequestDelete = async ({ request, env }: { request: Request; env: Env }) => {
+  if (!env.MIMENU_KV) return json({ error: 'El almacenamiento del conserje no está configurado.' }, 503);
+
+  const admin = await requireConciergeAdmin(request, env);
+  if (admin instanceof Response) return admin;
+
+  const url = new URL(request.url);
+  const slug = (url.searchParams.get('venue') || '').trim().toLowerCase();
+  const id = (url.searchParams.get('id') || '').trim();
+
+  const venue = findVenueSnapshot(slug);
+  if (!venue) return json({ error: 'Sede inválida.' }, 400);
+  if (!canReviewVenue(admin, venue.id)) return json({ error: 'No podés administrar otra sede.' }, 403);
+  if (!RESERVATION_ID_PATTERN.test(id)) return json({ error: 'Falta el id de la reserva.' }, 400);
+
+  let deleted = 0;
+  for (const name of await listAllKeys(env.MIMENU_KV, `concierge:reservation:${venue.id}:`)) {
+    if (!name.endsWith(`:${id}`)) continue;
+    await env.MIMENU_KV.delete(name);
+    deleted += 1;
+  }
+
+  for (const name of await listAllKeys(env.MIMENU_KV, `concierge:reservation:idem:${venue.id}:`)) {
+    const raw = await env.MIMENU_KV.get(name);
+    if (!raw) continue;
+    try {
+      const parsed = JSON.parse(raw) as { id?: unknown };
+      if (parsed.id === id) {
+        await env.MIMENU_KV.delete(name);
+        deleted += 1;
+      }
+    } catch {
+      /* ignore malformed idempotency entries */
+    }
+  }
+
+  if (!deleted) return json({ error: 'Reserva no encontrada.' }, 404);
+  return json({ ok: true, id, deleted });
 };
