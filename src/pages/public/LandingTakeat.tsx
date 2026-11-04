@@ -46,7 +46,8 @@ import {
   Box,
   Camera,
   Users,
-  Languages
+  Languages,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -413,13 +414,13 @@ export const LandingTakeat: React.FC = () => {
                   {t.landing.cta}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <a
-                  href="#solucoes"
+                <Link
+                  to="/onboarding?plan=premium"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-card hover:bg-muted text-foreground font-bold text-base border border-border hover:shadow transition-all"
                 >
-                  <Play className="w-4 h-4 fill-accent text-accent" />
+                  <UserPlus className="w-4 h-4 text-accent" />
                   {t.landing.ctaSecondary2}
-                </a>
+                </Link>
               </div>
             </ScrollReveal>
 
