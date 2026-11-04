@@ -1,0 +1,7 @@
+/assets/*.wasm
+  Content-Type: application/wasm
+
+/assets/*.wasm.js
+  Content-Type: application/javascript
+
+/*    /index.html   200
