@@ -768,8 +768,8 @@ export function MenuChatbot() {
                       aria-pressed={mode === 'text'}
                       className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                         mode === 'text'
-                          ? 'bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
-                          : 'text-[#9A9484] hover:text-[#EDEAE0]'
+                          ? 'border-transparent bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
+                          : 'border-transparent bg-transparent text-[#9A9484] hover:text-[#EDEAE0]'
                       }`}
                     >
                       <Keyboard className="h-3 w-3" aria-hidden="true" />
@@ -783,8 +783,8 @@ export function MenuChatbot() {
                       title={!modeToggle ? labels[lang].voiceUnsupported : undefined}
                       className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                         mode === 'voice'
-                          ? 'bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
-                          : 'text-[#9A9484] hover:text-[#EDEAE0]'
+                          ? 'border-transparent bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] text-[#1A1408]'
+                          : 'border-transparent bg-transparent text-[#9A9484] hover:text-[#EDEAE0]'
                       }`}
                     >
                       <Mic className="h-3 w-3" aria-hidden="true" />
@@ -951,7 +951,7 @@ export function MenuChatbot() {
                       type="submit"
                       disabled={busy || !text.trim()}
                       aria-label="Enviar mensaje"
-                      className="rounded-2xl bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] px-4 text-[#1A1408] shadow-[0_8px_20px_-8px_rgba(232,193,90,0.6)] transition-opacity disabled:opacity-40"
+                      className="rounded-2xl border-transparent bg-gradient-to-b from-[#F5D68A] to-[#D9A93F] px-4 text-[#1A1408] shadow-[0_8px_20px_-8px_rgba(232,193,90,0.6)] transition-opacity disabled:opacity-40"
                     >
                       <Send className="h-4 w-4" />
                     </button>
