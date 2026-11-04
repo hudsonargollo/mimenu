@@ -43,9 +43,7 @@ const currencyFor = (code: string) =>
 export const Onboarding: React.FC = () => {
   const navigate = useNavigate();
   const { batchSetupVenue } = useMimenu();
-
-  // Step 1 — plan. `?plan=` deep-links from the pricing table and starts the
-  // wizard one step further in, since the plan is already chosen.
+    const searchParams = new URLSearchParams(window.location.search);
   const initialPlan = (() => {
     const fromUrl = searchParams.get('plan');
     return PLANS.some((p) => p.id === fromUrl) ? (fromUrl as PlanId) : 'basic';
