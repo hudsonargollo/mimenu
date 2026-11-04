@@ -53,6 +53,7 @@ const Cashier = () => {
     tables,
     updateOrderStatus,
     updateOrder,
+    deleteOrder,
   } = useMimenu();
 
   const [selectedOrder, setSelectedOrder] = useState<MimenuOrder | null>(null);
@@ -154,6 +155,10 @@ const Cashier = () => {
 
   const cancelOrder = (orderId: string) => {
     updateOrderStatus(orderId, "cancelled");
+  };
+
+  const deleteOrderPermanent = (orderId: string) => {
+    deleteOrder(orderId);
   };
 
   const completeOrder = (orderId: string) => {
@@ -362,10 +367,10 @@ const Cashier = () => {
                             <AlertDialogFooter>
                               <AlertDialogCancel>No</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => cancelOrder(order.id)}
+                                onClick={() => deleteOrderPermanent(order.id)}
                                 className="bg-destructive"
                               >
-                                Sí, Cancelar
+                                Sí, Eliminar
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

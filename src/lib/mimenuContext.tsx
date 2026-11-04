@@ -84,6 +84,7 @@ interface MimenuContextType {
   deleteCustomer: (id: string) => void;
   updateOrderStatus: (orderId: string, status: MimenuOrder['status']) => void;
   updateOrder: (orderId: string, patch: Partial<MimenuOrder>) => void;
+  deleteOrder: (orderId: string) => void;
   updateCustomerNotes: (customerId: string, notes: string) => void;
 }
 
@@ -684,6 +685,11 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...patch } : o));
   };
 
+  const deleteOrder = (orderId: string) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    toast.success('Pedido eliminado');
+  };
+
   const updateCustomerNotes = (customerId: string, notes: string) => {
     setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, notes } : c));
     toast.success('Notas de cliente guardadas');
@@ -750,6 +756,7 @@ export const MimenuProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         deleteCustomer,
         updateOrderStatus,
         updateOrder,
+        deleteOrder,
         updateCustomerNotes,
       }}
     >
