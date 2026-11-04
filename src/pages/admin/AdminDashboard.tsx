@@ -65,7 +65,23 @@ const AdminDashboard: React.FC = () => {
     [allItems]
   );
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const isWithin = (o: { created_at?: string }, start: Date) => {
+    if (!o.created_at) return false;
+    return new Date(o.created_at) >= start;
+  };
+
+  const totalRevenueToday = orders.filter((o) => isWithin(o, startOfToday)).reduce((sum, o) => sum + o.total, 0);
+  const totalRevenueWeek = orders.filter((o) => isWithin(o, startOfWeek)).reduce((sum, o) => sum + o.total, 0);
+  const totalRevenueMonth = orders.filter((o) => isWithin(o, startOfMonth)).reduce((sum, o) => sum + o.total, 0);
+
+  const totalRevenue = totalRevenueToday;
   const activeOrdersCount = orders.filter((o) => o.status === 'pending' || o.status === 'preparing').length;
   const occupiedTablesCount = tables.filter((t) => t.is_occupied).length;
   const totalOfferRevenue = cyclingOffers.reduce((sum, o) => sum + o.analytics.revenue_generated, 0);
