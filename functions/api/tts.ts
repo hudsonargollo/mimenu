@@ -10,8 +10,13 @@ interface Env {
   TTS_FALLBACK_URL?: string;
 }
 
-// The public hostname has pointed at other projects before, so always keep a
-// direct route to the container as a fallback instead of failing the reply.
+const VOICE_MAP: Record<string, string> = {
+  es: 'es-ES-ElviraNeural',
+  en: 'en-US-JennyNeural',
+  pt: 'pt-BR-FranciscaNeural',
+  de: 'de-DE-KatjaNeural',
+};
+
 const DEFAULT_SERVICE_URLS = [
   'https://tts.clubemkt.online',
   'http://62.171.137.90:8788',
@@ -19,11 +24,9 @@ const DEFAULT_SERVICE_URLS = [
 
 const TTS_TIMEOUT_MS = 9000;
 
-// Remember the endpoint that worked so a stale hostname is only retried once
-// per isolate instead of on every spoken reply.
 let preferredServiceUrl: string | null = null;
 
-async function requestTts(baseUrl: string, text: string, lang: string): Promise<ArrayBuffer> {
+async function requestTts(baseUrl: string, text: string, lang: string, voice?: string): Promise<ArrayBuffer> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TTS_TIMEOUT_MS);
 
@@ -34,7 +37,7 @@ async function requestTts(baseUrl: string, text: string, lang: string): Promise<
         'Content-Type': 'application/json',
         'User-Agent': 'mimenu-voice-agent/1.0',
       },
-      body: JSON.stringify({ text, lang }),
+      body: JSON.stringify({ text, lang, voice }),
       redirect: 'follow',
       signal: controller.signal,
     });
@@ -59,23 +62,29 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const text = body.text?.trim();
   const lang = body.lang || 'es';
 
   if (!text) {
-    return new Response(JSON.stringify({ success: false, error: 'text is required.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ success: false, error: 'text is required.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  // Limit text length — edge-tts handles long text but we cap for latency
-  const truncatedText = text.length > 500 ? text.slice(0, 500) + '...' : text;
+  const truncatedText = text.length > 500 ? `${text.slice(0, 500)}...` : text;
+  const voice = VOICE_MAP[lang] || VOICE_MAP['es'];
 
   const serviceUrls = Array.from(
     new Set(
       [preferredServiceUrl, env.TTS_SERVICE_URL, env.TTS_FALLBACK_URL, ...DEFAULT_SERVICE_URLS]
-        .map(url => url?.trim())
+        .map((url) => url?.trim())
         .filter((url): url is string => Boolean(url)),
     ),
   );
@@ -83,7 +92,7 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
   const failures: string[] = [];
   for (const serviceUrl of serviceUrls) {
     try {
-      const audio = await requestTts(serviceUrl, truncatedText, lang);
+      const audio = await requestTts(serviceUrl, truncatedText, lang, voice);
       preferredServiceUrl = serviceUrl;
       return new Response(audio, {
         status: 200,
@@ -100,10 +109,13 @@ export const onRequestPost = async (context: { request: Request; env: Env }) => 
   }
 
   console.error('TTS generation failed for every endpoint:', failures.join(' | '));
-  return new Response(JSON.stringify({ success: false, error: 'TTS service unavailable.' }), {
-    status: 502,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({ success: false, error: 'TTS service unavailable.' }),
+    {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 };
 
 export const onRequestOptions = async () => new Response(null, { status: 204 });

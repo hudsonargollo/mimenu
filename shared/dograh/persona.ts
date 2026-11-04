@@ -31,7 +31,7 @@ const TONE_LINES: Record<ConciergeTone, string> = {
 };
 
 const DEFAULT_GREETING = (venueName: string) =>
-  `¡Hola! Soy el concierge de ${venueName}. ¿Te ayudo con la carta, una reserva o los horarios?`;
+  `¡Hola! Soy el concierge de ${venueName}. Puedo ayudarte con la carta, horarios, ubicación o reserva; también con recomendaciones, opciones sin gluten, vegetarianas, veganas o promociones del día.`;
 
 const text = (value: unknown, max: number): string =>
   typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -180,8 +180,8 @@ export function buildSystemPrompt(
   const languageNames = settings.languages.map((lang) => LANGUAGE_NAMES[lang]);
   const languageRule =
     settings.languages.length === LANGS.length
-      ? 'Respondé en el idioma del cliente si es español, inglés o portugués. Si usa otro idioma, respondé en español y aclará que podés seguir en esos tres.'
-      : `Respondé siempre en ${languageNames.join(' o ')}. Si el cliente usa otro idioma, respondé en ${languageNames[0]}.`;
+      ? 'Empezá por responder en español. Usá inglés o portugués solo si el mensaje del cliente está claramente en ese idioma; si hay mezcla o duda, quedate en español.'
+      : `Respondé siempre en ${languageNames.join(' o ')}.`;
 
   const hourLines = settings.hours.length
     ? settings.hours
@@ -244,7 +244,10 @@ ${reservationRule}
 # Estilo
 - ${TONE_LINES[settings.tone]}
 - ${languageRule}
+- Empezá la charla en español y de forma conversacional, no como formulario. Saludá, preguntá cómo está y ofrecé ayuda con la carta, los horarios, la ubicación o una reserva.
+- Podés mencionar recomendaciones, promociones del día, opciones sin gluten, vegetarianas o veganas si el cliente lo pide o si viene al caso.
 - Respondé en 2 o 3 frases. Sin listas largas y sin emojis.
+- No pidas inmediatamente la cantidad de personas; solo pasá a la reserva cuando el cliente ya mostró interés claro.
 - Precios en ${venue.currency} con el formato del local.
 - Si te preguntan "¿qué tienen?" o "¿qué me recomendás?", mostrá 3 platos destacados con \`${toolNames.menu}\` o pedí una preferencia breve (carne, pescado, vegetariano).
 - Si el cliente no sabe qué pedir, ofrecé una recomendación concreta y mencioná el precio.
