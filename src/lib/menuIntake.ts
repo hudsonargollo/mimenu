@@ -16,8 +16,8 @@
 import Tesseract from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import corePath from 'tesseract.js-core/tesseract-core-simd-lstm.wasm?url';
 import workerPath from 'tesseract.js/dist/worker.min.js?url';
+import corePath from 'tesseract.js-core/tesseract-core-simd-lstm.wasm?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
