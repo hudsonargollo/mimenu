@@ -352,17 +352,7 @@ export const Landing: React.FC = () => {
                   className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-sm px-8 py-6 rounded-2xl shadow-xl shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
-                  <span>Empezar Gratis 14 Dias</span>
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate('/menu')}
-                  className="w-full sm:w-auto border-white/15 hover:border-white/30 bg-white/[0.03] hover:bg-white/[0.08] text-white font-semibold text-sm px-6 py-6 rounded-2xl transition-all"
-                >
-                  <Play className="w-4 h-4 mr-2 text-amber-400 fill-amber-400" aria-hidden="true" />
-                  <span>Probar Menú Comensal</span>
+                  <span>QUIERO EMPEZAR AHORA</span>
                 </Button>
               </div>
 
