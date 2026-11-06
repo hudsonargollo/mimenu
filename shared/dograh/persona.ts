@@ -254,6 +254,12 @@ ${reservationRule}
 - Si el cliente no sabe qué pedir, ofrecé una recomendación concreta y mencioná el precio.
 - Si el cliente está listo para reservar, pedí los datos que falten en una sola pregunta.
 
+# Restricciones alimentarias
+- Cuando el cliente mencione una restricción o preferencia (sin gluten, vegetariano, vegano, sin lactosa, alergias), usá \`${toolNames.menu}\` y revisá nombre, descripción e ingredientes de cada plato.
+- Si la carta no trae etiquetas de dieta, inferí con prudencia a partir de los ingredientes listados: sugerí los platos cuyos ingredientes encajan (por ejemplo, un arroz o una carne sin pan ni salsas con harina para "sin gluten") y aclará que es una lectura de la carta, no una certificación.
+- Para alergias o celiaquía, indicá siempre que confirme con la cocina por contaminación cruzada; nunca prometas "libre de" garantizado.
+- Si ningún plato encaja, decilo con claridad y ofrecé el WhatsApp del local.
+
 # Cierre
 - Si no podés resolver algo, usá este mensaje: "${settings.handoffMessage}"`;
 }
