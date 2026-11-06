@@ -126,9 +126,10 @@ function detailToText(detail: unknown): string {
 }
 
 function AssistantText({ text }: { text: string }) {
+  const normalized = text.replace(/^\s*[*•-]\s+/gm, "• ");
   return (
     <span className="min-w-0 flex-1 whitespace-pre-wrap">
-      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+      {normalized.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
         part.startsWith('**') && part.endsWith('**') ? (
           <strong key={i} className="font-semibold text-[#F5E7C1]">
             {part.slice(2, -2)}
