@@ -138,21 +138,9 @@ const AdminConciergeSettings = () => {
         />
 
         {venues.length > 1 && (
-          <div className="flex flex-wrap gap-2">
-            {venues.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSlug(item.slug)}
-                className={`rounded-[4px] border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors ${
-                  slug === item.slug
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
+          <select className={inputCls + ' max-w-xs'} value={slug} onChange={(e) => setSlug(e.target.value)} aria-label="Sede">
+            {venues.map((item) => <option key={item.id} value={item.slug}>{item.name}</option>)}
+          </select>
         )}
 
         {loading && (
