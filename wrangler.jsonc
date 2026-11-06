@@ -9,7 +9,6 @@
     { "pattern": "mimenu.clubemkt.digital", "custom_domain": true },
     { "pattern": "mimenu.clubemkt.online", "custom_domain": true }
   ],
-  "pages_build_output_dir": "./dist",
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
