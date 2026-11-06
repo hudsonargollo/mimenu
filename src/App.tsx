@@ -24,6 +24,7 @@ const Admin = lazy(() => import("./pages/admin/Admin"));
 const UpgradePlan = lazy(() => import("./pages/admin/UpgradePlan"));
 const AdminAIChat = lazy(() => import("./pages/admin/AdminAIChat"));
 const AdminConcierge = lazy(() => import("./pages/admin/AdminConcierge"));
+const AdminConciergeSettings = lazy(() => import("./pages/admin/AdminConciergeSettings"));
 const AdminMenuIngester = lazy(() => import("./pages/admin/AdminMenuIngester"));
 const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
 const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
@@ -253,6 +254,7 @@ const App = () => {
                     } />
                     <Route path="/admin/ai" element={planPage('whatsapp_concierge', <AdminAIChat />)} />
                     <Route path="/admin/concierge" element={planPage('whatsapp_concierge', <AdminConcierge />)} />
+                    <Route path="/admin/concierge-settings" element={planPage('whatsapp_concierge', <AdminConciergeSettings />)} />
                     <Route path="/admin/ingester" element={planPage('photographed_menu', <AdminMenuIngester />)} />
                     <Route path="/admin/ingest-menu" element={planPage('photographed_menu', <AdminMenuIngester />)} />
                     <Route path="/admin/offers" element={planPage('smart_offers', <AdminOffers />)} />

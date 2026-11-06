@@ -62,6 +62,7 @@ const GROUPS: SidebarGroup[] = [
     items: [
       { label: 'AI Copilot', icon: <Bot />, path: '/admin/ai', badge: 'IA', feature: 'whatsapp_concierge' },
       { label: 'Conserje', icon: <ClipboardCheck />, path: '/admin/concierge', badge: 'QA', feature: 'whatsapp_concierge' },
+      { label: 'Ajustes conserje', icon: <Settings />, path: '/admin/concierge-settings', feature: 'whatsapp_concierge' },
       { label: 'Ingestor de carta', icon: <Camera />, path: '/admin/ingest-menu', feature: 'photographed_menu' },
       { label: 'Marca', icon: <Palette />, path: '/admin/branding', feature: 'custom_website' },
       { label: 'Configuraciones', icon: <Settings />, path: '/admin/settings' },
