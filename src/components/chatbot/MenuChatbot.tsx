@@ -125,6 +125,23 @@ function detailToText(detail: unknown): string {
   }
 }
 
+function AssistantText({ text }: { text: string }) {
+  return (
+    <span className="min-w-0 flex-1 whitespace-pre-wrap">
+      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+        part.startsWith('**') && part.endsWith('**') ? (
+          <strong key={i} className="font-semibold text-[#F5E7C1]">
+            {part.slice(2, -2)}
+          </strong>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+}
+
+
 export function MenuChatbot() {
   const { venue } = useMimenu();
   const { getTotalItems } = useCart();
@@ -144,6 +161,7 @@ export function MenuChatbot() {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
 
   const sessionRef = useRef<{ token: string; revision: number; turnCount: number } | null>(null);
+  const autoSpeakRef = useRef(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
@@ -446,9 +464,6 @@ export function MenuChatbot() {
     const knownTurns = current?.turnCount ?? 0;
     const fresh: ChatMessage[] = [];
     session.turns.slice(knownTurns).forEach((turn, index) => {
-      if (turn.user_message) {
-        fresh.push({ id: `${turn.id}-user`, role: 'user', text: turn.user_message.text });
-      }
       const assistantTexts = turn.assistant_messages ?? (turn.assistant_message ? [turn.assistant_message] : []);
       assistantTexts.forEach((msg, msgIndex) => {
         fresh.push({ id: `${turn.id}-assistant-${index}-${msgIndex}`, role: 'assistant', text: msg.text });
@@ -460,6 +475,7 @@ export function MenuChatbot() {
       revision: session.revision,
       turnCount: session.turns.length
     };
+    return fresh;
   }, []);
 
   const initSession = useCallback(async (): Promise<boolean> => {
@@ -474,12 +490,18 @@ export function MenuChatbot() {
       if (!res.ok) return false;
       const data = (await res.json()) as { session_token: string; chat_session?: PublicSession };
       sessionRef.current = { token: data.session_token, revision: 0, turnCount: 0 };
-      if (data.chat_session) applySession(data.chat_session);
+      if (data.chat_session) {
+        const fresh = applySession(data.chat_session);
+        if (autoSpeakRef.current && fresh.length) {
+          const last = fresh[fresh.length - 1];
+          void speakText(last.text, last.id);
+        }
+      }
       return true;
     } catch {
       return false;
     }
-  }, [agent, endpoint, applySession]);
+  }, [agent, endpoint, applySession, speakText]);
 
   const ensureSession = useCallback(async (): Promise<boolean> => {
     if (sessionRef.current) return true;
@@ -523,7 +545,11 @@ export function MenuChatbot() {
           const body = (await res.json().catch(() => null)) as { detail?: unknown } | null;
           throw new Error(detailToText(body?.detail ?? res.status));
         }
-        applySession((await res.json()) as PublicSession);
+        const fresh = applySession((await res.json()) as PublicSession);
+        if (autoSpeakRef.current && fresh.length) {
+          const last = fresh[fresh.length - 1];
+          void speakText(last.text, last.id);
+        }
       } catch (error) {
         console.error('Concierge turn failed:', error);
         setMessages(prev => [...prev, { id: `${Date.now()}-error`, role: 'assistant', text: t.error }]);
@@ -532,7 +558,7 @@ export function MenuChatbot() {
         setBusy(false);
       }
     },
-    [endpoint, applySession, initSession, t.error]
+    [endpoint, applySession, initSession, speakText, t.error]
   );
 
   const handleSubmit = useCallback(
@@ -554,6 +580,7 @@ export function MenuChatbot() {
       setMessages(prev => [...prev, { id: `${Date.now()}-user`, role: 'user', text: trimmed }]);
       busyRef.current = true;
       setBusy(true);
+      autoSpeakRef.current = true;
       void (async () => {
         if (await ensureSession()) {
           await sendToDograh(trimmed);
@@ -578,9 +605,11 @@ export function MenuChatbot() {
 
   const handlePlayMessage = (message: ChatMessage) => {
     if (speakingId === message.id && speaking) {
+      autoSpeakRef.current = false;
       stopSpeech();
       return;
     }
+    autoSpeakRef.current = true;
     void speakText(message.text, message.id);
   };
 
@@ -675,7 +704,7 @@ export function MenuChatbot() {
                   >
                     {message.role === 'assistant' ? (
                       <div className="flex items-end gap-2">
-                        <span className="min-w-0 flex-1 whitespace-pre-wrap">{message.text}</span>
+                        <AssistantText text={message.text} />
                         <button
                           type="button"
                           onClick={() => handlePlayMessage(message)}

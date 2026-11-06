@@ -11,7 +11,7 @@ interface Env {
 }
 
 const VOICE_MAP: Record<string, string> = {
-  es: 'es-ES-ElviraNeural',
+  es: 'es-BO-SofiaNeural',
   en: 'en-US-JennyNeural',
   pt: 'pt-BR-FranciscaNeural',
   de: 'de-DE-KatjaNeural',

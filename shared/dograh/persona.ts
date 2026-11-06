@@ -31,7 +31,7 @@ const TONE_LINES: Record<ConciergeTone, string> = {
 };
 
 const DEFAULT_GREETING = (venueName: string) =>
-  `¡Hola! Soy el concierge de ${venueName}. Puedo ayudarte con la carta, horarios, ubicación o reserva; también con recomendaciones, opciones sin gluten, vegetarianas, veganas o promociones del día.`;
+  `¡Hola! Soy tu concierge de ${venueName}. Te ayudo con la carta, las especialidades de la casa, los horarios o una reserva; también con opciones sin gluten, vegetarianas o veganas, y las promociones del día. ¿Por dónde empezamos?`;
 
 const text = (value: unknown, max: number): string =>
   typeof value === 'string' ? value.trim().slice(0, max) : '';
