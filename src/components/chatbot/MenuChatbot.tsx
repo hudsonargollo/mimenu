@@ -5,7 +5,6 @@ import { useMimenu } from '@/lib/mimenuContext';
 import { useCart } from '@/lib/cartContext';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ConciergeOrb, OrbState } from './ConciergeOrb';
-import { MenuChatbotLegacy } from './MenuChatbotLegacy';
 
 type UiLang = 'es' | 'en' | 'pt';
 
@@ -630,7 +629,7 @@ export function MenuChatbot() {
   );
 
   if (agent && !agent.enabled) {
-    return <MenuChatbotLegacy />;
+    return null;
   }
 
   const orbState: OrbState = busy ? 'thinking' : speaking ? 'speaking' : listening ? 'listening' : 'idle';
