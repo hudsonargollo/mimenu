@@ -28,3 +28,12 @@ vps-worker/__pycache__/
 *.sln
 *.sw?
 .wrangler
+
+# Local secrets — never track
+.env
+.env.*
+!.env.example
+
+# Archived notes containing credentials
+_archive/dev_notes/CREDENTIALS.md
+_archive/sql_fixes/CHANGE_ADMIN_PASSWORD.sql

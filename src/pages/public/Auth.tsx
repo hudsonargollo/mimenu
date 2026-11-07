@@ -88,34 +88,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const [{ resolveCredential }, { requestSession, AppSessionError }] = await Promise.all([
-        import("@/lib/tenantAuth"),
-        import("@/lib/appSession"),
-      ]);
-
-      const cred = resolveCredential(identifier, password);
-
-      if (cred) {
-        await login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName);
-
-        if (cred.role === "admin") {
-          try {
-            await requestSession(cred.identifier, cred.password);
-          } catch (sessionError: any) {
-            console.error("🔴 Admin session error:", sessionError);
-            toast.warning(
-              sessionError?.message ||
-                "No se pudo habilitar la gestión de meseros en este inicio de sesión."
-            );
-          }
-        }
-
-        console.log("✅ Login successful", cred.email, cred.tenantSlug);
-        toast.success("¡Inicio de sesión exitoso!");
-        login(cred.email, cred.name, cred.role, cred.password, cred.tenantSlug, cred.venueName, rememberMe);
-        redirectToRolePage(cred.role);
-        return;
-      }
+      const { requestSession, AppSessionError } = await import("@/lib/appSession");
 
       try {
         const session = await requestSession(identifier, password);

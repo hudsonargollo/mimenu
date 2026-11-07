@@ -30,7 +30,6 @@ interface RegistryItem {
 }
 
 import registry from '@/data/provisioned_venues.json';
-import { APP_CREDENTIALS } from '../../shared/app-credentials';
 
 function registryItems(): RegistryItem[] {
   return Array.isArray(registry) ? (registry as unknown as RegistryItem[]) : [];
@@ -85,44 +84,6 @@ export function listTenantAccounts(lang: Lang): TenantAccount[] {
       venueName: venue.name_i18n?.[lang] || venue.name,
       login: venue.staff[0],
     });
-  }
-  return out;
-}
-
-/** Credential store for staff logins.
- *
- * Supports login by email OR by restaurant slug/username. Passwords live here
- * (client-side demo store; production would verify against a backend).
- */
-export interface Credential {
-  identifier: string; // email or slug/username (lowercased)
-  password: string;
-  email: string;
-  name: string;
-  role: StaffRole;
-  tenantSlug: string | null; // null = platform super admin
-  venueName: string | null;
-}
-
-const CREDENTIALS: Credential[] = APP_CREDENTIALS;
-
-export function resolveCredential(identifier: string, password: string): Credential | null {
-  const key = (identifier || '').trim().toLowerCase();
-  const cred = CREDENTIALS.find((c) => c.identifier === key);
-  if (!cred) return null;
-  if (cred.password !== password) return null;
-  return cred;
-}
-
-export function listTenantCredentials(): Credential[] {
-  // One entry per tenant (admin) for the quick-pick buttons.
-  const seen = new Set<string>();
-  const out: Credential[] = [];
-  for (const c of CREDENTIALS) {
-    if (c.tenantSlug && c.role === 'admin' && !seen.has(c.tenantSlug)) {
-      seen.add(c.tenantSlug);
-      out.push(c);
-    }
   }
   return out;
 }
